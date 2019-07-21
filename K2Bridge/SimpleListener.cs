@@ -1,14 +1,13 @@
 ﻿namespace K2Bridge
 {
     using System;
-    using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Text;
 
     internal static class SimpleListener
     {
-        public static void Start(string[] prefixes, string remoteEndpoint, int timeoutInMilliSeconds = 2000)
+        public static void Start(string[] prefixes, string remoteEndpoint, QueryTranslator translator, int timeoutInMilliSeconds = 5000)
         {
             if (!HttpListener.IsSupported)
             {
@@ -44,13 +43,40 @@
                     HttpListenerContext context = listener.GetContext();
                     HttpListenerRequest request = context.Request;
 
+                    // use a stream we can read more than once
+                    var requestInputStream = new MemoryStream();
+                    request.InputStream.CopyTo(requestInputStream);
+                    requestInputStream.Position = 0;
+
                     if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
                         Console.WriteLine("Data Search");
+
+                        try
+                        {
+                            string body = GetRequestBody(request, requestInputStream);
+
+                            // the body is in NDJson. TODO: probably there's a better way to handle this...
+                            // TODO: handle the "index" part
+                            string[] lines = body.Split(
+                                new[] { "\r\n", "\r", "\n" },
+                                StringSplitOptions.RemoveEmptyEntries);
+
+                            // TODO: add ability to handle multiple queries
+                            string translation = translator.Translate(lines[1]);
+                            Console.WriteLine($"Translated Query: {translation}");
+
+                            // rewind the stream for another read
+                            requestInputStream.Position = 0;
+                        }
+                        catch (Exception ex)
+                        {
+                            throw;
+                        }
                     }
 
-                    var remoteResponse = PassThrough(request, remoteEndpoint, timeoutInMilliSeconds);
+                    var remoteResponse = PassThrough(request, remoteEndpoint, timeoutInMilliSeconds, requestInputStream);
 
                     // Obtain a response object.
                     HttpListenerResponse response = context.Response;
@@ -66,11 +92,12 @@
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
+                    throw;
                 }
             }
         }
 
-        private static HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds)
+        private static HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds, MemoryStream memoryStream)
         {
             string[] bodylessMethods = { "GET", "HEAD" };
 
@@ -93,7 +120,10 @@
 
                 using (var stream = remoteRequest.GetRequestStream())
                 {
-                    request.InputStream.CopyTo(stream);
+                    // request.InputStream.CopyTo(stream);
+
+                    // This is a fallback since we already read the source stream
+                    memoryStream.CopyTo(stream);
                 }
             }
 
@@ -101,6 +131,18 @@
 
             return remoteResponse;
         }
-    }
 
+        private static string GetRequestBody(HttpListenerRequest request, MemoryStream bodyMemoryStream)
+        {
+            if (!request.HasEntityBody)
+            {
+                return null;
+            }
+
+            using (var reader = new StreamReader(bodyMemoryStream, request.ContentEncoding, false, 4096, true))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+    }
 }

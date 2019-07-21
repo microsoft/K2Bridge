@@ -1,6 +1,6 @@
 ﻿namespace K2Bridge
 {
-    partial class ElasticSearchDSLVisitor : IVisitor
+    internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(MatchPhraseQuery matchPhraseQuery)
         {

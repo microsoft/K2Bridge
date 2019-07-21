@@ -1,6 +1,9 @@
 ﻿namespace K2Bridge
 {
-    class LeafQueryClause : KQLBase
+    using Newtonsoft.Json;
+
+    [JsonConverter(typeof(LeafQueryClauseConverter))]
+    internal abstract class LeafQueryClause : KQLBase
     {
     }
 }

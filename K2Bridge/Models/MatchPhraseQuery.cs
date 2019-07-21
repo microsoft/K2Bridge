@@ -3,7 +3,7 @@
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(MatchPhraseQueryConverter))]
-    class MatchPhraseQuery : LeafQueryClause, IVisitable
+    internal class MatchPhraseQuery : LeafQueryClause, IVisitable
     {
         public string FieldName { get; set; }
 

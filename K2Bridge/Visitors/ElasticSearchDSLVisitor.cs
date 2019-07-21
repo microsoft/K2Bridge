@@ -1,11 +1,19 @@
 ﻿namespace K2Bridge
 {
-    partial class ElasticSearchDSLVisitor : IVisitor
+    internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(ElasticSearchDSL elasticSearchDSL)
         {
             elasticSearchDSL.Query.Accept(this);
-            elasticSearchDSL.KQL = elasticSearchDSL.Query.KQL;
+
+            string kql = elasticSearchDSL.Query.KQL;
+
+            if (elasticSearchDSL.Size >= 0)
+            {
+                kql += $"\n| limit {elasticSearchDSL.Size}";
+            }
+
+            elasticSearchDSL.KQL = kql;
         }
     }
 }

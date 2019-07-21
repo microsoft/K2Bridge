@@ -4,16 +4,13 @@
     using System.IO;
     using Newtonsoft.Json;
 
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            ElasticSearchDSL elasticSearchDSL = JsonConvert.DeserializeObject<ElasticSearchDSL>(File.ReadAllText(@"C:\dev\kusto\esproxy\src\main\resources\query2.json"));
+            var translator = new QueryTranslator();
 
-            ElasticSearchDSLVisitor visitor = new ElasticSearchDSLVisitor();
-            elasticSearchDSL.Accept(visitor);
-
-            Console.WriteLine(elasticSearchDSL.KQL);
+            SimpleListener.Start(new string[] { @"http://localhost:8080/" }, @"http://localhost:9200", translator);
         }
     }
 }

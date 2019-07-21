@@ -1,6 +1,6 @@
 ﻿namespace K2Bridge
 {
-    internal class KQLBase
+    internal abstract class KQLBase : object
     {
         public string KQL { get; set; }
     }

@@ -4,7 +4,7 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    public class RangeQueryConverter : JsonConverter
+    internal class RangeQueryConverter : ReadOnlyJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -19,16 +19,11 @@
             RangeQuery rangeQuery = new RangeQuery
             {
                 FieldName = first.Name,
-                GTEValue = (int)first.First["gte"],
-                LTEValue = (int)first.First["lte"],
+                GTEValue = (long)first.First["gte"],
+                LTEValue = (long)first.First["lte"],
             };
 
             return rangeQuery;
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
         }
     }
 }

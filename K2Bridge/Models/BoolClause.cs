@@ -3,17 +3,14 @@
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
-    class BoolClause
+    internal class BoolClause : KQLBase, IVisitable
     {
         [JsonProperty("must")]
         public List<LeafQueryClause> Must { get; set; }
 
-        void xyz()
+        public void Accept(IVisitor visitor)
         {
-            LeafQueryClause leafQueryClause;
-            RangeQuery rangeQuery = new RangeQuery();
-
-            leafQueryClause = rangeQuery;
+            visitor.Visit(this);
         }
     }
 }

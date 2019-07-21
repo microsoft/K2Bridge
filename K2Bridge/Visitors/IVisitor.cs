@@ -9,5 +9,7 @@
         void Visit(ElasticSearchDSL elasticSearchDSL);
 
         void Visit(RangeQuery rangeQuery);
+
+        void Visit(BoolClause boolClause);
     }
 }

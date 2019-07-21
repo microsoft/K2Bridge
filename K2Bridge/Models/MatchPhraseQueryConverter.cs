@@ -4,7 +4,7 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    public class MatchPhraseQueryConverter : JsonConverter
+    internal class MatchPhraseQueryConverter : ReadOnlyJsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
@@ -22,11 +22,6 @@
                 Phrase = (string)first.First["query"],
             };
             return matchPhraseQuery;
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
         }
     }
 }
