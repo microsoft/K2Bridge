@@ -4,18 +4,19 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal class MatchPhraseQueryConverter : ReadOnlyJsonConverter
+    internal class SortClauseConverter : ReadOnlyJsonConverter
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            var obj = new MatchPhraseQuery
+            var obj = new SortClause
             {
                 FieldName = first.Name,
-                Phrase = (string)first.First["query"],
+                Order = (string)first.First["order"],
             };
+
             return obj;
         }
     }

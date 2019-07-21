@@ -11,5 +11,7 @@
         void Visit(RangeQuery rangeQuery);
 
         void Visit(BoolClause boolClause);
+
+        void Visit(SortClause sortClause);
     }
 }

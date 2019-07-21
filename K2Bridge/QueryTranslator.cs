@@ -9,7 +9,7 @@
         public string Translate(string query)
         {
             var elasticSearchDSL = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
-            elasticSearchDSL.Accept(this.visitor);
+            elasticSearchDSL.Accept(visitor);
             return elasticSearchDSL.KQL;
         }
     }

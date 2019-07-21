@@ -14,7 +14,8 @@
         [JsonProperty("timeout")]
         public string Timeout { get; set; }
 
-        // Add sort = ordering
+        [JsonProperty("sort")]
+        public List<SortClause> Sort { get; set; }
 
         public void Accept(IVisitor visitor)
         {

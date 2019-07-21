@@ -8,9 +8,12 @@
     {
         public static void Main(string[] args)
         {
+            string proxyAddress = @"http://localhost:8080/";
+            string elasticAddress = @"http://localhost:9200";
+
             var translator = new QueryTranslator();
 
-            SimpleListener.Start(new string[] { @"http://localhost:8080/" }, @"http://localhost:9200", translator);
+            SimpleListener.Start(new string[] { proxyAddress }, elasticAddress, translator);
         }
     }
 }
