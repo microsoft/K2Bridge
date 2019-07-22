@@ -57,22 +57,29 @@
                         {
                             string body = GetRequestBody(request, requestInputStream);
 
-                            // the body is in NDJson. TODO: probably there's a better way to handle this...
+                            // the body is in NDJson. TODO: probably there's a better way to do this...
                             // TODO: handle the "index" part
                             string[] lines = body.Split(
                                 new[] { "\r\n", "\r", "\n" },
                                 StringSplitOptions.RemoveEmptyEntries);
 
                             // TODO: add ability to handle multiple queries
-                            string translation = translator.Translate(lines[1]);
+                            Console.WriteLine($"Sending to translation: {lines[1]}");
+                            string translation = translator.Translate(lines[0], lines[1]);
                             Console.WriteLine($"Translated Query: {translation}");
-
-                            // rewind the stream for another read
-                            requestInputStream.Position = 0;
                         }
                         catch (Exception ex)
                         {
-                            throw;
+                            Console.WriteLine("Failed to translate.");
+                            //throw;
+                        }
+                        finally
+                        {
+                            if (requestInputStream.Position > 0)
+                            {
+                                // rewind the stream for another read
+                                requestInputStream.Position = 0;
+                            }
                         }
                     }
 
@@ -99,37 +106,46 @@
 
         private static HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds, MemoryStream memoryStream)
         {
-            string[] bodylessMethods = { "GET", "HEAD" };
-
-            var requestString = $"{remoteEndpoint}{request.RawUrl}";
-            var remoteRequest = WebRequest.Create(requestString) as HttpWebRequest;
-            remoteRequest.AllowAutoRedirect = false;
-            remoteRequest.KeepAlive = request.KeepAlive;
-            remoteRequest.Proxy.Credentials = CredentialCache.DefaultCredentials;
-            remoteRequest.Method = request.HttpMethod;
-            remoteRequest.ContentType = request.ContentType;
-
-            var cookies = new CookieContainer();
-            cookies.Add(new Uri(requestString), request.Cookies);
-            remoteRequest.CookieContainer = cookies;
-            remoteRequest.Timeout = timeoutInMilliSeconds;
-
-            if (!bodylessMethods.Contains(remoteRequest.Method))
+            try
             {
-                remoteRequest.ContentLength = request.ContentLength64;
+                string[] bodylessMethods = { "GET", "HEAD" };
 
-                using (var stream = remoteRequest.GetRequestStream())
+                var requestString = $"{remoteEndpoint}{request.RawUrl}";
+                var remoteRequest = WebRequest.Create(requestString) as HttpWebRequest;
+                remoteRequest.AllowAutoRedirect = false;
+                remoteRequest.KeepAlive = request.KeepAlive;
+                remoteRequest.Proxy.Credentials = CredentialCache.DefaultCredentials;
+                remoteRequest.Method = request.HttpMethod;
+                remoteRequest.ContentType = request.ContentType;
+
+                var cookies = new CookieContainer();
+                cookies.Add(new Uri(requestString), request.Cookies);
+                remoteRequest.CookieContainer = cookies;
+                remoteRequest.Timeout = timeoutInMilliSeconds;
+
+                if (!bodylessMethods.Contains(remoteRequest.Method))
                 {
-                    // request.InputStream.CopyTo(stream);
+                    remoteRequest.ContentLength = request.ContentLength64;
 
-                    // This is a fallback since we already read the source stream
-                    memoryStream.CopyTo(stream);
+                    using (var stream = remoteRequest.GetRequestStream())
+                    {
+                        // request.InputStream.CopyTo(stream);
+
+                        // This is a fallback since we already read the source stream
+                        memoryStream.CopyTo(stream);
+                    }
                 }
+
+                var remoteResponse = (HttpWebResponse)remoteRequest.GetResponse();
+
+                return remoteResponse;
             }
-
-            var remoteResponse = (HttpWebResponse)remoteRequest.GetResponse();
-
-            return remoteResponse;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PassThrough request to: {request.RawUrl} ended with an exception: {ex.Message}");
+                throw;
+                return null;
+            }
         }
 
         private static string GetRequestBody(HttpListenerRequest request, MemoryStream bodyMemoryStream)

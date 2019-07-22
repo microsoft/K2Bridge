@@ -33,7 +33,7 @@
                 }
             }
 
-            boolClause.KQL = tempKQL.Remove(tempKQL.Length - 5);
+            boolClause.KQL = tempKQL.Remove(tempKQL.Length - 5); // remove last end
         }
     }
 }

@@ -16,6 +16,7 @@
                 FieldName = first.Name,
                 GTEValue = (long)first.First["gte"],
                 LTEValue = (long)first.First["lte"],
+                Format = (string)first.First["format"],
             };
 
             return obj;

@@ -4,7 +4,18 @@
     {
         public void Visit(RangeQuery rangeQuery)
         {
-            rangeQuery.KQL = $"{rangeQuery.FieldName} between ({rangeQuery.GTEValue}..{rangeQuery.LTEValue})";
+            string betweenExp;
+
+            if (rangeQuery.Format == "epoch_millis")
+            {
+                betweenExp = $"fromUnixTimeMilli({rangeQuery.GTEValue})..fromUnixTimeMilli({rangeQuery.LTEValue})";
+            }
+            else
+            {
+                betweenExp = $"{rangeQuery.GTEValue}..{rangeQuery.LTEValue}";
+            }
+
+            rangeQuery.KQL = $"{rangeQuery.FieldName} between ({betweenExp})";
         }
     }
 }

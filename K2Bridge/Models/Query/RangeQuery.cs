@@ -11,6 +11,8 @@
 
         public long LTEValue { get; set; }
 
+        public string Format { get; set; }
+
         public void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
