@@ -2,16 +2,12 @@
 {
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        private const string KQLAndKeyword = "and";
+        private const string KQLNotKeyword = "not";
+
         public void Visit(BoolClause boolClause)
         {
-            string tempKQL = string.Empty;
-
-            bool multipleLeafQueries = false;
-            if (boolClause.Must.Count > 1)
-            {
-                multipleLeafQueries = true;
-            }
-
+            string mustKQL = string.Empty;
             foreach (dynamic leafQuery in boolClause.Must)
             {
                 if (leafQuery == null)
@@ -21,19 +17,32 @@
                 }
 
                 leafQuery.Accept(this);
-
-                if (multipleLeafQueries)
-                {
-                    tempKQL += $"({leafQuery.KQL}) AND ";
-                }
-                else
-                {
-                    boolClause.KQL = $"{leafQuery.KQL}";
-                    return;
-                }
+                mustKQL += $"({leafQuery.KQL}) {KQLAndKeyword} ";
             }
 
-            boolClause.KQL = tempKQL.Remove(tempKQL.Length - 5); // remove last end
+            string mustNotKQL = string.Empty;
+            foreach (dynamic leafQuery in boolClause.MustNot)
+            {
+                if (leafQuery == null)
+                {
+                    // probably deser. problem
+                    continue;
+                }
+
+                leafQuery.Accept(this);
+                mustNotKQL += $"({KQLNotKeyword} {leafQuery.KQL}) {KQLAndKeyword} ";
+            }
+
+            boolClause.KQL = $"{mustKQL.Remove(mustKQL.Length - 5)}";
+            if (!string.IsNullOrEmpty(mustNotKQL))
+            {
+                if (!string.IsNullOrEmpty(boolClause.KQL))
+                {
+                    boolClause.KQL += $" {KQLAndKeyword} ";
+                }
+
+                boolClause.KQL += $"{mustNotKQL.Remove(mustNotKQL.Length - 5)}";
+            }
         }
     }
 }

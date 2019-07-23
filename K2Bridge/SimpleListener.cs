@@ -19,7 +19,7 @@
         public int TimeoutInMilliSeconds { get; set; } = 5000;
 
         public void Start()
-        {            
+        {
             if (!HttpListener.IsSupported)
             {
                 this.Logger.Error("OS doesn't support using the HttpListener class.");
@@ -66,25 +66,21 @@
                         // This request should be routed to Kusto
                         try
                         {
-                            string body = GetRequestBody(request, requestInputStream);
+                            string body = this.GetRequestBody(request, requestInputStream);
 
                             // the body is in NDJson. TODO: probably there's a better way to do this...
                             // TODO: handle the "index" part
-                            string[] lines = body.Split(
-                                new[] { "\r\n", "\r", "\n" },
-                                StringSplitOptions.RemoveEmptyEntries);
+                            string[] lines = body.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                             // TODO: add ability to handle multiple queries
-                            this.Logger.Debug($"Sending to translation:\n{lines[1]}");
+                            this.Logger.Debug($"Elastic search request:\n{lines[1]}");
                             string translation = this.Translator.Translate(lines[0], lines[1]);
-                            this.Logger.Debug($"Translated Query:\n{translation}");
-
+                            this.Logger.Debug($"Translated Kusto query:\n{translation}");
                             kusto.ExecuteQuery(translation);
                         }
                         catch (Exception ex)
                         {
                             this.Logger.Error(ex, "Failed to translate query.");
-                            //throw;
                         }
                         finally
                         {
@@ -96,7 +92,7 @@
                         }
                     }
 
-                    var remoteResponse = PassThrough(request, this.RemoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
+                    var remoteResponse = this.PassThrough(request, this.RemoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
 
                     // Obtain a response object.
                     HttpListenerResponse response = context.Response;
@@ -117,10 +113,8 @@
             }
         }
 
-        private static HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds, MemoryStream memoryStream)
+        private HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds, MemoryStream memoryStream)
         {
-            //Serilog.ILogger logger = Logger.GetLogger();
-
             try
             {
                 string[] bodylessMethods = { "GET", "HEAD" };
@@ -157,13 +151,12 @@
             }
             catch (Exception ex)
             {
-                //Logger.Error(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
-                throw;
+                this.Logger.Error(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
                 return null;
             }
         }
 
-        private static string GetRequestBody(HttpListenerRequest request, MemoryStream bodyMemoryStream)
+        private string GetRequestBody(HttpListenerRequest request, MemoryStream bodyMemoryStream)
         {
             if (!request.HasEntityBody)
             {
