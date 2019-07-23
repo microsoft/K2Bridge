@@ -16,8 +16,14 @@
 
         void Visit(SortClause sortClause);
 
+        void Visit(Aggregation aggregation);
+
+        // Bucket Aggregations
         void Visit(DateHistogram dateHistogram);
 
-        void Visit(Aggregation aggregation);
+        // Metric Aggregations
+        void Visit(Avg avg);
+
+        void Visit(Cardinality cardinality);
     }
 }

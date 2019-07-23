@@ -12,7 +12,8 @@
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(RangeQuery);
+            // We don't really need this since we're always using the 'JsonConverter' property
+            throw new NotImplementedException();
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

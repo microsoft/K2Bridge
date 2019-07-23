@@ -20,9 +20,11 @@
                 string subName = aggKeyPair.Key;
                 var subAgg = aggKeyPair.Value;
                 subAgg.Accept(this);
+
+                aggregation.KQL += $"{subAgg.KQL}, "; // this won't work when 2+ bucket aggregations are used!
             }
 
-            aggregation.KQL = aggregation.PrimaryAggregation.KQL;
+            aggregation.KQL += aggregation.PrimaryAggregation.KQL;
         }
     }
 }

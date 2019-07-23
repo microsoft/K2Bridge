@@ -5,19 +5,29 @@
     using System.Linq;
     using System.Net;
 
-    internal static class SimpleListener
+    internal class SimpleListener
     {
-        public static void Start(string[] prefixes, string remoteEndpoint, QueryTranslator translator, int timeoutInMilliSeconds = 5000)
-        {
+        public string[] Prefixes { get; set; }
+
+        public string RemoteEndpoint { get; set; }
+
+        public QueryTranslator Translator { get; set; }
+
+        public Serilog.ILogger Logger { get; set; }
+
+        public int TimeoutInMilliSeconds { get; set; } = 5000;
+
+        public void Start()
+        {            
             if (!HttpListener.IsSupported)
             {
-                Console.WriteLine("OS doesn't support using the HttpListener class.");
+                this.Logger.Error("OS doesn't support using the HttpListener class.");
                 return;
             }
 
             // URI prefixes are required,
             // for example "http://contoso.com:8080/index/".
-            if (prefixes == null || prefixes.Length == 0)
+            if (this.Prefixes == null || this.Prefixes.Length == 0)
             {
                 throw new ArgumentException("prefixes");
             }
@@ -26,14 +36,14 @@
             HttpListener listener = new HttpListener();
 
             // Add the prefixes.
-            foreach (string s in prefixes)
+            foreach (string s in this.Prefixes)
             {
                 listener.Prefixes.Add(s);
             }
 
             listener.Start();
-            Console.WriteLine("Proxy is Listening...");
-            Console.WriteLine("Press Ctrl+C to exit.");
+            this.Logger.Information("Proxy is Listening...");
+            this.Logger.Information("Press Ctrl+C to exit.");
 
             while (true)
             {
@@ -51,8 +61,6 @@
                     if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
-                        Console.WriteLine("Data Search");
-
                         try
                         {
                             string body = GetRequestBody(request, requestInputStream);
@@ -64,13 +72,13 @@
                                 StringSplitOptions.RemoveEmptyEntries);
 
                             // TODO: add ability to handle multiple queries
-                            Console.WriteLine($"Sending to translation: {lines[1]}");
-                            string translation = translator.Translate(lines[0], lines[1]);
-                            Console.WriteLine($"Translated Query: {translation}");
+                            this.Logger.Debug($"Sending to translation:\n{lines[1]}");
+                            string translation = this.Translator.Translate(lines[0], lines[1]);
+                            this.Logger.Debug($"Translated Query:\n{translation}");
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Failed to translate.");
+                            this.Logger.Error(ex, "Failed to translate query.");
                             //throw;
                         }
                         finally
@@ -83,7 +91,7 @@
                         }
                     }
 
-                    var remoteResponse = PassThrough(request, remoteEndpoint, timeoutInMilliSeconds, requestInputStream);
+                    var remoteResponse = PassThrough(request, this.RemoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
 
                     // Obtain a response object.
                     HttpListenerResponse response = context.Response;
@@ -98,7 +106,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    this.Logger.Error(ex.Message);
                     throw;
                 }
             }
@@ -106,6 +114,8 @@
 
         private static HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds, MemoryStream memoryStream)
         {
+            //Serilog.ILogger logger = Logger.GetLogger();
+
             try
             {
                 string[] bodylessMethods = { "GET", "HEAD" };
@@ -142,7 +152,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"PassThrough request to: {request.RawUrl} ended with an exception: {ex.Message}");
+                //Logger.Error(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
                 throw;
                 return null;
             }

@@ -3,7 +3,7 @@
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(JustFieldConverter))]
-    internal class Avg : MetricAggregation
+    internal class Cardinality : MetricAggregation
     {
         [JsonProperty("field")]
         public string FieldName { get; set; }

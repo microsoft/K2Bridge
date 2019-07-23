@@ -31,7 +31,7 @@
                     kqlSB.Append($"{aggregation.KQL} ");
                 }
 
-                kqlSB.Append(" | as aggs);");
+                kqlSB.Append("| as aggs);");
             }
 
             // hits (projections...)

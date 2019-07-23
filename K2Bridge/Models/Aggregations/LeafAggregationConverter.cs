@@ -21,6 +21,10 @@
                 case "avg":
                     leafAggregation = first.Value.ToObject<Avg>(serializer);
                     break;
+
+                case "cardinality":
+                    leafAggregation = first.Value.ToObject<Cardinality>(serializer);
+                    break;
             }
 
             return leafAggregation;
