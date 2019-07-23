@@ -1,5 +1,6 @@
 ﻿namespace K2Bridge
 {
+    using K2Bridge.KustoConnector;
     using System;
     using System.IO;
     using System.Linq;
@@ -45,6 +46,8 @@
             this.Logger.Information("Proxy is Listening...");
             this.Logger.Information("Press Ctrl+C to exit.");
 
+            KustoManager kusto = new KustoManager();
+
             while (true)
             {
                 try
@@ -75,6 +78,8 @@
                             this.Logger.Debug($"Sending to translation:\n{lines[1]}");
                             string translation = this.Translator.Translate(lines[0], lines[1]);
                             this.Logger.Debug($"Translated Query:\n{translation}");
+
+                            kusto.ExecuteQuery(translation);
                         }
                         catch (Exception ex)
                         {
@@ -107,7 +112,7 @@
                 catch (Exception ex)
                 {
                     this.Logger.Error(ex.Message);
-                    throw;
+                    //throw;
                 }
             }
         }
