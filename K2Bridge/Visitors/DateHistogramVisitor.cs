@@ -6,7 +6,8 @@
     {
         public void Visit(Models.Aggregations.DateHistogram dateHistogram)
         {
-            dateHistogram.KQL = $"{dateHistogram.Metric} by bin({dateHistogram.FieldName}, {dateHistogram.Interval})";
+            // todatetime is redundent but we'll keep it for now
+            dateHistogram.KQL = $"{dateHistogram.Metric} by bin(todatetime({dateHistogram.FieldName}), {dateHistogram.Interval})";
         }
     }
 }

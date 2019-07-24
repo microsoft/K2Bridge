@@ -1,10 +1,10 @@
 ﻿namespace K2Bridge
 {
-    using K2Bridge.KustoConnector;
     using System;
     using System.IO;
     using System.Linq;
     using System.Net;
+    using K2Bridge.KustoConnector;
 
     internal class SimpleListener
     {
@@ -61,6 +61,9 @@
                     request.InputStream.CopyTo(requestInputStream);
                     requestInputStream.Position = 0;
 
+                    // Log
+                    string translatedKqlQuery = null;
+
                     if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
@@ -74,9 +77,10 @@
 
                             // TODO: add ability to handle multiple queries
                             this.Logger.Debug($"Elastic search request:\n{lines[1]}");
-                            string translation = this.Translator.Translate(lines[0], lines[1]);
-                            this.Logger.Debug($"Translated Kusto query:\n{translation}");
-                            kusto.ExecuteQuery(translation);
+                            translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
+                            this.Logger.Debug($"Translated Query:\n{translatedKqlQuery}");
+
+                            kusto.ExecuteQuery(translatedKqlQuery);
                         }
                         catch (Exception ex)
                         {
@@ -94,6 +98,10 @@
 
                     var remoteResponse = this.PassThrough(request, this.RemoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
 
+                    // use a stream we can read more than once
+                    var remoteResposeStream = new MemoryStream();
+                    remoteResponse.GetResponseStream().CopyTo(remoteResposeStream);
+
                     // Obtain a response object.
                     HttpListenerResponse response = context.Response;
 
@@ -101,8 +109,29 @@
                     response.ContentLength64 = remoteResponse.ContentLength;
                     response.ContentType = remoteResponse.ContentType;
 
+                    // Record the inputs and outputs
+                    if (!string.IsNullOrEmpty(translatedKqlQuery))
+                    {
+                        try
+                        {
+                            Guid g = Guid.NewGuid();
+
+                            WriteFile($"{g}.KQL.json", translatedKqlQuery);
+                            WriteFile($"{g}.TranslatedResponse.json", "TBD");
+                            WriteFile($"{g}.Request.json", requestInputStream);
+                            WriteFile($"{g}.OriginalResponse.json", remoteResposeStream);
+                        }
+                        catch (Exception ex)
+                        {
+                            this.Logger.Error(ex, "Failed to write trace files.");
+                            this.Logger.Warning($"Create folder {CaseLogPath} to dump the content of translated queries");
+                        }
+                    }
+
+                    // Send the respose back
                     var output = response.OutputStream;
-                    remoteResponse.GetResponseStream().CopyTo(output);
+                    remoteResposeStream.Position = 0;
+                    remoteResposeStream.CopyTo(output);
                     output.Close();
                 }
                 catch (Exception ex)
@@ -153,6 +182,28 @@
             {
                 this.Logger.Error(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
                 return null;
+            }
+        }
+
+        private const string CaseLogPath = "..\\..\\..\\..\\Tests\\dump";
+
+        private static void WriteFile(string filename, string content)
+        {
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(CaseLogPath, filename)))
+            {
+                outputFile.Write(content);
+            }
+        }
+
+        private static void WriteFile(string filename, Stream content)
+        {
+            using (FileStream outputFile = new FileStream(Path.Combine(CaseLogPath, filename), FileMode.CreateNew))
+            {
+                content.Position = 0;
+                content.CopyTo(outputFile);
+                content.Position = 0;
+
+                outputFile.Flush();
             }
         }
 

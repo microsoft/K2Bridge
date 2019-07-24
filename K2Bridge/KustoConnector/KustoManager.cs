@@ -4,6 +4,7 @@ using System.Text;
 
 namespace K2Bridge.KustoConnector
 {
+    using System.Data;
     using Kusto.Data;
     using Kusto.Data.Common;
     using Kusto.Data.Net.Client;
@@ -14,8 +15,8 @@ namespace K2Bridge.KustoConnector
 
         public KustoManager()
         {
-            KustoConnectionStringBuilder conn = new KustoConnectionStringBuilder("https://kustolab.kusto.windows.net", "takamara")
-                .WithAadApplicationKeyAuthentication("", "", "");
+            KustoConnectionStringBuilder conn = new KustoConnectionStringBuilder("https://kustolab.kusto.windows.net/takamara;Fed=true")
+                .WithAadApplicationKeyAuthentication("<App>", "<Key>", "Authority");
 
             this.client = KustoClientFactory.CreateCslQueryProvider(conn);
 
@@ -23,18 +24,13 @@ namespace K2Bridge.KustoConnector
             this.client.DefaultDatabaseName = "takamara";
         }
 
-        public void ExecuteQuery(string query)
+        public IDataReader ExecuteQuery(string query)
         {
             // var result = this.client.ExecuteQuery("kibana_sample_data_flights | take 10");
-            var result = this.client.ExecuteQuery(query);
+            IDataReader result = this.client.ExecuteQuery(query);
             Console.WriteLine("columns received = " + result.FieldCount);
-            int i = 1;
-            while (result.Read())
-            {
-                Console.WriteLine(i++);
-            }
 
-            // return result.FieldCount.ToString();
+            return result;
         }
     }
 }
