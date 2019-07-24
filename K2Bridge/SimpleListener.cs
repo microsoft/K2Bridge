@@ -20,6 +20,8 @@
 
         public int TimeoutInMilliSeconds { get; set; } = 5000;
 
+        private const string TracePath = @"../../../Traces";
+
         public void Start()
         {
             if (!HttpListener.IsSupported)
@@ -44,11 +46,17 @@
                 listener.Prefixes.Add(s);
             }
 
+            KustoManager kusto = new KustoManager();
+
+            // Setup tracing directory
+            if (!Directory.Exists(TracePath))
+            {
+                Directory.CreateDirectory(TracePath);
+            }
+
             listener.Start();
             this.Logger.Information("Proxy is Listening...");
             this.Logger.Information("Press Ctrl+C to exit.");
-
-            KustoManager kusto = new KustoManager();
 
             while (true)
             {
@@ -65,15 +73,14 @@
                     request.InputStream.CopyTo(requestInputStream);
                     requestInputStream.Position = 0;
 
-                    
-
-                    string translatedKqlQuery = null;
+                    bool requestTraceIsOn = false;
+                    bool requestAnsweredSuccessfully = false;
 
                     if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
-
-                        WriteFile($"{requestId}.Request.json", requestInputStream);
+                        requestTraceIsOn = true;
+                        this.WriteFile($"{requestId}.Request.json", requestInputStream);
 
                         try
                         {
@@ -85,7 +92,7 @@
 
                             // TODO: add ability to handle multiple queries
                             this.Logger.Debug($"Elastic search request:\n{lines[1]}");
-                            translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
+                            string translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
                             this.Logger.Debug($"Translated query:\n{translatedKqlQuery}");
 
                             ElasticResponse kustoResults = kusto.ExecuteQuery(translatedKqlQuery);
@@ -108,7 +115,7 @@
                                 this.WriteFile($"{requestId}.TranslatedResponse.json", kustoResultsStream);
                             }
 
-                            continue;
+                            requestAnsweredSuccessfully = true;
                         }
                         catch (Exception ex)
                         {
@@ -130,25 +137,31 @@
                     var remoteResposeStream = new MemoryStream();
                     remoteResponse.GetResponseStream().CopyTo(remoteResposeStream);
 
-                    // Obtain a response object.
-                    HttpListenerResponse response = context.Response;
+                    if (!requestAnsweredSuccessfully)
+                    {
+                        // We didn't answer the request yet, so use the elastic pass-through response
+                        // Obtain a response object.
+                        HttpListenerResponse response = context.Response;
 
-                    response.StatusCode = (int)remoteResponse.StatusCode;
-                    response.ContentLength64 = remoteResponse.ContentLength;
-                    response.ContentType = remoteResponse.ContentType;
+                        response.StatusCode = (int)remoteResponse.StatusCode;
+                        response.ContentLength64 = remoteResponse.ContentLength;
+                        response.ContentType = remoteResponse.ContentType;
 
-                    WriteFile($"{requestId}.ElasticResponse.json", remoteResposeStream);
+                        // Send the respose back
+                        var output = response.OutputStream;
+                        remoteResposeStream.Position = 0;
+                        remoteResposeStream.CopyTo(output);
+                        output.Close();
+                    }
 
-                    // Send the respose back
-                    var output = response.OutputStream;
-                    remoteResposeStream.Position = 0;
-                    remoteResposeStream.CopyTo(output);
-                    output.Close();
+                    if (requestTraceIsOn)
+                    {
+                        this.WriteFile($"{requestId}.ElasticResponse.json", remoteResposeStream);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.Error(ex.Message);
-                    //throw;
+                    this.Logger.Error(ex, "An exception...");
                 }
             }
         }
@@ -196,13 +209,11 @@
             }
         }
 
-        private const string CaseLogPath = "..\\..\\..\\..\\Tests\\dump";
-
         private void WriteFile(string filename, string content)
         {
             try
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(CaseLogPath, filename)))
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(TracePath, filename)))
                 {
                     outputFile.Write(content);
                 }
@@ -210,7 +221,7 @@
             catch (Exception ex)
             {
                 this.Logger.Error(ex, "Failed to write trace files.");
-                this.Logger.Warning($"Create folder {CaseLogPath} to dump the content of translated queries");
+                this.Logger.Warning($"Create folder {TracePath} to dump the content of translated queries");
             }
         }
 
@@ -218,7 +229,7 @@
         {
             try
             {
-                using (FileStream outputFile = new FileStream(Path.Combine(CaseLogPath, filename), FileMode.CreateNew))
+                using (FileStream outputFile = new FileStream(Path.Combine(TracePath, filename), FileMode.CreateNew))
                 {
                     content.Position = 0;
                     content.CopyTo(outputFile);
@@ -230,7 +241,7 @@
             catch (Exception ex)
             {
                 this.Logger.Error(ex, "Failed to write trace files.");
-                this.Logger.Warning($"Create folder {CaseLogPath} to dump the content of translated queries");
+                this.Logger.Warning($"Create folder {TracePath} to dump the content of translated queries");
             }
         }
 
