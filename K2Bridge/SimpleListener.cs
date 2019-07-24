@@ -76,6 +76,10 @@
                     bool requestTraceIsOn = false;
                     bool requestAnsweredSuccessfully = false;
 
+                    // Obtain a response object.
+                    HttpListenerResponse response = context.Response;
+                    response.Headers.Add("X-K2-CorrelationId", requestId.ToString());
+
                     if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
@@ -94,20 +98,19 @@
                             this.Logger.Debug($"Elastic search request:\n{lines[1]}");
                             string translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
                             this.Logger.Debug($"Translated query:\n{translatedKqlQuery}");
+                            this.WriteFile($"{requestId}.KQL.json", translatedKqlQuery);
 
                             ElasticResponse kustoResults = kusto.ExecuteQuery(translatedKqlQuery);
                             byte[] kustoResultsContent = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(kustoResults));
 
-                            context.Response.StatusCode = 200;
-                            context.Response.ContentLength64 = kustoResultsContent.LongLength;
-                            context.Response.ContentType = "application/json";
+                            response.StatusCode = 200;
+                            response.ContentLength64 = kustoResultsContent.LongLength;
+                            response.ContentType = "application/json";
 
                             var kustoResultsStream = new MemoryStream(kustoResultsContent);
-                            kustoResultsStream.CopyTo(context.Response.OutputStream);
+                            kustoResultsStream.CopyTo(response.OutputStream);
 
-                            context.Response.OutputStream.Close();
-
-                            this.WriteFile($"{requestId}.KQL.json", translatedKqlQuery);
+                            response.OutputStream.Close();
 
                             if (kustoResultsStream != null)
                             {
@@ -140,12 +143,10 @@
                     if (!requestAnsweredSuccessfully)
                     {
                         // We didn't answer the request yet, so use the elastic pass-through response
-                        // Obtain a response object.
-                        HttpListenerResponse response = context.Response;
-
                         response.StatusCode = (int)remoteResponse.StatusCode;
                         response.ContentLength64 = remoteResponse.ContentLength;
                         response.ContentType = remoteResponse.ContentType;
+                        response.Headers.Add("X-K2-PassThrough", "true");
 
                         // Send the respose back
                         var output = response.OutputStream;
