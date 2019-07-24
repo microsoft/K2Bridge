@@ -4,7 +4,9 @@
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Text;
     using K2Bridge.KustoConnector;
+    using Newtonsoft.Json;
 
     internal class SimpleListener
     {
@@ -52,6 +54,8 @@
             {
                 try
                 {
+                    Guid requestId = Guid.NewGuid();
+
                     // Note: The GetContext method blocks while waiting for a request.
                     HttpListenerContext context = listener.GetContext();
                     HttpListenerRequest request = context.Request;
@@ -61,12 +65,16 @@
                     request.InputStream.CopyTo(requestInputStream);
                     requestInputStream.Position = 0;
 
-                    // Log
+                    
+
                     string translatedKqlQuery = null;
 
                     if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
+
+                        WriteFile($"{requestId}.Request.json", requestInputStream);
+
                         try
                         {
                             string body = this.GetRequestBody(request, requestInputStream);
@@ -78,9 +86,29 @@
                             // TODO: add ability to handle multiple queries
                             this.Logger.Debug($"Elastic search request:\n{lines[1]}");
                             translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
-                            this.Logger.Debug($"Translated Query:\n{translatedKqlQuery}");
+                            this.Logger.Debug($"Translated query:\n{translatedKqlQuery}");
 
-                            kusto.ExecuteQuery(translatedKqlQuery);
+                            ElasticResponse kustoResults = kusto.ExecuteQuery(translatedKqlQuery);
+                            byte[] kustoResultsContent = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(kustoResults));
+
+                            context.Response.StatusCode = 200;
+                            context.Response.ContentLength64 = kustoResultsContent.LongLength;
+                            context.Response.ContentType = "application/json";
+
+                            var kustoResultsStream = new MemoryStream(kustoResultsContent);
+                            kustoResultsStream.CopyTo(context.Response.OutputStream);
+
+                            context.Response.OutputStream.Close();
+
+                            this.WriteFile($"{requestId}.KQL.json", translatedKqlQuery);
+
+                            if (kustoResultsStream != null)
+                            {
+                                kustoResultsStream.Position = 0;
+                                this.WriteFile($"{requestId}.TranslatedResponse.json", kustoResultsStream);
+                            }
+
+                            continue;
                         }
                         catch (Exception ex)
                         {
@@ -109,24 +137,7 @@
                     response.ContentLength64 = remoteResponse.ContentLength;
                     response.ContentType = remoteResponse.ContentType;
 
-                    // Record the inputs and outputs
-                    if (!string.IsNullOrEmpty(translatedKqlQuery))
-                    {
-                        try
-                        {
-                            Guid g = Guid.NewGuid();
-
-                            WriteFile($"{g}.KQL.json", translatedKqlQuery);
-                            WriteFile($"{g}.TranslatedResponse.json", "TBD");
-                            WriteFile($"{g}.Request.json", requestInputStream);
-                            WriteFile($"{g}.OriginalResponse.json", remoteResposeStream);
-                        }
-                        catch (Exception ex)
-                        {
-                            this.Logger.Error(ex, "Failed to write trace files.");
-                            this.Logger.Warning($"Create folder {CaseLogPath} to dump the content of translated queries");
-                        }
-                    }
+                    WriteFile($"{requestId}.ElasticResponse.json", remoteResposeStream);
 
                     // Send the respose back
                     var output = response.OutputStream;
@@ -187,23 +198,39 @@
 
         private const string CaseLogPath = "..\\..\\..\\..\\Tests\\dump";
 
-        private static void WriteFile(string filename, string content)
+        private void WriteFile(string filename, string content)
         {
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(CaseLogPath, filename)))
+            try
             {
-                outputFile.Write(content);
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(CaseLogPath, filename)))
+                {
+                    outputFile.Write(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Logger.Error(ex, "Failed to write trace files.");
+                this.Logger.Warning($"Create folder {CaseLogPath} to dump the content of translated queries");
             }
         }
 
-        private static void WriteFile(string filename, Stream content)
+        private void WriteFile(string filename, Stream content)
         {
-            using (FileStream outputFile = new FileStream(Path.Combine(CaseLogPath, filename), FileMode.CreateNew))
+            try
             {
-                content.Position = 0;
-                content.CopyTo(outputFile);
-                content.Position = 0;
+                using (FileStream outputFile = new FileStream(Path.Combine(CaseLogPath, filename), FileMode.CreateNew))
+                {
+                    content.Position = 0;
+                    content.CopyTo(outputFile);
+                    content.Position = 0;
 
-                outputFile.Flush();
+                    outputFile.Flush();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Logger.Error(ex, "Failed to write trace files.");
+                this.Logger.Warning($"Create folder {CaseLogPath} to dump the content of translated queries");
             }
         }
 

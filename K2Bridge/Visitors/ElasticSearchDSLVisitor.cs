@@ -14,7 +14,8 @@
 
             // base query
             elasticSearchDSL.Query.Accept(this);
-            kqlSB.Append($"let _data = ({elasticSearchDSL.IndexName} | evaluate bag_unpack(raw) | evaluate bag_unpack(_source)\n| {elasticSearchDSL.Query.KQL});");
+            kqlSB.Append($"let _data = ({elasticSearchDSL.IndexName} | extend raw1=raw | evaluate bag_unpack(raw1)" +
+                $" | extend _source1=_source | evaluate bag_unpack(_source1)\n| {elasticSearchDSL.Query.KQL});");
 
             // aggregations
             // TODO: procress the entire list
