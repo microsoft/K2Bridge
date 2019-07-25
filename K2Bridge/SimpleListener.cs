@@ -10,6 +10,8 @@
 
     internal class SimpleListener
     {
+        private const string TracePath = @"../../../Traces";
+
         public string[] Prefixes { get; set; }
 
         public string RemoteEndpoint { get; set; }
@@ -18,9 +20,9 @@
 
         public Serilog.ILogger Logger { get; set; }
 
-        public int TimeoutInMilliSeconds { get; set; } = 5000;
+        public KustoManager KustoManager { get; set; }
 
-        private const string TracePath = @"../../../Traces";
+        public int TimeoutInMilliSeconds { get; set; } = 5000;
 
         public void Start()
         {
@@ -46,8 +48,6 @@
                 listener.Prefixes.Add(s);
             }
 
-            KustoManager kusto = new KustoManager();
-
             // Setup tracing directory
             if (!Directory.Exists(TracePath))
             {
@@ -62,60 +62,56 @@
             {
                 try
                 {
-                    Guid requestId = Guid.NewGuid();
-
                     // Note: The GetContext method blocks while waiting for a request.
                     HttpListenerContext context = listener.GetContext();
                     HttpListenerRequest request = context.Request;
 
                     // use a stream we can read more than once
                     var requestInputStream = new MemoryStream();
-                    request.InputStream.CopyTo(requestInputStream);
-                    requestInputStream.Position = 0;
+                    this.CopyStream(request.InputStream, requestInputStream);
 
                     bool requestTraceIsOn = false;
                     bool requestAnsweredSuccessfully = false;
 
                     // Obtain a response object.
                     HttpListenerResponse response = context.Response;
-                    response.Headers.Add("X-K2-CorrelationId", requestId.ToString());
+                    response.Headers.Add("X-K2-CorrelationId", request.RequestTraceIdentifier.ToString());
 
                     if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
                         requestTraceIsOn = true;
-                        this.WriteFile($"{requestId}.Request.json", requestInputStream);
+                        this.WriteFile($"{request.RequestTraceIdentifier}.Request.json", requestInputStream);
 
                         try
                         {
                             string body = this.GetRequestBody(request, requestInputStream);
 
                             // the body is in NDJson. TODO: probably there's a better way to do this...
-                            // TODO: handle the "index" part
                             string[] lines = body.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                             // TODO: add ability to handle multiple queries
                             this.Logger.Debug($"Elastic search request:\n{lines[1]}");
                             string translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
                             this.Logger.Debug($"Translated query:\n{translatedKqlQuery}");
-                            this.WriteFile($"{requestId}.KQL.json", translatedKqlQuery);
+                            this.WriteFile($"{request.RequestTraceIdentifier}.KQL.json", translatedKqlQuery);
 
-                            ElasticResponse kustoResults = kusto.ExecuteQuery(translatedKqlQuery);
+                            ElasticResponse kustoResults = this.KustoManager.ExecuteQuery(translatedKqlQuery);
                             byte[] kustoResultsContent = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(kustoResults));
 
-                            response.StatusCode = 200;
+                            response.StatusCode = (int)HttpStatusCode.OK;
                             response.ContentLength64 = kustoResultsContent.LongLength;
                             response.ContentType = "application/json";
 
                             var kustoResultsStream = new MemoryStream(kustoResultsContent);
-                            kustoResultsStream.CopyTo(response.OutputStream);
+                            this.CopyStream(kustoResultsStream, response.OutputStream);
 
                             response.OutputStream.Close();
 
                             if (kustoResultsStream != null)
                             {
                                 kustoResultsStream.Position = 0;
-                                this.WriteFile($"{requestId}.TranslatedResponse.json", kustoResultsStream);
+                                this.WriteFile($"{request.RequestTraceIdentifier}.TranslatedResponse.json", kustoResultsStream);
                             }
 
                             requestAnsweredSuccessfully = true;
@@ -124,21 +120,13 @@
                         {
                             this.Logger.Error(ex, "Failed to translate query.");
                         }
-                        finally
-                        {
-                            if (requestInputStream.Position > 0)
-                            {
-                                // rewind the stream for another read
-                                requestInputStream.Position = 0;
-                            }
-                        }
                     }
 
                     var remoteResponse = this.PassThrough(request, this.RemoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
 
                     // use a stream we can read more than once
                     var remoteResposeStream = new MemoryStream();
-                    remoteResponse.GetResponseStream().CopyTo(remoteResposeStream);
+                    this.CopyStream(remoteResponse.GetResponseStream(), remoteResposeStream);
 
                     if (!requestAnsweredSuccessfully)
                     {
@@ -150,14 +138,13 @@
 
                         // Send the respose back
                         var output = response.OutputStream;
-                        remoteResposeStream.Position = 0;
-                        remoteResposeStream.CopyTo(output);
+                        this.CopyStream(remoteResposeStream, output);
                         output.Close();
                     }
 
                     if (requestTraceIsOn)
                     {
-                        this.WriteFile($"{requestId}.ElasticResponse.json", remoteResposeStream);
+                        this.WriteFile($"{request.RequestTraceIdentifier}.ElasticResponse.json", remoteResposeStream);
                     }
                 }
                 catch (Exception ex)
@@ -192,10 +179,8 @@
 
                     using (var stream = remoteRequest.GetRequestStream())
                     {
-                        // request.InputStream.CopyTo(stream);
-
                         // This is a fallback since we already read the source stream
-                        memoryStream.CopyTo(stream);
+                        this.CopyStream(memoryStream, stream);
                     }
                 }
 
@@ -232,10 +217,7 @@
             {
                 using (FileStream outputFile = new FileStream(Path.Combine(TracePath, filename), FileMode.CreateNew))
                 {
-                    content.Position = 0;
-                    content.CopyTo(outputFile);
-                    content.Position = 0;
-
+                    this.CopyStream(content, outputFile);
                     outputFile.Flush();
                 }
             }
@@ -253,9 +235,25 @@
                 return null;
             }
 
+            bodyMemoryStream.Position = 0;
             using (var reader = new StreamReader(bodyMemoryStream, request.ContentEncoding, false, 4096, true))
             {
                 return reader.ReadToEnd();
+            }
+        }
+
+        private void CopyStream(Stream source, Stream destination)
+        {
+            if (source.CanSeek && source.Position > 0)
+            {
+                source.Position = 0;
+            }
+
+            source.CopyTo(destination);
+
+            if (destination.CanSeek && destination.Position > 0)
+            {
+                destination.Position = 0;
             }
         }
     }
