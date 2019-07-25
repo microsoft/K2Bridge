@@ -1,11 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-
-namespace K2Bridge.KustoConnector
+﻿namespace K2Bridge.KustoConnector
 {
+    using System.Collections.Generic;
+    using System.Data;
+    using Newtonsoft.Json.Linq;
+
     public class KustoParser
     {
         public static void ReadHits(IDataReader reader, ElasticResponse response)
@@ -14,7 +12,8 @@ namespace K2Bridge.KustoConnector
 
             while (reader.Read())
             {
-                var hit = JsonConvert.DeserializeObject<Hit>(reader.GetValue(0).ToString());
+                var jo = (JObject)reader.GetValue(0);
+                var hit = jo.ToObject<Hit>();
                 hits.Add(hit);
             }
 

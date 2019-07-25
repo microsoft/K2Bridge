@@ -48,6 +48,8 @@
 
             KustoManager kusto = new KustoManager();
 
+            RequestHandler.StaticLogger = this.Logger;
+
             // Setup tracing directory
             if (!Directory.Exists(TracePath))
             {
@@ -73,7 +75,7 @@
                     request.InputStream.CopyTo(requestInputStream);
                     requestInputStream.Position = 0;
 
-                    bool requestTraceIsOn = false;
+                    bool requestTraceIsOn = true;
                     bool requestAnsweredSuccessfully = false;
 
                     var sr = new StreamReader(requestInputStream);
@@ -89,6 +91,8 @@
                         IndexListRequestHandler handler = new IndexListRequestHandler(context, kusto, requestId);
 
                         response = handler.PrepareResponse(requestInputString);
+
+                        requestAnsweredSuccessfully = true;
                     }
                     else if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
