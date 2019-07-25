@@ -10,7 +10,7 @@
 
     internal class SimpleListener
     {
-        private const string TracePath = @"../../../Traces";
+        private TraceHelper tracer;
 
         public string[] Prefixes { get; set; }
 
@@ -48,11 +48,7 @@
                 listener.Prefixes.Add(s);
             }
 
-            // Setup tracing directory
-            if (!Directory.Exists(TracePath))
-            {
-                Directory.CreateDirectory(TracePath);
-            }
+            this.tracer = new TraceHelper(this.Logger, @"../../../Traces");
 
             listener.Start();
             this.Logger.Information("Proxy is Listening...");
@@ -68,7 +64,7 @@
 
                     // use a stream we can read more than once
                     var requestInputStream = new MemoryStream();
-                    this.CopyStream(request.InputStream, requestInputStream);
+                    StreamUtils.CopyStream(request.InputStream, requestInputStream);
 
                     bool requestTraceIsOn = false;
                     bool requestAnsweredSuccessfully = false;
@@ -81,7 +77,7 @@
                     {
                         // This request should be routed to Kusto
                         requestTraceIsOn = true;
-                        this.WriteFile($"{request.RequestTraceIdentifier}.Request.json", requestInputStream);
+                        this.tracer.WriteFile($"{request.RequestTraceIdentifier}.Request.json", requestInputStream);
 
                         try
                         {
@@ -94,7 +90,7 @@
                             this.Logger.Debug($"Elastic search request:\n{lines[1]}");
                             string translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
                             this.Logger.Debug($"Translated query:\n{translatedKqlQuery}");
-                            this.WriteFile($"{request.RequestTraceIdentifier}.KQL.json", translatedKqlQuery);
+                            this.tracer.WriteFile($"{request.RequestTraceIdentifier}.KQL.json", translatedKqlQuery);
 
                             ElasticResponse kustoResults = this.KustoManager.ExecuteQuery(translatedKqlQuery);
                             byte[] kustoResultsContent = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(kustoResults));
@@ -104,14 +100,14 @@
                             response.ContentType = "application/json";
 
                             var kustoResultsStream = new MemoryStream(kustoResultsContent);
-                            this.CopyStream(kustoResultsStream, response.OutputStream);
+                            StreamUtils.CopyStream(kustoResultsStream, response.OutputStream);
 
                             response.OutputStream.Close();
 
                             if (kustoResultsStream != null)
                             {
                                 kustoResultsStream.Position = 0;
-                                this.WriteFile($"{request.RequestTraceIdentifier}.TranslatedResponse.json", kustoResultsStream);
+                                this.tracer.WriteFile($"{request.RequestTraceIdentifier}.TranslatedResponse.json", kustoResultsStream);
                             }
 
                             requestAnsweredSuccessfully = true;
@@ -126,7 +122,7 @@
 
                     // use a stream we can read more than once
                     var remoteResposeStream = new MemoryStream();
-                    this.CopyStream(remoteResponse.GetResponseStream(), remoteResposeStream);
+                    StreamUtils.CopyStream(remoteResponse.GetResponseStream(), remoteResposeStream);
 
                     if (!requestAnsweredSuccessfully)
                     {
@@ -138,13 +134,13 @@
 
                         // Send the respose back
                         var output = response.OutputStream;
-                        this.CopyStream(remoteResposeStream, output);
+                        StreamUtils.CopyStream(remoteResposeStream, output);
                         output.Close();
                     }
 
                     if (requestTraceIsOn)
                     {
-                        this.WriteFile($"{request.RequestTraceIdentifier}.ElasticResponse.json", remoteResposeStream);
+                        this.tracer.WriteFile($"{request.RequestTraceIdentifier}.ElasticResponse.json", remoteResposeStream);
                     }
                 }
                 catch (Exception ex)
@@ -180,7 +176,7 @@
                     using (var stream = remoteRequest.GetRequestStream())
                     {
                         // This is a fallback since we already read the source stream
-                        this.CopyStream(memoryStream, stream);
+                        StreamUtils.CopyStream(memoryStream, stream);
                     }
                 }
 
@@ -195,39 +191,6 @@
             }
         }
 
-        private void WriteFile(string filename, string content)
-        {
-            try
-            {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(TracePath, filename)))
-                {
-                    outputFile.Write(content);
-                }
-            }
-            catch (Exception ex)
-            {
-                this.Logger.Error(ex, "Failed to write trace files.");
-                this.Logger.Warning($"Create folder {TracePath} to dump the content of translated queries");
-            }
-        }
-
-        private void WriteFile(string filename, Stream content)
-        {
-            try
-            {
-                using (FileStream outputFile = new FileStream(Path.Combine(TracePath, filename), FileMode.CreateNew))
-                {
-                    this.CopyStream(content, outputFile);
-                    outputFile.Flush();
-                }
-            }
-            catch (Exception ex)
-            {
-                this.Logger.Error(ex, "Failed to write trace files.");
-                this.Logger.Warning($"Create folder {TracePath} to dump the content of translated queries");
-            }
-        }
-
         private string GetRequestBody(HttpListenerRequest request, MemoryStream bodyMemoryStream)
         {
             if (!request.HasEntityBody)
@@ -239,21 +202,6 @@
             using (var reader = new StreamReader(bodyMemoryStream, request.ContentEncoding, false, 4096, true))
             {
                 return reader.ReadToEnd();
-            }
-        }
-
-        private void CopyStream(Stream source, Stream destination)
-        {
-            if (source.CanSeek && source.Position > 0)
-            {
-                source.Position = 0;
-            }
-
-            source.CopyTo(destination);
-
-            if (destination.CanSeek && destination.Position > 0)
-            {
-                destination.Position = 0;
             }
         }
     }
