@@ -329,6 +329,8 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 
-
+# Traces
 /Tests/Dump/
 /K2Bridge/Traces
+
+# /K2Bridge/appsettings.json
