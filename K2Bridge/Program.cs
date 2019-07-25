@@ -16,12 +16,15 @@
 
             var translator = new QueryTranslator();
 
+            var kustoManager = new KustoConnector.KustoManager();
+
             SimpleListener simpleListener = new SimpleListener()
             {
                 Prefixes = new string[] { proxyAddress },
                 RemoteEndpoint = elasticAddress,
                 Translator = translator,
                 Logger = logger,
+                KustoManager = kustoManager,
             };
 
             simpleListener.Start();
