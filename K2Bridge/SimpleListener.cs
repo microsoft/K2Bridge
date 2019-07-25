@@ -76,7 +76,21 @@
                     bool requestTraceIsOn = false;
                     bool requestAnsweredSuccessfully = false;
 
-                    if (request.RawUrl.StartsWith(@"/_msearch"))
+                    var sr = new StreamReader(requestInputStream);
+                    string requestInputString = sr.ReadToEnd();
+                    requestInputStream.Position = 0;
+
+                    HttpListenerResponse response;
+
+                    if (IndexListRequestHandler.Mine(request.RawUrl, requestInputString))
+                    {
+                        this.Logger.Debug($"Request index list:{requestId}");
+
+                        IndexListRequestHandler handler = new IndexListRequestHandler(context, kusto, requestId);
+
+                        response = handler.PrepareResponse(requestInputString);
+                    }
+                    else if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
                         requestTraceIsOn = true;
@@ -141,7 +155,7 @@
                     {
                         // We didn't answer the request yet, so use the elastic pass-through response
                         // Obtain a response object.
-                        HttpListenerResponse response = context.Response;
+                        response = context.Response;
 
                         response.StatusCode = (int)remoteResponse.StatusCode;
                         response.ContentLength64 = remoteResponse.ContentLength;
