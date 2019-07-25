@@ -16,8 +16,6 @@
 
             var translator = new QueryTranslator();
 
-            var kustoManager = new KustoConnector.KustoManager();
-
             SimpleListener simpleListener = new SimpleListener()
             {
                 Prefixes = new string[] { proxyAddress },
