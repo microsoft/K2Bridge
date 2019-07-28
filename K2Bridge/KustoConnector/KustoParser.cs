@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Data;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     public class KustoParser
@@ -14,6 +15,8 @@
             {
                 var jo = (JObject)reader.GetValue(0);
                 var hit = jo.ToObject<Hit>();
+                //hit.highlight = new JObject();
+                //hit.highlight.Add("extension", JArray.Parse(@"[""@kibana-highlighted-field@gz@/kibana-highlighted-field@""]"));
                 hits.Add(hit);
             }
 
@@ -23,7 +26,16 @@
 
         public static void ReadAggs(IDataReader reader, ElasticResponse response)
         {
+            var buckets = new List<DateHistogramBucket>();
 
+            while (reader.Read())
+            {
+                var record = (IDataRecord)reader;
+                var bucket = DateHistogramBucket.Create(record);
+                buckets.Add(bucket);
+            }
+
+            response.responses[0].aggregations._2.buckets = buckets.ToArray();
         }
     }
 }
