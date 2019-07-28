@@ -43,6 +43,7 @@
         public object _score { get; set; }
         public JObject _source { get; set; }
         public Fields fields { get; set; }
+        public JObject highlight { get; set; }
         public long[] sort { get; set; }
     }
 
@@ -60,7 +61,7 @@
 
     public class _2
     {
-        public Bucket[] buckets { get; set; }
+        public DateHistogramBucket[] buckets { get; set; }
     }
 
     public class Bucket
