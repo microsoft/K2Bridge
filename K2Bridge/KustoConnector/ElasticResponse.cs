@@ -41,15 +41,45 @@
         public string _id { get; set; }
         public int _version { get; set; }
         public object _score { get; set; }
-        public JObject _source { get; set; }
+        public Source _source { get; set; }
         public Fields fields { get; set; }
         public long[] sort { get; set; }
+        public long _seq_no { get; set; }
+        public long _primary_term { get; set; }
     }
+
+    public class IndexPattern
+    {
+        public string title { get; set; }
+
+        public string timeFieldName { get; set; }
+
+        public string fieldFormatMap { get; set; }
+
+        public string fields { get; set; }
+    }
+
+
+    public class Source
+    {
+        [JsonProperty(PropertyName = "index-pattern")]
+        public IndexPattern index_pattern { get; set; }
+        public string type { get; set; }
+        public string updated_at { get; set; }
+        public MigrationVersion migrationVersion { get; set; }
+    }
+
 
     public class Fields
     {
         public int[] hour_of_day { get; set; }
         public DateTime[] timestamp { get; set; }
+    }
+
+    public class MigrationVersion
+    {
+        [JsonProperty(PropertyName = "index-pattern")]
+        public string index_pattern { get; set; }
     }
 
     public class Aggregations

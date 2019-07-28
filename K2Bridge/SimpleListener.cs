@@ -75,8 +75,17 @@
                     request.InputStream.CopyTo(requestInputStream);
                     requestInputStream.Position = 0;
 
+
                     bool requestTraceIsOn = true;
                     bool requestAnsweredSuccessfully = false;
+
+                    requestTraceIsOn = request.RawUrl.StartsWith(@"/.kibana");
+
+                    if (requestTraceIsOn)
+                    {
+                        this.WriteFile($"{requestId}.Request.json", requestInputStream);
+                        this.Logger.Debug($"Request: {request.RawUrl}:{requestId}");
+                    }
 
                     var sr = new StreamReader(requestInputStream);
                     string requestInputString = sr.ReadToEnd();
@@ -84,22 +93,41 @@
 
                     HttpListenerResponse response;
 
-                    if (IndexListRequestHandler.Mine(request.RawUrl, requestInputString))
+                    if (request.RawUrl.StartsWith(@"/.kibana/"))
                     {
-                        this.Logger.Debug($"Request index list:{requestId}");
+                        if (IndexListRequestHandler.Mine(request.RawUrl, requestInputString))
+                        {
+                            this.Logger.Debug($"Request index list:{requestId}");
 
-                        IndexListRequestHandler handler = new IndexListRequestHandler(context, kusto, requestId);
+                            IndexListRequestHandler handler = new IndexListRequestHandler(context, kusto, requestId);
 
-                        response = handler.PrepareResponse(requestInputString);
+                            response = handler.PrepareResponse(requestInputString);
 
-                        requestAnsweredSuccessfully = true;
+                            requestAnsweredSuccessfully = true;
+                        }
+                        else if (DetailedIndexListRequestHandler.Mine(request.RawUrl, requestInputString))
+                        {
+                            this.Logger.Debug($"Request Getting detailed index list and schemas:{requestId}");
+
+                            DetailedIndexListRequestHandler handler = new DetailedIndexListRequestHandler(context, kusto, requestId);
+
+                            response = handler.PrepareResponse(requestInputString);
+
+                            requestAnsweredSuccessfully = true;
+                        }
+                        else if (IndexDetailsRequestHandler.Mine(request.RawUrl, requestInputString))
+                        {
+                            this.Logger.Debug($"Request Getting index details and schema:{requestId}");
+
+                            IndexDetailsRequestHandler handler = new IndexDetailsRequestHandler(context, kusto, requestId);
+
+                            response = handler.PrepareResponse(requestInputString);
+
+                            requestAnsweredSuccessfully = true;
+                        }
                     }
                     else if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
-                        // This request should be routed to Kusto
-                        requestTraceIsOn = true;
-                        this.WriteFile($"{requestId}.Request.json", requestInputStream);
-
                         try
                         {
                             string body = this.GetRequestBody(request, requestInputStream);

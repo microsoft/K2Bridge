@@ -332,3 +332,9 @@ ASALocalRun/
 
 /Tests/Dump/
 /K2Bridge/Traces
+/K2Bridge/Requests/Detailed Index List.txt
+/K2Bridge/Requests/Simple Index List 1.txt
+/K2Bridge/Requests/Simple Index List 2.txt
+/K2Bridge/Requests/Not Handled/kibana Default Space.txt
+/K2Bridge/Requests/Not Handled/kibana config.txt
+/K2Bridge/Requests/Not Handled/Default Index.txt

@@ -12,16 +12,23 @@ namespace K2Bridge
     {
         protected HttpListenerContext context;
 
-
         protected KustoManager kusto;
+
+        protected Guid requestId;
 
         protected Serilog.ILogger Logger { get; set; }
 
         public static Serilog.ILogger StaticLogger { get; set; }
 
-        public RequestHandler()
+        public RequestHandler(HttpListenerContext requestContext, KustoManager kustoClient, Guid requestId)
         {
             this.Logger = StaticLogger;
+
+            this.context = requestContext;
+
+            this.kusto = kustoClient;
+
+            this.requestId = requestId;
         }
     }
 }
