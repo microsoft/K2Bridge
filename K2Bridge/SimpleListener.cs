@@ -123,7 +123,7 @@
 
                             response = handler.PrepareResponse(requestInputString);
 
-                            requestAnsweredSuccessfully = true;
+                            requestAnsweredSuccessfully = (response != null);
                         }
                     }
                     else if (request.RawUrl.StartsWith(@"/_msearch"))

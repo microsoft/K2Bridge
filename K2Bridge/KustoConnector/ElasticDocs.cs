@@ -5,8 +5,9 @@
     using Newtonsoft.Json.Linq;
 
 
+    
     public class ElasticDocs
     {
-        public Hit[] docs { get; set; }
+        public Hit[] docs{ get; set; }
     }
 }

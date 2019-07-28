@@ -39,6 +39,12 @@
 
                 elasticOutputStream.docs = hitsList.ToArray();
 
+                if (hitsList.Count == 0)
+                {
+                    this.Logger.Debug($"Detailed index schemas: Could not locate index. Giving way to Kibana local storage ({requestId}):{indexPatternID}");
+                    return null;
+                }
+
                 HttpListenerResponse response = this.context.Response;
 
                 string kustoResultsString = JsonConvert.SerializeObject(elasticOutputStream);
