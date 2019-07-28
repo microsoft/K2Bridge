@@ -32,11 +32,9 @@
                 return;
             }
 
-            // URI prefixes are required,
-            // for example "http://contoso.com:8080/index/".
             if (this.Prefixes == null || this.Prefixes.Length == 0)
             {
-                throw new ArgumentException("prefixes");
+                throw new ArgumentException("URI prefixes are required, for example http://contoso.com:8080/index/");
             }
 
             // Create a listener.

@@ -1,27 +1,30 @@
 ﻿namespace K2Bridge
 {
+    using Microsoft.Extensions.Configuration;
     using System;
-    using System.IO;
-    using Newtonsoft.Json;
 
     public class Program
     {
+        private const string ConfigFileName = "appsettings.json";
+        private const string LocalConfigFileName = "appsettings.local.json";
+
         public static void Main(string[] args)
         {
-            string proxyAddress = @"http://localhost:8080/";
-            //string elasticAddress = @"http://localhost:9200";
-            string elasticAddress = @"http://tk8elastic.westeurope.cloudapp.azure.com:9200";
+            IConfigurationRoot config = new ConfigurationBuilder()
+                .AddJsonFile(ConfigFileName, false, true)
+                .AddJsonFile(LocalConfigFileName, true, true) // Optional for local development
+                .Build();
 
             Serilog.ILogger logger = Logger.GetLogger();
 
             var translator = new QueryTranslator();
 
-            var kustoManager = new KustoConnector.KustoManager();
+            var kustoManager = new KustoConnector.KustoManager(config);
 
             SimpleListener simpleListener = new SimpleListener()
             {
-                Prefixes = new string[] { proxyAddress },
-                RemoteEndpoint = elasticAddress,
+                Prefixes = new string[] { config["bridgeListenerAddress"] },
+                RemoteEndpoint = config["remoteElasticAddress"],
                 Translator = translator,
                 Logger = logger,
                 KustoManager = kustoManager,
