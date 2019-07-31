@@ -83,6 +83,8 @@
 
                     if (requestTraceIsOn)
                     {
+                        // Write the request befaore anything bad might happen. 
+
                         this.WriteFile($"{requestId}.Request.json", requestInputStream);
                         this.Logger.Debug($"Request: {request.RawUrl}:{requestId}");
                     }
@@ -91,7 +93,7 @@
                     string requestInputString = sr.ReadToEnd();
                     requestInputStream.Position = 0;
 
-                    HttpListenerResponse response;
+                    string responseString = null;
 
                     if (request.RawUrl.StartsWith(@"/.kibana/"))
                     {
@@ -101,9 +103,9 @@
 
                             IndexListRequestHandler handler = new IndexListRequestHandler(context, kusto, requestId);
 
-                            response = handler.PrepareResponse(requestInputString);
+                            responseString = handler.PrepareResponse(requestInputString);
 
-                            requestAnsweredSuccessfully = true;
+                            //                            requestAnsweredSuccessfully = true;
                         }
                         else if (DetailedIndexListRequestHandler.Mine(request.RawUrl, requestInputString))
                         {
@@ -111,9 +113,9 @@
 
                             DetailedIndexListRequestHandler handler = new DetailedIndexListRequestHandler(context, kusto, requestId);
 
-                            response = handler.PrepareResponse(requestInputString);
+                            responseString = handler.PrepareResponse(requestInputString);
 
-                            requestAnsweredSuccessfully = true;
+                            //                            requestAnsweredSuccessfully = true;
                         }
                         else if (IndexDetailsRequestHandler.Mine(request.RawUrl, requestInputString))
                         {
@@ -121,9 +123,9 @@
 
                             IndexDetailsRequestHandler handler = new IndexDetailsRequestHandler(context, kusto, requestId);
 
-                            response = handler.PrepareResponse(requestInputString);
+                            responseString = handler.PrepareResponse(requestInputString);
 
-                            requestAnsweredSuccessfully = (response != null);
+                            //                            requestAnsweredSuccessfully = (response != null);
                         }
                     }
                     else if (request.RawUrl.StartsWith(@"/_msearch"))
@@ -142,24 +144,9 @@
                             this.Logger.Debug($"Translated query:\n{translatedKqlQuery}");
 
                             ElasticResponse kustoResults = kusto.ExecuteQuery(translatedKqlQuery);
-                            byte[] kustoResultsContent = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(kustoResults));
-
-                            context.Response.StatusCode = 200;
-                            context.Response.ContentLength64 = kustoResultsContent.LongLength;
-                            context.Response.ContentType = "application/json";
-
-                            var kustoResultsStream = new MemoryStream(kustoResultsContent);
-                            kustoResultsStream.CopyTo(context.Response.OutputStream);
-
-                            context.Response.OutputStream.Close();
+                            responseString = JsonConvert.SerializeObject(kustoResults);
 
                             this.WriteFile($"{requestId}.KQL.json", translatedKqlQuery);
-
-                            if (kustoResultsStream != null)
-                            {
-                                kustoResultsStream.Position = 0;
-                                this.WriteFile($"{requestId}.TranslatedResponse.json", kustoResultsStream);
-                            }
 
                             requestAnsweredSuccessfully = true;
                         }
@@ -179,37 +166,68 @@
 
                     var remoteResponse = this.PassThrough(request, this.RemoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
 
-                    // use a stream we can read more than once
-                    var remoteResposeStream = new MemoryStream();
-                    remoteResponse.GetResponseStream().CopyTo(remoteResposeStream);
+                    // use streams we can read more than once
+                    var passthroughResposeStream = new MemoryStream();
+                    remoteResponse.GetResponseStream().CopyTo(passthroughResposeStream);
 
-                    if (!requestAnsweredSuccessfully)
+                    Stream responseStream = null;
+                    Stream kustoResultsStream = null;
+                    Int64 kustoResultsStreamLength = 0;
+
+                    HttpListenerResponse response = context.Response;
+
+                    if (null != responseString)
+                    {
+                        byte[] kustoResultsContent = Encoding.ASCII.GetBytes(responseString);
+                        kustoResultsStream = new MemoryStream(kustoResultsContent);
+                        kustoResultsStreamLength = kustoResultsContent.LongLength;
+                    }
+
+                    if (requestAnsweredSuccessfully)
+                    {
+                        responseStream = kustoResultsStream;
+
+                        response.StatusCode = 200;
+                        response.ContentLength64 = kustoResultsStreamLength;
+                        response.ContentType = "application/json";
+                    }
+                    else 
                     {
                         // We didn't answer the request yet, so use the elastic pass-through response
                         // Obtain a response object.
-                        response = context.Response;
+                        responseStream = passthroughResposeStream;
 
                         response.StatusCode = (int)remoteResponse.StatusCode;
                         response.ContentLength64 = remoteResponse.ContentLength;
                         response.ContentType = remoteResponse.ContentType;
-
-                        // Send the respose back
-                        var output = response.OutputStream;
-                        remoteResposeStream.Position = 0;
-                        remoteResposeStream.CopyTo(output);
-                        output.Close();
                     }
+
+                    responseStream.Position = 0;
+                    responseStream.CopyTo(response.OutputStream);
+                    response.OutputStream.Close();
 
                     if (requestTraceIsOn)
                     {
-                        this.WriteFile($"{requestId}.ElasticResponse.json", remoteResposeStream);
+                        this.WriteFile($"{requestId}.ElasticResponse.json", passthroughResposeStream);
+                        if (kustoResultsStream!= null)
+                        {
+                            this.WriteFile($"{requestId}.K2Response.json", kustoResultsStream);
+                        }
                     }
+
+                    CompareStreams(passthroughResposeStream, kustoResultsStream);
                 }
                 catch (Exception ex)
                 {
                     this.Logger.Error(ex, "An exception...");
                 }
             }
+        }
+
+        private void CompareStreams(Stream passthroughResposeStream, Stream kustoResultsStream)
+        {
+            //Do  nothing
+
         }
 
         private HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds, MemoryStream memoryStream)

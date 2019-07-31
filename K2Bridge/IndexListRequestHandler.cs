@@ -30,7 +30,7 @@
                 (-1 != requestString.IndexOf(requestSignature));
         }
 
-        public HttpListenerResponse PrepareResponse(string requestInputString)
+        public string PrepareResponse(string requestInputString)
         {
             try
             {
@@ -84,23 +84,9 @@
 
                 string kustoResultsString = JsonConvert.SerializeObject(elasticOutputStream);
 
-                this.Logger.Information($"Request index list: {sb.ToString()}");
-
-                this.Logger.Verbose($"Request index list: Response: {kustoResultsString}");
-
-                byte[] kustoResultsContent = Encoding.ASCII.GetBytes(kustoResultsString);
-
-                var kustoResultsStream = new MemoryStream(kustoResultsContent);
-
-                response.StatusCode = 200;
-                response.ContentLength64 = kustoResultsContent.LongLength;
-                response.ContentType = "application/json";
-                kustoResultsStream.CopyTo(response.OutputStream);
-                response.OutputStream.Close();
-
                 this.Logger.Debug($"Index list output:{kustoResultsString}");
 
-                return response;
+                return kustoResultsString;
             }
             catch (Exception ex)
             {
