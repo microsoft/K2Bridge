@@ -23,7 +23,7 @@
                 rawUrl == @"/.kibana/_search?size=10000&from=0&rest_total_hits_as_int=true";
         }
 
-        public HttpListenerResponse PrepareResponse(string requestInputString)
+        public string PrepareResponse(string requestInputString)
         {
             try
             {
@@ -41,23 +41,11 @@
                 elasticOutputStream.hits.total = hitsList.Count;
                 elasticOutputStream.hits.hits = hitsList.ToArray();
 
-                HttpListenerResponse response = this.context.Response;
-
                 string kustoResultsString = JsonConvert.SerializeObject(elasticOutputStream);
-
-                byte[] kustoResultsContent = Encoding.ASCII.GetBytes(kustoResultsString);
-
-                var kustoResultsStream = new MemoryStream(kustoResultsContent);
-
-                response.StatusCode = 200;
-                response.ContentLength64 = kustoResultsContent.LongLength;
-                response.ContentType = "application/json";
-                kustoResultsStream.CopyTo(response.OutputStream);
-                response.OutputStream.Close();
 
                 this.Logger.Debug($"Detailed index list and schemas:({requestId}):{kustoResultsString}");
 
-                return response;
+                return kustoResultsString;
             }
             catch (Exception ex)
             {
