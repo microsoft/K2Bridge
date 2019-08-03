@@ -30,7 +30,7 @@
                 }
 
                 leafQuery.Accept(this);
-                mustNotKQL += $"({KQLNotKeyword} {leafQuery.KQL}) {KQLAndKeyword} ";
+                mustNotKQL += $"{KQLNotKeyword} ({leafQuery.KQL}) {KQLAndKeyword} ";
             }
 
             boolClause.KQL = $"{mustKQL.Remove(mustKQL.Length - 5)}";

@@ -10,11 +10,11 @@
             var kqlSB = new StringBuilder();
 
             // REMOVE THIS
-            kqlSB.Append("let fromUnixTimeMilli = (t:long) { datetime(1970 - 01 - 01) + t * 1millisec};").Append('\n');
+            //kqlSB.Append("let fromUnixTimeMilli = (t:long) { datetime(1970 - 01 - 01) + t * 1millisec};").Append('\n');
 
             // base query
             elasticSearchDSL.Query.Accept(this);
-            kqlSB.Append($"let _data = ({elasticSearchDSL.IndexName} | extend raw1=raw | evaluate bag_unpack(raw1)" +
+            kqlSB.Append($"let _data = materialize({elasticSearchDSL.IndexName} | extend raw1=raw | evaluate bag_unpack(raw1)" +
                 $" | extend _source1=_source | evaluate bag_unpack(_source1)\n| {elasticSearchDSL.Query.KQL});");
 
             // aggregations
