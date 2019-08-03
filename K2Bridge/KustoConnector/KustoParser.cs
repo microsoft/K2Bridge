@@ -2,12 +2,18 @@
 {
     using System.Collections.Generic;
     using System.Data;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    public class KustoParser
+    internal class KustoParser
     {
-        public static void ReadHits(IDataReader reader, ElasticResponse response)
+        private readonly Serilog.ILogger logger;
+
+        public KustoParser(Serilog.ILogger logger)
+        {
+            this.logger = logger;
+        }
+
+        public void ReadHits(IDataReader reader, ElasticResponse response)
         {
             List<Hit> hits = new List<Hit>();
 
@@ -22,9 +28,11 @@
 
             response.responses[0].hits.total = hits.Count;
             response.responses[0].hits.hits = hits.ToArray();
+
+            this.logger.Debug($"Hits processed: {hits.Count}");
         }
 
-        public static void ReadAggs(IDataReader reader, ElasticResponse response)
+        public void ReadAggs(IDataReader reader, ElasticResponse response)
         {
             var buckets = new List<DateHistogramBucket>();
 
@@ -36,6 +44,8 @@
             }
 
             response.responses[0].aggregations._2.buckets = buckets.ToArray();
+
+            this.logger.Debug($"Aggs processed: {buckets.Count}");
         }
     }
 }

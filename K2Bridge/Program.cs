@@ -19,7 +19,7 @@
 
             var translator = new QueryTranslator();
 
-            var kustoManager = new KustoConnector.KustoManager(config);
+            var kustoManager = new KustoConnector.KustoManager(config, logger);
 
             SimpleListener simpleListener = new SimpleListener()
             {
