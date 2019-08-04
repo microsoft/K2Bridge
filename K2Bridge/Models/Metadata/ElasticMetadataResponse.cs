@@ -1,10 +1,10 @@
-﻿namespace K2Bridge.KustoConnector
+﻿namespace K2Bridge.Models.Metadata
 {
     using System;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    public class ElasticResponse
+    public class ElasticMetadataResponse
     {
         public Response[] responses { get; set; }
     }
@@ -41,7 +41,7 @@
         public string _id { get; set; }
         public int _version { get; set; }
         public object _score { get; set; }
-        public JObject _source { get; set; }
+        public Source _source { get; set; }
         public Fields fields { get; set; }
         public long[] sort { get; set; }
         public long _seq_no { get; set; }

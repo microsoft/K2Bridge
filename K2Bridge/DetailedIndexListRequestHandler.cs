@@ -1,10 +1,7 @@
 ﻿namespace K2Bridge
 {
     using System;
-    using System.IO;
-    using System.Linq;
     using System.Net;
-    using System.Text;
     using System.Data;
     using System.Collections.Generic;
     using K2Bridge.KustoConnector;
@@ -29,14 +26,14 @@
             {
                 IDataReader kustoResults = this.kusto.ExecuteControlCommand(".show database schema");
 
-                KustoConnector.Response elasticOutputStream = JsonConvert.DeserializeObject<KustoConnector.Response>(
+                Models.Metadata.Response elasticOutputStream = JsonConvert.DeserializeObject<Models.Metadata.Response>(
                                    "{\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":3,\"max_score\":0.0,\"hits\":[{\"_index\":\".kibana_1\",\"_type\":\"doc\",\"_id\":\"index-pattern:90943e30-9a47-11e8-b64d-95841ca0b247\",\"_seq_no\":55,\"_primary_term\":1,\"_score\":0.0,\"_source\":{\"index-pattern\":{\"title\":\"kibana_sample_data_logs\"},\"type\":\"index-pattern\"}},{\"_index\":\".kibana_1\",\"_type\":\"doc\",\"_id\":\"index-pattern:ff959d40-b880-11e8-a6d9-e546fe2bba5f\",\"_seq_no\":65,\"_primary_term\":2,\"_score\":0.0,\"_source\":{\"index-pattern\":{\"title\":\"kibana_sample_data_ecommerce\"},\"type\":\"index-pattern\"}},{\"_index\":\".kibana_1\",\"_type\":\"doc\",\"_id\":\"index-pattern:d3d7af60-4c81-11e8-b3d7-01146121b73d\",\"_seq_no\":67,\"_primary_term\":2,\"_score\":0.0,\"_source\":{\"index-pattern\":{\"title\":\"kibana_sample_data_flights\"},\"type\":\"index-pattern\"}}]}}");
 
                 elasticOutputStream.took = 10; // TODO: need to add the stats from the actual query.
 
-                KustoConnector.Hits hitsField = new KustoConnector.Hits();
+                Models.Metadata.Hits hitsField = new Models.Metadata.Hits();
 
-                List<KustoConnector.Hit> hitsList = PrepareHits();
+                List<Models.Metadata.Hit> hitsList = PrepareHits();
 
                 elasticOutputStream.hits.total = hitsList.Count;
                 elasticOutputStream.hits.hits = hitsList.ToArray();

@@ -9,7 +9,8 @@
     using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
     using System.Collections.Generic;
-    using KustoConnector;
+    using K2Bridge.Models;
+
 
     internal class IndexDetailsRequestHandler : KibanaRequestHandler
     {
@@ -28,14 +29,14 @@
         {
             try
             {
-                KustoConnector.ElasticDocs requestStream = JsonConvert.DeserializeObject<KustoConnector.ElasticDocs>(requestInputString);
+                Models.Metadata.ElasticDocs requestStream = JsonConvert.DeserializeObject<Models.Metadata.ElasticDocs>(requestInputString);
 
-                KustoConnector.ElasticDocs elasticOutputStream = JsonConvert.DeserializeObject<KustoConnector.ElasticDocs>(
+                Models.Metadata.ElasticDocs elasticOutputStream = JsonConvert.DeserializeObject<Models.Metadata.ElasticDocs>(
                                     "{\"docs\":[{\"index\":\".kibana_1\",\"_type\":\"doc\",\"_id\":\"index-pattern:d3d7af60-4c81-11e8-b3d7-01146121b73d\",\"_version\":3,\"_seq_no\":67,\"_primary_term\":2,\"found\":true,\"_source\":{\"index-pattern\":{\"title\":\"kibana_sample_data_flights\",\"timeFieldName\":\"timestamp\",\"fields\":\"\",\"fieldFormatMap\":\"\"},\"type\":\"index-pattern\",\"migrationVersion\":{\"index-pattern\":\"6.5.0\"},\"updated_at\":\"2019-07-18T13:38:35.278Z\"}}]}");
 
                 string indexPatternID = requestStream.docs[0]._id;
 
-                List <KustoConnector.Hit> hitsList = PrepareHits(indexPatternID);
+                List <Models.Metadata.Hit> hitsList = PrepareHits(indexPatternID);
 
                 elasticOutputStream.docs = hitsList.ToArray();
 

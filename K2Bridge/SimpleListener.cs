@@ -105,7 +105,7 @@
 
                             responseString = handler.PrepareResponse(requestInputString);
 
-                            //                            requestAnsweredSuccessfully = true;
+                            //requestAnsweredSuccessfully = true;
                         }
                         else if (DetailedIndexListRequestHandler.Mine(request.RawUrl, requestInputString))
                         {
@@ -115,7 +115,7 @@
 
                             responseString = handler.PrepareResponse(requestInputString);
 
-                            //                            requestAnsweredSuccessfully = true;
+                            //requestAnsweredSuccessfully = true;
                         }
                         else if (IndexDetailsRequestHandler.Mine(request.RawUrl, requestInputString))
                         {
@@ -125,7 +125,7 @@
 
                             responseString = handler.PrepareResponse(requestInputString);
 
-                            //                            requestAnsweredSuccessfully = (response != null);
+                            //requestAnsweredSuccessfully = (responseString != null);
                         }
                     }
                     else if (request.RawUrl.StartsWith(@"/_msearch"))

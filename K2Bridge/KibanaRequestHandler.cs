@@ -6,7 +6,8 @@
     using System.Net;
     using System.Text;
     using System.Data;
-    using K2Bridge.KustoConnector;
+    using KustoConnector;
+    using K2Bridge.Models;
     using Newtonsoft.Json;
     using System.Security.Cryptography;
     using System.Collections.Generic;
@@ -32,13 +33,13 @@
             }
         }
 
-        protected List<KustoConnector.Hit> PrepareHits(string indexPatternId = null)
+        protected List<Models.Metadata.Hit> PrepareHits(string indexPatternId = null)
         {
             IDataReader kustoResults = this.kusto.ExecuteControlCommand(".show database schema");
 
-            List<KustoConnector.Hit> hitsList = new List<KustoConnector.Hit>();
+            List<Models.Metadata.Hit> hitsList = new List<Models.Metadata.Hit>();
 
-            KustoConnector.Hit hit = null;
+            Models.Metadata.Hit hit = null;
             StringBuilder sbFields = null;
 
             while (kustoResults.Read())
@@ -72,9 +73,9 @@
 
                     // Starting a new table 
                     sbFields = new StringBuilder("[");
-                    hit = new KustoConnector.Hit();
-                    hit._source = new KustoConnector.Source();
-                    hit._source.index_pattern = new KustoConnector.IndexPattern();
+                    hit = new Models.Metadata.Hit();
+                    hit._source = new Models.Metadata.Source();
+                    hit._source.index_pattern = new Models.Metadata.IndexPattern();
 
 
                     hit._index = ".kibana_1";
@@ -84,7 +85,7 @@
                     hit._primary_term = 1;
                     hit._score = 0.0;
                     hit._source.type = "index-pattern";
-                    hit._source.migrationVersion = new MigrationVersion();
+                    hit._source.migrationVersion = new Models.Metadata.MigrationVersion();
                     hit._source.migrationVersion.index_pattern = "6.5.0";
                     hit._source.updated_at = "2019-07-16T16:19:23.016Z"; //TODO what value shoudl go in here?
                     hit._source.index_pattern.title = tableName;
