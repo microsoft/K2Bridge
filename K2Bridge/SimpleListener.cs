@@ -5,8 +5,10 @@
     using System.Linq;
     using System.Net;
     using System.Text;
+    using System.Collections;
     using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     internal class SimpleListener
     {
@@ -215,19 +217,15 @@
                         }
                     }
 
-                    CompareStreams(passthroughResposeStream, kustoResultsStream);
+                    ResponseComparer rc = new ResponseComparer(this.Logger);
+
+                    rc.CompareStreams(passthroughResposeStream, kustoResultsStream);
                 }
                 catch (Exception ex)
                 {
                     this.Logger.Error(ex, "An exception...");
                 }
             }
-        }
-
-        private void CompareStreams(Stream passthroughResposeStream, Stream kustoResultsStream)
-        {
-            //Do  nothing
-
         }
 
         private HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds, MemoryStream memoryStream)

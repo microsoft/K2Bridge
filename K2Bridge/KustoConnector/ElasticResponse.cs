@@ -37,12 +37,20 @@
     public class Hit
     {
         public string _index { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string _type { get; set; }
         public string _id { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public int _version { get; set; }
         public object _score { get; set; }
         public JObject _source { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Fields fields { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public long[] sort { get; set; }
         public long _seq_no { get; set; }
         public long _primary_term { get; set; }

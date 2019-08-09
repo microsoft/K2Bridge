@@ -15,8 +15,6 @@
         public bool timed_out { get; set; }
         public _Shards _shards { get; set; }
         public Hits hits { get; set; }
-        public Aggregations aggregations { get; set; }
-        public int status { get; set; }
     }
 
     public class _Shards
@@ -39,33 +37,48 @@
         public string _index { get; set; }
         public string _type { get; set; }
         public string _id { get; set; }
-        public int _version { get; set; }
-        public object _score { get; set; }
-        public Source _source { get; set; }
-        public Fields fields { get; set; }
-        public long[] sort { get; set; }
         public long _seq_no { get; set; }
         public long _primary_term { get; set; }
+        public object _score { get; set; }
+        public Source _source { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Fields fields { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int _version { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public long[] sort { get; set; }
     }
 
     public class IndexPattern
     {
         public string title { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string timeFieldName { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string fieldFormatMap { get; set; }
 
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string fields { get; set; }
     }
 
 
     public class Source
     {
-        [JsonProperty(PropertyName = "index-pattern")]
+        [JsonProperty(PropertyName = "index-pattern", NullValueHandling = NullValueHandling.Ignore)]
         public IndexPattern index_pattern { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string type { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string updated_at { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public MigrationVersion migrationVersion { get; set; }
     }
 

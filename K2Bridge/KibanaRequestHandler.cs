@@ -19,18 +19,21 @@
         {
         }
 
-        public Guid GetIndexGuid(string tableName)
+        public string GetIndexGuid(string tableName)
         {
+            Guid g;
             if (tableName == "kibana_sample_data_flights")
-            { return new Guid("d3d7af60-4c81-11e8-b3d7-01146121b73d"); }
+            { g = new Guid("d3d7af60-4c81-11e8-b3d7-01146121b73d"); }
             else if (tableName == "kibana_sample_data_ecommerce")
-            { return new Guid("ff959d40-b880-11e8-a6d9-e546fe2bba5f"); }
+            { g = new Guid("ff959d40-b880-11e8-a6d9-e546fe2bba5f"); }
             else if (tableName == "kibana_sample_data_logs")
-            { return new Guid("90943e30-9a47-11e8-b64d-95841ca0b247"); }
+            { g = new Guid("90943e30-9a47-11e8-b64d-95841ca0b247"); }
             else
             {
-                return StringToGUID(tableName);
+                g = StringToGUID(tableName);
             }
+
+            return g.ToString();
         }
 
         protected List<Models.Metadata.Hit> PrepareHits(string indexPatternId = null)
@@ -49,7 +52,7 @@
                 string tableName = record[1].ToString();
                 string fieldName = record[2].ToString();
                 string fieldType = record[3].ToString();
-                string indexID = GetIndexGuid(tableName).ToString();
+                string indexID = GetIndexGuid(tableName);
 
                 if (tableName == string.Empty)
                 {

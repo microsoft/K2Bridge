@@ -48,13 +48,13 @@
 
                 string kustoResultsString = JsonConvert.SerializeObject(elasticOutputStream);
 
-                this.Logger.Debug($"Detailed index list and schemas:({requestId}):{kustoResultsString}");
+                this.Logger.Debug($"Detailed index schemas:({requestId}):{kustoResultsString}");
 
                 return kustoResultsString;
             }
             catch (Exception ex)
             {
-                this.Logger.Debug($"Detailed index list and schemas:({requestId}):Failed to retrieve indexes");
+                this.Logger.Debug($"Detailed index schemas:({requestId}):Failed to retrieve indexes");
 
                 throw;
             }
