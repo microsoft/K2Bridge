@@ -15,13 +15,13 @@
         
         private readonly ILogger<SimpleListener> logger;
 
-        public string[] Prefixes { get; private set; }
+        private readonly string[] prefixes;
 
-        public string RemoteEndpoint { get; private set; }
+        private readonly string remoteEndpoint;
 
-        public ITranslator Translator { get; private set; }
+        private readonly ITranslator translator;
 
-        public IQueryExecutor KustoManager { get; private set; }
+        private IQueryExecutor kustoManager;
 
         public int TimeoutInMilliSeconds { get; set; } = 5000;
 
@@ -31,28 +31,11 @@
             IQueryExecutor kustoManager,
             ILoggerFactory loggerFactory)
         {
-            if (listenerEndpoints is null)
-            {
-                throw new ArgumentNullException(nameof(listenerEndpoints));
-            }
-            if (queryTranslator is null)
-            {
-                throw new ArgumentNullException(nameof(queryTranslator));
-            }
-            if (kustoManager is null)
-            {
-                throw new ArgumentNullException(nameof(kustoManager));
-            }
-            if (loggerFactory is null)
-            {
-                throw new ArgumentNullException(nameof(loggerFactory));
-            }
-
-            Prefixes = listenerEndpoints.Prefixes;
-            RemoteEndpoint = listenerEndpoints.RemoteEndpoint;
-            Translator = queryTranslator;
-            KustoManager = kustoManager;
-            logger = loggerFactory.CreateLogger<SimpleListener>();
+            this.prefixes = listenerEndpoints.Prefixes;
+            this.remoteEndpoint = listenerEndpoints.RemoteEndpoint;
+            this.translator = queryTranslator;
+            this.kustoManager = kustoManager;
+            this.logger = loggerFactory.CreateLogger<SimpleListener>();
             this.tracer = new TraceHelper(this.logger, @"../../../Traces");
         }
 
@@ -64,7 +47,7 @@
                 return;
             }
 
-            if (this.Prefixes == null || this.Prefixes.Length == 0)
+            if (this.prefixes == null || this.prefixes.Length == 0)
             {
                 throw new ArgumentException("URI prefixes are required, for example http://contoso.com:8080/index/");
             }
@@ -73,7 +56,7 @@
             HttpListener listener = new HttpListener();
 
             // Add the prefixes.
-            foreach (string s in this.Prefixes)
+            foreach (string s in this.prefixes)
             {
                 listener.Prefixes.Add(s);
             }
@@ -116,11 +99,11 @@
 
                             // TODO: add ability to handle multiple queries
                             this.logger.LogDebug($"Elastic search request:\n{lines[1]}");
-                            string translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
+                            string translatedKqlQuery = this.translator.Translate(lines[0], lines[1]);
                             this.logger.LogDebug($"Translated query:\n{translatedKqlQuery}");
                             this.tracer.WriteFile($"{request.RequestTraceIdentifier}.KQL.json", translatedKqlQuery);
 
-                            ElasticResponse kustoResults = this.KustoManager.ExecuteQuery(translatedKqlQuery);
+                            ElasticResponse kustoResults = this.kustoManager.ExecuteQuery(translatedKqlQuery);
                             byte[] kustoResultsContent = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(kustoResults));
 
                             response.StatusCode = (int)HttpStatusCode.OK;
@@ -146,7 +129,7 @@
                         }
                     }
 
-                    var remoteResponse = this.PassThrough(request, this.RemoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
+                    var remoteResponse = this.PassThrough(request, this.remoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
 
                     // use a stream we can read more than once
                     var remoteResposeStream = new MemoryStream();
