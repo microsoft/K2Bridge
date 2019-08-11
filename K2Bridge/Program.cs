@@ -1,7 +1,9 @@
 ﻿namespace K2Bridge
 {
+    using K2Bridge.KustoConnector;
     using Microsoft.Extensions.Configuration;
-    using System;
+    using Microsoft.Extensions.DependencyInjection;
+    using Serilog;
 
     public class Program
     {
@@ -10,27 +12,32 @@
 
         public static void Main(string[] args)
         {
+            // initialize configuration
             IConfigurationRoot config = new ConfigurationBuilder()
                 .AddJsonFile(ConfigFileName, false, true)
                 .AddJsonFile(LocalConfigFileName, true, true) // Optional for local development
                 .Build();
+            
+            // initialize logger
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .CreateLogger();
+            
+            // initialize DI container
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(loggingBuilder =>
+      	            loggingBuilder.AddSerilog(dispose: true))
+                .AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(config))
+                .AddScoped<ListenerEndpointsDetails>(s => ListenerEndpointsDetails.MakeFromConfiguration(config))
+                .AddTransient<ITranslator, QueryTranslator>()
+                .AddTransient<IQueryExecutor, KustoManager>()
+                .AddTransient<IVisitor, ElasticSearchDSLVisitor>()
+                .AddTransient<SimpleListener>()
+                .BuildServiceProvider();
 
-            Serilog.ILogger logger = Logger.GetLogger();
-
-            var translator = new QueryTranslator();
-
-            var kustoManager = new KustoConnector.KustoManager(config, logger);
-
-            SimpleListener simpleListener = new SimpleListener()
-            {
-                Prefixes = new string[] { config["bridgeListenerAddress"] },
-                RemoteEndpoint = config["remoteElasticAddress"],
-                Translator = translator,
-                Logger = logger,
-                KustoManager = kustoManager,
-            };
-
-            simpleListener.Start();
+            // start service
+            serviceProvider.GetService<SimpleListener>().Start();
         }
     }
 }

@@ -6,29 +6,61 @@
     using System.Net;
     using System.Text;
     using K2Bridge.KustoConnector;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     internal class SimpleListener
     {
-        private TraceHelper tracer;
+        private readonly TraceHelper tracer;
+        
+        private readonly ILogger<SimpleListener> logger;
 
-        public string[] Prefixes { get; set; }
+        public string[] Prefixes { get; private set; }
 
-        public string RemoteEndpoint { get; set; }
+        public string RemoteEndpoint { get; private set; }
 
-        public QueryTranslator Translator { get; set; }
+        public ITranslator Translator { get; private set; }
 
-        public Serilog.ILogger Logger { get; set; }
-
-        public KustoManager KustoManager { get; set; }
+        public IQueryExecutor KustoManager { get; private set; }
 
         public int TimeoutInMilliSeconds { get; set; } = 5000;
+
+        public SimpleListener(
+            ListenerEndpointsDetails listenerEndpoints,
+            ITranslator queryTranslator, 
+            IQueryExecutor kustoManager,
+            ILoggerFactory loggerFactory)
+        {
+            if (listenerEndpoints is null)
+            {
+                throw new ArgumentNullException(nameof(listenerEndpoints));
+            }
+            if (queryTranslator is null)
+            {
+                throw new ArgumentNullException(nameof(queryTranslator));
+            }
+            if (kustoManager is null)
+            {
+                throw new ArgumentNullException(nameof(kustoManager));
+            }
+            if (loggerFactory is null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
+            }
+
+            Prefixes = listenerEndpoints.Prefixes;
+            RemoteEndpoint = listenerEndpoints.RemoteEndpoint;
+            Translator = queryTranslator;
+            KustoManager = kustoManager;
+            logger = loggerFactory.CreateLogger<SimpleListener>();
+            this.tracer = new TraceHelper(this.logger, @"../../../Traces");
+        }
 
         public void Start()
         {
             if (!HttpListener.IsSupported)
             {
-                this.Logger.Error("OS doesn't support using the HttpListener class.");
+                this.logger.LogError("OS doesn't support using the HttpListener class.");
                 return;
             }
 
@@ -46,11 +78,9 @@
                 listener.Prefixes.Add(s);
             }
 
-            this.tracer = new TraceHelper(this.Logger, @"../../../Traces");
-
             listener.Start();
-            this.Logger.Information("Proxy is Listening...");
-            this.Logger.Information("Press Ctrl+C to exit.");
+            this.logger.LogInformation("Proxy is Listening...");
+            this.logger.LogInformation("Press Ctrl+C to exit.");
 
             while (true)
             {
@@ -62,7 +92,7 @@
 
                     // use a stream we can read more than once
                     var requestInputStream = new MemoryStream();
-                    StreamUtils.CopyStream(request.InputStream, requestInputStream);
+                    request.InputStream.CopyStream(requestInputStream);
 
                     bool requestTraceIsOn = false;
                     bool requestAnsweredSuccessfully = false;
@@ -85,9 +115,9 @@
                             string[] lines = body.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                             // TODO: add ability to handle multiple queries
-                            this.Logger.Debug($"Elastic search request:\n{lines[1]}");
+                            this.logger.LogDebug($"Elastic search request:\n{lines[1]}");
                             string translatedKqlQuery = this.Translator.Translate(lines[0], lines[1]);
-                            this.Logger.Debug($"Translated query:\n{translatedKqlQuery}");
+                            this.logger.LogDebug($"Translated query:\n{translatedKqlQuery}");
                             this.tracer.WriteFile($"{request.RequestTraceIdentifier}.KQL.json", translatedKqlQuery);
 
                             ElasticResponse kustoResults = this.KustoManager.ExecuteQuery(translatedKqlQuery);
@@ -98,7 +128,7 @@
                             response.ContentType = "application/json";
 
                             var kustoResultsStream = new MemoryStream(kustoResultsContent);
-                            StreamUtils.CopyStream(kustoResultsStream, response.OutputStream);
+                            kustoResultsStream.CopyStream(response.OutputStream);
 
                             response.OutputStream.Close();
 
@@ -112,7 +142,7 @@
                         }
                         catch (Exception ex)
                         {
-                            this.Logger.Error(ex, "Failed to translate query.");
+                            logger.LogError(ex, "Failed to translate query.");
                         }
                     }
 
@@ -120,7 +150,7 @@
 
                     // use a stream we can read more than once
                     var remoteResposeStream = new MemoryStream();
-                    StreamUtils.CopyStream(remoteResponse.GetResponseStream(), remoteResposeStream);
+                    remoteResponse.GetResponseStream().CopyStream(remoteResposeStream);
 
                     if (!requestAnsweredSuccessfully)
                     {
@@ -132,7 +162,7 @@
 
                         // Send the respose back
                         var output = response.OutputStream;
-                        StreamUtils.CopyStream(remoteResposeStream, output);
+                        remoteResposeStream.CopyStream(output);
                         output.Close();
                     }
 
@@ -143,7 +173,7 @@
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.Error(ex, "An exception...");
+                    logger.LogError(ex, "An exception...");
                 }
             }
         }
@@ -174,7 +204,7 @@
                     using (var stream = remoteRequest.GetRequestStream())
                     {
                         // This is a fallback since we already read the source stream
-                        StreamUtils.CopyStream(memoryStream, stream);
+                        memoryStream.CopyStream(stream);
                     }
                 }
 
@@ -184,7 +214,7 @@
             }
             catch (Exception ex)
             {
-                this.Logger.Error(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
+                logger.LogError(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
                 return null;
             }
         }

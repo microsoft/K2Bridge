@@ -4,24 +4,27 @@
     using Kusto.Data;
     using Kusto.Data.Common;
     using Kusto.Data.Net.Client;
-    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
-    public class KustoManager
+    internal class KustoManager : IQueryExecutor
     {
-        private readonly ICslQueryProvider client;
-        private readonly Serilog.ILogger logger;
+        private readonly ICslQueryProvider client;        
+        private readonly ILogger<KustoManager> logger;
         private readonly KustoParser kustoParser;
 
-        public KustoManager(IConfigurationRoot config, Serilog.ILogger logger)
+        public KustoManager(KustoConnectionDetails connection, ILoggerFactory loggerFactory)
         {
-            KustoConnectionStringBuilder conn = new KustoConnectionStringBuilder(config["kustoClusterUrl"], config["kustoDatabase"])
-                .WithAadApplicationKeyAuthentication(config["kustoAadClientId"], config["kustoAadClientSecret"], config["kustoAadTenantId"]);
+            this.logger = loggerFactory.CreateLogger<KustoManager>();
+            KustoConnectionStringBuilder conn = new KustoConnectionStringBuilder(
+                connection.KustoClusterUrl, 
+                connection.KustoDatabase)
+                .WithAadApplicationKeyAuthentication(
+                    connection.KustoAadClientId, 
+                    connection.KustoAadClientSecret, 
+                    connection.KustoAadTenantId);
 
             this.client = KustoClientFactory.CreateCslQueryProvider(conn);
-
-            this.logger = logger;
-
             this.kustoParser = new KustoParser(logger);
         }
 
@@ -38,10 +41,10 @@
                 switch (tableOrdinal)
                 {
                     case 0:
-                        this.kustoParser.ReadAggs(reader, response);
+                        kustoParser.ReadAggs(reader, response);
                         break;
                     case 1:
-                        this.kustoParser.ReadHits(reader, response);
+                        kustoParser.ReadHits(reader, response);
                         break;
                     default:
                         break;
