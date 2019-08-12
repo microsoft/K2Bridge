@@ -12,7 +12,7 @@
     internal class SimpleListener
     {
         private readonly TraceHelper tracer;
-        
+
         private readonly ILogger<SimpleListener> logger;
 
         private readonly string[] prefixes;
@@ -21,13 +21,11 @@
 
         private readonly ITranslator translator;
 
-        private IQueryExecutor kustoManager;
-
-        public int TimeoutInMilliSeconds { get; set; } = 5000;
+        private readonly IQueryExecutor kustoManager;
 
         public SimpleListener(
             ListenerEndpointsDetails listenerEndpoints,
-            ITranslator queryTranslator, 
+            ITranslator queryTranslator,
             IQueryExecutor kustoManager,
             ILoggerFactory loggerFactory)
         {
@@ -38,6 +36,8 @@
             this.logger = loggerFactory.CreateLogger<SimpleListener>();
             this.tracer = new TraceHelper(this.logger, @"../../../Traces");
         }
+
+        public int TimeoutInMilliSeconds { get; set; } = 5000;
 
         public void Start()
         {
@@ -84,6 +84,42 @@
                     HttpListenerResponse response = context.Response;
                     response.Headers.Add("X-K2-CorrelationId", request.RequestTraceIdentifier.ToString());
 
+                    /*
+                    if (request.RawUrl.StartsWith(@"/.kibana/"))
+                    {
+                        if (IndexListRequestHandler.Mine(request.RawUrl, requestInputString))
+                        {
+                            this.Logger.Debug($"Request index list:{requestId}");
+
+                            IndexListRequestHandler handler = new IndexListRequestHandler(context, kusto, requestId);
+
+                            responseString = handler.PrepareResponse(requestInputString);
+
+                            //requestAnsweredSuccessfully = true;
+                        }
+                        else if (DetailedIndexListRequestHandler.Mine(request.RawUrl, requestInputString))
+                        {
+                            this.Logger.Debug($"Request Getting detailed index list and schemas:{requestId}");
+
+                            DetailedIndexListRequestHandler handler = new DetailedIndexListRequestHandler(context, kusto, requestId);
+
+                            responseString = handler.PrepareResponse(requestInputString);
+
+                            //requestAnsweredSuccessfully = true;
+                        }
+                        else if (IndexDetailsRequestHandler.Mine(request.RawUrl, requestInputString))
+                        {
+                            this.Logger.Debug($"Request Getting index details and schema:{requestId}");
+
+                            IndexDetailsRequestHandler handler = new IndexDetailsRequestHandler(context, kusto, requestId);
+
+                            responseString = handler.PrepareResponse(requestInputString);
+
+                            //requestAnsweredSuccessfully = (responseString != null);
+                        }
+                    }
+                    else
+                    */
                     if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
                         // This request should be routed to Kusto
@@ -125,7 +161,7 @@
                         }
                         catch (Exception ex)
                         {
-                            logger.LogError(ex, "Failed to translate query.");
+                            this.logger.LogError(ex, "Failed to translate query.");
                         }
                     }
 
@@ -156,7 +192,7 @@
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "An exception...");
+                    this.logger.LogError(ex, "An exception...");
                 }
             }
         }
@@ -197,7 +233,7 @@
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
+                this.logger.LogError(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
                 return null;
             }
         }
