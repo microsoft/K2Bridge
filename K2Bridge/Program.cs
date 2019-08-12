@@ -17,17 +17,17 @@
                 .AddJsonFile(ConfigFileName, false, true)
                 .AddJsonFile(LocalConfigFileName, true, true) // Optional for local development
                 .Build();
-            
+
             // initialize logger
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .CreateLogger();
-            
+
             // initialize DI container
             var serviceProvider = new ServiceCollection()
                 .AddLogging(loggingBuilder =>
-      	            loggingBuilder.AddSerilog(dispose: true))
+                      loggingBuilder.AddSerilog(dispose: true))
                 .AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(config))
                 .AddScoped<ListenerEndpointsDetails>(s => ListenerEndpointsDetails.MakeFromConfiguration(config))
                 .AddTransient<ITranslator, QueryTranslator>()

@@ -233,7 +233,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
+                logger.LogError(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
                 return null;
             }
         }

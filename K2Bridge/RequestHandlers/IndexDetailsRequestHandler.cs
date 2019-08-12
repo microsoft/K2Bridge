@@ -1,21 +1,15 @@
 ﻿namespace K2Bridge
 {
     using System;
-    using System.IO;
-    using System.Linq;
+    using System.Collections.Generic;
     using System.Net;
-    using System.Text;
-    using System.Data;
     using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
-    using System.Collections.Generic;
-    using K2Bridge.Models;
-
 
     internal class IndexDetailsRequestHandler : KibanaRequestHandler
     {
         public IndexDetailsRequestHandler(HttpListenerContext requestContext, KustoManager kustoClient, Guid requestId)
-            :base(requestContext, kustoClient, requestId)
+            : base(requestContext, kustoClient, requestId)
         {
         }
 
@@ -36,7 +30,7 @@
 
                 string indexPatternID = requestStream.docs[0]._id;
 
-                List <Models.Metadata.Hit> hitsList = PrepareHits(indexPatternID);
+                List<Models.Metadata.Hit> hitsList = PrepareHits(indexPatternID);
 
                 elasticOutputStream.docs = hitsList.ToArray();
 

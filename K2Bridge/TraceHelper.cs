@@ -33,8 +33,8 @@
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to write trace files.");
-                logger.LogWarning($"Create folder {this.tracePath} to dump the content of translated queries");
+                this.logger.LogError(ex, "Failed to write trace files.");
+                this.logger.LogWarning($"Create folder {this.tracePath} to dump the content of translated queries");
             }
         }
 
@@ -50,8 +50,8 @@
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Failed to write trace files.");
-                logger.LogWarning($"Create folder {this.tracePath} to dump the content of translated queries");
+                this.logger.LogError(ex, "Failed to write trace files.");
+                this.logger.LogWarning($"Create folder {this.tracePath} to dump the content of translated queries");
             }
         }
 

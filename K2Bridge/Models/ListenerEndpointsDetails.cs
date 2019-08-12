@@ -5,10 +5,6 @@ namespace K2Bridge
 
     internal class ListenerEndpointsDetails
     {
-        public string[] Prefixes { get; private set; }
-
-        public string RemoteEndpoint { get; private set; }
-
         private ListenerEndpointsDetails(string[] prefixes, string remoteEndpoint)
         {
             if (prefixes == null || prefixes.Length == 0)
@@ -23,8 +19,11 @@ namespace K2Bridge
 
             this.Prefixes = prefixes;
             this.RemoteEndpoint = remoteEndpoint;
-
         }
+
+        public string[] Prefixes { get; private set; }
+
+        public string RemoteEndpoint { get; private set; }
 
         public static ListenerEndpointsDetails MakeFromConfiguration(IConfigurationRoot config) =>
             new ListenerEndpointsDetails(new string[] { config["bridgeListenerAddress"] }, config["remoteElasticAddress"]);

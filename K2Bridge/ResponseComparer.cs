@@ -1,11 +1,8 @@
 ﻿namespace K2Bridge
 {
     using System;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Text;
     using System.Collections;
+    using System.IO;
     using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -76,8 +73,7 @@
                     k2Response = reader.ReadToEnd();
                 }
 
-
-                //Do  nothing
+                // Do  nothing
                 JObject elasticJsonObject = JsonConvert.DeserializeObject<JObject>(elasticResponse);
                 JObject k2JsonObject = JsonConvert.DeserializeObject<JObject>(k2Response);
 
@@ -93,6 +89,7 @@
                 this.Logger.Error(ex, "An exception...");
             }
         }
+
         private void CompareObjects(JToken elasticJsonObject, JToken k2JsonObject)
         {
             SortedList eSL = CreateSortedChildrenList(elasticJsonObject);
@@ -122,15 +119,15 @@
                 string ePath = eChild.Path;
                 string kPath = kChild.Path;
 
-
                 int incompareResult = String.Compare(ePath, kPath);
 
-                if (0 == incompareResult)
+                if (incompareResult == 0)
                 {
                     if (eChild.HasValues && kChild.HasValues)
                     {
                         CompareObjects(eChild, kChild);
                     }
+
                     eIndex++;
                     kIndex++;
                 }

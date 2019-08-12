@@ -1,21 +1,17 @@
 ﻿namespace K2Bridge
 {
     using System;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Text;
-    using System.Data;
-    using KustoConnector;
-    using K2Bridge.Models;
-    using Newtonsoft.Json;
-    using System.Security.Cryptography;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Net;
+    using System.Security.Cryptography;
+    using System.Text;
+    using K2Bridge.KustoConnector;
 
     internal class KibanaRequestHandler : RequestHandler
     {
         public KibanaRequestHandler(HttpListenerContext requestContext, KustoManager kustoClient, Guid requestId)
-            :base(requestContext, kustoClient, requestId)
+            : base(requestContext, kustoClient, requestId)
         {
         }
 
@@ -80,7 +76,6 @@
                     hit._source = new Models.Metadata.Source();
                     hit._source.index_pattern = new Models.Metadata.IndexPattern();
 
-
                     hit._index = ".kibana_1";
                     hit._type = "doc";
                     hit._id = $"index-pattern:{indexID}";
@@ -101,7 +96,6 @@
                     {
                         hit._source.index_pattern.timeFieldName = fieldName;
                     }
-
 
                     if (sbFields.ToString() != "[")
                     {
@@ -157,6 +151,7 @@
             sb.Append(attributeValue);
             sb.Append("\"");
         }
+
         protected void AddAttributeToStringBuilder(StringBuilder sb, string attributeName, int attributeValue)
         {
             sb.Append("\"");
@@ -164,6 +159,7 @@
             sb.Append("\":");
             sb.Append(attributeValue.ToString());
         }
+
         protected void AddAttributeToStringBuilder(StringBuilder sb, string attributeName, bool attributeValue)
         {
             sb.Append("\"");
@@ -171,6 +167,7 @@
             sb.Append("\":");
             sb.Append(attributeValue.ToString().ToLower());
         }
+
         protected string ElasticTypeFromKustoType(string type)
         {
             if ("System.DateTime" == type)

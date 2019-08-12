@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Data;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using K2Bridge.KustoConnector;
-
-namespace K2Bridge
+﻿namespace K2Bridge
 {
+    using System;
+    using System.Net;
+    using K2Bridge.KustoConnector;
+
     internal class RequestHandler
     {
         protected HttpListenerContext context;

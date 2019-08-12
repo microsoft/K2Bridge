@@ -8,7 +8,7 @@
         private readonly IVisitor visitor;
 
         public QueryTranslator(IVisitor visitor) => this.visitor = visitor;
-        
+
         public string Translate(string header, string query)
         {
             var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
