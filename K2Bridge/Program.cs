@@ -1,4 +1,6 @@
-﻿namespace K2Bridge
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("K2BridgeUnitTests")]
+
+namespace K2Bridge
 {
     using K2Bridge.KustoConnector;
     using Microsoft.Extensions.Configuration;
