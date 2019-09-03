@@ -9,6 +9,7 @@ pr:
     include:
     - master
     - development
+    - metadata-merge3
   paths:
     exclude:
     - '*.md'
