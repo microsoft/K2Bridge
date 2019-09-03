@@ -60,7 +60,6 @@
                     return;
                 }
 
-
                 using (var reader = new StreamReader(passthroughResposeStream))
                 {
                     passthroughResposeStream.Position = 0;
@@ -109,6 +108,7 @@
                     eIndex++;
                     continue;
                 }
+
                 if (eChild == null)
                 {
                     this.Logger.Error($"Redundant child path: k:{kChild.Path}, type:{kChild.Type}, object:{kChild}");

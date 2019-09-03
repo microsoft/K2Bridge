@@ -52,7 +52,7 @@
 
                 if (tableName == string.Empty)
                 {
-                    // First line of results is DB name only. 
+                    // First line of results is DB name only.
                     continue;
                 }
 
@@ -60,7 +60,7 @@
                 {
                     if (hit != null)
                     {
-                        // Wrap the previous table 
+                        // Wrap the previous table
                         sbFields.Append("]");
                         hit._source.index_pattern.fields = sbFields.ToString();
 
@@ -70,7 +70,7 @@
                         }
                     }
 
-                    // Starting a new table 
+                    // Starting a new table
                     sbFields = new StringBuilder("[");
                     hit = new Models.Metadata.Hit();
                     hit._source = new Models.Metadata.Source();
@@ -91,7 +91,7 @@
                 }
                 else
                 {
-                    // Adding a field 
+                    // Adding a field
                     if (hit._source.index_pattern.timeFieldName == null && fieldType == "System.DateTime")
                     {
                         hit._source.index_pattern.timeFieldName = fieldName;
@@ -101,6 +101,7 @@
                     {
                         sbFields.Append(",");
                     }
+
                     sbFields.Append("{");
                     AddAttributeToStringBuilder(sbFields, "name", fieldName);
                     sbFields.Append(",");
@@ -119,8 +120,7 @@
                 }
             }
 
-            // Wrap the previous table 
-
+            // Wrap the previous table
             sbFields.Append("]");
             hit._source.index_pattern.fields = sbFields.ToString();
 

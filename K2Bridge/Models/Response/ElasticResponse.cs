@@ -68,7 +68,6 @@
         public string fields { get; set; }
     }
 
-
     public class Source
     {
         [JsonProperty(PropertyName = "index-pattern")]
@@ -77,7 +76,6 @@
         public string updated_at { get; set; }
         public MigrationVersion migrationVersion { get; set; }
     }
-
 
     public class Fields
     {

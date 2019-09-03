@@ -65,7 +65,6 @@
         public string fields { get; set; }
     }
 
-
     public class Source
     {
         [JsonProperty(PropertyName = "index-pattern", NullValueHandling = NullValueHandling.Ignore)]
@@ -80,7 +79,6 @@
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public MigrationVersion migrationVersion { get; set; }
     }
-
 
     public class Fields
     {

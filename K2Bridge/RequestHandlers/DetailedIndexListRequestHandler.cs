@@ -44,7 +44,7 @@
 
                 return kustoResultsString;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 this.Logger.Debug($"Detailed index list and schemas:({requestId}):Failed to retrieve indexes");
 
@@ -54,8 +54,7 @@
     }
 }
 
-
-/* 
+/*
 /.kibana/_search?size=10000&from=0&rest_total_hits_as_int=true
 Request
 {"seq_no_primary_term":true,"query":{"bool":{"filter":[{"bool":{"should":[{"bool":{"must":[{"term":{"type":"index-pattern"}}],"must_not":[{"exists":{"field":"namespace"}}]}}],"minimum_should_match":1}}]}}}
