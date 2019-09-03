@@ -5,4 +5,7 @@
     <Rule Id="SA1600" Action="None" />
     <Rule Id="SA1633" Action="None" />
   </Rules>
+<Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeAnalysis.CSharp.CodeStyle">
+<Rule Id="CS0168" Action="Error" />
+  </Rules>
 </RuleSet>
