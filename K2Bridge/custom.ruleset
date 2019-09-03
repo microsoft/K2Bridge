@@ -4,6 +4,12 @@
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1600" Action="None" />
     <Rule Id="SA1633" Action="None" />
+    <Rule Id="SA1009" Action="Error" />
+    <Rule Id="SA1512" Action="Error" />
+    <Rule Id="SA1513" Action="Error" />
+    <Rule Id="SA1012" Action="Error" />
+    <Rule Id="SA1507" Action="Error" />
+    <Rule Id="SA1028" Action="Error" />
   </Rules>
 <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeAnalysis.CSharp.CodeStyle">
 <Rule Id="CS0168" Action="Error" />
