@@ -2,14 +2,15 @@
 {
     using System;
     using System.IO;
+    using Microsoft.Extensions.Logging;
 
     internal class TraceHelper
     {
-        private readonly Serilog.ILogger logger;
+        private readonly ILogger logger;
 
         private readonly string tracePath;
 
-        internal TraceHelper(Serilog.ILogger logger, string tracePath)
+        internal TraceHelper(ILogger logger, string tracePath)
         {
             this.logger = logger;
             this.tracePath = tracePath;
@@ -32,8 +33,8 @@
             }
             catch (Exception ex)
             {
-                this.logger.Error(ex, "Failed to write trace files.");
-                this.logger.Warning($"Create folder {this.tracePath} to dump the content of translated queries");
+                this.logger.LogError(ex, "Failed to write trace files.");
+                this.logger.LogWarning($"Create folder {this.tracePath} to dump the content of translated queries");
             }
         }
 
@@ -43,14 +44,14 @@
             {
                 using (FileStream outputFile = new FileStream(Path.Combine(this.tracePath, filename), FileMode.CreateNew))
                 {
-                    StreamUtils.CopyStream(content, outputFile);
+                    content.CopyStream(outputFile);
                     outputFile.Flush();
                 }
             }
             catch (Exception ex)
             {
-                this.logger.Error(ex, "Failed to write trace files.");
-                this.logger.Warning($"Create folder {this.tracePath} to dump the content of translated queries");
+                this.logger.LogError(ex, "Failed to write trace files.");
+                this.logger.LogWarning($"Create folder {this.tracePath} to dump the content of translated queries");
             }
         }
 

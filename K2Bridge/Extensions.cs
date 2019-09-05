@@ -2,9 +2,9 @@
 {
     using System.IO;
 
-    internal static class StreamUtils
+    internal static class Extensions
     {
-        internal static void CopyStream(Stream source, Stream destination)
+        internal static void CopyStream(this Stream source, Stream destination)
         {
             if (source.CanSeek && source.Position > 0)
             {

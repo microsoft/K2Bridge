@@ -37,19 +37,53 @@
     public class Hit
     {
         public string _index { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string _type { get; set; }
         public string _id { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public int _version { get; set; }
         public object _score { get; set; }
         public JObject _source { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Fields fields { get; set; }
+
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public long[] sort { get; set; }
+    }
+
+    public class IndexPattern
+    {
+        public string title { get; set; }
+
+        public string timeFieldName { get; set; }
+
+        public string fieldFormatMap { get; set; }
+
+        public string fields { get; set; }
+    }
+
+    public class Source
+    {
+        [JsonProperty(PropertyName = "index-pattern")]
+        public IndexPattern index_pattern { get; set; }
+        public string type { get; set; }
+        public string updated_at { get; set; }
+        public MigrationVersion migrationVersion { get; set; }
     }
 
     public class Fields
     {
         public int[] hour_of_day { get; set; }
         public DateTime[] timestamp { get; set; }
+    }
+
+    public class MigrationVersion
+    {
+        [JsonProperty(PropertyName = "index-pattern")]
+        public string index_pattern { get; set; }
     }
 
     public class Aggregations
@@ -60,7 +94,7 @@
 
     public class _2
     {
-        public Bucket[] buckets { get; set; }
+        public DateHistogramBucket[] buckets { get; set; }
     }
 
     public class Bucket

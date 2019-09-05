@@ -12,8 +12,10 @@
         [JsonProperty("size")]
         public int Size { get; set; }
 
-        //[JsonProperty("timeout")]
-        //public string Timeout { get; set; }
+        /*
+        [JsonProperty("timeout")]
+        public string Timeout { get; set; }
+        */
 
         [JsonProperty("sort")]
         public List<SortClause> Sort { get; set; }

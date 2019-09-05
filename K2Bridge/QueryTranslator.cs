@@ -3,9 +3,11 @@
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
-    internal class QueryTranslator
+    internal class QueryTranslator : ITranslator
     {
-        private readonly ElasticSearchDSLVisitor visitor = new ElasticSearchDSLVisitor();
+        private readonly IVisitor visitor;
+
+        public QueryTranslator(IVisitor visitor) => this.visitor = visitor;
 
         public string Translate(string header, string query)
         {
