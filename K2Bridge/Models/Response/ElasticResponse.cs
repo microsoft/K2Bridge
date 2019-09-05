@@ -49,12 +49,9 @@
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Fields fields { get; set; }
-        public JObject highlight { get; set; }
 
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public long[] sort { get; set; }
-        public long _seq_no { get; set; }
-        public long _primary_term { get; set; }
     }
 
     public class IndexPattern

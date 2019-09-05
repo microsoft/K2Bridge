@@ -7,11 +7,12 @@
     using System.Security.Cryptography;
     using System.Text;
     using K2Bridge.KustoConnector;
+    using Microsoft.Extensions.Logging;
 
     internal class KibanaRequestHandler : RequestHandler
     {
-        public KibanaRequestHandler(HttpListenerContext requestContext, KustoManager kustoClient, Guid requestId)
-            : base(requestContext, kustoClient, requestId)
+        public KibanaRequestHandler(HttpListenerContext requestContext, IQueryExecutor kustoClient, string requestId, ILogger logger)
+            : base(requestContext, kustoClient, requestId, logger)
         {
         }
 
@@ -19,11 +20,17 @@
         {
             Guid g;
             if (tableName == "kibana_sample_data_flights")
-            { g = new Guid("d3d7af60-4c81-11e8-b3d7-01146121b73d"); }
+            {
+                g = new Guid("d3d7af60-4c81-11e8-b3d7-01146121b73d");
+            }
             else if (tableName == "kibana_sample_data_ecommerce")
-            { g = new Guid("ff959d40-b880-11e8-a6d9-e546fe2bba5f"); }
+            {
+                g = new Guid("ff959d40-b880-11e8-a6d9-e546fe2bba5f");
+            }
             else if (tableName == "kibana_sample_data_logs")
-            { g = new Guid("90943e30-9a47-11e8-b64d-95841ca0b247"); }
+            {
+                g = new Guid("90943e30-9a47-11e8-b64d-95841ca0b247");
+            }
             else
             {
                 g = StringToGUID(tableName);
@@ -62,9 +69,10 @@
                     {
                         // Wrap the previous table
                         sbFields.Append("]");
+
                         hit._source.index_pattern.fields = sbFields.ToString();
 
-                        if (indexPatternId == hit._id)
+                        if (indexPatternId == null || indexPatternId == hit._id)
                         {
                             hitsList.Add(hit);
                         }
@@ -88,6 +96,14 @@
                     hit._source.updated_at = "2019-07-16T16:19:23.016Z"; //TODO what value shoudl go in here?
                     hit._source.index_pattern.title = tableName;
                     hit._source.index_pattern.fieldFormatMap = "{\"hour_of_day\":{}}"; //TODO this is not clear why it is done this way
+
+                    //
+                    // Hack
+                    if (indexID == "d3d7af60-4c81-11e8-b3d7-01146121b73d")
+                    {
+                        hit._source.index_pattern.timeFieldName = "timestamp";
+                        hit._source.index_pattern.fieldFormatMap = "{\"hour_of_day\":{\"id\":\"number\",\"params\":{\"pattern\":\"00\"}},\"AvgTicketPrice\":{\"id\":\"number\",\"params\":{\"pattern\":\"$0,0.[00]\"}}}";
+                    }
                 }
                 else
                 {

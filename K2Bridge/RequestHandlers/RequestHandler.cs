@@ -3,22 +3,21 @@
     using System;
     using System.Net;
     using K2Bridge.KustoConnector;
+    using Microsoft.Extensions.Logging;
 
     internal class RequestHandler
     {
         protected HttpListenerContext context;
 
-        protected KustoManager kusto;
+        protected IQueryExecutor kusto;
 
-        protected Guid requestId;
+        protected string requestId;
 
-        protected Serilog.ILogger Logger { get; set; }
+        protected ILogger logger { get; set; }
 
-        public static Serilog.ILogger StaticLogger { get; set; }
-
-        public RequestHandler(HttpListenerContext requestContext, KustoManager kustoClient, Guid requestId)
+        public RequestHandler(HttpListenerContext requestContext, IQueryExecutor kustoClient, string requestId, ILogger logger)
         {
-            this.Logger = StaticLogger;
+            this.logger = logger;
 
             this.context = requestContext;
 

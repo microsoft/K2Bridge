@@ -4,12 +4,13 @@
     using System.Collections.Generic;
     using System.Net;
     using K2Bridge.KustoConnector;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     internal class IndexDetailsRequestHandler : KibanaRequestHandler
     {
-        public IndexDetailsRequestHandler(HttpListenerContext requestContext, KustoManager kustoClient, Guid requestId)
-            : base(requestContext, kustoClient, requestId)
+        public IndexDetailsRequestHandler(HttpListenerContext requestContext, IQueryExecutor kustoClient, string requestId, ILogger logger)
+            : base(requestContext, kustoClient, requestId, logger)
         {
         }
 
@@ -31,24 +32,27 @@
 
                 List<Models.Metadata.Hit> hitsList = PrepareHits(indexPatternID);
 
+                if (hitsList.Count > 0)
+                    // Marking as found for Kibana
+                    hitsList[0].found = true;
+
                 elasticOutputStream.docs = hitsList.ToArray();
 
                 if (hitsList.Count == 0)
                 {
-                    this.Logger.Debug($"Detailed index schemas: Could not locate index. Giving way to Kibana local storage ({requestId}):{indexPatternID}");
+                    this.logger.LogDebug($"Detailed index schemas: Could not locate index. Giving way to Kibana local storage ({requestId}):{indexPatternID}");
                     return null;
                 }
 
                 string kustoResultsString = JsonConvert.SerializeObject(elasticOutputStream);
 
-                this.Logger.Debug($"Detailed index schemas:({requestId}):{kustoResultsString}");
+                this.logger.LogDebug($"Detailed index schemas:({requestId})");
 
                 return kustoResultsString;
             }
             catch (Exception)
             {
-                this.Logger.Debug($"Detailed index schemas:({requestId}):Failed to retrieve indexes");
-
+                this.logger.LogError($"Detailed index schemas:({requestId}):Failed to retrieve indexes");
                 throw;
             }
         }

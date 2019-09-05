@@ -38,7 +38,12 @@
         public string _id { get; set; }
         public long _seq_no { get; set; }
         public long _primary_term { get; set; }
+
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public bool found { get; set; }
+
         public object _score { get; set; }
+
         public Source _source { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]

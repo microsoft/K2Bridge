@@ -1,21 +1,18 @@
 ﻿namespace K2Bridge
 {
     using System;
-    using System.IO;
-    using System.Linq;
+    using System.Collections.Generic;
+    using System.Data;
     using System.Net;
     using System.Text;
-    using System.Data;
-    using System.Collections.Generic;
     using K2Bridge.KustoConnector;
-    using Models.Metadata;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
 
     internal class IndexListRequestHandler: KibanaRequestHandler
     {
-        public IndexListRequestHandler(HttpListenerContext requestContext, KustoManager kustoClient, Guid requestId)
-            :base(requestContext, kustoClient, requestId)
+        public IndexListRequestHandler(HttpListenerContext requestContext, IQueryExecutor kustoClient, string requestId, ILogger logger)
+            : base(requestContext, kustoClient, requestId, logger)
         {
         }
 
@@ -77,7 +74,7 @@
 
                     hitsList.Add(hit);
 
-                    this.Logger.Debug($"Found index: {record[0].ToString()}");
+                    this.logger.LogDebug($"Found index: {record[0].ToString()}");
                 }
 
                 kustoResults.Close();
@@ -89,13 +86,11 @@
 
                 string kustoResultsString = JsonConvert.SerializeObject(elasticOutputStream);
 
-                this.Logger.Debug($"Index list output:{kustoResultsString}");
-
                 return kustoResultsString;
             }
             catch (Exception)
             {
-                this.Logger.Debug($"Failed to retrieve indexes");
+                this.logger.LogDebug($"Failed to retrieve indexes");
 
                 throw;
             }
