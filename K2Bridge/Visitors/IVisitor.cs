@@ -25,5 +25,7 @@
         void Visit(Avg avg);
 
         void Visit(Cardinality cardinality);
+
+        void Visit(QueryStringQuery queryStringQuery);
     }
 }

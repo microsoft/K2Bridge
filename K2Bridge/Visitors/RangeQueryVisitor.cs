@@ -8,11 +8,11 @@
 
             if (rangeQuery.Format == "epoch_millis")
             {
-                betweenExp = $"fromUnixTimeMilli({rangeQuery.GTEValue})..fromUnixTimeMilli({rangeQuery.LTEValue})";
+                betweenExp = $"fromUnixTimeMilli({rangeQuery.GTEValue}) .. fromUnixTimeMilli({rangeQuery.LTEValue})";
             }
             else
             {
-                betweenExp = $"{rangeQuery.GTEValue}..{rangeQuery.LTEValue}";
+                betweenExp = $"{rangeQuery.GTEValue} .. {rangeQuery.LTValue}";
             }
 
             rangeQuery.KQL = $"{rangeQuery.FieldName} between ({betweenExp})";

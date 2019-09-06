@@ -10,14 +10,28 @@
         {
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
+            RangeQuery obj;
 
-            var obj = new RangeQuery
+            // there are more then 2 cases, will add them later
+            if (first.Name.Equals("timestamp"))
             {
-                FieldName = first.Name,
-                GTEValue = (long)first.First["gte"],
-                LTEValue = (long)first.First["lte"],
-                Format = (string)first.First["format"],
-            };
+                obj = new RangeQuery
+                {
+                    FieldName = first.Name,
+                    GTEValue = (long)first.First["gte"],
+                    LTEValue = (long)first.First["lte"],
+                    Format = (string)first.First["format"],
+                };
+            }
+            else
+            {
+                obj = new RangeQuery
+                {
+                    FieldName = first.Name,
+                    GTEValue = (long)first.First["gte"],
+                    LTValue = (long)first.First["lt"],
+                };
+            }
 
             return obj;
         }

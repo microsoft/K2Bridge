@@ -7,6 +7,9 @@
 
         public void Visit(BoolClause boolClause)
         {
+            bool addedSearchToKQL = false;
+            bool addedWhereToKQL = false;
+
             string mustKQL = string.Empty;
             foreach (dynamic leafQuery in boolClause.Must)
             {
@@ -17,7 +20,32 @@
                 }
 
                 leafQuery.Accept(this);
-                mustKQL += $"({leafQuery.KQL}) {KQLAndKeyword} ";
+
+                // if we used the search bar - the first leaf in Must will be of type QueryStringQuery
+                if (leafQuery is QueryStringQuery)
+                {
+                    addedSearchToKQL = true;
+                    mustKQL += $"{leafQuery.KQL}";
+                }
+                else
+                {
+                    if (!addedWhereToKQL)
+                    {
+                        if (addedSearchToKQL)
+                        {
+                            mustKQL += "\n| ";
+                        }
+
+                        mustKQL += "where ";
+                        addedWhereToKQL = true;
+                    }
+                    else
+                    {
+                        mustKQL += $" {KQLAndKeyword} ";
+                    }
+
+                    mustKQL += $"({leafQuery.KQL})";
+                }
             }
 
             string mustNotKQL = string.Empty;
@@ -30,19 +58,25 @@
                 }
 
                 leafQuery.Accept(this);
-                mustNotKQL += $"{KQLNotKeyword} ({leafQuery.KQL}) {KQLAndKeyword} ";
-            }
-
-            boolClause.KQL = $"{mustKQL.Remove(mustKQL.Length - 5)}";
-            if (!string.IsNullOrEmpty(mustNotKQL))
-            {
-                if (!string.IsNullOrEmpty(boolClause.KQL))
+                if (!addedWhereToKQL)
                 {
-                    boolClause.KQL += $" {KQLAndKeyword} ";
+                    if (addedSearchToKQL)
+                    {
+                        mustNotKQL += "\n| ";
+                    }
+
+                    mustNotKQL += "where ";
+                    addedWhereToKQL = true;
+                }
+                else
+                {
+                    mustNotKQL += $" {KQLAndKeyword} ";
                 }
 
-                boolClause.KQL += $"{mustNotKQL.Remove(mustNotKQL.Length - 5)}";
+                mustNotKQL += $"{KQLNotKeyword} ({leafQuery.KQL})";
             }
+
+            boolClause.KQL = $"{mustKQL}{mustNotKQL}";
         }
     }
 }

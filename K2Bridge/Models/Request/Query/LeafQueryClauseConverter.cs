@@ -21,6 +21,10 @@
                     var range = first.Value.ToObject<RangeQuery>(serializer);
                     return range;
 
+                case "query_string":
+                    var search = jo.ToObject<QueryStringQuery>(serializer);
+                    return search;
+
                 default:
                     return null;
             }

@@ -18,6 +18,5 @@
                 destination.Position = 0;
             }
         }
-
     }
 }
