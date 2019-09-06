@@ -1,5 +1,23 @@
+# Kibana Kusto Bridge
 
-# Contributing
+**A bridge connecting Kibana to Kusto (Azure Data Explorer) as its backend database**
+
+---
+
+[![Build Status](https://dev.azure.com/csedevil/K2-bridge/_apis/build/status/microsoft.KibanaKustoBridge?branchName=master)](https://dev.azure.com/csedevil/K2-bridge/_build/latest?definitionId=146&branchName=master)
+[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+
+## Description
+
+## Installation
+
+See the Installation document
+
+## Development
+
+Running Kibana and KibanaKustoBridge locally for testing and development, see [here](./docs/development.md)
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
