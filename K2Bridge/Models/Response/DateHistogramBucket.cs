@@ -3,7 +3,7 @@
     using System;
     using Newtonsoft.Json;
 
-    public class DateHistogramBucket
+    public class DateHistogramBucket : IBucket
     {
         [JsonProperty("doc_count")]
         public int DocCount { get; set; }

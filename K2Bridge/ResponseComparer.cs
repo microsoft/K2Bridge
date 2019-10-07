@@ -77,7 +77,14 @@
                     }
                 }
 
-                SL.Add(key, child);
+                if (!SL.ContainsKey(key))
+                {
+                    SL.Add(key, child);
+                }
+                else
+                {
+                    this.ReportToken(child, $"duplicate key {key} while creating compare lists");
+                }
             }
 
             return SL;
@@ -152,38 +159,20 @@
                 this.logger.LogError($"Incconsistent type: {elasticJsonObject.Path}, e.Type ({elasticJsonObject.Type.ToString()}) != k2.Type({k2JsonObject.Type.ToString()})");
             }
 
-            string eValue;
-            string k2Value;
-
-            switch (k2JsonObject.Type)
-            {
-                case JTokenType.Integer:
-                    eValue = elasticJsonObject.Type == JTokenType.Null ? string.Empty : elasticJsonObject?.Value<long>().ToString();
-                    k2Value = k2JsonObject.Value<long>().ToString();
-                    break;
-                case JTokenType.String:
-                    eValue = elasticJsonObject?.Value<string>();
-                    k2Value = k2JsonObject?.Value<string>();
-                    break;
-                case JTokenType.Null:
-                    eValue = elasticJsonObject.Type == JTokenType.Null ? string.Empty : elasticJsonObject?.Value<long>().ToString();
-                    k2Value = string.Empty;
-                    break;
-                default:
-                    return;
-            }
+            var eValue = elasticJsonObject.TokenToString();
+            var k2Value = k2JsonObject.TokenToString();
 
             if (eValue != k2Value)
             {
                 if (eValue?.Length > 50)
                 {
-                    this.logger.LogInformation($"eValue '{eValue}', was truncated");
+                    this.logger.LogTrace($"eValue '{eValue}', was truncated");
                     eValue = eValue.Substring(0, 50);
                 }
 
                 if (k2Value?.Length > 50)
                 {
-                    this.logger.LogInformation($"k2Value '{k2Value}', was truncated");
+                    this.logger.LogTrace($"k2Value '{k2Value}', was truncated");
                     k2Value = k2Value.Substring(0, 50);
                 }
 

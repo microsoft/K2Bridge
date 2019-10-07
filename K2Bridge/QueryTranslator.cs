@@ -9,7 +9,7 @@
 
         public QueryTranslator(IVisitor visitor) => this.visitor = visitor;
 
-        public string Translate(string header, string query)
+        public QueryData Translate(string header, string query)
         {
             var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
 
@@ -17,7 +17,7 @@
             elasticSearchDSL.IndexName = headerDictionary["index"];
 
             elasticSearchDSL.Accept(this.visitor);
-            return elasticSearchDSL.KQL;
+            return new QueryData(elasticSearchDSL.KQL, elasticSearchDSL.IndexName);
         }
     }
 }

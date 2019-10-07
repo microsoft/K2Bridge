@@ -1,6 +1,6 @@
 ﻿namespace K2Bridge
 {
-    using K2Bridge.Models.Aggregations;
+    using K2Bridge.Models.Request.Aggregations;
 
     internal interface IVisitor
     {

@@ -4,7 +4,7 @@ namespace K2Bridge.KustoConnector
 
     public interface IQueryExecutor
     {
-        ElasticResponse ExecuteQuery(string query);
+        ElasticResponse ExecuteQuery(QueryData query);
 
         IDataReader ExecuteControlCommand(string query);
     }

@@ -1,7 +1,7 @@
 ﻿namespace K2Bridge
 {
     using System.Collections.Generic;
-    using K2Bridge.Models.Aggregations;
+    using K2Bridge.Models.Request.Aggregations;
     using Newtonsoft.Json;
 
     internal class ElasticSearchDSL : KQLBase, IVisitable

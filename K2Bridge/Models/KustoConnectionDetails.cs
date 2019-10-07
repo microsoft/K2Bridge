@@ -5,26 +5,30 @@ namespace K2Bridge
 
     internal class KustoConnectionDetails
     {
-
         private KustoConnectionDetails(string kustoClusterUrl, string kustoDatabase, string kustoAadClientId, string kustoAadClientSecret, string kustoAadTenantId)
         {
-            if (kustoClusterUrl == null || kustoClusterUrl.Length == 0) {
+            if (kustoClusterUrl == null || kustoClusterUrl.Length == 0)
+            {
                 throw new ArgumentException("Kusto Cluster URL is empty");
             }
 
-            if (kustoDatabase == null || kustoDatabase.Length == 0) {
+            if (kustoDatabase == null || kustoDatabase.Length == 0)
+            {
                 throw new ArgumentException("Kusto database name is empty");
             }
 
-            if (kustoAadClientId == null || kustoAadClientId.Length == 0) {
+            if (kustoAadClientId == null || kustoAadClientId.Length == 0)
+            {
                 throw new ArgumentException("Kusto AAD Client ID is empty");
             }
 
-            if (kustoAadClientSecret == null || kustoAadClientSecret.Length == 0) {
+            if (kustoAadClientSecret == null || kustoAadClientSecret.Length == 0)
+            {
                 throw new ArgumentException("Kusto AAD Client Secret is empty");
             }
 
-            if (kustoAadTenantId == null || kustoAadTenantId.Length == 0) {
+            if (kustoAadTenantId == null || kustoAadTenantId.Length == 0)
+            {
                 throw new ArgumentException("Kusto AAD Tenant ID is emtpy");
             }
 

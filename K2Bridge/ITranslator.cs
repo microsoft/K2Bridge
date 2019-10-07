@@ -2,6 +2,6 @@ namespace K2Bridge
 {
     internal interface ITranslator
     {
-        string Translate(string header, string query);
+        QueryData Translate(string header, string query);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace K2Bridge.Models.Aggregations
+﻿namespace K2Bridge.Models.Request.Aggregations
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;

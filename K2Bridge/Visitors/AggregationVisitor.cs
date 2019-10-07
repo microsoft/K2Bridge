@@ -5,7 +5,7 @@
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(Models.Aggregations.Aggregation aggregation)
+        public void Visit(Models.Request.Aggregations.Aggregation aggregation)
         {
             if (aggregation.PrimaryAggregation == null)
             {

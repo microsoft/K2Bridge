@@ -157,11 +157,11 @@
 
                             // TODO: add ability to handle multiple queries
                             this.logger.LogDebug($"Elastic search request:\n{lines[1]}");
-                            string translatedKqlQuery = this.translator.Translate(lines[0], lines[1]);
-                            this.logger.LogDebug($"Translated query:\n{translatedKqlQuery}");
-                            this.tracer.WriteFile($"{request.RequestTraceIdentifier}.KQL.json", translatedKqlQuery);
+                            var translatedResponse = this.translator.Translate(lines[0], lines[1]);
+                            this.logger.LogDebug($"Translated query:\n{translatedResponse.KQL}");
+                            this.tracer.WriteFile($"{request.RequestTraceIdentifier}.KQL.json", translatedResponse.KQL);
 
-                            ElasticResponse kustoResults = this.kustoManager.ExecuteQuery(translatedKqlQuery);
+                            ElasticResponse kustoResults = this.kustoManager.ExecuteQuery(translatedResponse);
                             responseString = JsonConvert.SerializeObject(kustoResults);
 
                             requestAnsweredSuccessfully = true;
