@@ -1,17 +1,22 @@
-﻿namespace K2Bridge
+﻿using System;
+
+namespace K2Bridge
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         private const string KQLAndKeyword = "and";
         private const string KQLNotKeyword = "not";
+        private const string KQLCommandSeparator = "\n| ";
 
         public void Visit(BoolClause boolClause)
         {
-            bool addedSearchToKQL = false;
-            bool addedWhereToKQL = false;
+            // TODO: the following can be more generic (need to account for Should/Or)
+            List<string> mustKQLExpressions = new List<string>();
 
-            string mustKQL = string.Empty;
-            foreach (dynamic leafQuery in boolClause.Must)
+            foreach (dynamic leafQuery in boolClause.Must.Where(q => !(q is QueryStringQuery)))
             {
                 if (leafQuery == null)
                 {
@@ -20,35 +25,11 @@
                 }
 
                 leafQuery.Accept(this);
-
-                // if we used the search bar - the first leaf in Must will be of type QueryStringQuery
-                if (leafQuery is QueryStringQuery)
-                {
-                    addedSearchToKQL = true;
-                    mustKQL += $"{leafQuery.KQL}";
-                }
-                else
-                {
-                    if (!addedWhereToKQL)
-                    {
-                        if (addedSearchToKQL)
-                        {
-                            mustKQL += "\n| ";
-                        }
-
-                        mustKQL += "where ";
-                        addedWhereToKQL = true;
-                    }
-                    else
-                    {
-                        mustKQL += $" {KQLAndKeyword} ";
-                    }
-
-                    mustKQL += $"({leafQuery.KQL})";
-                }
+                mustKQLExpressions.Add($"({leafQuery.KQL})");
             }
 
-            string mustNotKQL = string.Empty;
+            List<string> mustNotKQLExpressions = new List<string>();
+
             foreach (dynamic leafQuery in boolClause.MustNot)
             {
                 if (leafQuery == null)
@@ -58,25 +39,39 @@
                 }
 
                 leafQuery.Accept(this);
-                if (!addedWhereToKQL)
-                {
-                    if (addedSearchToKQL)
-                    {
-                        mustNotKQL += "\n| ";
-                    }
-
-                    mustNotKQL += "where ";
-                    addedWhereToKQL = true;
-                }
-                else
-                {
-                    mustNotKQL += $" {KQLAndKeyword} ";
-                }
-
-                mustNotKQL += $"{KQLNotKeyword} ({leafQuery.KQL})";
+                mustNotKQLExpressions.Add($"{KQLNotKeyword} ({leafQuery.KQL})");
             }
 
-            boolClause.KQL = $"{mustKQL}{mustNotKQL}";
+            this.KQLListToString(mustKQLExpressions, KQLAndKeyword, boolClause);
+            this.KQLListToString(mustNotKQLExpressions, KQLAndKeyword, boolClause);
+
+            QueryStringQuery queryString = (QueryStringQuery)boolClause.Must.Where(q => q is QueryStringQuery).SingleOrDefault();
+
+            if (queryString != null)
+            {
+                queryString.Accept(this);
+                if (!string.IsNullOrEmpty(boolClause.KQL))
+                {
+                    boolClause.KQL += KQLCommandSeparator;
+                }
+
+                boolClause.KQL += queryString.KQL;
+            }
+        }
+
+        private void KQLListToString(List<string> kqlList, string joinString, BoolClause boolClause)
+        {
+            joinString = $" {joinString} ";
+
+            if (kqlList.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(boolClause.KQL))
+                {
+                    boolClause.KQL += KQLCommandSeparator;
+                }
+
+                boolClause.KQL += $"where {string.Join(joinString, kqlList)}";
+            }
         }
     }
 }

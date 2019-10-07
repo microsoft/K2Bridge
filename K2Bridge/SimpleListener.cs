@@ -101,8 +101,7 @@
                     if (requestTraceIsOn)
                     {
                         // Write the request before anything bad might happen.
-                        this.tracer.WriteFile($"{request.RequestTraceIdentifier}.Request.json", requestInputStream);
-                        requestInputStream.Position = 0;
+                        this.tracer.WriteFile($"{requestId}.Request.json", requestInputStream);
                     }
 
                     string responseString = null;
@@ -112,7 +111,7 @@
                     {
                         if (IndexListRequestHandler.Mine(request.RawUrl, requestInputString))
                         {
-                            this.logger.LogDebug($"Request index list:{requestId}");
+                            this.logger.LogDebug($"Request index list: {requestId}");
 
                             IndexListRequestHandler handler = new IndexListRequestHandler(context, this.kustoManager, requestId, this.logger);
 
@@ -123,7 +122,7 @@
                         }
                         else if (DetailedIndexListRequestHandler.Mine(request.RawUrl, requestInputString))
                         {
-                            this.logger.LogDebug($"Request Getting detailed index list and schemas:{requestId}");
+                            this.logger.LogDebug($"Request getting detailed index list and schemas: {requestId}");
 
                             DetailedIndexListRequestHandler handler = new DetailedIndexListRequestHandler(context, this.kustoManager, requestId, this.logger);
 
@@ -134,7 +133,7 @@
                         }
                         else if (IndexDetailsRequestHandler.Mine(request.RawUrl, requestInputString))
                         {
-                            this.logger.LogDebug($"Request Getting index details and schema:{requestId}");
+                            this.logger.LogDebug($"Request getting index details and schema: {requestId}");
 
                             IndexDetailsRequestHandler handler = new IndexDetailsRequestHandler(context, this.kustoManager, requestId, this.logger);
 

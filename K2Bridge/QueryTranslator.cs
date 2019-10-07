@@ -16,7 +16,7 @@
             var elasticSearchDSL = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
             elasticSearchDSL.IndexName = headerDictionary["index"];
 
-            elasticSearchDSL.Accept(visitor);
+            elasticSearchDSL.Accept(this.visitor);
             return elasticSearchDSL.KQL;
         }
     }

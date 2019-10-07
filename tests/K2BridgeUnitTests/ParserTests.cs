@@ -145,7 +145,7 @@ namespace Tests
                 }
             }";
 
-        const string onlyNotQuery = @"
+        const string notQueryStringQuery = @"
             {""bool"":
                 {""must"":
                     [
@@ -192,7 +192,7 @@ namespace Tests
             return query.KQL;
         }
 
-        [TestCase(queryStringQuery, ExpectedResult = "search TEST_RESULT | project-away $table")]
+        [TestCase(queryStringQuery, ExpectedResult = "where (* contains \"TEST_RESULT\")")]
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -201,17 +201,9 @@ namespace Tests
             return query.KQL;
         }
 
-        [TestCase(combinedQuery, ExpectedResult = "search TEST_RESULT | project-away $table\n| where (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp between (fromUnixTimeMilli(0) .. fromUnixTimeMilli(10)))")]
+        [TestCase(combinedQuery, ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp between (fromUnixTimeMilli(0) .. fromUnixTimeMilli(10)))\n| where (* contains \"TEST_RESULT\")")]
+        [TestCase(notQueryStringQuery, ExpectedResult = "where not (TEST_FIELD == \"TEST_RESULT_2\")\n| where (* contains \"TEST_RESULT\")")]
         public string TestCombinedQueries(string queryString)
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
-            query.Accept(visitor);
-            return query.KQL;
-        }
-
-        [TestCase(onlyNotQuery, ExpectedResult = "search TEST_RESULT | project-away $table\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
-        public string TestNotQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
