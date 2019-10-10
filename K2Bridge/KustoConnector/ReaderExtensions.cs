@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using K2Bridge.Models.Response;
 
     internal static class ReaderExtensions
     {

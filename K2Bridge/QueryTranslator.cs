@@ -1,6 +1,8 @@
 ﻿namespace K2Bridge
 {
     using System.Collections.Generic;
+    using K2Bridge.Models.Request;
+    using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     internal class QueryTranslator : ITranslator

@@ -1,4 +1,4 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.RequestHandlers
 {
     using System;
     using System.Collections.Generic;
@@ -7,6 +7,7 @@
     using System.Security.Cryptography;
     using System.Text;
     using K2Bridge.KustoConnector;
+    using K2Bridge.Models.Response.Metadata;
     using Microsoft.Extensions.Logging;
 
     internal class KibanaRequestHandler : RequestHandler
@@ -39,23 +40,23 @@
             return g.ToString();
         }
 
-        protected List<Models.Metadata.Hit> PrepareHits(string indexPatternId = null)
+        protected List<Hit> PrepareHits(string indexPatternId = null)
         {
             IDataReader kustoResults = this.kusto.ExecuteControlCommand(".show database schema");
 
-            List<Models.Metadata.Hit> hitsList = new List<Models.Metadata.Hit>();
+            List<Hit> hitsList = new List<Hit>();
 
-            Models.Metadata.Hit hit = null;
+            Hit hit = null;
             StringBuilder sbFields = null;
 
             while (kustoResults.Read())
             {
-                IDataRecord record = (IDataRecord)kustoResults;
+                IDataRecord record = kustoResults;
 
                 string tableName = record[1].ToString();
                 string fieldName = record[2].ToString();
                 string fieldType = record[3].ToString();
-                string indexID = GetIndexGuid(tableName);
+                string indexID = this.GetIndexGuid(tableName);
 
                 if (tableName == string.Empty)
                 {
@@ -80,9 +81,9 @@
 
                     // Starting a new table
                     sbFields = new StringBuilder("[");
-                    hit = new Models.Metadata.Hit();
-                    hit._source = new Models.Metadata.Source();
-                    hit._source.index_pattern = new Models.Metadata.IndexPattern();
+                    hit = new Hit();
+                    hit._source = new Source();
+                    hit._source.index_pattern = new IndexPattern();
 
                     hit._index = ".kibana_1";
                     hit._type = "doc";
@@ -91,7 +92,7 @@
                     hit._primary_term = 1;
                     hit._score = 0.0;
                     hit._source.type = "index-pattern";
-                    hit._source.migrationVersion = new Models.Metadata.MigrationVersion();
+                    hit._source.migrationVersion = new MigrationVersion();
                     hit._source.migrationVersion.index_pattern = "6.5.0";
                     hit._source.updated_at = "2019-07-16T16:19:23.016Z"; //TODO what value shoudl go in here?
                     hit._source.index_pattern.title = tableName;
@@ -119,19 +120,19 @@
                     }
 
                     sbFields.Append("{");
-                    AddAttributeToStringBuilder(sbFields, "name", fieldName);
+                    this.AddAttributeToStringBuilder(sbFields, "name", fieldName);
                     sbFields.Append(",");
-                    AddAttributeToStringBuilder(sbFields, "type", ElasticTypeFromKustoType(fieldType));
+                    this.AddAttributeToStringBuilder(sbFields, "type", this.ElasticTypeFromKustoType(fieldType));
                     sbFields.Append(",");
-                    AddAttributeToStringBuilder(sbFields, "count", 0);
+                    this.AddAttributeToStringBuilder(sbFields, "count", 0);
                     sbFields.Append(",");
-                    AddAttributeToStringBuilder(sbFields, "scripted", false);
+                    this.AddAttributeToStringBuilder(sbFields, "scripted", false);
                     sbFields.Append(",");
-                    AddAttributeToStringBuilder(sbFields, "searchable", true);
+                    this.AddAttributeToStringBuilder(sbFields, "searchable", true);
                     sbFields.Append(",");
-                    AddAttributeToStringBuilder(sbFields, "aggregatable", true);
+                    this.AddAttributeToStringBuilder(sbFields, "aggregatable", true);
                     sbFields.Append(",");
-                    AddAttributeToStringBuilder(sbFields, "readFromDocValues", false);
+                    this.AddAttributeToStringBuilder(sbFields, "readFromDocValues", false);
                     sbFields.Append("}");
                 }
             }

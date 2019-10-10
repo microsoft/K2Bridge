@@ -1,5 +1,6 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Models.Request
 {
+    using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(SortClauseConverter))]

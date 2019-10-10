@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using K2Bridge.Models.Request;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 

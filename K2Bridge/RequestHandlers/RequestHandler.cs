@@ -1,4 +1,4 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.RequestHandlers
 {
     using System;
     using System.Net;

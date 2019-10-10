@@ -1,4 +1,4 @@
-﻿namespace K2Bridge.Models.Metadata
+﻿namespace K2Bridge.Models.Response.Metadata
 {
     using System;
     using Newtonsoft.Json;
@@ -11,32 +11,44 @@
     public class Response
     {
         public int took { get; set; }
+
         public bool timed_out { get; set; }
+
         public _Shards _shards { get; set; }
+
         public Hits hits { get; set; }
     }
 
     public class _Shards
     {
         public int total { get; set; }
+
         public int successful { get; set; }
+
         public int skipped { get; set; }
+
         public int failed { get; set; }
     }
 
     public class Hits
     {
         public int total { get; set; }
+
         public object max_score { get; set; }
+
         public Hit[] hits { get; set; }
     }
 
     public class Hit
     {
         public string _index { get; set; }
+
         public string _type { get; set; }
+
         public string _id { get; set; }
+
         public long _seq_no { get; set; }
+
         public long _primary_term { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -88,6 +100,7 @@
     public class Fields
     {
         public int[] hour_of_day { get; set; }
+
         public DateTime[] timestamp { get; set; }
     }
 
@@ -111,7 +124,9 @@
     public class Bucket
     {
         public DateTime key_as_string { get; set; }
+
         public long key { get; set; }
+
         public int doc_count { get; set; }
     }
 

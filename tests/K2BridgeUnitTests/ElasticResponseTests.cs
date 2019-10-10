@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using K2Bridge.Models.Response;
 
 namespace Tests
 {

@@ -1,9 +1,10 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.RequestHandlers
 {
     using System;
     using System.Collections.Generic;
     using System.Net;
     using K2Bridge.KustoConnector;
+    using K2Bridge.Models.Response.Metadata;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
@@ -23,36 +24,38 @@
         {
             try
             {
-                Models.Metadata.ElasticDocs requestStream = JsonConvert.DeserializeObject<Models.Metadata.ElasticDocs>(requestInputString);
+                ElasticDocs requestStream = JsonConvert.DeserializeObject<ElasticDocs>(requestInputString);
 
-                Models.Metadata.ElasticDocs elasticOutputStream = JsonConvert.DeserializeObject<Models.Metadata.ElasticDocs>(
+                ElasticDocs elasticOutputStream = JsonConvert.DeserializeObject<ElasticDocs>(
                                     "{\"docs\":[{\"index\":\".kibana_1\",\"_type\":\"doc\",\"_id\":\"index-pattern:d3d7af60-4c81-11e8-b3d7-01146121b73d\",\"_version\":3,\"_seq_no\":67,\"_primary_term\":2,\"found\":true,\"_source\":{\"index-pattern\":{\"title\":\"kibana_sample_data_flights\",\"timeFieldName\":\"timestamp\",\"fields\":\"\",\"fieldFormatMap\":\"\"},\"type\":\"index-pattern\",\"migrationVersion\":{\"index-pattern\":\"6.5.0\"},\"updated_at\":\"2019-07-18T13:38:35.278Z\"}}]}");
 
                 string indexPatternID = requestStream.docs[0]._id;
 
-                List<Models.Metadata.Hit> hitsList = PrepareHits(indexPatternID);
+                List<Hit> hitsList = this.PrepareHits(indexPatternID);
 
                 if (hitsList.Count > 0)
+                {
                     // Marking as found for Kibana
                     hitsList[0].found = true;
+                }
 
                 elasticOutputStream.docs = hitsList.ToArray();
 
                 if (hitsList.Count == 0)
                 {
-                    this.logger.LogDebug($"Detailed index schemas: Could not locate index. Giving way to Kibana local storage ({requestId}):{indexPatternID}");
+                    this.logger.LogDebug($"Detailed index schemas: Could not locate index. Giving way to Kibana local storage ({this.requestId}):{indexPatternID}");
                     return null;
                 }
 
                 string kustoResultsString = JsonConvert.SerializeObject(elasticOutputStream);
 
-                this.logger.LogDebug($"Detailed index schemas:({requestId})");
+                this.logger.LogDebug($"Detailed index schemas:({this.requestId})");
 
                 return kustoResultsString;
             }
             catch (Exception)
             {
-                this.logger.LogError($"Detailed index schemas:({requestId}):Failed to retrieve indexes");
+                this.logger.LogError($"Detailed index schemas:({this.requestId}):Failed to retrieve indexes");
                 throw;
             }
         }

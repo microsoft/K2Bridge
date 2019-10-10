@@ -3,6 +3,8 @@
     using System;
     using System.Data;
     using System.Linq;
+    using K2Bridge.Models;
+    using K2Bridge.Models.Response;
     using Kusto.Data;
     using Kusto.Data.Common;
     using Kusto.Data.Net.Client;

@@ -1,4 +1,4 @@
-namespace K2Bridge
+namespace K2Bridge.Models
 {
     using System;
     using Microsoft.Extensions.Configuration;

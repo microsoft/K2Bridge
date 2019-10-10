@@ -1,4 +1,4 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Models.Request
 {
     using System;
     using Newtonsoft.Json;

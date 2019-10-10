@@ -1,4 +1,4 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Models.Request
 {
     internal abstract class KQLBase : object
     {

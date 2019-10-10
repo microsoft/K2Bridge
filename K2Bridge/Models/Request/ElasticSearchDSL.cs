@@ -1,7 +1,9 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Models.Request
 {
     using System.Collections.Generic;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     internal class ElasticSearchDSL : KQLBase, IVisitable

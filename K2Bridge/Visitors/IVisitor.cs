@@ -1,6 +1,8 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Visitors
 {
+    using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Queries;
 
     internal interface IVisitor
     {

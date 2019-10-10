@@ -1,6 +1,7 @@
 namespace K2Bridge.KustoConnector
 {
     using System.Data;
+    using K2Bridge.Models.Response;
 
     public interface IQueryExecutor
     {

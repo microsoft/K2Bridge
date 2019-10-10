@@ -6,6 +6,9 @@
     using System.Net;
     using System.Text;
     using K2Bridge.KustoConnector;
+    using K2Bridge.Models;
+    using K2Bridge.Models.Response;
+    using K2Bridge.RequestHandlers;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 

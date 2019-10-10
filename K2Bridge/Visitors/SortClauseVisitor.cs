@@ -1,5 +1,7 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Visitors
 {
+    using K2Bridge.Models.Request;
+
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(SortClause sortClause)

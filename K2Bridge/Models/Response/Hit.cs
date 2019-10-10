@@ -1,6 +1,7 @@
-namespace K2Bridge.KustoConnector
+namespace K2Bridge.Models.Response
 {
     using System.Data;
+    using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 

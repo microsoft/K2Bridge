@@ -1,7 +1,5 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Visitors
 {
-    using System.Collections.Generic;
-
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(Models.Request.Aggregations.DateHistogram dateHistogram)

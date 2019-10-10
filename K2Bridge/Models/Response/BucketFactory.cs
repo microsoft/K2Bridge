@@ -1,4 +1,4 @@
-namespace K2Bridge.KustoConnector
+namespace K2Bridge.Models.Response
 {
     internal static class BucketFactory
     {

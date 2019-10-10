@@ -1,7 +1,8 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
     using System.Text;
+    using K2Bridge.Models.Request;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {

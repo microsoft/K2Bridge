@@ -1,4 +1,4 @@
-﻿namespace K2Bridge.KustoConnector
+﻿namespace K2Bridge.Models.Response
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;

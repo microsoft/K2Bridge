@@ -1,6 +1,7 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Models.Request.Queries
 {
     using System;
+    using K2Bridge.Models.Request;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 

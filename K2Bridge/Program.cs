@@ -3,6 +3,8 @@
 namespace K2Bridge
 {
     using K2Bridge.KustoConnector;
+    using K2Bridge.Models;
+    using K2Bridge.Visitors;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Serilog;

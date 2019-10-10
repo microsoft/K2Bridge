@@ -1,6 +1,8 @@
-﻿namespace K2Bridge
+﻿namespace K2Bridge.Models.Request.Queries
 {
     using System.Collections.Generic;
+    using K2Bridge.Models.Request;
+    using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     internal class BoolClause : KQLBase, IVisitable

@@ -1,5 +1,6 @@
 ﻿namespace K2Bridge.Models.Request.Aggregations
 {
+    using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(DateHistogramConverter))]
