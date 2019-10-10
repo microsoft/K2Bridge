@@ -37,7 +37,7 @@ namespace K2Bridge.Models.Response
 
         public void AddSource(string keyName, object value)
         {
-            this.Source.Add(keyName, JToken.FromObject(value));
+            this.Source.Add(keyName, value == null ? null : JToken.FromObject(value));
         }
 
         public static Hit Create(IDataRecord record, string indexName)

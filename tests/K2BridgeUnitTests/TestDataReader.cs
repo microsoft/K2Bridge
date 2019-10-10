@@ -121,7 +121,9 @@ namespace Tests
 
         public bool IsDBNull(int i)
         {
-            throw new NotImplementedException();
+            if (this[i] == DBNull.Value)
+                return true;
+            return false;
         }
 
         public bool NextResult()

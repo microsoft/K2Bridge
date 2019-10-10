@@ -154,5 +154,18 @@ namespace Tests
             var response = reader.ReadHits("_index");
             return response.First().Source.GetValue("somefield1").Type;
         }
+
+        [TestCase(ExpectedResult = JTokenType.Null)]
+        public JTokenType TestDbNullAreRead()
+        {
+            var reader = new TestDataReader(
+                new List<Dictionary<string, object>>(){
+                    new Dictionary<string, object>{
+                        {"somefield1", DBNull.Value}
+                    }
+            });
+            var response = reader.ReadHits("_index");
+            return response.First().Source.GetValue("somefield1").Type;
+        }
     }    
 }
