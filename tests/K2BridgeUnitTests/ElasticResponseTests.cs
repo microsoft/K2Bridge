@@ -167,5 +167,42 @@ namespace Tests
             var response = reader.ReadHits("_index");
             return response.First().Source.GetValue("somefield1").Type;
         }
+
+        [TestCase(ExpectedResult = false)]
+        public bool TestHitIdsAreUnique()
+        {
+            var reader = new TestDataReader(
+                    new List<Dictionary<string, object>>(){
+                        new Dictionary<string, object>{
+                            {"somefield1", "somevalue1"}
+                        },
+                        new Dictionary<string, object>{
+                            {"somefield2", "somevalue2"}
+                        } ,
+                        new Dictionary<string, object>{
+                            {"somefield3", "somevalue3"}
+                        },
+                        new Dictionary<string, object>{
+                            {"somefield4", "somevalue4"}
+                        } ,
+                        new Dictionary<string, object>{
+                            {"somefield5", "somevalue5"}
+                        },
+                        new Dictionary<string, object>{
+                            {"somefield6", "somevalue6"}
+                        }                    
+                });
+            
+            var response = reader.ReadHits("_index");
+            var hash = new Dictionary<string, int>();
+            foreach(var hit in response){
+                if (hash.ContainsKey(hit.Id))
+                    return true;
+                hash.Add(hit.Id, 1);
+            }
+            return false;
+        }
     }    
+
+    
 }

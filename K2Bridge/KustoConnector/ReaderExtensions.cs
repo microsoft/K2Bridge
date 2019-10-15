@@ -21,11 +21,15 @@
             { typeof(object), (reader, index) => reader.ReadValueOrDbNull(index, () => reader.GetValue(index)) },
         };
 
+        private static Random random = new Random();
+
         internal static IEnumerable<Hit> ReadHits(this IDataReader reader, string indexName)
         {
             while (reader.Read())
             {
-                yield return Hit.Create((IDataRecord)reader, indexName);
+                var hit = Hit.Create((IDataRecord)reader, indexName);
+                hit.Id = random.Next().ToString();
+                yield return hit;
             }
         }
 

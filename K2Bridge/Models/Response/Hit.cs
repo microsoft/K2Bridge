@@ -7,7 +7,6 @@ namespace K2Bridge.Models.Response
 
     public class Hit
     {
-        private const string ID = "999"; // arbitrary decided on this value. used internally by kibana
         private const string TYPE = "_doc";
         private const int VERSION = 1;
 
@@ -18,7 +17,7 @@ namespace K2Bridge.Models.Response
         public string Type { get; } = TYPE;
 
         [JsonProperty("_id")]
-        public string Id { get; } = ID;
+        public string Id { get; set; }
 
         [JsonProperty("_version")]
         public int Version { get; set; } = VERSION;
