@@ -13,6 +13,8 @@ namespace Tests
     [TestFixture]
     public partial class ElasticResponseTests
     {
+        private const string HIT_TEST_ID = "999";
+
         [TestCase(ExpectedResult = "{\"responses\":[{\"took\":1,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"aggregations\":{\"2\":{\"buckets\":[]}},\"status\":200}]}")]
         public string DefaultResponseHasExpectedElasticProperties()
         {
@@ -33,7 +35,7 @@ namespace Tests
                 });
             var response = reader.ReadHits("_index");
 
-            return JsonConvert.SerializeObject(response.First());
+            return JsonConvert.SerializeObject(SetRandomProperties(response).First());
         }
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"}}")]
@@ -49,8 +51,7 @@ namespace Tests
                     }
                 });
             var response = reader.ReadHits("_index");
-
-            return JsonConvert.SerializeObject(response.First());
+            return JsonConvert.SerializeObject(SetRandomProperties(response).First());
         }
 
         [TestCase(ExpectedResult = new[]{
@@ -73,7 +74,7 @@ namespace Tests
             });
             var response = reader.ReadHits("_index");
 
-            return response.Select(r => JsonConvert.SerializeObject(r)).ToArray();
+            return SetRandomProperties(response).Select(r =>JsonConvert.SerializeObject(r)).ToArray();
         }
 
 
@@ -202,7 +203,8 @@ namespace Tests
             }
             return false;
         }
-    }    
 
-    
+        private IEnumerable<Hit> SetRandomProperties(IEnumerable<Hit> hits) =>  hits.Select(i =>{ i.Id = HIT_TEST_ID; return i;});
+
+    }    
 }
