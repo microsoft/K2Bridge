@@ -284,10 +284,21 @@
 
                 return remoteResponse;
             }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError && ex.Response != null)
+                {
+                    var resp = (HttpWebResponse)ex.Response;
+                    return resp;
+                }
+
+                this.logger.LogError(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
+                throw;
+            }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, $"PassThrough request to: {request.RawUrl} ended with an exception");
-                return null;
+                throw;
             }
         }
 

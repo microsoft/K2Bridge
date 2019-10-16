@@ -22,7 +22,8 @@
         public static bool CanAnswer(string rawUrl, string requestString)
         {
             return
-                rawUrl.Contains("_search?ignore_unavailable=true")
+                //rawUrl.Contains("_search?ignore_unavailable=true") // 6.8.1
+                rawUrl.Contains("_search") // 6.3.2
                 && requestString.Contains("indices")
                 && requestString.Contains("_index")
             ;
