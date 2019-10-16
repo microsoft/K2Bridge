@@ -7,7 +7,6 @@
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-
         public void Visit(QueryStringQuery queryStringQuery)
         {
             List<string> phraseList = this.Parse(queryStringQuery.Phrase);

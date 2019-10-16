@@ -22,22 +22,35 @@
 
         private readonly string remoteEndpoint;
 
+        private readonly bool isCompareResponses;
+
+        private readonly bool isHandleMetadata;
+
         private readonly ITranslator translator;
 
         private readonly IQueryExecutor kustoManager;
 
         public SimpleListener(
-            ListenerEndpointsDetails listenerEndpoints,
+            ListenerDetails listenerDetails,
             ITranslator queryTranslator,
             IQueryExecutor kustoManager,
             ILoggerFactory loggerFactory)
         {
-            this.prefixes = listenerEndpoints.Prefixes;
-            this.remoteEndpoint = listenerEndpoints.RemoteEndpoint;
+            this.prefixes = listenerDetails.Prefixes;
+            this.remoteEndpoint = listenerDetails.RemoteEndpoint;
             this.translator = queryTranslator;
+            this.isCompareResponses = listenerDetails.IsCompareResponse;
+            this.isHandleMetadata = listenerDetails.IsHandleMetadata;
             this.kustoManager = kustoManager;
             this.logger = loggerFactory.CreateLogger<SimpleListener>();
             this.tracer = new TraceHelper(this.logger, @"../../../Traces");
+        }
+
+        private enum RequestType
+        {
+            NA, // = not interesting for K2 to handle
+            Data,
+            Metadata,
         }
 
         public int TimeoutInMilliSeconds { get; set; } = 5000;
@@ -82,76 +95,58 @@
                     var requestInputStream = new MemoryStream();
                     request.InputStream.CopyStream(requestInputStream);
 
-                    bool requestTraceIsOn = false;
-                    bool requestAnsweredSuccessfully = false;
+                    bool isRequestTraceEnabled = false;
+                    bool isRequestAnsweredSuccessfully = false;
+                    RequestType requestType = RequestType.NA;
 
                     // Obtain a response object.
                     HttpListenerResponse response = context.Response;
                     requestId = request.RequestTraceIdentifier.ToString();
                     response.Headers.Add("X-K2-CorrelationId", requestId);
 
-                    if (request.RawUrl.StartsWith(@"/.reporting-*/esqueue/_search") &&
-                        request.RawUrl.StartsWith(@"/.kibana_task_manager/_doc/_search"))
-                    {
-                        this.logger.LogDebug($"Request: {requestId}:{request.RawUrl}");
-                    }
-
                     var sr = new StreamReader(requestInputStream);
-                    string requestInputString = null;
-                    requestInputString = sr.ReadToEnd();
+                    var requestInputString = sr.ReadToEnd();
                     requestInputStream.Position = 0;
-
-                    if (requestTraceIsOn)
-                    {
-                        // Write the request before anything bad might happen.
-                        this.tracer.WriteFile($"{requestId}.Request.json", requestInputStream);
-                    }
 
                     string responseString = null;
                     MemoryStream kustoResultsStream = null;
 
-                    if (request.RawUrl.StartsWith(@"/.kibana/"))
+                    if (IndexListRequestHandler.CanAnswer(request.RawUrl, requestInputString))
                     {
-                        if (IndexListRequestHandler.Mine(request.RawUrl, requestInputString))
+                        isRequestTraceEnabled = true;
+                        requestType = RequestType.Metadata;
+                        this.tracer.WriteFile($"{requestId}.Request.json", requestInputStream);
+
+                        var handler = new IndexListRequestHandler(context, this.kustoManager, requestId, this.logger);
+
+                        responseString = handler.PrepareResponse(request.RawUrl);
+                        if (this.isHandleMetadata)
                         {
-                            this.logger.LogDebug($"Request index list: {requestId}");
-
-                            IndexListRequestHandler handler = new IndexListRequestHandler(context, this.kustoManager, requestId, this.logger);
-
-                            responseString = handler.PrepareResponse(requestInputString);
-
-                            requestTraceIsOn = true;
-                            //requestAnsweredSuccessfully = true;
+                            isRequestAnsweredSuccessfully = true;
                         }
-                        else if (DetailedIndexListRequestHandler.Mine(request.RawUrl, requestInputString))
+                    }
+                    else if (FieldCapabilityRequestHandler.CanAnswer(request.RawUrl))
+                    {
+                        isRequestTraceEnabled = true;
+                        requestType = RequestType.Metadata;
+                        this.tracer.WriteFile($"{requestId}.Request.json", requestInputStream);
+
+                        var handler = new FieldCapabilityRequestHandler(context, this.kustoManager, requestId, this.logger);
+
+                        responseString = handler.PrepareResponse(request.RawUrl);
+
+                        if (this.isHandleMetadata)
                         {
-                            this.logger.LogDebug($"Request getting detailed index list and schemas: {requestId}");
-
-                            DetailedIndexListRequestHandler handler = new DetailedIndexListRequestHandler(context, this.kustoManager, requestId, this.logger);
-
-                            responseString = handler.PrepareResponse(requestInputString);
-
-                            requestTraceIsOn = true;
-                            //requestAnsweredSuccessfully = true;
-                        }
-                        else if (IndexDetailsRequestHandler.Mine(request.RawUrl, requestInputString))
-                        {
-                            this.logger.LogDebug($"Request getting index details and schema: {requestId}");
-
-                            IndexDetailsRequestHandler handler = new IndexDetailsRequestHandler(context, this.kustoManager, requestId, this.logger);
-
-                            responseString = handler.PrepareResponse(requestInputString);
-
-                            requestTraceIsOn = true;
-                            //requestAnsweredSuccessfully = (responseString != null);
+                            isRequestAnsweredSuccessfully = true;
                         }
                     }
                     else if (request.RawUrl.StartsWith(@"/_msearch"))
                     {
-                        // This request should be routed to Kusto
                         try
                         {
-                            requestTraceIsOn = true;
+                            isRequestTraceEnabled = true;
+                            requestType = RequestType.Data;
+                            this.tracer.WriteFile($"{requestId}.Request.json", requestInputStream);
 
                             string body = this.GetRequestBody(request, requestInputStream);
 
@@ -159,15 +154,16 @@
                             string[] lines = body.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                             // TODO: add ability to handle multiple queries
-                            this.logger.LogDebug($"Elastic search request:\n{lines[1]}");
+                            this.logger.LogDebug($"Elastic search request:\n{lines[0]}\n{lines[1]}");
+
                             var translatedResponse = this.translator.Translate(lines[0], lines[1]);
                             this.logger.LogDebug($"Translated query:\n{translatedResponse.KQL}");
-                            this.tracer.WriteFile($"{request.RequestTraceIdentifier}.KQL.json", translatedResponse.KQL);
+                            this.tracer.WriteFile($"{requestId}.KQL.json", translatedResponse.KQL);
 
                             ElasticResponse kustoResults = this.kustoManager.ExecuteQuery(translatedResponse);
                             responseString = JsonConvert.SerializeObject(kustoResults);
 
-                            requestAnsweredSuccessfully = true;
+                            isRequestAnsweredSuccessfully = true;
                         }
                         catch (Exception ex)
                         {
@@ -175,23 +171,32 @@
                         }
                     }
 
-                    var remoteResponse = this.PassThrough(request, this.remoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
-                    Stream remoteResponseStream = null;
+                    MemoryStream remoteResponseStream = null;
+                    HttpWebResponse remoteResponse = null;
 
-                    if (remoteResponse != null)
+                    if ((requestType == RequestType.NA) ||
+                        (requestType == RequestType.Data && !isRequestAnsweredSuccessfully) ||
+                        (requestType == RequestType.Metadata && !this.isHandleMetadata) ||
+                        (requestType != RequestType.NA && this.isCompareResponses))
+
                     {
-                        // use a stream we can read more than once
-                        remoteResponseStream = new MemoryStream();
-                        remoteResponse.GetResponseStream().CopyStream(remoteResponseStream);
+                        remoteResponse = this.PassThrough(request, this.remoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
+
+                        if (remoteResponse != null)
+                        {
+                            // use a stream we can read more than once
+                            remoteResponseStream = new MemoryStream();
+                            remoteResponse.GetResponseStream().CopyStream(remoteResponseStream);
+                        }
                     }
 
-                    if (requestAnsweredSuccessfully)
+                    if (isRequestAnsweredSuccessfully)
                     {
                         byte[] kustoResultsContent = Encoding.ASCII.GetBytes(responseString);
 
                         kustoResultsStream = new MemoryStream(kustoResultsContent);
 
-                        if (requestTraceIsOn)
+                        if (isRequestTraceEnabled)
                         {
                             if (remoteResponseStream != null)
                             {
@@ -221,16 +226,20 @@
                         response.ContentType = remoteResponse.ContentType;
                         response.Headers.Add("X-K2-PassThrough", "true");
 
+                        if (isRequestTraceEnabled)
+                        {
+                            this.logger.LogError("Something went wrong, returning passthrough (=elastic's) response");
+                        }
+
                         // Send the respose back
                         var output = response.OutputStream;
                         remoteResponseStream.CopyStream(output);
                         output.Close();
                     }
 
-                    if (requestTraceIsOn)
+                    if (isRequestTraceEnabled && this.isCompareResponses && remoteResponseStream != null)
                     {
                         ResponseComparer rc = new ResponseComparer(this.logger, "not yet", requestId);
-
                         rc.CompareStreams(remoteResponseStream, kustoResultsStream);
                     }
                 }

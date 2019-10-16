@@ -35,7 +35,7 @@
         public IDataReader ExecuteControlCommand(string command)
         {
             var result = this.adminClient.ExecuteControlCommand(command);
-            this.logger.LogDebug($"columns received: {result.FieldCount}");
+            this.logger.LogDebug($"Columns received from control command: {result.FieldCount}");
 
             return result;
         }

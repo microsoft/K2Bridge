@@ -54,6 +54,5 @@
                 this.logger.LogWarning($"Create folder {this.tracePath} to dump the content of translated queries");
             }
         }
-
     }
 }

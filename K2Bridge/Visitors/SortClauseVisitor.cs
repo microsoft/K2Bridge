@@ -6,7 +6,15 @@
     {
         public void Visit(SortClause sortClause)
         {
-            sortClause.KQL = $"{sortClause.FieldName} {sortClause.Order}";
+            if (sortClause.FieldName.StartsWith('_'))
+            {
+                // fields that start with "_" are internal to elastic and we want to disregard them
+                sortClause.KQL = string.Empty;
+            }
+            else
+            {
+                sortClause.KQL = $"{sortClause.FieldName} {sortClause.Order}";
+            }
         }
     }
 }

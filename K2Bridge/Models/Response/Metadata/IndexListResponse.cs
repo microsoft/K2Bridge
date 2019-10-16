@@ -1,8 +1,8 @@
-namespace K2Bridge.Models.Response
+﻿namespace K2Bridge.Models.Response.Metadata
 {
     using Newtonsoft.Json;
 
-    public class ResponseElement
+    internal class IndexListResponse
     {
         private const int TOOK = 1;
         private const int STATUS = 200;
@@ -20,7 +20,7 @@ namespace K2Bridge.Models.Response
         public HitsCollection Hits { get; set; } = new HitsCollection();
 
         [JsonProperty("aggregations")]
-        public Aggregations Aggregations { get; set; } = new Aggregations();
+        public IndexListAggregations Aggregations { get; set; } = new IndexListAggregations();
 
         [JsonProperty("status")]
         public int Status { get; set; } = STATUS;

@@ -7,27 +7,27 @@ namespace K2Bridge.Models
     {
         private KustoConnectionDetails(string kustoClusterUrl, string kustoDatabase, string kustoAadClientId, string kustoAadClientSecret, string kustoAadTenantId)
         {
-            if (kustoClusterUrl == null || kustoClusterUrl.Length == 0)
+            if (string.IsNullOrEmpty(kustoClusterUrl))
             {
                 throw new ArgumentException("Kusto Cluster URL is empty");
             }
 
-            if (kustoDatabase == null || kustoDatabase.Length == 0)
+            if (string.IsNullOrEmpty(kustoDatabase))
             {
                 throw new ArgumentException("Kusto database name is empty");
             }
 
-            if (kustoAadClientId == null || kustoAadClientId.Length == 0)
+            if (string.IsNullOrEmpty(kustoAadClientId))
             {
                 throw new ArgumentException("Kusto AAD Client ID is empty");
             }
 
-            if (kustoAadClientSecret == null || kustoAadClientSecret.Length == 0)
+            if (string.IsNullOrEmpty(kustoAadClientSecret))
             {
                 throw new ArgumentException("Kusto AAD Client Secret is empty");
             }
 
-            if (kustoAadTenantId == null || kustoAadTenantId.Length == 0)
+            if (string.IsNullOrEmpty(kustoAadTenantId))
             {
                 throw new ArgumentException("Kusto AAD Tenant ID is emtpy");
             }

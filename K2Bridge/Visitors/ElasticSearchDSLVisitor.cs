@@ -10,16 +10,13 @@
         {
             var kqlSB = new StringBuilder();
 
-            // REMOVE THIS
-            //kqlSB.Append("let fromUnixTimeMilli = (t:long) { datetime(1970 - 01 - 01) + t * 1millisec};").Append('\n');
-
             // base query
             elasticSearchDSL.Query.Accept(this);
             kqlSB.Append($"let _data = materialize({elasticSearchDSL.IndexName} | {elasticSearchDSL.Query.KQL});");
 
             // aggregations
             // TODO: procress the entire list
-            if (elasticSearchDSL.Aggregations.Count > 0)
+            if (elasticSearchDSL.Aggregations != null && elasticSearchDSL.Aggregations.Count > 0)
             {
                 kqlSB.Append('\n').Append("(_data | summarize ");
 
@@ -39,15 +36,22 @@
             kqlSB.Append("\n(_data ");
             if (elasticSearchDSL.Size > 0)
             {
+                // we only need to sort if we're returning hits
                 var orderingList = new List<string>();
 
                 foreach (var sortClause in elasticSearchDSL.Sort)
                 {
                     sortClause.Accept(this);
-                    orderingList.Add(sortClause.KQL);
+                    if (!string.IsNullOrEmpty(sortClause.KQL))
+                    {
+                        orderingList.Add(sortClause.KQL);
+                    }
                 }
 
-                kqlSB.Append($"| order by {string.Join(", ", orderingList)}");
+                if (orderingList.Count > 0)
+                {
+                    kqlSB.Append($"| order by {string.Join(", ", orderingList)} ");
+                }
             }
 
             if (elasticSearchDSL.Size >= 0)

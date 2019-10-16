@@ -1,11 +1,10 @@
 ﻿namespace K2Bridge.RequestHandlers
 {
-    using System;
     using System.Net;
     using K2Bridge.KustoConnector;
     using Microsoft.Extensions.Logging;
 
-    internal class RequestHandler
+    internal class RequestHandlerBase
     {
         protected HttpListenerContext context;
 
@@ -13,9 +12,9 @@
 
         protected string requestId;
 
-        protected ILogger logger { get; set; }
+        protected ILogger logger;
 
-        public RequestHandler(HttpListenerContext requestContext, IQueryExecutor kustoClient, string requestId, ILogger logger)
+        public RequestHandlerBase(HttpListenerContext requestContext, IQueryExecutor kustoClient, string requestId, ILogger logger)
         {
             this.logger = logger;
 
@@ -24,6 +23,11 @@
             this.kusto = kustoClient;
 
             this.requestId = requestId;
+        }
+
+        protected string IndexNameFromURL(string rawUrl)
+        {
+            return rawUrl.Substring(1, rawUrl.IndexOf('/', 1) - 1);
         }
     }
 }

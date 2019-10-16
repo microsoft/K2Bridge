@@ -33,7 +33,7 @@ namespace K2Bridge
                 .AddLogging(loggingBuilder =>
                       loggingBuilder.AddSerilog(dispose: true))
                 .AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(config))
-                .AddScoped<ListenerEndpointsDetails>(s => ListenerEndpointsDetails.MakeFromConfiguration(config))
+                .AddScoped<ListenerDetails>(s => ListenerDetails.MakeFromConfiguration(config))
                 .AddTransient<ITranslator, QueryTranslator>()
                 .AddTransient<IQueryExecutor, KustoManager>()
                 .AddTransient<IVisitor, ElasticSearchDSLVisitor>()
