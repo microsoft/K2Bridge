@@ -22,7 +22,7 @@
 
         internal static string TokenToString(this JToken jToken)
         {
-            var eObj = jToken == null ? null : jToken.Value<object>();
+            var eObj = jToken?.Value<object>();
             return eObj == null ? string.Empty : eObj.ToString();
         }
     }

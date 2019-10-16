@@ -2,6 +2,7 @@ using K2Bridge.Models.Request.Queries;
 using K2Bridge.Visitors;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System;
 
 namespace Tests
 {
@@ -78,6 +79,25 @@ namespace Tests
                         {""range"":
                             {""TEST_FIELD"":
                                 {""gte"":0,""lt"":10}
+                            }
+                        }
+                    ],
+                    ""filter"":
+                    [
+                        {""match_all"":{}}
+                    ],
+                    ""should"":[],
+                    ""must_not"":[]
+                }
+            }";
+
+        const string queryTimestampRangeSingleNoPair = @"
+            {""bool"":
+                {""must"":
+                    [
+                        {""range"":
+                            {""timestamp"":
+                                {""gte"":0,""format"":""epoch_millis""}
                             }
                         }
                     ],
@@ -182,14 +202,25 @@ namespace Tests
             return query.KQL;
         }
         
-        [TestCase(queryTimestampRangeSingle, ExpectedResult ="where (timestamp between (fromUnixTimeMilli(0) .. fromUnixTimeMilli(10)))")]
-        [TestCase(queryBetweenRangeSingle, ExpectedResult = "where (TEST_FIELD between (0 .. 10))")]
-        public string TestRangeQueries(string queryString)
+        private string TestRangeQueryBody(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
             return query.KQL;
+        }
+
+        [TestCase(queryTimestampRangeSingle, ExpectedResult ="where (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
+        [TestCase(queryBetweenRangeSingle, ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)")]
+        public string TestRangeQueries(string queryString)
+        {
+            return TestRangeQueryBody(queryString);
+        }
+
+        [TestCase(queryTimestampRangeSingleNoPair)]
+        public void TestRangeQueriesMissingValues(string queryString)
+        {
+            Assert.Throws(typeof(NullReferenceException), () => TestRangeQueryBody(queryString));
         }
 
         [TestCase(queryStringQuery, ExpectedResult = "where (* contains \"TEST_RESULT\")")]
@@ -201,7 +232,7 @@ namespace Tests
             return query.KQL;
         }
 
-        [TestCase(combinedQuery, ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp between (fromUnixTimeMilli(0) .. fromUnixTimeMilli(10)))\n| where (* contains \"TEST_RESULT\")")]
+        [TestCase(combinedQuery, ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))\n| where (* contains \"TEST_RESULT\")")]
         [TestCase(notQueryStringQuery, ExpectedResult = "where not (TEST_FIELD == \"TEST_RESULT_2\")\n| where (* contains \"TEST_RESULT\")")]
         public string TestCombinedQueries(string queryString)
         {
