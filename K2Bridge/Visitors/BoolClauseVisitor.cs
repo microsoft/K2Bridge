@@ -1,63 +1,56 @@
 ﻿namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
-    using System.Linq;
+    using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         private const string KQLAndKeyword = "and";
+        private const string KQLOrKeyword = "or";
         private const string KQLNotKeyword = "not";
-        private const string KQLCommandSeparator = "\n| ";
+        private const string KQLCommandSeparator = "\n| where ";
 
         public void Visit(BoolClause boolClause)
         {
-            // TODO: the following can be more generic (need to account for Should/Or)
-            List<string> mustKQLExpressions = new List<string>();
-
-            foreach (dynamic leafQuery in boolClause.Must.Where(q => !(q is QueryStringQuery)))
-            {
-                if (leafQuery == null)
-                {
-                    // probably deser. problem
-                    continue;
-                }
-
-                leafQuery.Accept(this);
-                mustKQLExpressions.Add($"({leafQuery.KQL})");
-            }
-
-            List<string> mustNotKQLExpressions = new List<string>();
-
-            foreach (dynamic leafQuery in boolClause.MustNot)
-            {
-                if (leafQuery == null)
-                {
-                    // probably deser. problem
-                    continue;
-                }
-
-                leafQuery.Accept(this);
-                mustNotKQLExpressions.Add($"{KQLNotKeyword} ({leafQuery.KQL})");
-            }
-
-            this.KQLListToString(mustKQLExpressions, KQLAndKeyword, boolClause);
-            this.KQLListToString(mustNotKQLExpressions, KQLAndKeyword, boolClause);
-
-            QueryStringQuery queryString = (QueryStringQuery)boolClause.Must.Where(q => q is QueryStringQuery).SingleOrDefault();
-
-            if (queryString != null)
-            {
-                queryString.Accept(this);
-                if (!string.IsNullOrEmpty(boolClause.KQL))
-                {
-                    boolClause.KQL += KQLCommandSeparator;
-                }
-
-                boolClause.KQL += queryString.KQL;
-            }
+            AddListInternal(boolClause.Must, KQLAndKeyword, false /* positive */, boolClause);
+            AddListInternal(boolClause.MustNot, KQLAndKeyword, true /* negative */, boolClause);
+            AddListInternal(boolClause.Should, KQLOrKeyword, false /* positive */, boolClause);
+            AddListInternal(boolClause.ShouldNot, KQLOrKeyword, true /* negative */, boolClause);
         }
 
+        /// <summary>
+        /// Create a list of clauses of a specific type (must / must not / should / should not)
+        /// </summary>
+        private void AddListInternal(IEnumerable<IQueryClause> lst, string delimiterKeyword, bool negativeCondition, BoolClause boolClause)
+        {
+            var kqlExpressions = new List<string>();
+
+            foreach (dynamic leafQuery in lst)
+            {
+                if (leafQuery == null)
+                {
+                    // probably deserialization problem
+                    continue;
+                }
+
+                leafQuery.Accept(this);
+                if (negativeCondition)
+                {
+                    kqlExpressions.Add($"{KQLNotKeyword} ({leafQuery.KQL})");
+                }
+                else
+                {
+                    kqlExpressions.Add($"({leafQuery.KQL})");
+                }
+            }
+
+            this.KQLListToString(kqlExpressions, delimiterKeyword, boolClause);
+        }
+
+        /// <summary>
+        /// Joins the list of kql commands and modifies the given BoolClause
+        /// </summary>
         private void KQLListToString(List<string> kqlList, string joinString, BoolClause boolClause)
         {
             joinString = $" {joinString} ";
@@ -69,7 +62,7 @@
                     boolClause.KQL += KQLCommandSeparator;
                 }
 
-                boolClause.KQL += $"where {string.Join(joinString, kqlList)}";
+                boolClause.KQL += $"{string.Join(joinString, kqlList)}";
             }
         }
     }

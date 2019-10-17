@@ -3,15 +3,16 @@
     using System.Collections.Generic;
     using K2Bridge.Models.Request;
     using K2Bridge.Visitors;
-    using Newtonsoft.Json;
 
-    internal class BoolClause : KQLBase, IVisitable
+    internal class BoolClause : KQLBase, IVisitable, IQueryClause
     {
-        [JsonProperty("must")]
-        public List<LeafQueryClause> Must { get; set; }
+        public IEnumerable<IQueryClause> Must { get; set; }
 
-        [JsonProperty("must_not")]
-        public List<LeafQueryClause> MustNot { get; set; }
+        public IEnumerable<IQueryClause> MustNot { get; set; }
+
+        public IEnumerable<IQueryClause> Should { get; set; }
+
+        public IEnumerable<IQueryClause> ShouldNot { get; set; }
 
         public void Accept(IVisitor visitor)
         {

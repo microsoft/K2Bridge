@@ -12,7 +12,6 @@
             List<string> phraseList = this.Parse(queryStringQuery.Phrase);
             if (phraseList != null)
             {
-                queryStringQuery.KQL = "where ";
                 foreach (var match in phraseList)
                 {
                     if (match.Equals("or") || match.Equals("and"))
@@ -25,7 +24,7 @@
                     }
                     else
                     {
-                        queryStringQuery.KQL += $"(* contains {match})";
+                        queryStringQuery.KQL += $"* contains {match}";
                     }
                 }
             }

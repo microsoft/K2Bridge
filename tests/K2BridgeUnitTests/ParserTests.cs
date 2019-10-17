@@ -232,8 +232,8 @@ namespace Tests
             return query.KQL;
         }
 
-        [TestCase(combinedQuery, ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))\n| where (* contains \"TEST_RESULT\")")]
-        [TestCase(notQueryStringQuery, ExpectedResult = "where not (TEST_FIELD == \"TEST_RESULT_2\")\n| where (* contains \"TEST_RESULT\")")]
+        [TestCase(combinedQuery, ExpectedResult = "where (* contains \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
+        [TestCase(notQueryStringQuery, ExpectedResult = "where (* contains \"TEST_RESULT\")\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);

@@ -156,7 +156,7 @@
         {
             if (elasticJsonObject.Type != k2JsonObject.Type)
             {
-                this.logger.LogError($"Incconsistent type: {elasticJsonObject.Path}, e.Type ({elasticJsonObject.Type.ToString()}) != k2.Type({k2JsonObject.Type.ToString()})");
+                this.logger.LogError($"Inconsistent type: {elasticJsonObject.Path}, e.Type ({elasticJsonObject.Type.ToString()}) != k2.Type({k2JsonObject.Type.ToString()})");
             }
 
             var eValue = elasticJsonObject.TokenToString();
@@ -176,7 +176,7 @@
                     k2Value = k2Value.Substring(0, 50);
                 }
 
-                this.logger.LogError($"Incconsistent value:{elasticJsonObject.Path}, e.Value({eValue}) != k2.Value({k2Value})");
+                this.logger.LogError($"Inconsistent value:{elasticJsonObject.Path}, e.Value({eValue}) != k2.Value({k2Value})");
             }
 
             return;

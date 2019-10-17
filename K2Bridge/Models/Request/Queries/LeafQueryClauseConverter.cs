@@ -15,16 +15,16 @@
             switch (first.Name)
             {
                 case "match_phrase":
-                    var match = first.Value.ToObject<MatchPhraseQuery>(serializer);
-                    return match;
+                    return first.Value.ToObject<MatchPhraseQuery>(serializer);
 
                 case "range":
-                    var range = first.Value.ToObject<RangeQuery>(serializer);
-                    return range;
+                    return first.Value.ToObject<RangeQuery>(serializer);
 
                 case "query_string":
-                    var search = jo.ToObject<QueryStringQuery>(serializer);
-                    return search;
+                    return jo.ToObject<QueryStringQuery>(serializer);
+
+                case "bool":
+                    return ((JProperty)jo.First).Value.ToObject<BoolClause>(serializer);
 
                 default:
                     return null;

@@ -12,12 +12,24 @@
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            var obj = new MatchPhraseQuery
+            if (first.First.GetType() == typeof(JObject))
             {
-                FieldName = first.Name,
-                Phrase = (string)first.First["query"],
-            };
-            return obj;
+                var obj = new MatchPhraseQuery
+                {
+                    FieldName = first.Name,
+                    Phrase = (string)first.First["query"],
+                };
+                return obj;
+            }
+            else
+            {
+                var obj = new MatchPhraseQuery
+                {
+                    FieldName = first.Name,
+                    Phrase = (string)((JValue)first.First).Value,
+                };
+                return obj;
+            }
         }
     }
 }
