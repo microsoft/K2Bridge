@@ -17,6 +17,23 @@ See the Installation document
 
 Running Kibana and KibanaKustoBridge locally for testing and development, see [here](./docs/development.md)
 
+### Run on Azure Kubernetes Service
+
+```sh
+
+CONTAINER_NAME=[CONTAINER_NAME]
+REPOSITORY_NAME=[YOU_REPO_NAME]
+
+docker build -t $CONTAINER_NAME .
+docker tag $CONTAINER_NAME $REPOSITORY_NAME/$CONTAINER_NAME
+docker push $CONTAINER_NAME $REPOSITORY_NAME/$CONTAINER_NAME
+
+
+helmv3 upgrade -i [RELEASE_NAME] charts/k2bridge --wait --namespace [NAMESPACE_NAME] --set image.repository=$CONTAINER_NAME $REPOSITORY_NAME/$CONTAINER_NAME
+
+Note: To run on other kubernetes providers, change value.yaml elasticsearch storage class to fit the one suggested by the provider. 
+```
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

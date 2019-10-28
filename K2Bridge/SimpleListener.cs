@@ -80,7 +80,8 @@
             }
 
             listener.Start();
-            this.logger.LogInformation("Proxy is Listening...");
+            this.logger.LogInformation($"Proxy is Listening on {listener.Prefixes.Aggregate((s1, s2) => $"{s1};{s2}")}...");
+            this.logger.LogInformation($"Remote elasticsearch is at {this.remoteEndpoint}");
             this.logger.LogInformation("Press Ctrl+C to exit.");
 
             while (true)

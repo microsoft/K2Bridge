@@ -20,6 +20,7 @@ namespace K2Bridge
             IConfigurationRoot config = new ConfigurationBuilder()
                 .AddJsonFile(ConfigFileName, false, true)
                 .AddJsonFile(LocalConfigFileName, true, true) // Optional for local development
+                .AddEnvironmentVariables()
                 .Build();
 
             // initialize logger
