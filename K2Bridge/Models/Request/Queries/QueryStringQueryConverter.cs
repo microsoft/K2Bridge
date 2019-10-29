@@ -9,15 +9,13 @@
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
-            var first = (JProperty)jo.First;
+            JToken jt = JToken.Load(reader);
 
             var obj = new QueryStringQuery
             {
-                FieldName = first.Name,
-                Phrase = (string)first.First["query"],
-                Wildcard = (bool)first.First["analyze_wildcard"],
-                Default = (string)first.First["default_field"],
+                Phrase = (string)jt.First["query"],
+                Wildcard = (bool)jt.First["analyze_wildcard"],
+                Default = (string)jt.First["default_field"],
             };
 
             return obj;

@@ -21,7 +21,7 @@
                     return first.Value.ToObject<RangeQuery>(serializer);
 
                 case "query_string":
-                    return jo.ToObject<QueryStringQuery>(serializer);
+                    return first.ToObject<QueryStringQuery>(serializer);
 
                 case "bool":
                     return ((JProperty)jo.First).Value.ToObject<BoolClause>(serializer);

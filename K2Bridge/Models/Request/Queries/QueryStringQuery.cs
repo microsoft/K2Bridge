@@ -7,8 +7,6 @@
     [JsonConverter(typeof(QueryStringQueryConverter))]
     internal class QueryStringQuery : LeafQueryClause, IVisitable
     {
-        public string FieldName { get; set; }
-
         public string Phrase { get; set; }
 
         public bool Wildcard { get; set; }
