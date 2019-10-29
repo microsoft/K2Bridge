@@ -223,7 +223,7 @@ namespace Tests
             Assert.Throws(typeof(NullReferenceException), () => TestRangeQueryBody(queryString));
         }
 
-        [TestCase(queryStringQuery, ExpectedResult = "where (* contains \"TEST_RESULT\")")]
+        [TestCase(queryStringQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\"))")]
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -232,8 +232,8 @@ namespace Tests
             return query.KQL;
         }
 
-        [TestCase(combinedQuery, ExpectedResult = "where (* contains \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
-        [TestCase(notQueryStringQuery, ExpectedResult = "where (* contains \"TEST_RESULT\")\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
+        [TestCase(combinedQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\")) and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
+        [TestCase(notQueryStringQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\"))\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
