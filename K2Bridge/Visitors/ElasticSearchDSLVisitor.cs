@@ -10,9 +10,15 @@
         {
             var kqlSB = new StringBuilder();
 
+            kqlSB.Append("let fromUnixTimeMilli = (t:long) { datetime(1970 - 01 - 01) + t * 1millisec};").Append('\n');
+
             // base query
             elasticSearchDSL.Query.Accept(this);
-            kqlSB.Append($"let _data = materialize({elasticSearchDSL.IndexName} | {elasticSearchDSL.Query.KQL});");
+
+            // when an index-pattern doesn't have a default time filter the query element can be empty
+            var kqlQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KQL) ? $"| {elasticSearchDSL.Query.KQL}" : string.Empty;
+
+            kqlSB.Append($"let _data = materialize({elasticSearchDSL.IndexName} {kqlQueryExpression});");
 
             // aggregations
             // TODO: procress the entire list

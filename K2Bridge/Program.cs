@@ -2,6 +2,7 @@
 
 namespace K2Bridge
 {
+    using System;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.Visitors;
@@ -16,6 +17,12 @@ namespace K2Bridge
 
         public static void Main(string[] args)
         {
+            // Version notice
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("***** ALPHA VERSION. MICROSOFT INTERNAL ONLY! *****");
+            Console.ResetColor();
+
             // initialize configuration
             IConfigurationRoot config = new ConfigurationBuilder()
                 .AddJsonFile(ConfigFileName, false, true)

@@ -151,10 +151,11 @@
 
                             string body = this.GetRequestBody(request, requestInputStream);
 
-                            // the body is in NDJson. TODO: probably there's a better way to do this...
+                            // The body is in NDJson
                             string[] lines = body.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                             // TODO: add ability to handle multiple queries
+                            // https://dev.azure.com/csedevil/K2-bridge-internal/_backlogs/backlog/K2-bridge-internal%20Team/Stories/?workitem=1172
                             this.logger.LogDebug($"Elastic search request:\n{lines[0]}\n{lines[1]}");
 
                             var translatedResponse = this.translator.Translate(lines[0], lines[1]);
