@@ -35,7 +35,7 @@ namespace K2Bridge.Models
             new ListenerDetails(
                 new string[] { config["bridgeListenerAddress"] },
                 config["remoteElasticAddress"],
-                bool.Parse(config["isCompareResponse"]),
-                bool.Parse(config["isHandleMetadata"]));
+                bool.Parse(config["isCompareResponse"] ?? "false"),
+                bool.Parse(config["isHandleMetadata"] ?? "true"));
     }
 }
