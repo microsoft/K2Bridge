@@ -43,7 +43,7 @@ namespace K2Bridge
                 .AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(config))
                 .AddScoped<ListenerDetails>(s => ListenerDetails.MakeFromConfiguration(config))
                 .AddTransient<ITranslator, QueryTranslator>()
-                .AddTransient<IQueryExecutor, KustoManager>()
+                .AddSingleton<IQueryExecutor, KustoManager>()
                 .AddTransient<IVisitor, ElasticSearchDSLVisitor>()
                 .AddTransient<SimpleListener>()
                 .BuildServiceProvider();
