@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Net;
     using System.Text;
+    using Flurl;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
@@ -258,7 +259,7 @@
             {
                 string[] bodylessMethods = { "GET", "HEAD" };
 
-                var requestString = $"{remoteEndpoint}{request.RawUrl}";
+                var requestString = Url.Combine(remoteEndpoint, request.RawUrl);
                 var remoteRequest = WebRequest.Create(requestString) as HttpWebRequest;
                 remoteRequest.AllowAutoRedirect = false;
                 remoteRequest.KeepAlive = request.KeepAlive;
