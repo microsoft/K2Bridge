@@ -6,6 +6,14 @@
     {
         public void Visit(MatchPhraseQuery matchPhraseQuery)
         {
+            // Must have a field name
+            if ((matchPhraseQuery.FieldName == null) ||
+                    string.IsNullOrEmpty(matchPhraseQuery.FieldName))
+            {
+                matchPhraseQuery.KQL = string.Empty;
+                return;
+            }
+
             matchPhraseQuery.KQL = $"{matchPhraseQuery.FieldName} == \"{matchPhraseQuery.Phrase}\"";
         }
     }

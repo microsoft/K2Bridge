@@ -192,8 +192,10 @@ namespace Tests
                 }
             }";
 
-        [TestCase(queryMatchPhraseSingle, ExpectedResult ="where (TEST_FIELD == \"TEST_RESULT\")")]
-        [TestCase(queryMatchPhraseMulti, ExpectedResult ="where (TEST_FIELD == \"TEST_RESULT\") and (TEST_FIELD_2 == \"TEST_RESULT_2\")")]
+        [TestCase(queryMatchPhraseSingle,
+            ExpectedResult ="where (TEST_FIELD == \"TEST_RESULT\")")]
+        [TestCase(queryMatchPhraseMulti,
+            ExpectedResult ="where (TEST_FIELD == \"TEST_RESULT\") and (TEST_FIELD_2 == \"TEST_RESULT_2\")")]
         public string TestMatchPhraseQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -210,8 +212,10 @@ namespace Tests
             return query.KQL;
         }
 
-        [TestCase(queryTimestampRangeSingle, ExpectedResult ="where (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
-        [TestCase(queryBetweenRangeSingle, ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)")]
+        [TestCase(queryTimestampRangeSingle,
+            ExpectedResult ="where (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
+        [TestCase(queryBetweenRangeSingle,
+            ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)")]
         public string TestRangeQueries(string queryString)
         {
             return TestRangeQueryBody(queryString);

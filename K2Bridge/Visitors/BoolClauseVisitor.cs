@@ -24,6 +24,8 @@
         /// </summary>
         private void AddListInternal(IEnumerable<IQueryClause> lst, string delimiterKeyword, bool negativeCondition, BoolClause boolClause)
         {
+            if (lst == null) return;
+
             var kqlExpressions = new List<string>();
 
             foreach (dynamic leafQuery in lst)

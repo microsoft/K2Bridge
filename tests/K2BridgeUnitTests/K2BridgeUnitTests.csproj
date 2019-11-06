@@ -20,4 +20,7 @@
     <ProjectReference Include="..\..\K2Bridge\K2Bridge.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Visitors\" />
+  </ItemGroup>
 </Project>
