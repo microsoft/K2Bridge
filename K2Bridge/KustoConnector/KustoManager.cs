@@ -12,6 +12,7 @@
 
     internal class KustoManager : IQueryExecutor
     {
+        private const string KustoApplicationNameForTracing = "K2Bridge";
         private readonly ICslQueryProvider queryClient;
         private readonly ICslAdminProvider adminClient;
         private readonly ILogger<KustoManager> logger;
@@ -27,6 +28,9 @@
                     connectionDetails.KustoAadClientId,
                     connectionDetails.KustoAadClientSecret,
                     connectionDetails.KustoAadTenantId);
+
+            conn.ApplicationNameForTracing = KustoApplicationNameForTracing;
+            conn.ClientVersionForTracing = typeof(KustoManager).Assembly.GetName().Version.ToString();
 
             this.queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             this.adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
