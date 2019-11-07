@@ -14,6 +14,9 @@
 
             switch (first.Name)
             {
+                case "exists":
+                    return first.Value.ToObject<ExistsQuery>(serializer);
+
                 case "match_phrase":
                     return first.Value.ToObject<MatchPhraseQuery>(serializer);
 

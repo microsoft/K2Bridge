@@ -6,6 +6,8 @@
 
     internal interface IVisitor
     {
+        void Visit(ExistsQuery existsQuery);
+
         void Visit(MatchPhraseQuery matchPhraseQuery);
 
         void Visit(Query query);

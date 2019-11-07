@@ -9,7 +9,24 @@ namespace Tests
     [TestFixture]
     public class TestParseElasticToKql
     {
-        
+
+        const string queryExists = @"
+            {""bool"":
+                {""must"":
+                    [
+                        {""exists"": {
+                            ""field"": ""TEST_FIELD""}
+                        }
+                    ],
+                    ""filter"":
+                    [
+                        {""match_all"":{}}
+                    ],
+                    ""should"":[],
+                    ""must_not"":[]
+                }
+            }";
+
         const string queryMatchPhraseSingle =  @"
             {""bool"":
                 {""must"":
@@ -203,7 +220,17 @@ namespace Tests
             query.Accept(visitor);
             return query.KQL;
         }
-        
+
+        [TestCase(queryExists,
+            ExpectedResult = "where (isnotnull(TEST_FIELD))")]
+           public string TestExistsQueries(string queryString)
+        {
+            var query = JsonConvert.DeserializeObject<Query>(queryString);
+            var visitor = new ElasticSearchDSLVisitor();
+            query.Accept(visitor);
+            return query.KQL;
+        }
+
         private string TestRangeQueryBody(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
