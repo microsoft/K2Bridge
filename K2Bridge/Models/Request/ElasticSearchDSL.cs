@@ -25,6 +25,11 @@
         [JsonProperty("aggs")]
         public Dictionary<string, Aggregation> Aggregations { get; set; }
 
+        [JsonProperty("highlight")]
+        public Highlight Highlight { get; set; }
+
+        public Dictionary<string, string> HighlightText { get; set; }
+
         public string IndexName { get; set; }
 
         public void Accept(IVisitor visitor)

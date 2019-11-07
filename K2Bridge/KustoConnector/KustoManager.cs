@@ -47,7 +47,7 @@
                 ElasticResponse response;
                 try
                 {
-                    response = ReadResponse(queryData.IndexName, reader);
+                    response = ReadResponse(queryData, reader);
                 }
                 catch (Exception e)
                 {
@@ -62,7 +62,7 @@
             }
         }
 
-        private static ElasticResponse ReadResponse(string indexName, IDataReader reader)
+        private static ElasticResponse ReadResponse(QueryData query, IDataReader reader)
         {
             var response = new ElasticResponse();
             int tableOrdinal = 0;
@@ -79,7 +79,7 @@
 
                         break;
                     case 1:
-                        foreach (var hit in reader.ReadHits(indexName))
+                        foreach (var hit in reader.ReadHits(query))
                         {
                             response.AddHit(hit);
                         }

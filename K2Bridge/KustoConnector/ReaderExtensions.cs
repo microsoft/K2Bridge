@@ -23,11 +23,11 @@
 
         private static Random random = new Random();
 
-        internal static IEnumerable<Hit> ReadHits(this IDataReader reader, string indexName)
+        internal static IEnumerable<Hit> ReadHits(this IDataReader reader, QueryData query)
         {
             while (reader.Read())
             {
-                var hit = Hit.Create((IDataRecord)reader, indexName);
+                var hit = Hit.Create((IDataRecord)reader, query);
                 hit.Id = random.Next().ToString();
                 yield return hit;
             }

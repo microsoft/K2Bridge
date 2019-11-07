@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using K2Bridge.Models.Response;
+using K2Bridge;
 
 namespace Tests
 {
@@ -14,6 +15,7 @@ namespace Tests
     public partial class ElasticResponseTests
     {
         private const string HIT_TEST_ID = "999";
+        private QueryData query = new QueryData("_kql", "_index", null);
 
         [TestCase(ExpectedResult = "{\"responses\":[{\"took\":1,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"aggregations\":{\"2\":{\"buckets\":[]}},\"status\":200}]}")]
         public string DefaultResponseHasExpectedElasticProperties()
@@ -24,7 +26,7 @@ namespace Tests
             return serializedResponse;
         }
 
-        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{}}")]
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{},\"highlight\":{}}")]
         public string ResponseWithEmptyHitHasExpectedElasticProperties()
         {
 
@@ -33,12 +35,12 @@ namespace Tests
                     new Dictionary<string, object>{
                     }
                 });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
 
             return JsonConvert.SerializeObject(SetRandomProperties(response).First());
         }
 
-        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"}}")]
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"highlight\":{}}")]
         public string ResponseWithSingleHitHasHasAllFieldsInSource()
         {
 
@@ -50,13 +52,13 @@ namespace Tests
                         {"somefield3", "somevalue3"}
                     }
                 });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             return JsonConvert.SerializeObject(SetRandomProperties(response).First());
         }
 
         [TestCase(ExpectedResult = new[]{
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"}}", 
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield4\":\"somevalue4\",\"somefield5\":\"somevalue5\",\"somefield6\":\"somevalue6\"}}"})]
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"highlight\":{}}", 
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield4\":\"somevalue4\",\"somefield5\":\"somevalue5\",\"somefield6\":\"somevalue6\"},\"highlight\":{}}"})]
         public string[] ResponseWithMultipleHitHasHasAllFieldsInSource()
         {
             var reader = new TestDataReader(
@@ -72,7 +74,7 @@ namespace Tests
                         {"somefield6", "somevalue6"}
                     }
             });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
 
             return SetRandomProperties(response).Select(r =>JsonConvert.SerializeObject(r)).ToArray();
         }
@@ -87,7 +89,7 @@ namespace Tests
                         {"somefield1", (decimal)2}
                     }
             });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -100,7 +102,7 @@ namespace Tests
                         {"somefield1", (sbyte)0}
                     }
             });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -113,7 +115,7 @@ namespace Tests
                         {"somefield1", false}
                     }
             });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -126,7 +128,7 @@ namespace Tests
                         {"somefield1", 1}
                     }
             });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -139,7 +141,7 @@ namespace Tests
                         {"somefield1", DateTime.Now}
                     }
             });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -152,7 +154,7 @@ namespace Tests
                         {"somefield1", "somevalue1"}
                     }
             });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -165,7 +167,7 @@ namespace Tests
                         {"somefield1", DBNull.Value}
                     }
             });
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -194,7 +196,7 @@ namespace Tests
                         }                    
                 });
             
-            var response = reader.ReadHits("_index");
+            var response = reader.ReadHits(query);
             var hash = new Dictionary<string, int>();
             foreach(var hit in response){
                 if (hash.ContainsKey(hit.Id))
