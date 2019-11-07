@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29020.237
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "K2Bridge", "K2Bridge\K2Bridge.csproj", "{F1641EEA-CA25-4FF3-9786-F823202EF7B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K2Bridge", "K2Bridge\K2Bridge.csproj", "{F1641EEA-CA25-4FF3-9786-F823202EF7B1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{44B06D40-F904-4106-ABAC-106726BBDA8C}"
 	ProjectSection(SolutionItems) = preProject
@@ -38,6 +38,5 @@ Global
 		SolutionGuid = {E55E11EA-AB0F-4280-943D-F6F1EC519DFB}
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B0752370-5A8B-40CF-B5C3-30E47A0CE316} = {43C8702D-4207-481D-AC51-EE1241A0AA17}
 	EndGlobalSection
 EndGlobal
