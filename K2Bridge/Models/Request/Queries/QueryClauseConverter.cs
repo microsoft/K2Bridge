@@ -26,7 +26,7 @@
             }
 
             // Its really a leaf
-            var leaf = jo.ToObject<LeafQueryClause>(serializer);
+            var leaf = jo.ToObject<ILeafQueryClause>(serializer);
             return leaf;
         }
 

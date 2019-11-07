@@ -5,7 +5,7 @@
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(QueryStringQueryConverter))]
-    internal class QueryStringQuery : LeafQueryClause, IVisitable
+    internal class QueryStringQuery : KQLBase, ILeafQueryClause, IVisitable
     {
         public string Phrase { get; set; }
 

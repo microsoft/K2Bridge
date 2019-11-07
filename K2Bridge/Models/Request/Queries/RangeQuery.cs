@@ -5,7 +5,7 @@
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(RangeQueryConverter))]
-    internal class RangeQuery : LeafQueryClause, IVisitable
+    internal class RangeQuery : KQLBase, ILeafQueryClause, IVisitable
     {
         public string FieldName { get; set; }
 

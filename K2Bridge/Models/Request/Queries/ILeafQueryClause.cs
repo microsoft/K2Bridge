@@ -4,7 +4,8 @@
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(LeafQueryClauseConverter))]
-    internal abstract class LeafQueryClause : KQLBase, IQueryClause
+    internal interface ILeafQueryClause : IQueryClause
     {
+        string KQL { get; set; }
     }
 }

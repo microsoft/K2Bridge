@@ -18,7 +18,7 @@ namespace VisitorsTests
 
         private IEnumerable<IQueryClause> CreateSimpleLeafList(IEnumerable<string> values)
         {
-            var lst = new LinkedList<LeafQueryClause>();
+            var lst = new LinkedList<ILeafQueryClause>();
 
             foreach (var value in values)
             {
@@ -29,7 +29,7 @@ namespace VisitorsTests
 
                 lst.AddLast(item);
             }
-            
+
             return lst;
         }
 
@@ -99,7 +99,7 @@ namespace VisitorsTests
 
             var boolClause = new BoolClause
             {
-                 Must = CreateSimpleLeafList(lst)
+                Must = CreateSimpleLeafList(lst)
             };
 
             var visitor = new ElasticSearchDSLVisitor();

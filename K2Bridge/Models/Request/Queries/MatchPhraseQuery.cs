@@ -5,7 +5,7 @@
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(MatchPhraseQueryConverter))]
-    internal class MatchPhraseQuery : LeafQueryClause, IVisitable
+    internal class MatchPhraseQuery : KQLBase, IVisitable, ILeafQueryClause
     {
         public string FieldName { get; set; }
 
