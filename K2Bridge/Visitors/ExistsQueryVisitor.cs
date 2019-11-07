@@ -5,7 +5,7 @@
     {
         public void Visit(ExistsQuery existsQuery)
         {
-            existsQuery.KQL = $"isnotnull({existsQuery.FieldName})";
+            existsQuery.KQL = $"{KQLOperators.IsNotNull}({existsQuery.FieldName})";
         }
     }
 }

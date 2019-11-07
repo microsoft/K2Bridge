@@ -6,17 +6,12 @@
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        private const string KQLAndKeyword = "and";
-        private const string KQLOrKeyword = "or";
-        private const string KQLNotKeyword = "not";
-        private const string KQLCommandSeparator = "\n| where ";
-
         public void Visit(BoolClause boolClause)
         {
-            AddListInternal(boolClause.Must, KQLAndKeyword, false /* positive */, boolClause);
-            AddListInternal(boolClause.MustNot, KQLAndKeyword, true /* negative */, boolClause);
-            AddListInternal(boolClause.Should, KQLOrKeyword, false /* positive */, boolClause);
-            AddListInternal(boolClause.ShouldNot, KQLOrKeyword, true /* negative */, boolClause);
+            AddListInternal(boolClause.Must, KQLOperators.And, false /* positive */, boolClause);
+            AddListInternal(boolClause.MustNot, KQLOperators.And, true /* negative */, boolClause);
+            AddListInternal(boolClause.Should, KQLOperators.Or, false /* positive */, boolClause);
+            AddListInternal(boolClause.ShouldNot, KQLOperators.Or, true /* negative */, boolClause);
         }
 
         /// <summary>
@@ -39,7 +34,7 @@
                 leafQuery.Accept(this);
                 if (negativeCondition)
                 {
-                    kqlExpressions.Add($"{KQLNotKeyword} ({leafQuery.KQL})");
+                    kqlExpressions.Add($"{KQLOperators.Not} ({leafQuery.KQL})");
                 }
                 else
                 {
@@ -61,7 +56,9 @@
             {
                 if (!string.IsNullOrEmpty(boolClause.KQL))
                 {
-                    boolClause.KQL += KQLCommandSeparator;
+                    boolClause.KQL += KQLOperators.CommandSeparator;
+                    boolClause.KQL += KQLOperators.Where;
+                    boolClause.KQL += " ";
                 }
 
                 boolClause.KQL += $"{string.Join(joinString, kqlList)}";

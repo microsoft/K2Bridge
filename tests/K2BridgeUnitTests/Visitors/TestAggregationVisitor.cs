@@ -11,7 +11,7 @@ namespace VisitorsTests
     public class TestAggregationVisitor
     {
         [TestCase(ExpectedResult = null)]
-        public string AggregationHasNoPrimary_DoesNotSetQuery()
+        public string TestMetricAggregationHasNoPrimary()
         {
             var aggregateClause = new Aggregation();
 
@@ -21,12 +21,12 @@ namespace VisitorsTests
             return aggregateClause.KQL;
         }
 
-        [TestCase(ExpectedResult = "avg(wibble)")]
-        public string AggregationWithPrimary_GeneratesQuery()
+        [TestCase(ExpectedResult = "avg(fieldA)")]
+        public string TestMetricAggregationWithPrimary_Avg()
         {
             var aggregateClause = new Aggregation()
             {
-                PrimaryAggregation = new Avg() { FieldName = "wibble" }
+                PrimaryAggregation = new Avg() { FieldName = "fieldA" }
             };
 
             var visitor = new ElasticSearchDSLVisitor();
@@ -35,15 +35,48 @@ namespace VisitorsTests
             return aggregateClause.KQL;
         }
 
-        [TestCase(ExpectedResult = "avg(bibble), avg(wibble)")]
-        public string AggregationWithSubAggregates_GeneratesQuery()
+        [TestCase(ExpectedResult = "avg(fieldB), avg(fieldA)")]
+        public string TestMetricAggregationWithSubAggregates_Avg()
         {
             var aggregateClause = new Aggregation()
             {
-                PrimaryAggregation = new Avg() { FieldName = "wibble" },
+                PrimaryAggregation = new Avg() { FieldName = "fieldA" },
                 SubAggregations = new Dictionary<string, Aggregation>
                 {
-                    { "wobble", new Aggregation() { PrimaryAggregation = new Avg { FieldName = "bibble" } } }
+                    { "sub", new Aggregation() { PrimaryAggregation = new Avg { FieldName = "fieldB" } } }
+                }
+            };
+
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KQL;
+        }
+
+
+        [TestCase(ExpectedResult = "dcount(fieldA)")]
+        public string TestMetricAggregation_Cardinality()
+        {
+            var aggregateClause = new Aggregation()
+            {
+                PrimaryAggregation = new Cardinality() { FieldName = "fieldA" }
+            };
+
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KQL;
+        }
+
+        [TestCase(ExpectedResult = "dcount(fieldB), dcount(fieldA)")]
+        public string TestMetricAggregationWithSubAggregates_DCount()
+        {
+            var aggregateClause = new Aggregation()
+            {
+                PrimaryAggregation = new Cardinality() { FieldName = "fieldA" },
+                SubAggregations = new Dictionary<string, Aggregation>
+                {
+                    { "sub", new Aggregation() { PrimaryAggregation = new Cardinality { FieldName = "fieldB" } } }
                 }
             };
 

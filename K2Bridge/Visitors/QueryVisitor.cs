@@ -7,7 +7,7 @@
         public void Visit(Query query)
         {
             query.Bool.Accept(this);
-            query.KQL = !string.IsNullOrEmpty(query.Bool.KQL) ? $"where {query.Bool.KQL}" : string.Empty;
+            query.KQL = !string.IsNullOrEmpty(query.Bool.KQL) ? $"{KQLOperators.Where} {query.Bool.KQL}" : string.Empty;
       }
     }
 }

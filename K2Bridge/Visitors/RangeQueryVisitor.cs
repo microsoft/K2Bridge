@@ -20,7 +20,7 @@
                     throw new NullReferenceException("RangeQuery LTE value is null");
                 }
 
-                rangeQuery.KQL = $"{rangeQuery.FieldName} >= fromUnixTimeMilli({rangeQuery.GTEValue}) and {rangeQuery.FieldName} <= fromUnixTimeMilli({rangeQuery.LTEValue})";
+                rangeQuery.KQL = $"{rangeQuery.FieldName} >= fromUnixTimeMilli({rangeQuery.GTEValue}) {KQLOperators.And} {rangeQuery.FieldName} <= fromUnixTimeMilli({rangeQuery.LTEValue})";
             }
             else
             {

@@ -6,12 +6,12 @@
     {
         public void Visit(Avg avg)
         {
-            avg.KQL = $"avg({avg.FieldName})";
+            avg.KQL = $"{KQLOperators.Avg}({avg.FieldName})";
         }
 
         public void Visit(Cardinality cardinality)
         {
-            cardinality.KQL = $"dcount({cardinality.FieldName})";
+            cardinality.KQL = $"{KQLOperators.DCount}({cardinality.FieldName})";
         }
     }
 }

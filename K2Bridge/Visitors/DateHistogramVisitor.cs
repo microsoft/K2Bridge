@@ -13,17 +13,17 @@ namespace K2Bridge.Visitors
                 switch (period)
                 {
                     case 'w':
-                        dateHistogram.KQL += $"startofweek({dateHistogram.FieldName})";
+                        dateHistogram.KQL += $"{KQLOperators.StartOfWeek}({dateHistogram.FieldName})";
                         break;
                     case 'M':
-                        dateHistogram.KQL += $"startofmonth({dateHistogram.FieldName})";
+                        dateHistogram.KQL += $"{KQLOperators.StartOfMonth}({dateHistogram.FieldName})";
                         break;
                     case 'y':
-                        dateHistogram.KQL += $"startofyear({dateHistogram.FieldName})";
+                        dateHistogram.KQL += $"{KQLOperators.StartOfYear}({dateHistogram.FieldName})";
                         break;
                     default:
                         // todatetime is redundent but we'll keep it for now
-                        dateHistogram.KQL += $"bin(todatetime({dateHistogram.FieldName}), {dateHistogram.Interval})";
+                        dateHistogram.KQL += $"bin({KQLOperators.ToDateTime}({dateHistogram.FieldName}), {dateHistogram.Interval})";
                         break;
                 }
             }
@@ -33,7 +33,7 @@ namespace K2Bridge.Visitors
             }
 
             // todatetime is redundent but we'll keep it for now
-            dateHistogram.KQL += $" | order by todatetime({dateHistogram.FieldName}) asc";
+            dateHistogram.KQL += $" | {KQLOperators.OrderBy} {KQLOperators.ToDateTime}({dateHistogram.FieldName}) asc";
         }
     }
 }

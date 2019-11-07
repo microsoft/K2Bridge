@@ -10,7 +10,7 @@
         {
             var kqlSB = new StringBuilder();
 
-            kqlSB.Append("let fromUnixTimeMilli = (t:long) { datetime(1970 - 01 - 01) + t * 1millisec};").Append('\n');
+            kqlSB.Append($"{KQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');
 
             // base query
             elasticSearchDSL.Query.Accept(this);
@@ -18,13 +18,13 @@
             // when an index-pattern doesn't have a default time filter the query element can be empty
             var kqlQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KQL) ? $"| {elasticSearchDSL.Query.KQL}" : string.Empty;
 
-            kqlSB.Append($"let _data = materialize({elasticSearchDSL.IndexName} {kqlQueryExpression});");
+            kqlSB.Append($"{KQLOperators.Let} _data = {KQLOperators.Materialize}({elasticSearchDSL.IndexName} {kqlQueryExpression});");
 
             // aggregations
             // TODO: procress the entire list
             if (elasticSearchDSL.Aggregations != null && elasticSearchDSL.Aggregations.Count > 0)
             {
-                kqlSB.Append('\n').Append("(_data | summarize ");
+                kqlSB.Append('\n').Append($"(_data | {KQLOperators.Summarize} ");
 
                 foreach (var aggKeyPair in elasticSearchDSL.Aggregations)
                 {
@@ -56,13 +56,13 @@
 
                 if (orderingList.Count > 0)
                 {
-                    kqlSB.Append($"| order by {string.Join(", ", orderingList)} ");
+                    kqlSB.Append($"| {KQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
                 }
             }
 
             if (elasticSearchDSL.Size >= 0)
             {
-                kqlSB.Append($"| limit {elasticSearchDSL.Size} | as hits)");
+                kqlSB.Append($"| {KQLOperators.Limit} {elasticSearchDSL.Size} | as hits)");
             }
 
             elasticSearchDSL.KQL = kqlSB.ToString();

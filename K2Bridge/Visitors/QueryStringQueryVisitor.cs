@@ -24,7 +24,7 @@
                     }
                     else
                     {
-                        queryStringQuery.KQL += $"(* contains {match})";
+                        queryStringQuery.KQL += $"(* {KQLOperators.Contains} {match})";
                     }
                 }
             }
