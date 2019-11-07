@@ -15,10 +15,10 @@
             RangeQuery obj = new RangeQuery
             {
                 FieldName = first.Name,
-                GTEValue = first.First.Value<long?>("gte"),
-                GTValue = first.First.Value<long?>("gt"),
-                LTEValue = first.First.Value<long?>("lte"),
-                LTValue = first.First.Value<long?>("lt"),
+                GTEValue = first.First.Value<decimal?>("gte"),
+                GTValue = first.First.Value<decimal?>("gt"),
+                LTEValue = first.First.Value<decimal?>("lte"),
+                LTValue = first.First.Value<decimal?>("lt"),
                 Format = (string)first.First["format"],
             };
 

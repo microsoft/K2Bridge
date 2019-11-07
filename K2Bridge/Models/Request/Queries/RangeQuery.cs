@@ -9,13 +9,13 @@
     {
         public string FieldName { get; set; }
 
-        public long? GTEValue { get; set; }
+        public decimal? GTEValue { get; set; }
 
-        public long? GTValue { get; set; } // isn't created by kibana but kept here for completeness
+        public decimal? GTValue { get; set; } // isn't created by kibana but kept here for completeness
 
-        public long? LTEValue { get; set; }
+        public decimal? LTEValue { get; set; }
 
-        public long? LTValue { get; set; }
+        public decimal? LTValue { get; set; }
 
         public string Format { get; set; }
 
