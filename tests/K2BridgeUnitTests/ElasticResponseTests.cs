@@ -17,7 +17,7 @@ namespace Tests
         private const string HIT_TEST_ID = "999";
         private QueryData query = new QueryData("_kql", "_index", null);
 
-        [TestCase(ExpectedResult = "{\"responses\":[{\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"aggregations\":{\"2\":{\"buckets\":[]}},\"status\":200}]}")]
+        [TestCase(ExpectedResult = "{\"responses\":[{\"aggregations\":{\"2\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"status\":200}]}")]
         public string DefaultResponseHasExpectedElasticProperties()
         {
             var defaultResponse = new ElasticResponse();

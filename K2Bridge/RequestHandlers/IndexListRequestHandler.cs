@@ -35,13 +35,13 @@
             {
                 string indexName = this.IndexNameFromURL(rawUrl);
                 IDataReader kustoResults = this.kusto.ExecuteControlCommand($".show tables | search TableName: '{indexName}' | project TableName");
-                var response = new IndexListResponse();
+                var response = new IndexListResponseElement();
 
                 while (kustoResults.Read())
                 {
                     IDataRecord record = kustoResults;
                     var termBucket = TermBucket.Create(record);
-                    response.Aggregations.IndicesCollection.AddBucket(termBucket);
+                    response.Aggregations.IndexCollection.AddBucket(termBucket);
 
                     this.logger.LogDebug($"Found index/table: {termBucket.Key}");
                 }

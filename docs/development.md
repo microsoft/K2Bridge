@@ -21,7 +21,7 @@ dotnet test ./tests/K2BridgeUnitTests/K2BridgeUnitTests.csproj
 ```
 
 ##### Debugging Unit-tests in VS Code 
-In this mode you'll need to attache the debugger to the process.
+In this mode you'll need to attach the debugger to the process.
 1. Set environment variable:
 On Mac/Linux:
 ```

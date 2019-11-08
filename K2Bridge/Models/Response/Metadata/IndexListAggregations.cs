@@ -5,6 +5,6 @@
     internal class IndexListAggregations
     {
         [JsonProperty("indices")]
-        public BucketsCollection IndicesCollection { get; set; } = new BucketsCollection();
+        public BucketsCollection IndexCollection { get; set; } = new BucketsCollection();
     }
 }

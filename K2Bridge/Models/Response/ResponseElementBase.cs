@@ -1,14 +1,13 @@
-﻿namespace K2Bridge.Models.Response.Metadata
+namespace K2Bridge.Models.Response
 {
     using Newtonsoft.Json;
 
-    internal class IndexListResponse
+    public abstract class ResponseElementBase
     {
-        private const int TOOK = 1;
         private const int STATUS = 200;
 
         [JsonProperty("took")]
-        public int Took { get; set; } = TOOK;
+        public int TookMilliseconds { get; set; }
 
         [JsonProperty("timed_out")]
         public bool TimedOut { get; set; }
@@ -18,9 +17,6 @@
 
         [JsonProperty("hits")]
         public HitsCollection Hits { get; set; } = new HitsCollection();
-
-        [JsonProperty("aggregations")]
-        public IndexListAggregations Aggregations { get; set; } = new IndexListAggregations();
 
         [JsonProperty("status")]
         public int Status { get; set; } = STATUS;
