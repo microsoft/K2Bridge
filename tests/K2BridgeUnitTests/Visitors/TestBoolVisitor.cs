@@ -9,6 +9,13 @@ namespace VisitorsTests
     [TestFixture]
     public class TestBoolVisitor
     {
+        private string VisitQuery(BoolClause clause)
+        {
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(clause);
+            return clause.KQL;
+        }
+
         private IEnumerable<IQueryClause> CreateSimpleLeafList(string singleValue)
         {
             var lst = new LinkedList<string>();
@@ -41,9 +48,7 @@ namespace VisitorsTests
                 Must = CreateSimpleLeafList("ItemA"),
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(boolClause);
-            return boolClause.KQL;
+            return VisitQuery(boolClause);
         }
 
         [TestCase(ExpectedResult = "not ((* contains \"ItemB\"))")]
@@ -54,9 +59,7 @@ namespace VisitorsTests
                 MustNot = CreateSimpleLeafList("ItemB"),
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(boolClause);
-            return boolClause.KQL;
+            return VisitQuery(boolClause);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemC\"))")]
@@ -67,9 +70,7 @@ namespace VisitorsTests
                 Should = CreateSimpleLeafList("ItemC"),
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(boolClause);
-            return boolClause.KQL;
+            return VisitQuery(boolClause);
         }
 
         [TestCase(ExpectedResult = "not ((* contains \"ItemD\"))")]
@@ -80,9 +81,7 @@ namespace VisitorsTests
                 ShouldNot = CreateSimpleLeafList("ItemD"),
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(boolClause);
-            return boolClause.KQL;
+            return VisitQuery(boolClause);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemA1\")) and " +
@@ -102,9 +101,7 @@ namespace VisitorsTests
                 Must = CreateSimpleLeafList(lst)
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(boolClause);
-            return boolClause.KQL;
+            return VisitQuery(boolClause);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemA\"))\n| " +
@@ -121,9 +118,7 @@ namespace VisitorsTests
                 ShouldNot = CreateSimpleLeafList("ItemD")
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(boolClause);
-            return boolClause.KQL;
+            return VisitQuery(boolClause);
         }
     }
 }

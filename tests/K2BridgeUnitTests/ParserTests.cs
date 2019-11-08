@@ -1,3 +1,4 @@
+using K2Bridge;
 using K2Bridge.Models.Request.Queries;
 using K2Bridge.Visitors;
 using Newtonsoft.Json;
@@ -251,7 +252,7 @@ namespace Tests
         [TestCase(queryTimestampRangeSingleNoPair)]
         public void TestRangeQueriesMissingValues(string queryString)
         {
-            Assert.Throws(typeof(NullReferenceException), () => TestRangeQueryBody(queryString));
+            Assert.Throws(typeof(IllegalClauseException), () => TestRangeQueryBody(queryString));
         }
 
         [TestCase(queryStringQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\"))")]

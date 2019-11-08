@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using K2Bridge.Models.Request;
+using K2Bridge;
 using K2Bridge.Models.Request.Queries;
 using K2Bridge.Visitors;
 using NUnit.Framework;
@@ -9,44 +8,45 @@ namespace VisitorsTests
     [TestFixture]
     public class TestMatchPhraseVisitor
     {
+        private string VisitQuery(MatchPhraseQuery clause)
+        {
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(clause);
+            return clause.KQL;
+        }
+
+        private static MatchPhraseQuery CreateMatchPhraseClause(string fieldName, string phrase)
+        {
+            return new MatchPhraseQuery
+            {
+                FieldName = fieldName,
+                Phrase = phrase
+            };
+        }
+
         [TestCase(ExpectedResult = "MyField == \"MyPhrase\"")]
         public string TestValidMatchPhraseVisit()
         {
-            var matchPhraseQuery = new MatchPhraseQuery
-            {
-                FieldName = "MyField",
-                Phrase = "MyPhrase"
-            };
+            var matchPhraseQuery = CreateMatchPhraseClause("MyField", "MyPhrase");
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(matchPhraseQuery);
-            return matchPhraseQuery.KQL;
+            return VisitQuery(matchPhraseQuery);
         }
 
         [TestCase(ExpectedResult = "MyField == \"\"")]
         public string TestMatchPhraseWithoutPhraseVisit()
         {
-            var matchPhraseQuery = new MatchPhraseQuery
-            {
-                FieldName = "MyField",
-            };
+            var matchPhraseQuery = CreateMatchPhraseClause("MyField", null);
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(matchPhraseQuery);
-            return matchPhraseQuery.KQL;
+            return VisitQuery(matchPhraseQuery);
         }
 
-        [TestCase(ExpectedResult = "")]
-        public string TestInvalidMatchPhraseVisit()
+        [TestCase]
+        public void TestInvalidMatchPhraseVisit()
         {
-            var matchPhraseQuery = new MatchPhraseQuery
-            {
-                Phrase = "phrase",
-            };
+            var matchPhraseQuery = CreateMatchPhraseClause(null, "myPhrase");
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(matchPhraseQuery);
-            return matchPhraseQuery.KQL;
+
+            Assert.Throws(typeof(IllegalClauseException), () => VisitQuery(matchPhraseQuery));
         }
     }
 }

@@ -6,6 +6,12 @@
     {
         public void Visit(SortClause sortClause)
         {
+            if (string.IsNullOrEmpty(sortClause.FieldName))
+            {
+                throw new IllegalClauseException(
+                    "SortClause must have a valid FieldName property");
+            }
+
             if (sortClause.FieldName.StartsWith('_'))
             {
                 // fields that start with "_" are internal to elastic and we want to disregard them
@@ -13,6 +19,12 @@
             }
             else
             {
+                if (string.IsNullOrEmpty(sortClause.Order))
+                {
+                    throw new IllegalClauseException(
+                        "SortClause must have a valid Order property");
+                }
+
                 sortClause.KQL = $"{sortClause.FieldName} {sortClause.Order}";
             }
         }

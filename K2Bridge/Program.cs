@@ -40,8 +40,8 @@ namespace K2Bridge
             var serviceProvider = new ServiceCollection()
                 .AddLogging(loggingBuilder =>
                       loggingBuilder.AddSerilog(dispose: true))
-                .AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(config))
-                .AddScoped<ListenerDetails>(s => ListenerDetails.MakeFromConfiguration(config))
+                .AddScoped(s => KustoConnectionDetails.MakeFromConfiguration(config))
+                .AddScoped(s => ListenerDetails.MakeFromConfiguration(config))
                 .AddTransient<ITranslator, QueryTranslator>()
                 .AddSingleton<IQueryExecutor, KustoManager>()
                 .AddTransient<IVisitor, ElasticSearchDSLVisitor>()

@@ -7,11 +7,9 @@
         public void Visit(MatchPhraseQuery matchPhraseQuery)
         {
             // Must have a field name
-            if ((matchPhraseQuery.FieldName == null) ||
-                    string.IsNullOrEmpty(matchPhraseQuery.FieldName))
+            if (string.IsNullOrEmpty(matchPhraseQuery.FieldName))
             {
-                matchPhraseQuery.KQL = string.Empty;
-                return;
+                throw new IllegalClauseException("FieldName must have a valid value");
             }
 
             matchPhraseQuery.KQL = $"{matchPhraseQuery.FieldName} == \"{matchPhraseQuery.Phrase}\"";

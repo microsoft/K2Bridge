@@ -54,7 +54,7 @@
             Metadata,
         }
 
-        public int TimeoutInMilliSeconds { get; set; } = 5000;
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(5);
 
         public void Start()
         {
@@ -183,7 +183,7 @@
                         (requestType != RequestType.NA && this.isCompareResponses))
 
                     {
-                        remoteResponse = this.PassThrough(request, this.remoteEndpoint, this.TimeoutInMilliSeconds, requestInputStream);
+                        remoteResponse = this.PassThrough(request, this.remoteEndpoint, this.Timeout, requestInputStream);
 
                         if (remoteResponse != null)
                         {
@@ -253,7 +253,7 @@
             }
         }
 
-        private HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, int timeoutInMilliSeconds, MemoryStream memoryStream)
+        private HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, TimeSpan timeout, MemoryStream memoryStream)
         {
             try
             {
@@ -270,7 +270,7 @@
                 var cookies = new CookieContainer();
                 cookies.Add(new Uri(requestString), request.Cookies);
                 remoteRequest.CookieContainer = cookies;
-                remoteRequest.Timeout = timeoutInMilliSeconds;
+                remoteRequest.Timeout = timeout.Milliseconds;
 
                 if (!bodylessMethods.Contains(remoteRequest.Method))
                 {
