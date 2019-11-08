@@ -4,11 +4,10 @@ namespace K2Bridge.Models.Response
 
     public class ResponseElement
     {
-        private const int TOOK = 1;
         private const int STATUS = 200;
 
         [JsonProperty("took")]
-        public int Took { get; set; } = TOOK;
+        public long TookMilliseconds { get; set; }
 
         [JsonProperty("timed_out")]
         public bool TimedOut { get; set; }

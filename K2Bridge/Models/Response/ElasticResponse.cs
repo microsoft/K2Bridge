@@ -1,5 +1,6 @@
 ﻿namespace K2Bridge.Models.Response
 {
+    using System;
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
@@ -38,6 +39,11 @@
         {
             // TODO: support more than one response
             return this.responses[0].Hits.Hits;
+        }
+
+        public void AddTook(TimeSpan timeTaken)
+        {
+            this.responses[0].TookMilliseconds += timeTaken.Milliseconds;
         }
     }
 }

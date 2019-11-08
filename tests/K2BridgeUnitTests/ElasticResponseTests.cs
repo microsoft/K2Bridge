@@ -17,7 +17,7 @@ namespace Tests
         private const string HIT_TEST_ID = "999";
         private QueryData query = new QueryData("_kql", "_index", null);
 
-        [TestCase(ExpectedResult = "{\"responses\":[{\"took\":1,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"aggregations\":{\"2\":{\"buckets\":[]}},\"status\":200}]}")]
+        [TestCase(ExpectedResult = "{\"responses\":[{\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"aggregations\":{\"2\":{\"buckets\":[]}},\"status\":200}]}")]
         public string DefaultResponseHasExpectedElasticProperties()
         {
             var defaultResponse = new ElasticResponse();
@@ -76,7 +76,7 @@ namespace Tests
             });
             var response = reader.ReadHits(query);
 
-            return SetRandomProperties(response).Select(r =>JsonConvert.SerializeObject(r)).ToArray();
+            return SetRandomProperties(response).Select(r => JsonConvert.SerializeObject(r)).ToArray();
         }
 
 
@@ -193,12 +193,13 @@ namespace Tests
                         },
                         new Dictionary<string, object>{
                             {"somefield6", "somevalue6"}
-                        }                    
+                        }
                 });
             
             var response = reader.ReadHits(query);
             var hash = new Dictionary<string, int>();
-            foreach(var hit in response){
+            foreach (var hit in response)
+            {
                 if (hash.ContainsKey(hit.Id))
                     return true;
                 hash.Add(hit.Id, 1);
@@ -206,7 +207,7 @@ namespace Tests
             return false;
         }
 
-        private IEnumerable<Hit> SetRandomProperties(IEnumerable<Hit> hits) =>  hits.Select(i =>{ i.Id = HIT_TEST_ID; return i;});
+        private IEnumerable<Hit> SetRandomProperties(IEnumerable<Hit> hits) => hits.Select(i => { i.Id = HIT_TEST_ID; return i; });
 
-    }    
+    }
 }

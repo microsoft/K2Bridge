@@ -46,29 +46,28 @@
 
         public ElasticResponse ExecuteQuery(QueryData queryData)
         {
-            using (var reader = this.queryClient.ExecuteQuery(queryData.KQL))
+            var (timeTaken, reader) = this.queryClient.ExecuteMonitoredQuery(queryData.KQL);
+            using (reader)
             {
-                ElasticResponse response;
                 try
                 {
-                    response = ReadResponse(queryData, reader);
+                    var response = ReadResponse(queryData, reader, timeTaken);
+                    this.logger.LogDebug($"Aggs processed: {response.GetAllAggregations().Count()}");
+                    this.logger.LogDebug($"Hits processed: {response.GetAllHits().Count()}");
+                    return response;
                 }
                 catch (Exception e)
                 {
                     this.logger.LogWarning($"Error reading kusto response: {e.Message}");
                     throw;
                 }
-
-                this.logger.LogDebug($"Aggs processed: {response.GetAllAggregations().Count()}");
-                this.logger.LogDebug($"Hits processed: {response.GetAllHits().Count()}");
-                reader.Close();
-                return response;
             }
         }
 
-        private static ElasticResponse ReadResponse(QueryData query, IDataReader reader)
+        private static ElasticResponse ReadResponse(QueryData query, IDataReader reader, TimeSpan timeTaken)
         {
             var response = new ElasticResponse();
+            response.AddTook(timeTaken);
             int tableOrdinal = 0;
 
             do
