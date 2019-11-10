@@ -56,15 +56,17 @@ namespace K2Bridge.Models.Response
                 var value = record.ReadValue(index);
                 hit.AddSource(name, value);
 
-                if (query.HighlightText == null) {
+                if (query.HighlightText == null || value == null)
+                {
                     continue;
                 }
 
                 // Elastic only highlights string values, but we try to highlight everything we can here.
                 // To mimic elastic: check for type of value here and skip if != string.
                 if ((query.HighlightText.ContainsKey(name) && query.HighlightText[name].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase)) ||
-                    (query.HighlightText.ContainsKey("*") && query.HighlightText["*"].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase))) {
-                       hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + value.ToString() + query.HighlightPostTag });
+                    (query.HighlightText.ContainsKey("*") && query.HighlightText["*"].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + value.ToString() + query.HighlightPostTag });
                 }
             }
 
