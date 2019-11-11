@@ -270,7 +270,7 @@
                 var cookies = new CookieContainer();
                 cookies.Add(new Uri(requestString), request.Cookies);
                 remoteRequest.CookieContainer = cookies;
-                remoteRequest.Timeout = timeout.Milliseconds;
+                remoteRequest.Timeout = (int)timeout.TotalMilliseconds;
 
                 if (!bodylessMethods.Contains(remoteRequest.Method))
                 {
