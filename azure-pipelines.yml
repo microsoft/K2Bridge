@@ -16,7 +16,7 @@ pr:
 name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 steps:
 - task: CredScan@2
