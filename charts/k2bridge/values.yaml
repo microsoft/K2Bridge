@@ -5,13 +5,14 @@
 replicaCount: 1
 
 image:
-  repository: avbalter/k2bridge
+  repository: repo-placeholder/k2bridge
   tag: latest
   pullPolicy: Always
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
+  targetPort: 8080
 
 ingress:
   enabled: false

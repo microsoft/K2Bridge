@@ -22,16 +22,20 @@ Running Kibana and KibanaKustoBridge locally for testing and development, see [h
 ```sh
 
 CONTAINER_NAME=[CONTAINER_NAME]
-REPOSITORY_NAME=[YOU_REPO_NAME]
+REPOSITORY_NAME=[YOUR_IMAGE_REPO_NAME]
 
 docker build -t $CONTAINER_NAME .
 docker tag $CONTAINER_NAME $REPOSITORY_NAME/$CONTAINER_NAME
-docker push $CONTAINER_NAME $REPOSITORY_NAME/$CONTAINER_NAME
+docker push $REPOSITORY_NAME/$CONTAINER_NAME
+
+helm repo update
+
+helm install charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --generate-name --set elasticsearch.image.tag="6.8.1" --set elasticsearch.appVersion="6.8.1"
 
 
-helmv3 upgrade -i [RELEASE_NAME] charts/k2bridge --wait --namespace [NAMESPACE_NAME] --set image.repository=$CONTAINER_NAME $REPOSITORY_NAME/$CONTAINER_NAME
-
-Note: To run on other kubernetes providers, change value.yaml elasticsearch storage class to fit the one suggested by the provider. 
+Notes: 
+ - By default the chart will also deploy a public facing load balancer pointing at the K2 Bridge. To change this, see the `service` section in `charts/k2bridge/values.yaml`.
+ - To run on other kubernetes providers, change value.yaml elasticsearch storage class to fit the one suggested by the provider. 
 ```
 
 ## Contributing
