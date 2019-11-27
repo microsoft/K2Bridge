@@ -19,6 +19,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: CredScan@2
+  inputs:
+    toolMajorVersion: 'V2'
+    
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
