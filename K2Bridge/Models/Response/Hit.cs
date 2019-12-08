@@ -1,12 +1,14 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 namespace K2Bridge.Models.Response
 {
+    using System;
+    using System.Collections.Generic;
     using System.Data;
     using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using System.Collections.Generic;
-    using System.Dynamic;
-    using System;
 
     public class Hit
     {
@@ -40,11 +42,6 @@ namespace K2Bridge.Models.Response
         [JsonProperty("highlight", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> Highlight { get; set; }
 
-        public void AddSource(string keyName, object value)
-        {
-            this.Source.Add(keyName, value == null ? null : JToken.FromObject(value));
-        }
-
         public static Hit Create(IDataRecord record, QueryData query)
         {
             var hit = new Hit() { Index = query.IndexName };
@@ -71,6 +68,11 @@ namespace K2Bridge.Models.Response
             }
 
             return hit;
+        }
+
+        public void AddSource(string keyName, object value)
+        {
+            this.Source.Add(keyName, value == null ? null : JToken.FromObject(value));
         }
     }
 }

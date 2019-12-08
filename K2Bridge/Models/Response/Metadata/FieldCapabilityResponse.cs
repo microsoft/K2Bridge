@@ -1,4 +1,7 @@
-﻿namespace K2Bridge.Models.Response.Metadata
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge.Models.Response.Metadata
 {
     using System;
     using System.Collections.Generic;
@@ -18,12 +21,12 @@
         {
             if (fieldCapabilityElement == null)
             {
-                throw new ArgumentNullException("fieldCapabilityElement is null.");
+                throw new ArgumentNullException("fieldCapabilityElement");
             }
 
             if (string.IsNullOrEmpty(fieldCapabilityElement.Name))
             {
-                throw new ArgumentNullException("Name of field is null or empty.");
+                throw new ArgumentNullException("fieldCapabilityElement.Name");
             }
 
             this.fields.Add(fieldCapabilityElement.Name, fieldCapabilityElement);

@@ -1,4 +1,7 @@
-﻿namespace K2Bridge.RequestHandlers
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge.RequestHandlers
 {
     using System.Net;
     using K2Bridge.KustoConnector;
@@ -6,24 +9,24 @@
 
     internal class RequestHandlerBase
     {
-        protected HttpListenerContext context;
-
-        protected IQueryExecutor kusto;
-
-        protected string requestId;
-
-        protected ILogger logger;
-
         public RequestHandlerBase(HttpListenerContext requestContext, IQueryExecutor kustoClient, string requestId, ILogger logger)
         {
-            this.logger = logger;
+            this.Logger = logger;
 
-            this.context = requestContext;
+            this.Context = requestContext;
 
-            this.kusto = kustoClient;
+            this.Kusto = kustoClient;
 
-            this.requestId = requestId;
+            this.RequestId = requestId;
         }
+
+        protected HttpListenerContext Context { get; private set; }
+
+        protected IQueryExecutor Kusto { get; private set; }
+
+        protected string RequestId { get; private set; }
+
+        protected ILogger Logger { get; private set; }
 
         protected string IndexNameFromURL(string rawUrl)
         {

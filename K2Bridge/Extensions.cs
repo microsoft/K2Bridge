@@ -1,4 +1,6 @@
-﻿namespace K2Bridge
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+namespace K2Bridge
 {
     using System.IO;
     using Newtonsoft.Json.Linq;

@@ -1,4 +1,7 @@
-﻿namespace K2Bridge
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge
 {
     using System;
     using System.Collections;
@@ -20,9 +23,50 @@
             this.requestDescription = requestName;
         }
 
+        public void CompareStreams(Stream passthroughResposeStream, Stream k2ResultsStream)
+        {
+            try
+            {
+                string elasticResponse;
+                string k2Response;
+
+                if (k2ResultsStream == null || passthroughResposeStream == null)
+                {
+                    return;
+                }
+
+                using (var reader = new StreamReader(passthroughResposeStream))
+                {
+                    passthroughResposeStream.Position = 0;
+                    elasticResponse = reader.ReadToEnd();
+                }
+
+                using (var reader = new StreamReader(k2ResultsStream))
+                {
+                    k2ResultsStream.Position = 0;
+                    k2Response = reader.ReadToEnd();
+                }
+
+                // Do  nothing
+                JObject elasticJsonObject = JsonConvert.DeserializeObject<JObject>(elasticResponse);
+                JObject k2JsonObject = JsonConvert.DeserializeObject<JObject>(k2Response);
+
+                if (elasticJsonObject.Count != k2JsonObject.Count)
+                {
+                    this.logger.LogError($"inconsistent number of children: e:{elasticJsonObject.Count} k2:{k2JsonObject.Count}");
+                }
+
+                this.CompareObjects(elasticJsonObject, k2JsonObject);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+            }
+        }
+
         private SortedList CreateSortedChildrenList(JToken token)
         {
-            SortedList SL = new SortedList();
+            SortedList sl = new SortedList();
 
             foreach (JToken child in token.Children())
             {
@@ -77,9 +121,9 @@
                     }
                 }
 
-                if (!SL.ContainsKey(key))
+                if (!sl.ContainsKey(key))
                 {
-                    SL.Add(key, child);
+                    sl.Add(key, child);
                 }
                 else
                 {
@@ -87,48 +131,7 @@
                 }
             }
 
-            return SL;
-        }
-
-        public void CompareStreams(Stream passthroughResposeStream, Stream k2ResultsStream)
-        {
-            try
-            {
-                string elasticResponse;
-                string k2Response;
-
-                if (k2ResultsStream == null || passthroughResposeStream == null)
-                {
-                    return;
-                }
-
-                using (var reader = new StreamReader(passthroughResposeStream))
-                {
-                    passthroughResposeStream.Position = 0;
-                    elasticResponse = reader.ReadToEnd();
-                }
-
-                using (var reader = new StreamReader(k2ResultsStream))
-                {
-                    k2ResultsStream.Position = 0;
-                    k2Response = reader.ReadToEnd();
-                }
-
-                // Do  nothing
-                JObject elasticJsonObject = JsonConvert.DeserializeObject<JObject>(elasticResponse);
-                JObject k2JsonObject = JsonConvert.DeserializeObject<JObject>(k2Response);
-
-                if (elasticJsonObject.Count != k2JsonObject.Count)
-                {
-                    this.logger.LogError($"inconsistent number of children: e:{elasticJsonObject.Count} k2:{k2JsonObject.Count}");
-                }
-
-                this.CompareObjects(elasticJsonObject, k2JsonObject);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-            }
+            return sl;
         }
 
         private void ReportRedundant(JToken token)

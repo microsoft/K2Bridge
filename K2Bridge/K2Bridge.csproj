@@ -5,28 +5,30 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <CodeAnalysisRuleSet>custom.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Flurl" Version="2.8.2" />
-    <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="8.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Serilog" Version="2.9.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.1" />
 
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="stylecop.json" />
+  </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.local.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -40,4 +42,10 @@
     <Folder Include="Traces\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="stylecop.json" />
+  </ItemGroup>
 </Project>

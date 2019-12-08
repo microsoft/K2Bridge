@@ -1,4 +1,7 @@
-﻿namespace K2Bridge.RequestHandlers
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge.RequestHandlers
 {
     using System;
     using System.Data;
@@ -29,7 +32,7 @@
             {
                 string indexName = this.IndexNameFromURL(rawUrl);
                 string kustoCommand = $".show database schema | where TableName=='{indexName}' and ColumnName!='' | project ColumnName, ColumnType";
-                IDataReader kustoResults = this.kusto.ExecuteControlCommand(kustoCommand);
+                IDataReader kustoResults = this.Kusto.ExecuteControlCommand(kustoCommand);
 
                 var response = new FieldCapabilityResponse();
 
@@ -39,12 +42,12 @@
                     var fieldCapabilityElement = FieldCapabilityElement.Create(record);
                     if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
                     {
-                        this.logger.LogWarning($"Field: {fieldCapabilityElement.Name} doesn't have a type.");
+                        this.Logger.LogWarning($"Field: {fieldCapabilityElement.Name} doesn't have a type.");
                     }
 
                     response.AddField(fieldCapabilityElement);
 
-                    this.logger.LogDebug($"Found field: {fieldCapabilityElement.Name} with type: {fieldCapabilityElement.Type}");
+                    this.Logger.LogDebug($"Found field: {fieldCapabilityElement.Name} with type: {fieldCapabilityElement.Type}");
                 }
 
                 kustoResults.Close();
@@ -53,7 +56,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, $"Failed to retrieve indexes");
+                this.Logger.LogError(ex, $"Failed to retrieve indexes");
                 throw;
             }
         }

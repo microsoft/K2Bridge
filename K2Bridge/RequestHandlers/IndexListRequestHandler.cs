@@ -1,4 +1,7 @@
-﻿namespace K2Bridge.RequestHandlers
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge.RequestHandlers
 {
     using System;
     using System.Data;
@@ -22,7 +25,8 @@
         public static bool CanAnswer(string rawUrl, string requestString)
         {
             return
-                //rawUrl.Contains("_search?ignore_unavailable=true") // 6.8.1
+
+                // rawUrl.Contains("_search?ignore_unavailable=true") // 6.8.1
                 rawUrl.Contains("_search") // 6.3.2
                 && requestString.Contains("indices")
                 && requestString.Contains("_index")
@@ -34,7 +38,7 @@
             try
             {
                 string indexName = this.IndexNameFromURL(rawUrl);
-                IDataReader kustoResults = this.kusto.ExecuteControlCommand($".show tables | search TableName: '{indexName}' | project TableName");
+                IDataReader kustoResults = this.Kusto.ExecuteControlCommand($".show tables | search TableName: '{indexName}' | project TableName");
                 var response = new IndexListResponseElement();
 
                 while (kustoResults.Read())
@@ -43,7 +47,7 @@
                     var termBucket = TermBucket.Create(record);
                     response.Aggregations.IndexCollection.AddBucket(termBucket);
 
-                    this.logger.LogDebug($"Found index/table: {termBucket.Key}");
+                    this.Logger.LogDebug($"Found index/table: {termBucket.Key}");
                 }
 
                 kustoResults.Close();
@@ -52,7 +56,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, $"Failed to retrieve indexes");
+                this.Logger.LogError(ex, $"Failed to retrieve indexes");
                 throw;
             }
         }

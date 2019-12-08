@@ -1,4 +1,7 @@
-﻿namespace K2Bridge
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge
 {
     using System;
     using System.IO;
@@ -181,9 +184,8 @@
                         (requestType == RequestType.Data && !isRequestAnsweredSuccessfully) ||
                         (requestType == RequestType.Metadata && !this.isHandleMetadata) ||
                         (requestType != RequestType.NA && this.isCompareResponses))
-
                     {
-                        remoteResponse = this.PassThrough(request, this.remoteEndpoint, this.Timeout, requestInputStream);
+                        remoteResponse = this.PassThrough(request, this.Timeout, requestInputStream);
 
                         if (remoteResponse != null)
                         {
@@ -253,13 +255,13 @@
             }
         }
 
-        private HttpWebResponse PassThrough(HttpListenerRequest request, string remoteEndpoint, TimeSpan timeout, MemoryStream memoryStream)
+        private HttpWebResponse PassThrough(HttpListenerRequest request, TimeSpan timeout, MemoryStream memoryStream)
         {
             try
             {
                 string[] bodylessMethods = { "GET", "HEAD" };
 
-                var requestString = Url.Combine(remoteEndpoint, request.RawUrl);
+                var requestString = Url.Combine(this.remoteEndpoint, request.RawUrl);
                 var remoteRequest = WebRequest.Create(requestString) as HttpWebRequest;
                 remoteRequest.AllowAutoRedirect = false;
                 remoteRequest.KeepAlive = request.KeepAlive;

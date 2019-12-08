@@ -1,4 +1,7 @@
-﻿namespace K2Bridge.KustoConnector
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge.KustoConnector
 {
     using System;
     using System.Collections.Generic;

@@ -1,4 +1,7 @@
-﻿namespace K2Bridge.Models.Request.Aggregations
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge.Models.Request.Aggregations
 {
     internal abstract class MetricAggregation : LeafAggregation
     {

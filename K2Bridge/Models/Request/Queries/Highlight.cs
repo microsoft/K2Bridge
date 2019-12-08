@@ -1,4 +1,7 @@
-﻿namespace K2Bridge.Models.Request.Queries
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge.Models.Request.Queries
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;

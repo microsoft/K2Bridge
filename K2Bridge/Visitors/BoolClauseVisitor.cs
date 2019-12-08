@@ -1,4 +1,7 @@
-﻿namespace K2Bridge.Visitors
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
     using K2Bridge.Models.Request;
@@ -8,10 +11,10 @@
     {
         public void Visit(BoolClause boolClause)
         {
-            AddListInternal(boolClause.Must, KQLOperators.And, false /* positive */, boolClause);
-            AddListInternal(boolClause.MustNot, KQLOperators.And, true /* negative */, boolClause);
-            AddListInternal(boolClause.Should, KQLOperators.Or, false /* positive */, boolClause);
-            AddListInternal(boolClause.ShouldNot, KQLOperators.Or, true /* negative */, boolClause);
+            this.AddListInternal(boolClause.Must, KQLOperators.And, false /* positive */, boolClause);
+            this.AddListInternal(boolClause.MustNot, KQLOperators.And, true /* negative */, boolClause);
+            this.AddListInternal(boolClause.Should, KQLOperators.Or, false /* positive */, boolClause);
+            this.AddListInternal(boolClause.ShouldNot, KQLOperators.Or, true /* negative */, boolClause);
         }
 
         /// <summary>
@@ -19,7 +22,10 @@
         /// </summary>
         private void AddListInternal(IEnumerable<IQueryClause> lst, string delimiterKeyword, bool negativeCondition, BoolClause boolClause)
         {
-            if (lst == null) return;
+            if (lst == null)
+            {
+                return;
+            }
 
             var kqlExpressions = new List<string>();
 

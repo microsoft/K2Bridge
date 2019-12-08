@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
 namespace K2Bridge
 {
     using System;
@@ -26,6 +29,7 @@ namespace K2Bridge
         public Dictionary<string, string> HighlightText { get; private set; }
 
         public string HighlightPreTag { get; set; }
+
         public string HighlightPostTag { get; set; }
     }
 }

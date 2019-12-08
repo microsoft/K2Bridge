@@ -1,4 +1,7 @@
-﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("K2BridgeUnitTests")]
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("K2BridgeUnitTests")]
 
 namespace K2Bridge
 {
