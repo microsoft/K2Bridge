@@ -5,5 +5,6 @@ namespace K2Bridge.Models.Response
 {
     public interface IBucket
     {
+        int DocCount { get; set; }
     }
 }

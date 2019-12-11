@@ -11,10 +11,7 @@ namespace K2Bridge.Models.Response
         private List<Hit> hits = new List<Hit>();
 
         [JsonProperty("total")]
-        public int Total
-        {
-            get { return this.hits.Count; }
-        }
+        public int Total { get; private set; }
 
         [JsonProperty("max_score")]
         public object MaxScore { get; set; }
@@ -28,6 +25,12 @@ namespace K2Bridge.Models.Response
         public void AddHit(Hit hit)
         {
             this.hits.Add(hit);
+        }
+
+        // Calculating HitsCollection.Total by summing up the DocCount values of every DateHistogramBucket
+        public void AddToTotal(int docCount)
+        {
+            this.Total += docCount;
         }
     }
 }
