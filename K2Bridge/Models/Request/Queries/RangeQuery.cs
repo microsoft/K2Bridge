@@ -14,7 +14,8 @@ namespace K2Bridge.Models.Request.Queries
 
         public decimal? GTEValue { get; set; }
 
-        public decimal? GTValue { get; set; } // isn't created by kibana but kept here for completeness
+        // isn't created by kibana but kept here for completeness
+        public decimal? GTValue { get; set; }
 
         public decimal? LTEValue { get; set; }
 

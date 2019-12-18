@@ -29,10 +29,8 @@ namespace K2Bridge
         {
             try
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(this.tracePath, filename)))
-                {
-                    outputFile.Write(content);
-                }
+                using StreamWriter outputFile = new StreamWriter(Path.Combine(this.tracePath, filename));
+                outputFile.Write(content);
             }
             catch (Exception ex)
             {
@@ -45,11 +43,9 @@ namespace K2Bridge
         {
             try
             {
-                using (FileStream outputFile = new FileStream(Path.Combine(this.tracePath, filename), FileMode.CreateNew))
-                {
-                    content.CopyStream(outputFile);
-                    outputFile.Flush();
-                }
+                using FileStream outputFile = new FileStream(Path.Combine(this.tracePath, filename), FileMode.CreateNew);
+                content.CopyStream(outputFile);
+                outputFile.Flush();
             }
             catch (Exception ex)
             {

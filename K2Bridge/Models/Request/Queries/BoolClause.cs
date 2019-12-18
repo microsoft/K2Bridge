@@ -7,6 +7,9 @@ namespace K2Bridge.Models.Request.Queries
     using K2Bridge.Models.Request;
     using K2Bridge.Visitors;
 
+    /// <summary>
+    /// Represents a boolean clause
+    /// </summary>
     internal class BoolClause : KQLBase, IVisitable, IQueryClause
     {
         public IEnumerable<IQueryClause> Must { get; set; }

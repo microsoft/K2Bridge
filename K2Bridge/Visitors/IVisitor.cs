@@ -7,6 +7,9 @@ namespace K2Bridge.Visitors
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Models.Request.Queries;
 
+    /// <summary>
+    /// IVisitor defines all the different visit methods overloads to handle all supported clause types
+    /// </summary>
     internal interface IVisitor
     {
         void Visit(ExistsQuery existsQuery);

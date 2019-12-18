@@ -8,15 +8,20 @@ namespace K2Bridge.KustoConnector
     using System.Diagnostics;
     using Kusto.Data.Common;
 
+    /// <summary>
+    /// Extension methods for Kusto query operation
+    /// </summary>
     public static class CslQueryProviderExtensions
     {
-        public static (TimeSpan timeTaken, IDataReader reader) ExecuteMonitoredQuery(this ICslQueryProvider client, string query)
+        public static (TimeSpan timeTaken, IDataReader reader) ExecuteMonitoredQuery(
+            this ICslQueryProvider client,
+            string query)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var reader = client.ExecuteQuery(query);
-            stopwatch.Stop();
-            return (stopwatch.Elapsed, reader);
+            sw.Stop();
+            return (sw.Elapsed, reader);
         }
     }
 }

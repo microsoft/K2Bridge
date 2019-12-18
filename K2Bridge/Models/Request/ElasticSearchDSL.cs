@@ -9,6 +9,11 @@ namespace K2Bridge.Models.Request
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// ElasticSearchDSL (Elastic Search Domain Specific Language) represents
+    /// the different properties of the elasticsearch query as deserialized from
+    /// the json object sent from Kibana. This object will be sent for transformation
+    /// </summary>
     internal class ElasticSearchDSL : KQLBase, IVisitable
     {
         [JsonProperty("query")]
@@ -16,11 +21,6 @@ namespace K2Bridge.Models.Request
 
         [JsonProperty("size")]
         public int Size { get; set; }
-
-        /*
-        [JsonProperty("timeout")]
-        public string Timeout { get; set; }
-        */
 
         [JsonProperty("sort")]
         public List<SortClause> Sort { get; set; }

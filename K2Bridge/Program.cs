@@ -13,6 +13,9 @@ namespace K2Bridge
     using Microsoft.Extensions.DependencyInjection;
     using Serilog;
 
+    /// <summary>
+    /// Entry point for the K2 program
+    /// </summary>
     public class Program
     {
         private const string ConfigFileName = "appsettings.json";

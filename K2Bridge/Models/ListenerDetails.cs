@@ -8,7 +8,13 @@ namespace K2Bridge.Models
 
     internal class ListenerDetails
     {
-        private ListenerDetails(string[] prefixes, string remoteEndpoint, bool isCompareResponse, bool isHandleMetadata)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="prefixes"></param>
+        /// <param name="remoteEndpoint"></param>
+        /// <param name="isHandleMetadata"></param>
+        private ListenerDetails(string[] prefixes, string remoteEndpoint, bool isHandleMetadata)
         {
             if (prefixes == null || prefixes.Length == 0)
             {
@@ -22,7 +28,6 @@ namespace K2Bridge.Models
 
             this.Prefixes = prefixes;
             this.RemoteEndpoint = remoteEndpoint;
-            this.IsCompareResponse = isCompareResponse;
             this.IsHandleMetadata = isHandleMetadata;
         }
 
@@ -30,15 +35,12 @@ namespace K2Bridge.Models
 
         public string RemoteEndpoint { get; private set; }
 
-        public bool IsCompareResponse { get; private set; }
-
         public bool IsHandleMetadata { get; private set; }
 
         public static ListenerDetails MakeFromConfiguration(IConfigurationRoot config) =>
             new ListenerDetails(
                 new string[] { config["bridgeListenerAddress"] },
                 config["remoteElasticAddress"],
-                bool.Parse(config["isCompareResponse"] ?? "false"),
                 bool.Parse(config["isHandleMetadata"] ?? "true"));
     }
 }

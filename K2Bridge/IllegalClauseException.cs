@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+
 namespace K2Bridge
 {
     using System;
 
-    // Thrown when trying to visit a clause and it mandatory properties
-    // are wrong/missing
+    /// <summary>
+    /// Thrown when trying to visit a clause and it mandatory properties
+    /// are wrong/missing
+    /// </summary>
     public class IllegalClauseException : Exception
     {
         public IllegalClauseException()

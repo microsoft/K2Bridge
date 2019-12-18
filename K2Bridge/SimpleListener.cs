@@ -16,6 +16,10 @@ namespace K2Bridge
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// SimpleListener is the 'simple' console application that blocks until
+    /// requests are arriving and then redirects them to the correct path
+    /// </summary>
     internal class SimpleListener
     {
         private readonly TraceHelper tracer;
@@ -25,8 +29,6 @@ namespace K2Bridge
         private readonly string[] prefixes;
 
         private readonly string remoteEndpoint;
-
-        private readonly bool isCompareResponses;
 
         private readonly bool isHandleMetadata;
 
@@ -43,7 +45,6 @@ namespace K2Bridge
             this.prefixes = listenerDetails.Prefixes;
             this.remoteEndpoint = listenerDetails.RemoteEndpoint;
             this.translator = queryTranslator;
-            this.isCompareResponses = listenerDetails.IsCompareResponse;
             this.isHandleMetadata = listenerDetails.IsHandleMetadata;
             this.kustoManager = kustoManager;
             this.logger = loggerFactory.CreateLogger<SimpleListener>();
@@ -123,8 +124,8 @@ namespace K2Bridge
                         this.tracer.WriteFile($"{requestId}.Request.json", requestInputStream);
 
                         var handler = new IndexListRequestHandler(context, this.kustoManager, requestId, this.logger);
-
                         responseString = handler.PrepareResponse(request.RawUrl);
+
                         if (this.isHandleMetadata)
                         {
                             isRequestAnsweredSuccessfully = true;
@@ -137,7 +138,6 @@ namespace K2Bridge
                         this.tracer.WriteFile($"{requestId}.Request.json", requestInputStream);
 
                         var handler = new FieldCapabilityRequestHandler(context, this.kustoManager, requestId, this.logger);
-
                         responseString = handler.PrepareResponse(request.RawUrl);
 
                         if (this.isHandleMetadata)
@@ -149,10 +149,10 @@ namespace K2Bridge
                     {
                         try
                         {
-                            isRequestTraceEnabled = true;
                             requestType = RequestType.Data;
                             this.tracer.WriteFile($"{requestId}.Request.json", requestInputStream);
 
+                            // get the request as sent from Kibana
                             string body = this.GetRequestBody(request, requestInputStream);
 
                             // The body is in NDJson
@@ -182,8 +182,7 @@ namespace K2Bridge
 
                     if ((requestType == RequestType.NA) ||
                         (requestType == RequestType.Data && !isRequestAnsweredSuccessfully) ||
-                        (requestType == RequestType.Metadata && !this.isHandleMetadata) ||
-                        (requestType != RequestType.NA && this.isCompareResponses))
+                        (requestType == RequestType.Metadata && !this.isHandleMetadata))
                     {
                         remoteResponse = this.PassThrough(request, this.Timeout, requestInputStream);
 
@@ -240,12 +239,6 @@ namespace K2Bridge
                         var output = response.OutputStream;
                         remoteResponseStream.CopyStream(output);
                         output.Close();
-                    }
-
-                    if (isRequestTraceEnabled && this.isCompareResponses && remoteResponseStream != null)
-                    {
-                        ResponseComparer rc = new ResponseComparer(this.logger, "not yet", requestId);
-                        rc.CompareStreams(remoteResponseStream, kustoResultsStream);
                     }
                 }
                 catch (Exception ex)

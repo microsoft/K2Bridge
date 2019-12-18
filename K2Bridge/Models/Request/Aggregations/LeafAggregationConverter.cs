@@ -10,7 +10,19 @@ namespace K2Bridge.Models.Request.Aggregations
 
     internal class LeafAggregationConverter : ReadOnlyJsonConverter
     {
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        /// <summary>
+        /// Read the given json and returns a LeafAggregation object
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="objectType"></param>
+        /// <param name="existingValue"></param>
+        /// <param name="serializer"></param>
+        /// <returns></returns>
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType,
+            object existingValue,
+            JsonSerializer serializer)
         {
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
@@ -28,9 +40,6 @@ namespace K2Bridge.Models.Request.Aggregations
 
                 case "cardinality":
                     leafAggregation = first.Value.ToObject<Cardinality>(serializer);
-                    break;
-
-                default:
                     break;
             }
 

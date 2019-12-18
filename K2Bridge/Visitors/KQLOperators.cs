@@ -3,6 +3,9 @@
 
 namespace K2Bridge.Visitors
 {
+    /// <summary>
+    /// Provides some constants to be used across the visitors classes
+    /// </summary>
     public static class KQLOperators
     {
         public const string And = "and";

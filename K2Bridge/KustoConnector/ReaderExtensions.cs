@@ -8,8 +8,13 @@ namespace K2Bridge.KustoConnector
     using System.Data;
     using K2Bridge.Models.Response;
 
+    /// <summary>
+    /// Provides extension methods for kusto response objects
+    /// </summary>
     internal static class ReaderExtensions
     {
+        private static readonly Random random = new Random();
+
         private static Dictionary<Type, Func<IDataRecord, int, object>> readerSwitch = new Dictionary<Type, Func<IDataRecord, int, object>>
         {
             { typeof(bool), (reader, index) => reader.ReadValueOrDbNull(index, () => reader.GetBoolean(index)) },
@@ -23,8 +28,6 @@ namespace K2Bridge.KustoConnector
             { typeof(decimal), (reader, index) => reader.ReadValueOrDbNull(index, () => reader.GetDecimal(index)) },
             { typeof(object), (reader, index) => reader.ReadValueOrDbNull(index, () => reader.GetValue(index)) },
         };
-
-        private static Random random = new Random();
 
         internal static IEnumerable<Hit> ReadHits(this IDataReader reader, QueryData query)
         {
@@ -50,17 +53,21 @@ namespace K2Bridge.KustoConnector
                                 record.GetFieldType(index),
                                 typeof(object))(record, index);
 
-        internal static object ReadValueOrDbNull(this IDataRecord record, int index, Func<object> readFunc) =>
+        internal static object ReadValueOrDbNull(
+            this IDataRecord record,
+            int index,
+            Func<object> readFunc) =>
             record.IsDBNull(index) ? (object)null : readFunc();
+
 
         private static TVal GetDictionaryValueOrDefault<TKey, TVal>(this Dictionary<TKey, TVal> dictionary, TKey key, TKey defaultKey)
         {
-            TVal response;
             if (!dictionary.ContainsKey(defaultKey))
             {
                 throw new ArgumentException("default key does not exist");
             }
 
+            TVal response;
             if (dictionary.TryGetValue(key, out response))
             {
                 return response;

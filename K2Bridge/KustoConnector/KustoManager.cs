@@ -13,6 +13,9 @@ namespace K2Bridge.KustoConnector
     using Kusto.Data.Net.Client;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>
+    /// The kusto manager handles the connection to the kusto cluster
+    /// </summary>
     internal class KustoManager : IQueryExecutor
     {
         private const string KustoApplicationNameForTracing = "K2Bridge";
@@ -33,7 +36,8 @@ namespace K2Bridge.KustoConnector
                     connectionDetails.KustoAadTenantId);
 
             conn.ApplicationNameForTracing = KustoApplicationNameForTracing;
-            conn.ClientVersionForTracing = typeof(KustoManager).Assembly.GetName().Version.ToString();
+            conn.ClientVersionForTracing =
+                typeof(KustoManager).Assembly.GetName().Version.ToString();
 
             this.queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             this.adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
@@ -49,25 +53,37 @@ namespace K2Bridge.KustoConnector
 
         public ElasticResponse ExecuteQuery(QueryData queryData)
         {
+            // Use the kusto client to execute the query
             var (timeTaken, reader) = this.queryClient.ExecuteMonitoredQuery(queryData.KQL);
             using (reader)
             {
                 try
                 {
+                    // Read results and transform to Elastic form
                     var response = ReadResponse(queryData, reader, timeTaken);
                     this.logger.LogDebug($"Aggs processed: {response.GetAllAggregations().Count()}");
                     this.logger.LogDebug($"Hits processed: {response.GetAllHits().Count()}");
                     return response;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    this.logger.LogWarning($"Error reading kusto response: {e.Message}");
+                    this.logger.LogWarning($"Error reading kusto response: {ex.Message}");
                     throw;
                 }
             }
         }
 
-        private static ElasticResponse ReadResponse(QueryData query, IDataReader reader, TimeSpan timeTaken)
+        /// <summary>
+        /// Use the kusto data reader and build an Elastic response
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="reader"></param>
+        /// <param name="timeTaken"></param>
+        /// <returns></returns>
+        private static ElasticResponse ReadResponse(
+            QueryData query,
+            IDataReader reader,
+            TimeSpan timeTaken)
         {
             var response = new ElasticResponse();
             response.AddTook(timeTaken);

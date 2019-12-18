@@ -3,9 +3,11 @@
 namespace K2Bridge
 {
     using System.IO;
-    using Newtonsoft.Json.Linq;
 
-    internal static class Extensions
+    /// <summary>
+    /// Streams extension methods
+    /// </summary>
+    internal static class StreamsExtensions
     {
         internal static void CopyStream(this Stream source, Stream destination)
         {
@@ -20,12 +22,6 @@ namespace K2Bridge
             {
                 destination.Position = 0;
             }
-        }
-
-        internal static string TokenToString(this JToken jToken)
-        {
-            var eObj = jToken?.Value<object>();
-            return eObj == null ? string.Empty : eObj.ToString();
         }
     }
 }

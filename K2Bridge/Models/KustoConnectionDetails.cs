@@ -6,9 +6,17 @@ namespace K2Bridge.Models
     using System;
     using Microsoft.Extensions.Configuration;
 
+    /// <summary>
+    /// Holds the different connection details for the kusto cluster. such as database name and credentials
+    /// </summary>
     internal class KustoConnectionDetails
     {
-        private KustoConnectionDetails(string kustoClusterUrl, string kustoDatabase, string kustoAadClientId, string kustoAadClientSecret, string kustoAadTenantId)
+        private KustoConnectionDetails(
+            string kustoClusterUrl,
+            string kustoDatabase,
+            string kustoAadClientId,
+            string kustoAadClientSecret,
+            string kustoAadTenantId)
         {
             if (string.IsNullOrEmpty(kustoClusterUrl))
             {

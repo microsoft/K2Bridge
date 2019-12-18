@@ -6,6 +6,9 @@ namespace K2Bridge.Models.Request.Queries
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Represents the highlighting tags for matching terms
+    /// </summary>
     internal class Highlight
     {
         [JsonProperty("pre_tags")]

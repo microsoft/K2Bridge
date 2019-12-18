@@ -7,8 +7,15 @@ namespace K2Bridge.Visitors
     using System.Text;
     using K2Bridge.Models.Request;
 
+    /// <summary>
+    /// Main visitor entry point
+    /// </summary>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        /// <summary>
+        /// Accept a given visitable object and build the valid Kusto query based on that KQL
+        /// </summary>
+        /// <param name="elasticSearchDSL"></param>
         public void Visit(ElasticSearchDSL elasticSearchDSL)
         {
             var kqlSB = new StringBuilder();
@@ -24,7 +31,7 @@ namespace K2Bridge.Visitors
             kqlSB.Append($"{KQLOperators.Let} _data = {KQLOperators.Materialize}({elasticSearchDSL.IndexName} {kqlQueryExpression});");
 
             // aggregations
-            // TODO: procress the entire list
+            // TODO: process the entire list
             if (elasticSearchDSL.Aggregations != null && elasticSearchDSL.Aggregations.Count > 0)
             {
                 kqlSB.Append('\n').Append($"(_data | {KQLOperators.Summarize} ");

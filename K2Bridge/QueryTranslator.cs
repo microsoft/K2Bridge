@@ -9,22 +9,37 @@ namespace K2Bridge
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// QueryTranslator provides the functionality for translating a Kibana query into KQL
+    /// </summary>
     internal class QueryTranslator : ITranslator
     {
         private readonly IVisitor visitor;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="visitor">The visitor to accept the translation request</param>
         public QueryTranslator(IVisitor visitor) => this.visitor = visitor;
 
+        /// <summary>
+        /// Translate a given request into QueryData
+        /// </summary>
+        /// <param name="header"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
         public QueryData Translate(string header, string query)
         {
-            var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
-
+            // Prepare the esDSL object, except some fields such as the query field which will be built later
             var elasticSearchDSL = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
+
+            // deserialize the headers and extract the index name
+            var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
             elasticSearchDSL.IndexName = headerDictionary["index"];
 
             elasticSearchDSL.HighlightText = new Dictionary<string, string>();
-            var qs = elasticSearchDSL.Query.Bool.Must.GetEnumerator();
 
+            var qs = elasticSearchDSL.Query.Bool.Must.GetEnumerator();
             while (qs.MoveNext()) {
                 if (qs.Current == null) {
                     continue;
@@ -39,8 +54,12 @@ namespace K2Bridge
                 }
             }
 
+            // Use the visitor and build the KQL string from the esDSL object
             elasticSearchDSL.Accept(this.visitor);
-            var queryData = new QueryData(elasticSearchDSL.KQL, elasticSearchDSL.IndexName, elasticSearchDSL.HighlightText);
+            var queryData = new QueryData(
+                elasticSearchDSL.KQL,
+                elasticSearchDSL.IndexName,
+                elasticSearchDSL.HighlightText);
 
             if (elasticSearchDSL.Highlight != null && elasticSearchDSL.Highlight.PreTags.Count > 0) {
                 queryData.HighlightPreTag = elasticSearchDSL.Highlight.PreTags[0];
