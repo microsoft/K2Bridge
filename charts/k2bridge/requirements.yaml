@@ -1,4 +1,0 @@
-dependencies:
-  - name: elasticsearch
-    version: "6.4.2"
-    repository: "@elastic"

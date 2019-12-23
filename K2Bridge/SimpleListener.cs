@@ -28,7 +28,7 @@ namespace K2Bridge
 
         private readonly string[] prefixes;
 
-        private readonly string remoteEndpoint;
+        private readonly string metadataEndpoint;
 
         private readonly bool isHandleMetadata;
 
@@ -43,7 +43,7 @@ namespace K2Bridge
             ILoggerFactory loggerFactory)
         {
             this.prefixes = listenerDetails.Prefixes;
-            this.remoteEndpoint = listenerDetails.RemoteEndpoint;
+            this.metadataEndpoint = listenerDetails.MetadataEndpoint;
             this.translator = queryTranslator;
             this.isHandleMetadata = listenerDetails.IsHandleMetadata;
             this.kustoManager = kustoManager;
@@ -86,7 +86,7 @@ namespace K2Bridge
 
             listener.Start();
             this.logger.LogInformation($"Proxy is Listening on {listener.Prefixes.Aggregate((s1, s2) => $"{s1};{s2}")}...");
-            this.logger.LogInformation($"Remote elasticsearch is at {this.remoteEndpoint}");
+            this.logger.LogInformation($"Metadata elasticsearch is at {this.metadataEndpoint}");
             this.logger.LogInformation("Press Ctrl+C to exit.");
 
             while (true)
@@ -254,7 +254,7 @@ namespace K2Bridge
             {
                 string[] bodylessMethods = { "GET", "HEAD" };
 
-                var requestString = Url.Combine(this.remoteEndpoint, request.RawUrl);
+                var requestString = Url.Combine(this.metadataEndpoint, request.RawUrl);
                 var remoteRequest = WebRequest.Create(requestString) as HttpWebRequest;
                 remoteRequest.AllowAutoRedirect = false;
                 remoteRequest.KeepAlive = request.KeepAlive;

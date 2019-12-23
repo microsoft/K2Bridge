@@ -29,6 +29,23 @@ spec:
               protocol: TCP
           env: 
             - name: bridgeListenerAddress
-              value: "http://*:8080/"
-            - name: remoteElasticAddress
-              value: "http://{{ .Release.Name }}-elasticsearch-client.default.svc:9200"
+              value: "{{ .Values.settings.bridgeListenerAddress }}"
+            - name: metadataElasticAddress
+              value: "{{ .Values.settings.metadataElasticAddress }}"
+            - name: isHandleMetadata
+              value: "{{ .Values.settings.isHandleMetadata }}"
+            - name: kustoClusterUrl
+              value: "{{ .Values.settings.kustoClusterUrl }}"
+            - name: kustoDatabase
+              value: "{{ .Values.settings.kustoDatabase }}"
+            - name: kustoAadClientId
+              value: "{{ .Values.settings.kustoAadClientId }}"
+            - name: kustoAadClientSecret
+              valueFrom:
+                secretKeyRef:
+                  name: kusto-credentials
+                  key: kustoAadClientSecret
+            - name: kustoAadTenantId
+              value: "{{ .Values.settings.kustoAadTenantId }}"
+            - name: useAspNetCore
+              value: "false"

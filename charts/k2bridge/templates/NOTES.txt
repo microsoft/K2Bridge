@@ -15,7 +15,17 @@
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "k2bridge.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
   echo http://$SERVICE_IP:{{ .Values.service.port }}
 {{- else if contains "ClusterIP" .Values.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "k2bridge.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl port-forward $POD_NAME 8080:80
+  echo "Use http://127.0.0.1:8080 to connect to K2Bridge"
+  kubectl port-forward service/{{ include "k2bridge.fullname" .}} 8080
 {{- end }}
+
+2. Wait for the K2Bridge and internal Elasticseach pods to be fully started.
+It can take several minutes to obtain persistent storage from the cloud
+provider the first time.
+   kubectl get pods
+
+3. Optionally deploy Kibana by running these commands:
+  echo "Use this command to install Kibana"
+  helm install kibana elastic/kibana --set image=docker.elastic.co/kibana/kibana-oss --set imageTag={{ .Values.k2bridgeelasticsearch.imageTag }} --set elasticsearchHosts=http://{{ include "k2bridge.fullname" . }}:{{ .Values.service.port }}
+  echo "Use http://127.0.0.1:5601 to connect to Kibana"
+  kubectl port-forward service/kibana-kibana 5601

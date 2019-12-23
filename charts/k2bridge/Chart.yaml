@@ -3,3 +3,10 @@ appVersion: "1.0"
 description: A bridge connecting Kibana to Kusto (Azure Data Explorer) as its backend database
 name: k2bridge
 version: 0.1.0
+dependencies:
+  - name: elasticsearch
+    alias: "k2bridgeelasticsearch"
+    version: 6.5.0
+    repository: "@elastic"
+    tags:
+      - k2bridge-internal-elasticsearch

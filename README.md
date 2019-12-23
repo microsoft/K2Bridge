@@ -17,7 +17,16 @@ See the Installation document
 
 Running Kibana and KibanaKustoBridge locally for testing and development, see [here](./docs/development.md)
 
-### Run on Azure Kubernetes Service
+### Requirements
+
+* Helm 3
+* Docker (or Azure CLI if building remotely on Azure Container Registry)
+* An Azure Data Explorer instance
+* An Azure AD service principal authorized to view data in Kusto
+
+### Build the Docker container
+
+You can build the container on a local Docker installation:
 
 ```sh
 
@@ -25,17 +34,59 @@ CONTAINER_NAME=[CONTAINER_NAME]
 REPOSITORY_NAME=[YOUR_IMAGE_REPO_NAME]
 
 docker build -t $CONTAINER_NAME .
-docker tag $CONTAINER_NAME $REPOSITORY_NAME/$CONTAINER_NAME
 docker push $REPOSITORY_NAME/$CONTAINER_NAME
+```
 
+Or you can build the container remotely on Azure Container Registry:
+
+```sh
+
+CONTAINER_NAME=[CONTAINER_NAME]
+REGISTRY_NAME=[YOUR_AZURE_CONTAINER_REGISTRY_NAME]
+REPOSITORY_NAME=$REGISTRY_NAME.azurecr.io
+
+az acr build -r $REGISTRY_NAME -t $CONTAINER_NAME .
+```
+
+### Run on Azure Kubernetes Service
+
+Ensure your AKS instance can [pull images from ACR](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration), e.g.:
+
+```sh
+az aks update -n myAKSCluster -g myResourceGroup --attach-acr $REGISTRY_NAME
+```
+
+Download the Elasticsearch helm chart dependency:
+
+```sh
+helm repo add elastic https://helm.elastic.co
 helm repo update
+helm dependency update charts/k2bridge
+```
 
-helm install charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --generate-name --set elasticsearch.image.tag="6.8.1" --set elasticsearch.appVersion="6.8.1"
+Deploy
 
+```sh
+KUSTO_INSTANCE=[YOUR_KUSTO_INSTANCE_NAME]
+KUSTO_DATABASE=[YOUR_KUSTO_DATABASE_NAME]
+KUSTO_CLIENT_ID=[SERVICE_PRINCIPAL_CLIENT_ID]
+KUSTO_CLIENT_SECRET=[SERVICE_PRINCIPAL_CLIENT_SECRET]
+KUSTO_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
+
+helm install k2bridge charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.kustoClusterUrl="https://$KUSTO_INSTANCE.kusto.windows.net" --set settings.kustoDatabase="$KUSTO_DATABASE" --set settings.kustoAadClientId="$KUSTO_CLIENT_ID" --set settings.kustoAadClientSecret="$KUSTO_CLIENT_SECRET" --set settings.kustoAadTenantId="$KUSTO_TENANT_ID" --set replicaCount=2
+```
+
+The command output will suggest a helm command to run to deploy Kibana, similar to:
+
+```sh
+helm install kibana elastic/kibana --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.5 --set elasticsearchHosts=http://k2bridge:8080
+```
+
+In a new installation of Kibana, you will need to configure the indexes. Navigate to Management -> Index Patterns and create new indexes.
+Note that the name of the index must be an exact match to the table name.
 
 Notes: 
- - By default the chart will also deploy a public facing load balancer pointing at the K2 Bridge. To change this, see the `service` section in `charts/k2bridge/values.yaml`.
- - To run on other kubernetes providers, change value.yaml elasticsearch storage class to fit the one suggested by the provider. 
+ - To run on other kubernetes providers, change in `values.yaml` the elasticsearch storageClassName to fit the one suggested by the provider. 
 ```
 
 ## Contributing

@@ -41,7 +41,7 @@ namespace K2Bridge
             services.AddHttpClient("elasticFallback", (svcProvider, elasticClient) =>
             {
                 var listenerDetails = svcProvider.GetRequiredService<ListenerDetails>();
-                elasticClient.BaseAddress = new Uri(listenerDetails.RemoteEndpoint);
+                elasticClient.BaseAddress = new Uri(listenerDetails.MetadataEndpoint);
             });
 
             // Register the Swagger generator, defining 1 or more Swagger documents
