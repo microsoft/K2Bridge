@@ -15,92 +15,150 @@ pr:
 
 name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 
-pool:
-  vmImage: 'windows-latest'
+variables:
+  ACR_NAME: k2dev
+  ACR_PUSH_SERVICE_CONNECTION: k2dev-acr-push
 
-steps:
-- task: CredScan@2
-  displayName: 'Find credentials in source code'
-  inputs:
-    toolMajorVersion: 'V2'
+stages:
 
-- task: SdtReport@1
-  displayName: 'Security analysis report'
-  inputs:
-    AllTools: false
-    APIScan: false
-    BinSkim: false
-    CodesignValidation: false
-    CredScan: true
-    FortifySCA: false
-    FxCop: false
-    ModernCop: false
-    MSRD: false
-    PoliCheck: false
-    RoslynAnalyzers: false
-    SDLNativeRules: false
-    Semmle: false
-    TSLint: false
-    ToolLogsNotFoundAction: 'Standard'
+- stage: CI
 
-- task: PublishSecurityAnalysisLogs@2
-  displayName: 'Publish security analysis logs'
-  inputs:
-    ArtifactName: 'CodeAnalysisLogs'
-    ArtifactType: 'Container'
-    AllTools: false
-    AntiMalware: false
-    APIScan: false
-    BinSkim: false
-    CodesignValidation: false
-    CredScan: true
-    FortifySCA: false
-    FxCop: false
-    ModernCop: false
-    MSRD: false
-    PoliCheck: false
-    RoslynAnalyzers: false
-    SDLNativeRules: false
-    Semmle: false
-    TSLint: false
-    WebScout: false
-    ToolLogsNotFoundAction: 'Standard'
+  jobs:
+  - job: Pre_build
+    displayName: Security Analysis
 
-- task: PostAnalysis@1
-  displayName: 'Post security analysis'
-  inputs:
-    AllTools: false
-    APIScan: false
-    BinSkim: false
-    CodesignValidation: false
-    CredScan: true
-    FortifySCA: false
-    FxCop: false
-    ModernCop: false
-    PoliCheck: false
-    RoslynAnalyzers: false
-    SDLNativeRules: false
-    Semmle: false
-    TSLint: false
-    VstsConsole: false
-    ToolLogsNotFoundAction: 'Standard'
-    
-- task: ComponentGovernanceComponentDetection@0
-  inputs:
-    scanType: 'Register'
-    verbosity: 'Verbose'
-    alertWarningLevel: 'Medium'
-    failOnAlert: true
-- task: DotNetCoreCLI@2
-  displayName: Build
-  inputs:
-    command: build
-    projects: '**/*.csproj'
-    arguments: '--configuration Release' # Update this to match your need
+    pool:
+      # CredScan only runs on Windows
+      vmImage: 'windows-latest'
 
-- task: DotNetCoreCLI@2
-  displayName: Test
-  inputs:
-    command: test
-    projects: '**/*Tests/*.csproj'
-    arguments: '--configuration Release'
+    steps:
+    - task: CredScan@2
+      displayName: 'Find credentials in source code'
+      inputs:
+        toolMajorVersion: 'V2'
+
+    - task: SdtReport@1
+      displayName: 'Security analysis report'
+      inputs:
+        AllTools: false
+        APIScan: false
+        BinSkim: false
+        CodesignValidation: false
+        CredScan: true
+        FortifySCA: false
+        FxCop: false
+        ModernCop: false
+        MSRD: false
+        PoliCheck: false
+        RoslynAnalyzers: false
+        SDLNativeRules: false
+        Semmle: false
+        TSLint: false
+        ToolLogsNotFoundAction: 'Standard'
+
+    - task: PublishSecurityAnalysisLogs@2
+      displayName: 'Publish security analysis logs'
+      inputs:
+        ArtifactName: 'CodeAnalysisLogs'
+        ArtifactType: 'Container'
+        AllTools: false
+        AntiMalware: false
+        APIScan: false
+        BinSkim: false
+        CodesignValidation: false
+        CredScan: true
+        FortifySCA: false
+        FxCop: false
+        ModernCop: false
+        MSRD: false
+        PoliCheck: false
+        RoslynAnalyzers: false
+        SDLNativeRules: false
+        Semmle: false
+        TSLint: false
+        WebScout: false
+        ToolLogsNotFoundAction: 'Standard'
+
+    - task: PostAnalysis@1
+      displayName: 'Post security analysis'
+      inputs:
+        AllTools: false
+        APIScan: false
+        BinSkim: false
+        CodesignValidation: false
+        CredScan: true
+        FortifySCA: false
+        FxCop: false
+        ModernCop: false
+        PoliCheck: false
+        RoslynAnalyzers: false
+        SDLNativeRules: false
+        Semmle: false
+        TSLint: false
+        VstsConsole: false
+        ToolLogsNotFoundAction: 'Standard'
+
+    - task: ComponentGovernanceComponentDetection@0
+      inputs:
+        scanType: 'Register'
+        verbosity: 'Verbose'
+        alertWarningLevel: 'Medium'
+        failOnAlert: true
+
+  - job: Build
+    dependsOn: Pre_build
+
+    pool:
+      # Docker container must be built on Linux to run on Linux
+      vmImage: 'ubuntu-latest'
+
+    steps:
+
+    - bash: |
+        # Only build first stage of Dockerfile (build and test)
+        docker build --target build -t k2bridgetest .
+        # Temporarily create container in order to extract test results file
+        id=$(docker create k2bridgetest)
+        docker cp $id:/app/TestResult.xml .
+        docker rm $id
+      displayName: Docker build & test
+
+    - task: PublishTestResults@2
+      displayName: Publish test results
+      condition: succeededOrFailed()
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: 'TestResult.xml'
+        failTaskOnFailedTests: true
+
+    - task: HelmInstaller@1
+      displayName: Helm installer
+      inputs:
+        helmVersionToInstall: 3.0.2
+
+    - task: AzureCLI@1
+      displayName: Push Helm chart to ACR
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+
+          # Build and push Docker image
+          az configure --defaults acr="$ACR_NAME"
+          az acr login
+          # Reuses the cached build stage from the previous docker build task
+          docker build \
+            -t "$ACR_NAME.azurecr.io/k2bridge:latest" \
+            -t "$ACR_NAME.azurecr.io/k2bridge:0.0.$(Build.BuildId)" \
+            .
+          docker push "$ACR_NAME.azurecr.io/k2bridge:latest"
+          docker push "$ACR_NAME.azurecr.io/k2bridge:0.0.$(Build.BuildId)"
+
+          # Push Helm chart
+          helm repo add elastic https://helm.elastic.co
+          helm repo update
+          helm dependency update charts/k2bridge
+          empty_dir="$(Build.StagingDirectory)/charts_out"
+          helm package charts/k2bridge -d $empty_dir
+          az acr helm push --force "$(ls $empty_dir/*)"

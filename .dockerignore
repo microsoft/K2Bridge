@@ -340,3 +340,12 @@ ASALocalRun/
 /K2Bridge/Traces
 
 /K2Bridge/appsettings.local.json
+
+# Dotnet output
+bin
+obj
+
+# CI-related files
+Dockerfile
+azure-pipelines.yml
+test_results.xml
