@@ -7,10 +7,11 @@ namespace K2Bridge.KustoConnector
     using System.Data;
     using K2Bridge.Models.Response;
 
-    public interface IQueryExecutor
+    /// <summary>
+    /// An interface for response parsing
+    /// </summary>
+    public interface IResponseParser
     {
-        (TimeSpan timeTaken, IDataReader reader) ExecuteQuery(QueryData query);
-
-        IDataReader ExecuteControlCommand(string query);
+        ElasticResponse ParseElasticResponse(IDataReader reader, QueryData queryData, TimeSpan timeTaken);
     }
 }

@@ -36,6 +36,7 @@ namespace K2Bridge
             services.AddTransient<ITranslator, QueryTranslator>();
             services.AddTransient<IQueryExecutor, KustoManager>();
             services.AddTransient<IVisitor, ElasticSearchDSLVisitor>();
+            services.AddTransient<IResponseParser, KustoResponseParser>();
 
             // use this http client factory to issue requests to the fallback elastic instance
             services.AddHttpClient("elasticFallback", (svcProvider, elasticClient) =>

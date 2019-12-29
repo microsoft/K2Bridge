@@ -51,70 +51,10 @@ namespace K2Bridge.KustoConnector
             return result;
         }
 
-        public ElasticResponse ExecuteQuery(QueryData queryData)
+        public (TimeSpan timeTaken, IDataReader reader) ExecuteQuery(QueryData queryData)
         {
             // Use the kusto client to execute the query
-            var (timeTaken, reader) = this.queryClient.ExecuteMonitoredQuery(queryData.KQL);
-            using (reader)
-            {
-                try
-                {
-                    // Read results and transform to Elastic form
-                    var response = ReadResponse(queryData, reader, timeTaken);
-                    this.logger.LogDebug($"Aggs processed: {response.GetAllAggregations().Count()}");
-                    this.logger.LogDebug($"Hits processed: {response.GetAllHits().Count()}");
-                    return response;
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogWarning($"Error reading kusto response: {ex.Message}");
-                    throw;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Use the kusto data reader and build an Elastic response
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="reader"></param>
-        /// <param name="timeTaken"></param>
-        /// <returns></returns>
-        private static ElasticResponse ReadResponse(
-            QueryData query,
-            IDataReader reader,
-            TimeSpan timeTaken)
-        {
-            var response = new ElasticResponse();
-            response.AddTook(timeTaken);
-            int tableOrdinal = 0;
-
-            do
-            {
-                switch (tableOrdinal)
-                {
-                    case 0:
-                        foreach (var agg in reader.ReadAggs())
-                        {
-                            response.AddAggregation(agg);
-                        }
-
-                        break;
-                    case 1:
-                        foreach (var hit in reader.ReadHits(query))
-                        {
-                            response.AddHit(hit);
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-
-                tableOrdinal++;
-            }
-            while (reader.NextResult());
-            return response;
+            return this.queryClient.ExecuteMonitoredQuery(queryData.KQL);
         }
     }
 }

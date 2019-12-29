@@ -72,6 +72,7 @@ namespace K2Bridge
                 .AddTransient<ITranslator, QueryTranslator>()
                 .AddSingleton<IQueryExecutor, KustoManager>()
                 .AddTransient<IVisitor, ElasticSearchDSLVisitor>()
+                .AddTransient<IResponseParser, KustoResponseParser>()
                 .AddTransient<SimpleListener>()
                 .BuildServiceProvider();
 

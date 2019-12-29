@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Data;
 using System.Threading.Tasks;
+using Substitute = NSubstitute.Substitute;
 
 namespace K2BridgeUnitTests
 {
@@ -23,10 +25,17 @@ namespace K2BridgeUnitTests
             mockTranslator.Setup(translator => translator.Translate(
                 It.IsNotNull<string>(), It.IsNotNull<string>())).Returns(new QueryData());
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-            mockQueryExecutor.Setup(exec => exec.ExecuteQuery(It.IsAny<QueryData>())).Returns(new ElasticResponse());
+            mockQueryExecutor.Setup(exec => exec.ExecuteQuery(It.IsAny<QueryData>())).Returns((new TimeSpan(), Substitute.For<IDataReader>()));
             var mockLogger = new Mock<ILogger<QueryController>>();
-
-            return new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object);
+            var mockResponseParser = new Mock<IResponseParser>();
+            mockResponseParser.Setup(exec => 
+                exec.ParseElasticResponse(
+                    It.IsAny<IDataReader>(), 
+                    It.IsAny<QueryData>(),
+                    It.IsAny<TimeSpan>()))
+                .Returns(new ElasticResponse());
+            
+            return new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object);
         }
 
         [Test]

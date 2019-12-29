@@ -36,17 +36,21 @@ namespace K2Bridge
 
         private readonly IQueryExecutor kustoManager;
 
+        private readonly IResponseParser responseParser;
+
         public SimpleListener(
             ListenerDetails listenerDetails,
             ITranslator queryTranslator,
             IQueryExecutor kustoManager,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            IResponseParser responseParser)
         {
             this.prefixes = listenerDetails.Prefixes;
             this.metadataEndpoint = listenerDetails.MetadataEndpoint;
             this.translator = queryTranslator;
             this.isHandleMetadata = listenerDetails.IsHandleMetadata;
             this.kustoManager = kustoManager;
+            this.responseParser = responseParser;
             this.logger = loggerFactory.CreateLogger<SimpleListener>();
             this.tracer = new TraceHelper(this.logger, @"../../../Traces");
         }
@@ -166,8 +170,9 @@ namespace K2Bridge
                             this.logger.LogDebug($"Translated query:\n{translatedResponse.KQL}");
                             this.tracer.WriteFile($"{requestId}.KQL.json", translatedResponse.KQL);
 
-                            ElasticResponse kustoResults = this.kustoManager.ExecuteQuery(translatedResponse);
-                            responseString = JsonConvert.SerializeObject(kustoResults);
+                            var (timeTaken, dataReader) = this.kustoManager.ExecuteQuery(translatedResponse);
+                            var elasticResponse = this.responseParser.ParseElasticResponse(dataReader, translatedResponse, timeTaken);
+                            responseString = JsonConvert.SerializeObject(elasticResponse);
 
                             isRequestAnsweredSuccessfully = true;
                         }

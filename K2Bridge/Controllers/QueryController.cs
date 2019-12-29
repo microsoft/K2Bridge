@@ -23,6 +23,7 @@ namespace K2Bridge.Controllers
         private readonly IQueryExecutor queryExecutor;
         private readonly ITranslator translator;
         private readonly ILogger<QueryController> logger;
+        private readonly IResponseParser responseParser;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryController"/> class.
@@ -30,11 +31,16 @@ namespace K2Bridge.Controllers
         /// <param name="queryExecutor"></param>
         /// <param name="translator"></param>
         /// <param name="logger"></param>
-        public QueryController(IQueryExecutor queryExecutor, ITranslator translator, ILogger<QueryController> logger)
+        public QueryController(
+            IQueryExecutor queryExecutor,
+            ITranslator translator,
+            ILogger<QueryController> logger,
+            IResponseParser responseParser)
         {
             this.queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
             this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.responseParser = responseParser ?? throw new ArgumentNullException(nameof(responseParser));
         }
 
         /// <summary>
@@ -79,7 +85,10 @@ namespace K2Bridge.Controllers
             var translatedResponse = this.translator.Translate(rawQueryData[0], rawQueryData[1]);
             this.logger.LogDebug($"Translated query:\n{translatedResponse.KQL}");
 
-            return this.Ok(this.queryExecutor.ExecuteQuery(translatedResponse));
+            var (timeTaken, dataReader) = this.queryExecutor.ExecuteQuery(translatedResponse);
+            var elasticResponse = this.responseParser.ParseElasticResponse(dataReader, translatedResponse, timeTaken);
+
+            return this.Ok(elasticResponse);
         }
 
         /// <summary>
