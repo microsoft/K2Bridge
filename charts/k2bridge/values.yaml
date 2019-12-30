@@ -39,7 +39,7 @@ k2bridgeelasticsearch:
   replicas: 3
 
   # Shrink default JVM heap.
-  esJavaOpts: "-Xmx256m -Xms128m"
+  esJavaOpts: "-Xmx256m -Xms256m"
 
   # Allocate smaller chunks of memory per pod.
   resources:
