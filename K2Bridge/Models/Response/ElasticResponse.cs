@@ -38,10 +38,10 @@ namespace K2Bridge.Models.Response
             return this.responses[0].Aggregations.Collection.Buckets;
         }
 
-        public void AddHit(Hit hit)
+        public void AddHits(IEnumerable<Hit> hits)
         {
             // TODO: support more than one response
-            this.responses[0].Hits.AddHit(hit);
+            this.responses[0].Hits.AddHits(hits);
         }
 
         public IEnumerable<Hit> GetAllHits()

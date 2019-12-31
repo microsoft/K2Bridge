@@ -4,21 +4,59 @@
 namespace K2Bridge.KustoConnector
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
-    using K2Bridge.Models.Response;
-    using Microsoft.Extensions.Logging;
     using System.Linq;
+    using K2Bridge.Models.Response;
+    using Kusto.Data.Data;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Provides parsing methods for kusto response objects
     /// </summary>
     public class KustoResponseParser : IResponseParser
     {
+        private const string AggregationTableName = "aggs";
+        private const string HitsTableName = "hits";
+        private static readonly Random Random = new Random();
         private readonly ILogger<KustoResponseParser> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KustoResponseParser"/> class.
+        /// </summary>
+        /// <param name="loggerFactory">ILoggerFactory object for logger initialization.</param>
         public KustoResponseParser(ILoggerFactory loggerFactory)
         {
             this.logger = loggerFactory.CreateLogger<KustoResponseParser>();
+        }
+
+        /// <summary>
+        /// Read Hits from KustoResponseDataSet response.
+        /// </summary>
+        /// <param name="kustoResponseDataSet">KustoResponseDataSet - Kusto parsed response.</param>
+        /// <param name="query">QueryData containing query information.</param>
+        /// <returns>IEnumerable<Hit> - collection of hits.</returns>
+        public static IEnumerable<Hit> ReadHits(KustoResponseDataSet kustoResponseDataSet, QueryData query)
+        {
+            if (kustoResponseDataSet[HitsTableName] != null)
+            {
+                foreach (DataRow row in kustoResponseDataSet[HitsTableName].TableData.Rows)
+                {
+                    var hit = Hit.Create(row, query);
+                    hit.Id = Random.Next().ToString();
+                    yield return hit;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parse IDataReader into KustoResponseDataSet response.
+        /// </summary>
+        /// <param name="reader">Kusto IDataReader response.</param>
+        /// <returns>KustoResponseDataSet - parsed response.</returns>
+        public static KustoResponseDataSet ReadDataResponse(IDataReader reader)
+        {
+            return KustoDataReaderParser.ParseV1(reader);
         }
 
         /// <summary>
@@ -63,33 +101,23 @@ namespace K2Bridge.KustoConnector
             var response = new ElasticResponse();
 
             response.AddTook(timeTaken);
-            int tableOrdinal = 0;
 
-            do
+            var parsedKustoResponse = ReadDataResponse(reader);
+
+            if (parsedKustoResponse[AggregationTableName] != null)
             {
-                switch (tableOrdinal)
+                // read aggregations
+                foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                 {
-                    case 0:
-                        foreach (var agg in reader.ReadAggs())
-                        {
-                            response.AddAggregation(agg);
-                        }
-
-                        break;
-                    case 1:
-                        foreach (var hit in reader.ReadHits(query))
-                        {
-                            response.AddHit(hit);
-                        }
-
-                        break;
-                    default:
-                        break;
+                    var bucket = BucketFactory.MakeBucket(row);
+                    response.AddAggregation(bucket);
                 }
-
-                tableOrdinal++;
             }
-            while (reader.NextResult());
+
+            // read hits
+            var hits = ReadHits(parsedKustoResponse, query);
+            response.AddHits(hits);
+
             return response;
         }
     }

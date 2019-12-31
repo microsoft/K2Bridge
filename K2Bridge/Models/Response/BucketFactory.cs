@@ -3,10 +3,12 @@
 
 namespace K2Bridge.Models.Response
 {
+    using System.Data;
+
     internal static class BucketFactory
     {
         // TODO: implement more aggregation buckets
-        public static IBucket MakeBucket(System.Data.IDataRecord record)
+        public static IBucket MakeBucket(DataRow record)
         {
             return DateHistogramBucket.Create(record);
         }

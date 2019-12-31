@@ -20,5 +20,10 @@ namespace K2Bridge.Models.Response
         {
             this.buckets.Add(bucket);
         }
+
+        public void AddBuckets(IEnumerable<IBucket> buckets)
+        {
+            this.buckets.AddRange(buckets);
+        }
     }
 }

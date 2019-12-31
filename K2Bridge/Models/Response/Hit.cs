@@ -9,6 +9,7 @@ namespace K2Bridge.Models.Response
     using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using Flurl.Util;
 
     public class Hit
     {
@@ -51,6 +52,36 @@ namespace K2Bridge.Models.Response
             {
                 var name = record.GetName(index);
                 var value = record.ReadValue(index);
+                hit.AddSource(name, value);
+
+                if (query.HighlightText == null || value == null)
+                {
+                    continue;
+                }
+
+                // Elastic only highlights string values, but we try to highlight everything we can here.
+                // To mimic elastic: check for type of value here and skip if != string.
+                if ((query.HighlightText.ContainsKey(name) && query.HighlightText[name].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase)) ||
+                    (query.HighlightText.ContainsKey("*") && query.HighlightText["*"].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase)))
+                {
+                    hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + value.ToString() + query.HighlightPostTag });
+                }
+            }
+
+            return hit;
+        }
+
+        public static Hit Create(DataRow row, QueryData query)
+        {
+            var hit = new Hit() { Index = query.IndexName };
+            hit.Highlight = new Dictionary<string, object>();
+
+            var columns = row.Table.Columns;
+
+            for (int index = 0; index < row.ItemArray.Length; index++)
+            {
+                var name = columns[index].ColumnName;
+                var value = row[name];
                 hit.AddSource(name, value);
 
                 if (query.HighlightText == null || value == null)

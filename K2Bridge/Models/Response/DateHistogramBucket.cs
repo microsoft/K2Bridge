@@ -5,9 +5,13 @@ namespace K2Bridge.Models.Response
 {
     using System;
     using Newtonsoft.Json;
+    using System.Data;
 
     public class DateHistogramBucket : IBucket
     {
+        private const string TimestampColumn = "timestamp";
+        private const string CountColumn = "count_";
+
         [JsonProperty("doc_count")]
         public int DocCount { get; set; }
 
@@ -17,10 +21,10 @@ namespace K2Bridge.Models.Response
         [JsonProperty("key_as_string")]
         public string KeyAsString { get; set; }
 
-        public static DateHistogramBucket Create(System.Data.IDataRecord record)
+        public static DateHistogramBucket Create(DataRow row)
         {
-            var f0 = record[0];
-            var f1 = record[1];
+            var f0 = row[TimestampColumn];
+            var f1 = row[CountColumn];
             var dateBucket = (DateTime)f0;
 
             return new DateHistogramBucket

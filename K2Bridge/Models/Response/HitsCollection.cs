@@ -10,24 +10,40 @@ namespace K2Bridge.Models.Response
     {
         private List<Hit> hits = new List<Hit>();
 
+        /// <summary>
+        /// Gets or sets Total.
+        /// </summary>
         [JsonProperty("total")]
         public int Total { get; private set; }
 
+        /// <summary>
+        /// Gets or sets MaxScore.
+        /// </summary>
         [JsonProperty("max_score")]
         public object MaxScore { get; set; }
 
+        /// <summary>
+        /// Gets all hits.
+        /// </summary>
         [JsonProperty("hits")]
         public IEnumerable<Hit> Hits
         {
             get { return this.hits; }
         }
 
-        public void AddHit(Hit hit)
+        /// <summary>
+        /// Add all hits.
+        /// </summary>
+        /// <param name="hits">IEnumerable<Hit> collection of hits.</param>
+        public void AddHits(IEnumerable<Hit> hits)
         {
-            this.hits.Add(hit);
+            this.hits.AddRange(hits);
         }
 
-        // Calculating HitsCollection.Total by summing up the DocCount values of every DateHistogramBucket
+        /// <summary>
+        /// Calculating HitsCollection.Total by summing up the DocCount values of every DateHistogramBucket
+        /// </summary>
+        /// <param name="docCount">int representing doc count.</param>
         public void AddToTotal(int docCount)
         {
             this.Total += docCount;

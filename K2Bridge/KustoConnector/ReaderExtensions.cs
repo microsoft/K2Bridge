@@ -39,15 +39,6 @@ namespace K2Bridge.KustoConnector
             }
         }
 
-        internal static IEnumerable<IBucket> ReadAggs(this IDataReader reader)
-        {
-            while (reader.Read())
-            {
-                var bucket = BucketFactory.MakeBucket((IDataRecord)reader);
-                yield return bucket;
-            }
-        }
-
         internal static object ReadValue(this IDataRecord record, int index) =>
             readerSwitch.GetDictionaryValueOrDefault(
                                 record.GetFieldType(index),
