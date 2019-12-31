@@ -14,7 +14,7 @@ namespace K2BridgeUnitTests
             var httpRequestPath = new PathString("/test/validfile.html");
 
             // Act
-            var uat = new RewriteRequestsMissingTrailingSlashesRule();
+            var uat = new RewriteTrailingSlashesRule();
             var result = uat.RewritePath(httpRequestPath);
 
             // Assert
@@ -28,7 +28,7 @@ namespace K2BridgeUnitTests
             var httpRequestPath = new PathString("/test/.html");
 
             // Act
-            var uat = new RewriteRequestsMissingTrailingSlashesRule();
+            var uat = new RewriteTrailingSlashesRule();
             var result = uat.RewritePath(httpRequestPath);
 
             // Assert
@@ -42,7 +42,7 @@ namespace K2BridgeUnitTests
             var httpRequestPath = new PathString("/test/.html/");
 
             // Act
-            var uat = new RewriteRequestsMissingTrailingSlashesRule();
+            var uat = new RewriteTrailingSlashesRule();
             var result = uat.RewritePath(httpRequestPath);
 
             // Assert

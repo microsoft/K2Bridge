@@ -33,7 +33,7 @@ namespace K2Bridge
             services.AddControllers();
             services.AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(this.Configuration as IConfigurationRoot));
             services.AddSingleton<ListenerDetails>(s => ListenerDetails.MakeFromConfiguration(this.Configuration as IConfigurationRoot));
-            services.AddTransient<ITranslator, QueryTranslator>();
+            services.AddTransient<ITranslator, ElasticQueryTranslator>();
             services.AddTransient<IQueryExecutor, KustoManager>();
             services.AddTransient<IVisitor, ElasticSearchDSLVisitor>();
             services.AddTransient<IResponseParser, KustoResponseParser>();
@@ -70,7 +70,7 @@ namespace K2Bridge
             // without the trailing slash ASP.NET interprets this is a file request and
             // blocks the request. Needed for the Kibana passtrough requests
             var options = new RewriteOptions()
-                .Add(new RewriteRequestsMissingTrailingSlashesRule());
+                .Add(new RewriteTrailingSlashesRule());
             app.UseRewriter(options);
             app.UseRouting();
 

@@ -14,7 +14,7 @@ namespace K2Bridge.RewriteRules
     /// There can be path segements have the form of /.pathsegment (sent by Kibana).
     /// ASP.NET interprets this as a file but not a path.
     /// </summary>
-    internal class RewriteRequestsMissingTrailingSlashesRule : IRule
+    internal class RewriteTrailingSlashesRule : IRule
     {
         /// <summary>
         /// Apply this rule on the given context object, i.e. add trailing slashes

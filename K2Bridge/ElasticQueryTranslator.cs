@@ -10,9 +10,9 @@ namespace K2Bridge
     using Newtonsoft.Json;
 
     /// <summary>
-    /// QueryTranslator provides the functionality for translating a Kibana query into KQL
+    /// ElasticQueryTranslator provides the functionality for translating a Kibana query into KQL
     /// </summary>
-    internal class QueryTranslator : ITranslator
+    internal class ElasticQueryTranslator : ITranslator
     {
         private readonly IVisitor visitor;
 
@@ -20,7 +20,7 @@ namespace K2Bridge
         /// Constructor
         /// </summary>
         /// <param name="visitor">The visitor to accept the translation request</param>
-        public QueryTranslator(IVisitor visitor) => this.visitor = visitor;
+        public ElasticQueryTranslator(IVisitor visitor) => this.visitor = visitor;
 
         /// <summary>
         /// Translate a given request into QueryData
