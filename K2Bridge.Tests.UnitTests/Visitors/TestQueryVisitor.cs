@@ -7,16 +7,16 @@ namespace VisitorsTests
     [TestFixture]
     public class TestQueryVisitor
     {
-        private static string VisitQuery(QueryStringQuery clause)
+        private static string VisitQuery(QueryString clause)
         {
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(clause);
             return clause.KQL;
         }
 
-        private static QueryStringQuery CreateQueryStringClause(string phrase, bool wildcard)
+        private static QueryString CreateQueryStringClause(string phrase, bool wildcard)
         {
-            return new QueryStringQuery
+            return new QueryString
             {
                 Phrase = phrase,
                 Wildcard = wildcard

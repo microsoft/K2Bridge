@@ -12,14 +12,14 @@ namespace VisitorsTests
         [TestCase(ExpectedResult = "isnotnull(MyField)")]
         public string TestValidExistsVisit()
         {
-            var existsQuery = new ExistsQuery
+            var existsClause = new Exists
             {
                 FieldName = "MyField"
             };
 
             var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(existsQuery);
-            return existsQuery.KQL;
+            visitor.Visit(existsClause);
+            return existsClause.KQL;
         }
     }
 }

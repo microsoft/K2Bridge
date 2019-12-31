@@ -30,19 +30,19 @@ namespace K2Bridge.Models.Request.Queries
             switch (first.Name)
             {
                 case "exists":
-                    return first.Value.ToObject<ExistsQuery>(serializer);
+                    return first.Value.ToObject<Exists>(serializer);
 
                 case "match_phrase":
-                    return first.Value.ToObject<MatchPhraseQuery>(serializer);
+                    return first.Value.ToObject<MatchPhrase>(serializer);
 
                 case "range":
-                    return first.Value.ToObject<RangeQuery>(serializer);
+                    return first.Value.ToObject<Range>(serializer);
 
                 case "query_string":
-                    return first.ToObject<QueryStringQuery>(serializer);
+                    return first.ToObject<QueryString>(serializer);
 
                 case "bool":
-                    return ((JProperty)jo.First).Value.ToObject<BoolClause>(serializer);
+                    return ((JProperty)jo.First).Value.ToObject<BoolQuery>(serializer);
 
                 default:
                     return null;

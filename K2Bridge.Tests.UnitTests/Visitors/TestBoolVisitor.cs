@@ -9,27 +9,27 @@ namespace VisitorsTests
     [TestFixture]
     public class TestBoolVisitor
     {
-        private string VisitQuery(BoolClause clause)
+        private string VisitQuery(BoolQuery query)
         {
             var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(clause);
-            return clause.KQL;
+            visitor.Visit(query);
+            return query.KQL;
         }
 
-        private IEnumerable<IQueryClause> CreateSimpleLeafList(string singleValue)
+        private IEnumerable<IQuery> CreateSimpleLeafList(string singleValue)
         {
             var lst = new LinkedList<string>();
             lst.AddFirst(singleValue);
             return CreateSimpleLeafList(lst);
         }
 
-        private IEnumerable<IQueryClause> CreateSimpleLeafList(IEnumerable<string> values)
+        private IEnumerable<IQuery> CreateSimpleLeafList(IEnumerable<string> values)
         {
-            var lst = new LinkedList<ILeafQueryClause>();
+            var lst = new LinkedList<ILeafQuery>();
 
             foreach (var value in values)
             {
-                var item = new QueryStringQuery
+                var item = new QueryString
                 {
                     Phrase = value
                 };
@@ -41,54 +41,54 @@ namespace VisitorsTests
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemA\"))")]
-        public string TestOneBoolClauseInMustVisit()
+        public string TestOneBoolQueryInMustVisit()
         {
-            var boolClause = new BoolClause
+            var boolQuery = new BoolQuery
             {
                 Must = CreateSimpleLeafList("ItemA"),
             };
 
-            return VisitQuery(boolClause);
+            return VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "not ((* contains \"ItemB\"))")]
-        public string TestOneBoolClauseInMustNotVisit()
+        public string TestOneBoolQueryInMustNotVisit()
         {
-            var boolClause = new BoolClause
+            var boolQuery = new BoolQuery
             {
                 MustNot = CreateSimpleLeafList("ItemB"),
             };
 
-            return VisitQuery(boolClause);
+            return VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemC\"))")]
-        public string TestOneBoolClauseInShouldVisit()
+        public string TestOneBoolQueryInShouldVisit()
         {
-            var boolClause = new BoolClause
+            var boolQuery = new BoolQuery
             {
                 Should = CreateSimpleLeafList("ItemC"),
             };
 
-            return VisitQuery(boolClause);
+            return VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "not ((* contains \"ItemD\"))")]
-        public string TestOneBoolClauseInShouldNotVisit()
+        public string TestOneBoolQueryInShouldNotVisit()
         {
-            var boolClause = new BoolClause
+            var boolQuery = new BoolQuery
             {
                 ShouldNot = CreateSimpleLeafList("ItemD"),
             };
 
-            return VisitQuery(boolClause);
+            return VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemA1\")) and " +
             "((* contains \"ItemA2\")) and " +
             "((* contains \"ItemA3\")) and " +
             "((* contains \"ItemA4\"))")]
-        public string TestMultipleBoolClauseInMustVisit()
+        public string TestMultipleBoolQueryInMustVisit()
         {
             var lst = new LinkedList<string>();
             lst.AddLast("ItemA1");
@@ -96,21 +96,21 @@ namespace VisitorsTests
             lst.AddLast("ItemA3");
             lst.AddLast("ItemA4");
 
-            var boolClause = new BoolClause
+            var boolQuery = new BoolQuery
             {
                 Must = CreateSimpleLeafList(lst)
             };
 
-            return VisitQuery(boolClause);
+            return VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemA\"))\n| " +
             "where not ((* contains \"ItemB\"))\n| " +
             "where ((* contains \"ItemC\"))\n| " +
             "where not ((* contains \"ItemD\"))")]
-        public string TestSimpleBoolClauseVisit()
+        public string TestSimpleBoolQueryVisit()
         {
-            var boolClause = new BoolClause
+            var boolQuery = new BoolQuery
             {
                 Must = CreateSimpleLeafList("ItemA"),
                 MustNot = CreateSimpleLeafList("ItemB"),
@@ -118,7 +118,7 @@ namespace VisitorsTests
                 ShouldNot = CreateSimpleLeafList("ItemD")
             };
 
-            return VisitQuery(boolClause);
+            return VisitQuery(boolQuery);
         }
     }
 }

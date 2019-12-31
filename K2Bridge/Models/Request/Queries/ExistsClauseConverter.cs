@@ -8,10 +8,10 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal class QueryStringQueryConverter : ReadOnlyJsonConverter
+    internal class ExistsClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns a QueryStringQuery object
+        /// Read the given json and returns an Exists object
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>
@@ -24,13 +24,12 @@ namespace K2Bridge.Models.Request.Queries
             object existingValue,
             JsonSerializer serializer)
         {
-            JToken jt = JToken.Load(reader);
+            JObject jo = JObject.Load(reader);
+            var first = (JProperty)jo.First;
 
-            var obj = new QueryStringQuery
+            Exists obj = new Exists
             {
-                Phrase = (string)jt.First["query"],
-                Wildcard = (bool)jt.First["analyze_wildcard"],
-                Default = (string)jt.First["default_field"],
+                FieldName = (string)((JValue)first.First).Value,
             };
 
             return obj;

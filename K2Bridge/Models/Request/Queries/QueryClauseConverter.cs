@@ -28,26 +28,26 @@ namespace K2Bridge.Models.Request.Queries
             JObject jo = JObject.Load(reader);
 
             // if we know this is a Bool Clause, deserialize accordingly
-            if (objectType == typeof(BoolClause))
+            if (objectType == typeof(BoolQuery))
             {
-                return this.DeserializeBoolClause(jo, serializer);
+                return this.DeserializeBoolQuery(jo, serializer);
             }
 
-            // if its an 'inner' bool, the type might indicate IQueryClause, but in fact its a bool
+            // if its an 'inner' bool, the type might indicate IQuery, but in fact its a bool
             if (((JProperty)jo.First).Name == "bool")
             {
                 var body = ((JProperty)jo.First).Value;
-                return this.DeserializeBoolClause(body, serializer);
+                return this.DeserializeBoolQuery(body, serializer);
             }
 
             // Its really a leaf
-            var leaf = jo.ToObject<ILeafQueryClause>(serializer);
+            var leaf = jo.ToObject<ILeafQuery>(serializer);
             return leaf;
         }
 
-        private BoolClause DeserializeBoolClause(JToken token, JsonSerializer serializer)
+        private BoolQuery DeserializeBoolQuery(JToken token, JsonSerializer serializer)
         {
-            return new BoolClause
+            return new BoolQuery
             {
                 Must = this.TokenToIQueryClauseList(token["must"], serializer),
                 MustNot = this.TokenToIQueryClauseList(token["must_not"], serializer),
@@ -56,9 +56,9 @@ namespace K2Bridge.Models.Request.Queries
             };
         }
 
-        private IEnumerable<IQueryClause> TokenToIQueryClauseList(JToken token, JsonSerializer serializer)
+        private IEnumerable<IQuery> TokenToIQueryClauseList(JToken token, JsonSerializer serializer)
         {
-            return token != null ? token.ToObject<List<IQueryClause>>(serializer) : new List<IQueryClause>();
+            return token != null ? token.ToObject<List<IQuery>>(serializer) : new List<IQuery>();
         }
     }
 }

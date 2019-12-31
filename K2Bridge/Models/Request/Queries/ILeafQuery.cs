@@ -7,7 +7,7 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(LeafQueryClauseConverter))]
-    internal interface ILeafQueryClause : IQueryClause
+    internal interface ILeafQuery : IQuery
     {
         string KQL { get; set; }
     }

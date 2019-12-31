@@ -7,8 +7,8 @@ namespace K2Bridge.Models.Request.Queries
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
-    [JsonConverter(typeof(RangeQueryConverter))]
-    internal class RangeQuery : KQLBase, ILeafQueryClause, IVisitable
+    [JsonConverter(typeof(RangeClauseConverter))]
+    internal class Range : KQLBase, ILeafQuery, IVisitable
     {
         public string FieldName { get; set; }
 

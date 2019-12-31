@@ -8,16 +8,16 @@ namespace VisitorsTests
     [TestFixture]
     public class TestMatchPhraseVisitor
     {
-        private string VisitQuery(MatchPhraseQuery clause)
+        private string VisitQuery(MatchPhrase clause)
         {
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(clause);
             return clause.KQL;
         }
 
-        private static MatchPhraseQuery CreateMatchPhraseClause(string fieldName, string phrase)
+        private static MatchPhrase CreateMatchPhraseClause(string fieldName, string phrase)
         {
-            return new MatchPhraseQuery
+            return new MatchPhrase
             {
                 FieldName = fieldName,
                 Phrase = phrase
@@ -27,26 +27,26 @@ namespace VisitorsTests
         [TestCase(ExpectedResult = "MyField == \"MyPhrase\"")]
         public string TestValidMatchPhraseVisit()
         {
-            var matchPhraseQuery = CreateMatchPhraseClause("MyField", "MyPhrase");
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", "MyPhrase");
 
-            return VisitQuery(matchPhraseQuery);
+            return VisitQuery(matchPhraseClause);
         }
 
         [TestCase(ExpectedResult = "MyField == \"\"")]
         public string TestMatchPhraseWithoutPhraseVisit()
         {
-            var matchPhraseQuery = CreateMatchPhraseClause("MyField", null);
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", null);
 
-            return VisitQuery(matchPhraseQuery);
+            return VisitQuery(matchPhraseClause);
         }
 
         [TestCase]
         public void TestInvalidMatchPhraseVisit()
         {
-            var matchPhraseQuery = CreateMatchPhraseClause(null, "myPhrase");
+            var matchPhraseClause = CreateMatchPhraseClause(null, "myPhrase");
 
 
-            Assert.Throws(typeof(IllegalClauseException), () => VisitQuery(matchPhraseQuery));
+            Assert.Throws(typeof(IllegalClauseException), () => VisitQuery(matchPhraseClause));
         }
     }
 }

@@ -45,11 +45,11 @@ namespace K2Bridge
                     continue;
                 }
 
-                if (qs.Current is QueryStringQuery) {
-                    var q = (QueryStringQuery)qs.Current;
+                if (qs.Current is QueryString) {
+                    var q = (QueryString)qs.Current;
                     elasticSearchDSL.HighlightText.Add("*", q.Phrase);
-                } else if (qs.Current is MatchPhraseQuery) {
-                    var q = (MatchPhraseQuery)qs.Current;
+                } else if (qs.Current is MatchPhrase) {
+                    var q = (MatchPhrase)qs.Current;
                     elasticSearchDSL.HighlightText.Add(q.FieldName, q.Phrase);
                 }
             }

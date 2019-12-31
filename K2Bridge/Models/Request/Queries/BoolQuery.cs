@@ -10,15 +10,15 @@ namespace K2Bridge.Models.Request.Queries
     /// <summary>
     /// Represents a boolean clause
     /// </summary>
-    internal class BoolClause : KQLBase, IVisitable, IQueryClause
+    internal class BoolQuery : KQLBase, IVisitable, IQuery
     {
-        public IEnumerable<IQueryClause> Must { get; set; }
+        public IEnumerable<IQuery> Must { get; set; }
 
-        public IEnumerable<IQueryClause> MustNot { get; set; }
+        public IEnumerable<IQuery> MustNot { get; set; }
 
-        public IEnumerable<IQueryClause> Should { get; set; }
+        public IEnumerable<IQuery> Should { get; set; }
 
-        public IEnumerable<IQueryClause> ShouldNot { get; set; }
+        public IEnumerable<IQuery> ShouldNot { get; set; }
 
         public void Accept(IVisitor visitor)
         {

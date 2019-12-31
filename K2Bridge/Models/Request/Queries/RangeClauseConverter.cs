@@ -8,10 +8,10 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal class RangeQueryConverter : ReadOnlyJsonConverter
+    internal class RangeClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns a RangeQuery object
+        /// Read the given json and returns a Range object
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>
@@ -27,7 +27,7 @@ namespace K2Bridge.Models.Request.Queries
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            RangeQuery obj = new RangeQuery
+            Range obj = new Range
             {
                 FieldName = first.Name,
                 GTEValue = first.First.Value<decimal?>("gte"),

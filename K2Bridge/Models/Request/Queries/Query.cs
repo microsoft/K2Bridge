@@ -10,7 +10,7 @@ namespace K2Bridge.Models.Request.Queries
     internal class Query : KQLBase, IVisitable
     {
         [JsonProperty("bool")]
-        public BoolClause Bool { get; set; }
+        public BoolQuery Bool { get; set; }
 
         public void Accept(IVisitor visitor)
         {

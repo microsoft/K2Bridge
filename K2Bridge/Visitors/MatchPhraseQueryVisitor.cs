@@ -7,15 +7,15 @@ namespace K2Bridge.Visitors
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(MatchPhraseQuery matchPhraseQuery)
+        public void Visit(MatchPhrase matchPhrase)
         {
             // Must have a field name
-            if (string.IsNullOrEmpty(matchPhraseQuery.FieldName))
+            if (string.IsNullOrEmpty(matchPhrase.FieldName))
             {
                 throw new IllegalClauseException("FieldName must have a valid value");
             }
 
-            matchPhraseQuery.KQL = $"{matchPhraseQuery.FieldName} == \"{matchPhraseQuery.Phrase}\"";
+            matchPhrase.KQL = $"{matchPhrase.FieldName} == \"{matchPhrase.Phrase}\"";
         }
     }
 }

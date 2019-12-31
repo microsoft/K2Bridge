@@ -128,7 +128,7 @@ namespace Tests
                 }
             }";
 
-        const string queryStringQuery = @"
+        const string queryString = @"
             {""bool"":
                 {""must"":
                     [
@@ -183,7 +183,7 @@ namespace Tests
                 }
             }";
 
-        const string notQueryStringQuery = @"
+        const string notQueryStringClause = @"
             {""bool"":
                 {""must"":
                     [
@@ -224,7 +224,7 @@ namespace Tests
 
         [TestCase(queryExists,
             ExpectedResult = "where (isnotnull(TEST_FIELD))")]
-           public string TestExistsQueries(string queryString)
+           public string TestExistsClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
@@ -232,7 +232,7 @@ namespace Tests
             return query.KQL;
         }
 
-        private string TestRangeQueryBody(string queryString)
+        private string TestRangeClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
@@ -246,16 +246,16 @@ namespace Tests
             ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)")]
         public string TestRangeQueries(string queryString)
         {
-            return TestRangeQueryBody(queryString);
+            return TestRangeClause(queryString);
         }
 
         [TestCase(queryTimestampRangeSingleNoPair)]
         public void TestRangeQueriesMissingValues(string queryString)
         {
-            Assert.Throws(typeof(IllegalClauseException), () => TestRangeQueryBody(queryString));
+            Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
         }
 
-        [TestCase(queryStringQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\"))")]
+        [TestCase(queryString, ExpectedResult = "where ((* contains \"TEST_RESULT\"))")]
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -265,7 +265,7 @@ namespace Tests
         }
 
         [TestCase(combinedQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\")) and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
-        [TestCase(notQueryStringQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\"))\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
+        [TestCase(notQueryStringClause, ExpectedResult = "where ((* contains \"TEST_RESULT\"))\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);

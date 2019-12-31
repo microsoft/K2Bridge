@@ -8,10 +8,10 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal class ExistsQueryConverter : ReadOnlyJsonConverter
+    internal class MatchPhraseClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns an ExistsQuery object
+        /// Read the given json and returns a MatchPhrase object
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>
@@ -27,12 +27,24 @@ namespace K2Bridge.Models.Request.Queries
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            ExistsQuery obj = new ExistsQuery
+            if (first.First.GetType() == typeof(JObject))
             {
-                FieldName = (string)((JValue)first.First).Value,
-            };
-
-            return obj;
+                var obj = new MatchPhrase
+                {
+                    FieldName = first.Name,
+                    Phrase = (string)first.First["query"],
+                };
+                return obj;
+            }
+            else
+            {
+                var obj = new MatchPhrase
+                {
+                    FieldName = first.Name,
+                    Phrase = (string)((JValue)first.First).Value,
+                };
+                return obj;
+            }
         }
     }
 }

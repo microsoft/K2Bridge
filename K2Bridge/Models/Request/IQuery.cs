@@ -7,7 +7,7 @@ namespace K2Bridge.Models.Request
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(QueryClauseConverter))]
-    internal interface IQueryClause
+    internal interface IQuery
     {
     }
 }

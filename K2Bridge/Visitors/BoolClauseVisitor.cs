@@ -9,18 +9,18 @@ namespace K2Bridge.Visitors
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(BoolClause boolClause)
+        public void Visit(BoolQuery boolQuery)
         {
-            this.AddListInternal(boolClause.Must, KQLOperators.And, false /* positive */, boolClause);
-            this.AddListInternal(boolClause.MustNot, KQLOperators.And, true /* negative */, boolClause);
-            this.AddListInternal(boolClause.Should, KQLOperators.Or, false /* positive */, boolClause);
-            this.AddListInternal(boolClause.ShouldNot, KQLOperators.Or, true /* negative */, boolClause);
+            this.AddListInternal(boolQuery.Must, KQLOperators.And, false /* positive */, boolQuery);
+            this.AddListInternal(boolQuery.MustNot, KQLOperators.And, true /* negative */, boolQuery);
+            this.AddListInternal(boolQuery.Should, KQLOperators.Or, false /* positive */, boolQuery);
+            this.AddListInternal(boolQuery.ShouldNot, KQLOperators.Or, true /* negative */, boolQuery);
         }
 
         /// <summary>
         /// Create a list of clauses of a specific type (must / must not / should / should not)
         /// </summary>
-        private void AddListInternal(IEnumerable<IQueryClause> lst, string delimiterKeyword, bool negativeCondition, BoolClause boolClause)
+        private void AddListInternal(IEnumerable<IQuery> lst, string delimiterKeyword, bool negativeCondition, BoolQuery boolQuery)
         {
             if (lst == null)
             {
@@ -48,26 +48,26 @@ namespace K2Bridge.Visitors
                 }
             }
 
-            this.KQLListToString(kqlExpressions, delimiterKeyword, boolClause);
+            this.KQLListToString(kqlExpressions, delimiterKeyword, boolQuery);
         }
 
         /// <summary>
-        /// Joins the list of kql commands and modifies the given BoolClause
+        /// Joins the list of kql commands and modifies the given BoolQuery
         /// </summary>
-        private void KQLListToString(List<string> kqlList, string joinString, BoolClause boolClause)
+        private void KQLListToString(List<string> kqlList, string joinString, BoolQuery boolQuery)
         {
             joinString = $" {joinString} ";
 
             if (kqlList.Count > 0)
             {
-                if (!string.IsNullOrEmpty(boolClause.KQL))
+                if (!string.IsNullOrEmpty(boolQuery.KQL))
                 {
-                    boolClause.KQL += KQLOperators.CommandSeparator;
-                    boolClause.KQL += KQLOperators.Where;
-                    boolClause.KQL += " ";
+                    boolQuery.KQL += KQLOperators.CommandSeparator;
+                    boolQuery.KQL += KQLOperators.Where;
+                    boolQuery.KQL += " ";
                 }
 
-                boolClause.KQL += $"{string.Join(joinString, kqlList)}";
+                boolQuery.KQL += $"{string.Join(joinString, kqlList)}";
             }
         }
     }

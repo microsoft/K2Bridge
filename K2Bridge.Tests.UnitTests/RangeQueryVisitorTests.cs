@@ -13,49 +13,49 @@ namespace Tests
     using K2Bridge.Visitors;
 
     [TestFixture]
-    public class TestRangeQueryVisitorTests
+    public class TestRangeClauseVisitorTests
     {
         //Numeric Range Query Tests
         [TestCase(ExpectedResult = "MyField >= 0 and MyField < 10")]
-        public string TestValidRangeQueryVisitNumberBetweenTwoInts()
+        public string TestValidRangeClauseVisitNumberBetweenTwoInts()
         {
-            return RangeQueryToKQL(CreateRangeQuery(0, 10m));
+            return RangeClauseToKQL(CreateRangeClause(0, 10m));
         }
 
         [TestCase(ExpectedResult = "MyField >= 0 and MyField < 10.10")]
-        public string TestValidRangeQueryVisitNumberBetweenIntAndDecimal()
+        public string TestValidRangeClauseVisitNumberBetweenIntAndDecimal()
         {
-            return RangeQueryToKQL(CreateRangeQuery(0, 10.10m));
+            return RangeClauseToKQL(CreateRangeClause(0, 10.10m));
         }
 
         [TestCase(ExpectedResult = "MyField >= 10.10 and MyField < 20.20")]
-        public string TestValidRangeQueryVisitNumberBetweenTwoDecimalss()
+        public string TestValidRangeClauseVisitNumberBetweenTwoDecimalss()
         {
-            return RangeQueryToKQL(CreateRangeQuery(10.10m, 20.20m));
+            return RangeClauseToKQL(CreateRangeClause(10.10m, 20.20m));
         }
 
         //Time Range Query Tests
         [TestCase(ExpectedResult = "MyField >= fromUnixTimeMilli(0) and MyField <= fromUnixTimeMilli(10)")]
-        public string TestValidTimeRangeQueryVisitNumberBetweenTwoInts()
+        public string TestValidTimeRangeClauseVisitNumberBetweenTwoInts()
         {
-            return RangeQueryToKQL(CreateTimeRangeQuery(0, 10m));
+            return RangeClauseToKQL(CreateTimeRangeClause(0, 10m));
         }
 
         [TestCase(ExpectedResult = "MyField >= fromUnixTimeMilli(0) and MyField <= fromUnixTimeMilli(10.10)")]
-        public string TestValidTimeRangeQueryVisitNumberBetweenIntAndDecimal()
+        public string TestValidTimeRangeClauseVisitNumberBetweenIntAndDecimal()
         {
-            return RangeQueryToKQL(CreateTimeRangeQuery(0, 10.10m));
+            return RangeClauseToKQL(CreateTimeRangeClause(0, 10.10m));
         }
 
         [TestCase(ExpectedResult = "MyField >= fromUnixTimeMilli(10.10) and MyField <= fromUnixTimeMilli(20.20)")]
-        public string TestValidTimeRangeQueryVisitNumberBetweenTwoDecimalss()
+        public string TestValidTimeRangeClauseVisitNumberBetweenTwoDecimalss()
         {
-            return RangeQueryToKQL(CreateTimeRangeQuery(10.10m, 20.20m));
+            return RangeClauseToKQL(CreateTimeRangeClause(10.10m, 20.20m));
         }
 
-        private static RangeQuery CreateRangeQuery(decimal min, decimal max)
+        private static K2Bridge.Models.Request.Queries.Range CreateRangeClause(decimal min, decimal max)
         {
-            return new RangeQuery()
+            return new K2Bridge.Models.Request.Queries.Range()
             {
                 FieldName = "MyField",
                 GTEValue = min,
@@ -66,9 +66,9 @@ namespace Tests
             };
         }
 
-        private static RangeQuery CreateTimeRangeQuery(decimal min, decimal max)
+        private static K2Bridge.Models.Request.Queries.Range CreateTimeRangeClause(decimal min, decimal max)
         {
-            return new RangeQuery()
+            return new K2Bridge.Models.Request.Queries.Range()
             {
                 FieldName = "MyField",
                 GTEValue = min,
@@ -79,11 +79,11 @@ namespace Tests
             };
         }
 
-        private static string RangeQueryToKQL(RangeQuery rangeQuery)
+        private static string RangeClauseToKQL(K2Bridge.Models.Request.Queries.Range range)
         {
             var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(rangeQuery);
-            return rangeQuery.KQL;
+            visitor.Visit(range);
+            return range.KQL;
         }
     } 
 }

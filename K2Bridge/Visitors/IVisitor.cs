@@ -8,21 +8,21 @@ namespace K2Bridge.Visitors
     using K2Bridge.Models.Request.Queries;
 
     /// <summary>
-    /// IVisitor defines all the different visit methods overloads to handle all supported clause types
+    /// IVisitor defines all the different visit methods overloads to handle all supported query types
     /// </summary>
     internal interface IVisitor
     {
-        void Visit(ExistsQuery existsQuery);
+        void Visit(Exists exists);
 
-        void Visit(MatchPhraseQuery matchPhraseQuery);
+        void Visit(MatchPhrase matchPhrase);
 
         void Visit(Query query);
 
         void Visit(ElasticSearchDSL elasticSearchDSL);
 
-        void Visit(RangeQuery rangeQuery);
+        void Visit(Range range);
 
-        void Visit(BoolClause boolClause);
+        void Visit(BoolQuery boolQuery);
 
         void Visit(SortClause sortClause);
 
@@ -36,6 +36,6 @@ namespace K2Bridge.Visitors
 
         void Visit(Cardinality cardinality);
 
-        void Visit(QueryStringQuery queryStringQuery);
+        void Visit(QueryString queryString);
     }
 }
