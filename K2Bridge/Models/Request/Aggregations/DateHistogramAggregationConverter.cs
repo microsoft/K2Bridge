@@ -8,10 +8,10 @@ namespace K2Bridge.Models.Request.Aggregations
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal class DateHistogramConverter : ReadOnlyJsonConverter
+    internal class DateHistogramAggregationConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns a DateHistogram object
+        /// Read the given json and returns a DateHistogramAggregation object
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>
@@ -26,7 +26,7 @@ namespace K2Bridge.Models.Request.Aggregations
         {
             JObject jo = JObject.Load(reader);
 
-            var obj = new DateHistogram
+            var obj = new DateHistogramAggregation
             {
                 FieldName = (string)jo["field"],
                 Interval = (string)jo["interval"],

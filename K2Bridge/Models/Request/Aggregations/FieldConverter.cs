@@ -8,10 +8,10 @@ namespace K2Bridge.Models.Request.Aggregations
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal class JustFieldConverter : ReadOnlyJsonConverter
+    internal class FieldConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns an object
+        /// Read the given json and returns an object.
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>

@@ -29,7 +29,7 @@ namespace K2Bridge.Visitors
         void Visit(Aggregation aggregation);
 
         // Bucket Aggregations
-        void Visit(DateHistogram dateHistogram);
+        void Visit(DateHistogramAggregation dateHistogramAggregation);
 
         // Metric Aggregations
         void Visit(Avg avg);

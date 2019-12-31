@@ -6,7 +6,7 @@ namespace K2Bridge.Models.Request.Aggregations
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
-    [JsonConverter(typeof(JustFieldConverter))]
+    [JsonConverter(typeof(FieldConverter))]
     internal class Cardinality : MetricAggregation
     {
         [JsonProperty("field")]

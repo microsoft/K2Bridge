@@ -6,30 +6,30 @@ using NUnit.Framework;
 namespace VisitorsTests
 {
     [TestFixture]
-    public class TestDateHistogramVisitor
+    public class TestDateHistogramAggregationVisitor
     {
         [TestCase(ExpectedResult = "wibble by wobble = wobble | order by todatetime(wobble) asc")]
-        public string DateHistogramConstructsQuery()
+        public string DateHistogramAggregationConstructsQuery()
         {
-            var histogram = new DateHistogram()
+            var histogramAggregation = new DateHistogramAggregation()
             {
                 Metric = "wibble",
                 FieldName = "wobble"
             };
 
             var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(histogram);
+            visitor.Visit(histogramAggregation);
 
-            return histogram.KQL;
+            return histogramAggregation.KQL;
         }
 
         [TestCase("w", ExpectedResult = "wibble by wobble = startofweek(wobble) | order by todatetime(wobble) asc")]
         [TestCase("y", ExpectedResult = "wibble by wobble = startofyear(wobble) | order by todatetime(wobble) asc")]
         [TestCase("M", ExpectedResult = "wibble by wobble = startofmonth(wobble) | order by todatetime(wobble) asc")]
         [TestCase("z", ExpectedResult = "wibble by wobble = bin(todatetime(wobble), z) | order by todatetime(wobble) asc")]
-        public string DateHistogramWithStartOfWeekIntervalConstructsQuery(string interval)
+        public string DateHistogramAggregationWithStartOfWeekIntervalConstructsQuery(string interval)
         {
-            var histogram = new DateHistogram()
+            var histogramAggregation = new DateHistogramAggregation()
             {
                 Metric = "wibble",
                 FieldName = "wobble",
@@ -37,9 +37,9 @@ namespace VisitorsTests
             };
 
             var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(histogram);
+            visitor.Visit(histogramAggregation);
 
-            return histogram.KQL;
+            return histogramAggregation.KQL;
         }
     }
 }

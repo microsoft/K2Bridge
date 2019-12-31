@@ -5,36 +5,36 @@ namespace K2Bridge.Visitors
 {
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(Models.Request.Aggregations.DateHistogram dateHistogram)
+        public void Visit(Models.Request.Aggregations.DateHistogramAggregation dateHistogramAggregation)
         {
-            dateHistogram.KQL = $"{dateHistogram.Metric} by {dateHistogram.FieldName} = ";
-            if (!string.IsNullOrEmpty(dateHistogram.Interval))
+            dateHistogramAggregation.KQL = $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldName} = ";
+            if (!string.IsNullOrEmpty(dateHistogramAggregation.Interval))
             {
-                var period = dateHistogram.Interval[dateHistogram.Interval.Length - 1];
+                var period = dateHistogramAggregation.Interval[dateHistogramAggregation.Interval.Length - 1];
                 switch (period)
                 {
                     case 'w':
-                        dateHistogram.KQL += $"{KQLOperators.StartOfWeek}({dateHistogram.FieldName})";
+                        dateHistogramAggregation.KQL += $"{KQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})";
                         break;
                     case 'M':
-                        dateHistogram.KQL += $"{KQLOperators.StartOfMonth}({dateHistogram.FieldName})";
+                        dateHistogramAggregation.KQL += $"{KQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})";
                         break;
                     case 'y':
-                        dateHistogram.KQL += $"{KQLOperators.StartOfYear}({dateHistogram.FieldName})";
+                        dateHistogramAggregation.KQL += $"{KQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})";
                         break;
                     default:
                         // todatetime is redundent but we'll keep it for now
-                        dateHistogram.KQL += $"bin({KQLOperators.ToDateTime}({dateHistogram.FieldName}), {dateHistogram.Interval})";
+                        dateHistogramAggregation.KQL += $"bin({KQLOperators.ToDateTime}({dateHistogramAggregation.FieldName}), {dateHistogramAggregation.Interval})";
                         break;
                 }
             }
             else
             {
-                dateHistogram.KQL += dateHistogram.FieldName;
+                dateHistogramAggregation.KQL += dateHistogramAggregation.FieldName;
             }
 
             // todatetime is redundent but we'll keep it for now
-            dateHistogram.KQL += $" | {KQLOperators.OrderBy} {KQLOperators.ToDateTime}({dateHistogram.FieldName}) asc";
+            dateHistogramAggregation.KQL += $" | {KQLOperators.OrderBy} {KQLOperators.ToDateTime}({dateHistogramAggregation.FieldName}) asc";
         }
     }
 }

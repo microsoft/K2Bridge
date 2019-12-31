@@ -31,7 +31,7 @@ namespace K2Bridge.Models.Request.Aggregations
             switch (first.Name)
             {
                 case "date_histogram":
-                    leafAggregation = first.Value.ToObject<DateHistogram>(serializer);
+                    leafAggregation = first.Value.ToObject<DateHistogramAggregation>(serializer);
                     break;
 
                 case "avg":
