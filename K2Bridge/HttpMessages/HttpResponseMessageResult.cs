@@ -14,24 +14,33 @@ namespace K2Bridge.HttpMessages
     /// <summary>
     /// This class acts as a wrapper of the original HttpResponseMessage
     /// result object with the IActionResult implementation to meet the
-    /// controllers expected type.
+    /// controllers expected type
+    /// The class is converting Elastic response which can't be forwarded as is to Kibana
+    /// with it's Http Response properties such as status code, headers etc
+    /// Therefore those properties are copied to IActionResult.
     /// </summary>
     public class HttpResponseMessageResult : IActionResult
     {
-        // UserStory 1373:
-        // https://dev.azure.com/csedevil/K2-bridge-internal/_backlogs/backlog/K2-bridge-internal%20Team/Stories/?showParents=true&workitem=1373
         private readonly HttpResponseMessage responseMessage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HttpResponseMessageResult"/> class.
         /// </summary>
-        /// <param name="responseMessage"></param>
+        /// <param name="responseMessage">HttpResponseMessage returned from Elastic.</param>
         internal HttpResponseMessageResult(HttpResponseMessage responseMessage)
         {
             this.responseMessage =
                 responseMessage ?? throw new ArgumentNullException(nameof(responseMessage));
         }
 
+        /// <summary>
+        /// Parses instance response and executes the result operation of the action method asynchronously.
+        /// This method is called by MVC to process the result of an action method.
+        /// </summary>
+        /// <param name="context">The context in which the result is executed. The context information includes
+        /// information about the action that was executed and request information.</param>
+        /// <returns>A task that represents the asynchronous execute operation.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task ExecuteResultAsync(ActionContext context)
         {
             var response = context.HttpContext.Response;
