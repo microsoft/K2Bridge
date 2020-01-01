@@ -3,24 +3,23 @@ using K2Bridge;
 using K2Bridge.Models.Request.Queries;
 using K2Bridge.Visitors;
 using NUnit.Framework;
-using Range = K2Bridge.Models.Request.Queries.Range;
 
 namespace VisitorsTests
 {
     [TestFixture]
     public class TestRangeVisitor
     {
-        private static string VisitRangeClause(Range clause)
+        private static string VisitRangeClause(RangeClause clause)
         {
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(clause);
             return clause.KQL;
         }
 
-        private static Range CreateRangeClause(string fieldName,
+        private static RangeClause CreateRangeClause(string fieldName,
             Decimal? gte, Decimal? gt, Decimal? lte, Decimal? lt, String? format)
         {
-            return new Range
+            return new RangeClause
             {
                 FieldName = fieldName,
                 GTEValue = gte,

@@ -41,7 +41,7 @@ namespace K2Bridge.Models.Request.Queries
             }
 
             // Its really a leaf
-            var leaf = jo.ToObject<ILeafQuery>(serializer);
+            var leaf = jo.ToObject<ILeafClause>(serializer);
             return leaf;
         }
 

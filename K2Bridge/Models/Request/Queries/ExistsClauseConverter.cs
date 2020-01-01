@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Request.Queries
     internal class ExistsClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns an Exists object
+        /// Read the given json and returns an ExistsClause object
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>
@@ -27,7 +27,7 @@ namespace K2Bridge.Models.Request.Queries
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            Exists obj = new Exists
+            ExistsClause obj = new ExistsClause
             {
                 FieldName = (string)((JValue)first.First).Value,
             };

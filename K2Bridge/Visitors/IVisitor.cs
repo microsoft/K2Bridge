@@ -12,15 +12,15 @@ namespace K2Bridge.Visitors
     /// </summary>
     internal interface IVisitor
     {
-        void Visit(Exists exists);
+        void Visit(ExistsClause existsClause);
 
-        void Visit(MatchPhrase matchPhrase);
+        void Visit(MatchPhraseClause matchPhraseClause);
 
         void Visit(Query query);
 
         void Visit(ElasticSearchDSL elasticSearchDSL);
 
-        void Visit(Range range);
+        void Visit(RangeClause rangeClause);
 
         void Visit(BoolQuery boolQuery);
 
@@ -36,6 +36,6 @@ namespace K2Bridge.Visitors
 
         void Visit(CardinalityAggregation cardinalityAggregation);
 
-        void Visit(QueryString queryString);
+        void Visit(QueryStringClause queryStringClause);
     }
 }

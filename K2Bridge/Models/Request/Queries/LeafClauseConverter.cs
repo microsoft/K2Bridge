@@ -8,7 +8,7 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    internal class LeafQueryClauseConverter : ReadOnlyJsonConverter
+    internal class LeafClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
         /// Read the given json and returns an object
@@ -30,16 +30,16 @@ namespace K2Bridge.Models.Request.Queries
             switch (first.Name)
             {
                 case "exists":
-                    return first.Value.ToObject<Exists>(serializer);
+                    return first.Value.ToObject<ExistsClause>(serializer);
 
                 case "match_phrase":
-                    return first.Value.ToObject<MatchPhrase>(serializer);
+                    return first.Value.ToObject<MatchPhraseClause>(serializer);
 
                 case "range":
-                    return first.Value.ToObject<Range>(serializer);
+                    return first.Value.ToObject<RangeClause>(serializer);
 
                 case "query_string":
-                    return first.ToObject<QueryString>(serializer);
+                    return first.ToObject<QueryStringClause>(serializer);
 
                 case "bool":
                     return ((JProperty)jo.First).Value.ToObject<BoolQuery>(serializer);

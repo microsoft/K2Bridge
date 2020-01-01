@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Request.Queries
     internal class RangeClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns a Range object
+        /// Read the given json and returns a RangeClause object
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>
@@ -27,7 +27,7 @@ namespace K2Bridge.Models.Request.Queries
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            Range obj = new Range
+            RangeClause obj = new RangeClause
             {
                 FieldName = first.Name,
                 GTEValue = first.First.Value<decimal?>("gte"),

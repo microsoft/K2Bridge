@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Request.Queries
     internal class MatchPhraseClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns a MatchPhrase object
+        /// Read the given json and returns a MatchPhraseClause object
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>
@@ -29,7 +29,7 @@ namespace K2Bridge.Models.Request.Queries
 
             if (first.First.GetType() == typeof(JObject))
             {
-                var obj = new MatchPhrase
+                var obj = new MatchPhraseClause
                 {
                     FieldName = first.Name,
                     Phrase = (string)first.First["query"],
@@ -38,7 +38,7 @@ namespace K2Bridge.Models.Request.Queries
             }
             else
             {
-                var obj = new MatchPhrase
+                var obj = new MatchPhraseClause
                 {
                     FieldName = first.Name,
                     Phrase = (string)((JValue)first.First).Value,

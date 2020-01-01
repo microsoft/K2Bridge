@@ -8,42 +8,42 @@ namespace K2Bridge.Visitors
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(Models.Request.Queries.Range range)
+        public void Visit(Models.Request.Queries.RangeClause rangeClause)
         {
-            if (string.IsNullOrEmpty(range.FieldName))
+            if (string.IsNullOrEmpty(rangeClause.FieldName))
             {
-                throw new IllegalClauseException("Range clause must have a valid FieldName property");
+                throw new IllegalClauseException("RangeClause clause must have a valid FieldName property");
             }
 
-            if (range.Format == "epoch_millis")
+            if (rangeClause.Format == "epoch_millis")
             {
-                // default time filter through a range query uses epoch times with GTE+LTE
-                if (range.GTEValue == null)
+                // default time filter through a rangeClause query uses epoch times with GTE+LTE
+                if (rangeClause.GTEValue == null)
                 {
-                    throw new IllegalClauseException("Range clause must have a valid GTEValue property");
+                    throw new IllegalClauseException("RangeClause clause must have a valid GTEValue property");
                 }
 
-                if (range.LTEValue == null)
+                if (rangeClause.LTEValue == null)
                 {
-                    throw new IllegalClauseException("Range clause must have a valid LTEValue property");
+                    throw new IllegalClauseException("RangeClause clause must have a valid LTEValue property");
                 }
 
-                range.KQL = $"{range.FieldName} >= fromUnixTimeMilli({range.GTEValue}) {KQLOperators.And} {range.FieldName} <= fromUnixTimeMilli({range.LTEValue})";
+                rangeClause.KQL = $"{rangeClause.FieldName} >= fromUnixTimeMilli({rangeClause.GTEValue}) {KQLOperators.And} {rangeClause.FieldName} <= fromUnixTimeMilli({rangeClause.LTEValue})";
             }
             else
             {
-                // general "is between" filter on numeric fields uses a range query with GTE+LT (not LTE like above)
-                if (range.GTEValue == null)
+                // general "is between" filter on numeric fields uses a rangeClause query with GTE+LT (not LTE like above)
+                if (rangeClause.GTEValue == null)
                 {
-                    throw new IllegalClauseException("Range clause must have a valid GTEValue property");
+                    throw new IllegalClauseException("RangeClause clause must have a valid GTEValue property");
                 }
 
-                if (range.LTValue == null)
+                if (rangeClause.LTValue == null)
                 {
-                    throw new IllegalClauseException("Range clause must have a valid LTValue property");
+                    throw new IllegalClauseException("RangeClause clause must have a valid LTValue property");
                 }
 
-                range.KQL = $"{range.FieldName} >= {range.GTEValue} and {range.FieldName} < {range.LTValue}";
+                rangeClause.KQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
             }
         }
     }

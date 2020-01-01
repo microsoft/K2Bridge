@@ -15,7 +15,7 @@ namespace Tests
     [TestFixture]
     public class TestRangeClauseVisitorTests
     {
-        //Numeric Range Query Tests
+        //Numeric RangeClause Query Tests
         [TestCase(ExpectedResult = "MyField >= 0 and MyField < 10")]
         public string TestValidRangeClauseVisitNumberBetweenTwoInts()
         {
@@ -34,7 +34,7 @@ namespace Tests
             return RangeClauseToKQL(CreateRangeClause(10.10m, 20.20m));
         }
 
-        //Time Range Query Tests
+        //Time RangeClause Query Tests
         [TestCase(ExpectedResult = "MyField >= fromUnixTimeMilli(0) and MyField <= fromUnixTimeMilli(10)")]
         public string TestValidTimeRangeClauseVisitNumberBetweenTwoInts()
         {
@@ -53,9 +53,9 @@ namespace Tests
             return RangeClauseToKQL(CreateTimeRangeClause(10.10m, 20.20m));
         }
 
-        private static K2Bridge.Models.Request.Queries.Range CreateRangeClause(decimal min, decimal max)
+        private static K2Bridge.Models.Request.Queries.RangeClause CreateRangeClause(decimal min, decimal max)
         {
-            return new K2Bridge.Models.Request.Queries.Range()
+            return new K2Bridge.Models.Request.Queries.RangeClause()
             {
                 FieldName = "MyField",
                 GTEValue = min,
@@ -66,9 +66,9 @@ namespace Tests
             };
         }
 
-        private static K2Bridge.Models.Request.Queries.Range CreateTimeRangeClause(decimal min, decimal max)
+        private static K2Bridge.Models.Request.Queries.RangeClause CreateTimeRangeClause(decimal min, decimal max)
         {
-            return new K2Bridge.Models.Request.Queries.Range()
+            return new K2Bridge.Models.Request.Queries.RangeClause()
             {
                 FieldName = "MyField",
                 GTEValue = min,
@@ -79,11 +79,11 @@ namespace Tests
             };
         }
 
-        private static string RangeClauseToKQL(K2Bridge.Models.Request.Queries.Range range)
+        private static string RangeClauseToKQL(K2Bridge.Models.Request.Queries.RangeClause rangeClause)
         {
             var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(range);
-            return range.KQL;
+            visitor.Visit(rangeClause);
+            return rangeClause.KQL;
         }
     } 
 }

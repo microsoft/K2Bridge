@@ -8,7 +8,7 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(QueryStringClauseConverter))]
-    internal class QueryString : KQLBase, ILeafQuery, IVisitable
+    internal class QueryStringClause : KQLBase, ILeafClause, IVisitable
     {
         public string Phrase { get; set; }
 

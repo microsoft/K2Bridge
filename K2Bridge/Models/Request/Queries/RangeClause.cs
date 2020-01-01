@@ -8,7 +8,7 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(RangeClauseConverter))]
-    internal class Range : KQLBase, ILeafQuery, IVisitable
+    internal class RangeClause : KQLBase, ILeafClause, IVisitable
     {
         public string FieldName { get; set; }
 

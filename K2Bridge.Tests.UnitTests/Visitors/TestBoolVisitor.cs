@@ -25,11 +25,11 @@ namespace VisitorsTests
 
         private IEnumerable<IQuery> CreateSimpleLeafList(IEnumerable<string> values)
         {
-            var lst = new LinkedList<ILeafQuery>();
+            var lst = new LinkedList<ILeafClause>();
 
             foreach (var value in values)
             {
-                var item = new QueryString
+                var item = new QueryStringClause
                 {
                     Phrase = value
                 };

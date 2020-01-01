@@ -7,9 +7,9 @@ namespace K2Bridge.Visitors
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(Exists exists)
+        public void Visit(ExistsClause existsClause)
         {
-            exists.KQL = $"{KQLOperators.IsNotNull}({exists.FieldName})";
+            existsClause.KQL = $"{KQLOperators.IsNotNull}({existsClause.FieldName})";
         }
     }
 }

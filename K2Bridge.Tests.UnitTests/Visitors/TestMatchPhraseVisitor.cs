@@ -8,16 +8,16 @@ namespace VisitorsTests
     [TestFixture]
     public class TestMatchPhraseVisitor
     {
-        private string VisitQuery(MatchPhrase clause)
+        private string VisitQuery(MatchPhraseClause clause)
         {
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(clause);
             return clause.KQL;
         }
 
-        private static MatchPhrase CreateMatchPhraseClause(string fieldName, string phrase)
+        private static MatchPhraseClause CreateMatchPhraseClause(string fieldName, string phrase)
         {
-            return new MatchPhrase
+            return new MatchPhraseClause
             {
                 FieldName = fieldName,
                 Phrase = phrase

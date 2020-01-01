@@ -12,7 +12,7 @@ namespace VisitorsTests
         [TestCase(ExpectedResult = "isnotnull(MyField)")]
         public string TestValidExistsVisit()
         {
-            var existsClause = new Exists
+            var existsClause = new ExistsClause
             {
                 FieldName = "MyField"
             };

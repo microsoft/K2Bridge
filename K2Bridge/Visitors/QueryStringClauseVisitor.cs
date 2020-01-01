@@ -10,24 +10,24 @@ namespace K2Bridge.Visitors
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(QueryString queryString)
+        public void Visit(QueryStringClause queryStringClause)
         {
-            List<string> phraseList = this.Parse(queryString.Phrase);
+            List<string> phraseList = this.Parse(queryStringClause.Phrase);
             if (phraseList != null)
             {
                 foreach (var match in phraseList)
                 {
                     if (match.Equals("or") || match.Equals("and"))
                     {
-                        queryString.KQL += $" {match} ";
+                        queryStringClause.KQL += $" {match} ";
                     }
                     else if (match.Equals("not"))
                     {
-                        queryString.KQL += $"{match} ";
+                        queryStringClause.KQL += $"{match} ";
                     }
                     else
                     {
-                        queryString.KQL += $"(* {KQLOperators.Contains} {match})";
+                        queryStringClause.KQL += $"(* {KQLOperators.Contains} {match})";
                     }
                 }
             }
