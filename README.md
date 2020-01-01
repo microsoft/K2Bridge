@@ -4,7 +4,7 @@
 
 ---
 
-[![Build Status](https://dev.azure.com/csedevil/K2-bridge/_apis/build/status/microsoft.KibanaKustoBridge?branchName=master)](https://dev.azure.com/csedevil/K2-bridge/_build/latest?definitionId=146&branchName=master)
+[![Build Status](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_apis/build/status/microsoft.KibanaKustoBridge?branchName=master)](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_build/latest?definitionId=140&branchName=master)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 ## Description
