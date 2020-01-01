@@ -7,7 +7,7 @@ namespace K2Bridge.Models.Response.Metadata
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
-    internal class FieldCapabilityResponse
+    public class FieldCapabilityResponse
     {
         private readonly Dictionary<string, FieldCapabilityElement> fields = new Dictionary<string, FieldCapabilityElement>();
 

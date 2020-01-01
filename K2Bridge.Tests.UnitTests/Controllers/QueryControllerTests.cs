@@ -1,18 +1,21 @@
-﻿using K2Bridge;
-using K2Bridge.Controllers;
-using K2Bridge.KustoConnector;
-using K2Bridge.Models.Response;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
-using NUnit.Framework;
-using System;
-using System.Data;
-using System.Threading.Tasks;
-using Substitute = NSubstitute.Substitute;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
 
 namespace K2BridgeUnitTests
 {
+    using K2Bridge;
+    using K2Bridge.Controllers;
+    using K2Bridge.KustoConnector;
+    using K2Bridge.Models.Response;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using NUnit.Framework;
+    using System;
+    using System.Data;
+    using System.Threading.Tasks;
+    using Substitute = NSubstitute.Substitute;
+
     [TestFixture]
     public class QueryControllerTests
     {
@@ -28,18 +31,18 @@ namespace K2BridgeUnitTests
             mockQueryExecutor.Setup(exec => exec.ExecuteQuery(It.IsAny<QueryData>())).Returns((new TimeSpan(), Substitute.For<IDataReader>()));
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
-            mockResponseParser.Setup(exec => 
+            mockResponseParser.Setup(exec =>
                 exec.ParseElasticResponse(
-                    It.IsAny<IDataReader>(), 
+                    It.IsAny<IDataReader>(),
                     It.IsAny<QueryData>(),
                     It.IsAny<TimeSpan>()))
                 .Returns(new ElasticResponse());
-            
+
             return new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object);
         }
 
         [Test]
-        public async Task Search_ReturnsAnActionResult_OKfromADX()
+        public async Task Search_ReturnsAnActionResult_OKfromKusto()
         {
             // Arrange
             var queryInBodyPayload = ValidQueryContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);

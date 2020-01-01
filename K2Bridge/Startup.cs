@@ -1,6 +1,7 @@
 namespace K2Bridge
 {
     using System;
+    using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.RewriteRules;
@@ -36,6 +37,8 @@ namespace K2Bridge
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
             services.AddTransient<IQueryExecutor, KustoManager>();
             services.AddTransient<IVisitor, ElasticSearchDSLVisitor>();
+            services.AddSingleton((Serilog.ILogger)Log.Logger);
+            services.AddTransient<IKustoDataAccess, KustoDataAccess>();
             services.AddTransient<IResponseParser, KustoResponseParser>();
 
             // use this http client factory to issue requests to the fallback elastic instance
@@ -66,10 +69,11 @@ namespace K2Bridge
             // detailed request logging
             app.UseSerilogRequestLogging();
 
-            // rewrite URL in case there is a dot ('.') in the path (and add a trailing slash)
-            // without the trailing slash ASP.NET interprets this is a file request and
-            // blocks the request. Needed for the Kibana passtrough requests
+            // Additional rewrite rules to allow different
+            // kibana routing behaviors.
             var options = new RewriteOptions()
+                .Add(new RewriteRequestsForTemplateRule())
+                .Add(new RewriteFieldCapabilitiesRule())
                 .Add(new RewriteTrailingSlashesRule());
             app.UseRewriter(options);
             app.UseRouting();
@@ -77,6 +81,9 @@ namespace K2Bridge
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+
+                // Special treatment to FieldCapabilityController as it's intentionally not marked with the [ApiController] attribute.
+                endpoints.MapControllerRoute("fieldcaps", "FieldCapability/Process/{indexName?}", defaults: new { controller = "FieldCapability", action = "Process" });
                 endpoints.MapFallbackToController("Passthrough", "Metadata");
             });
 

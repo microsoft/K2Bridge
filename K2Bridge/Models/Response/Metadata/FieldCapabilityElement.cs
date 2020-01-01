@@ -7,7 +7,7 @@ namespace K2Bridge.Models.Response.Metadata
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(FieldCapabilityElementConverter))]
-    internal class FieldCapabilityElement
+    public class FieldCapabilityElement
     {
         private enum DataReaderMapping
         {

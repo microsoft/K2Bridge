@@ -21,6 +21,8 @@
   <ItemGroup>
     <Folder Include="KustoConnector\" />
     <Folder Include="Visitors\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="DAL\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\K2Bridge\K2Bridge.csproj" />

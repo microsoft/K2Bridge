@@ -14,7 +14,7 @@ namespace K2Bridge.Controllers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Handles requests to ADX.
+    /// Handles requests to Kusto.
     /// </summary>
     [Route("")]
     [ApiController]

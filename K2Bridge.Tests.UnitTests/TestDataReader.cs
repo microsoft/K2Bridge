@@ -30,12 +30,10 @@ namespace Tests
 
         public void Close()
         {
-            throw new NotImplementedException();
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public bool GetBoolean(int i) =>
