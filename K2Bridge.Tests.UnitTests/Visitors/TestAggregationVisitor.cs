@@ -26,7 +26,7 @@ namespace VisitorsTests
         {
             var aggregateClause = new Aggregation()
             {
-                PrimaryAggregation = new Avg() { FieldName = "fieldA" }
+                PrimaryAggregation = new AvgAggregation() { FieldName = "fieldA" }
             };
 
             var visitor = new ElasticSearchDSLVisitor();
@@ -40,10 +40,10 @@ namespace VisitorsTests
         {
             var aggregateClause = new Aggregation()
             {
-                PrimaryAggregation = new Avg() { FieldName = "fieldA" },
+                PrimaryAggregation = new AvgAggregation() { FieldName = "fieldA" },
                 SubAggregations = new Dictionary<string, Aggregation>
                 {
-                    { "sub", new Aggregation() { PrimaryAggregation = new Avg { FieldName = "fieldB" } } }
+                    { "sub", new Aggregation() { PrimaryAggregation = new AvgAggregation { FieldName = "fieldB" } } }
                 }
             };
 
@@ -59,7 +59,7 @@ namespace VisitorsTests
         {
             var aggregateClause = new Aggregation()
             {
-                PrimaryAggregation = new Cardinality() { FieldName = "fieldA" }
+                PrimaryAggregation = new CardinalityAggregation() { FieldName = "fieldA" }
             };
 
             var visitor = new ElasticSearchDSLVisitor();
@@ -73,10 +73,10 @@ namespace VisitorsTests
         {
             var aggregateClause = new Aggregation()
             {
-                PrimaryAggregation = new Cardinality() { FieldName = "fieldA" },
+                PrimaryAggregation = new CardinalityAggregation() { FieldName = "fieldA" },
                 SubAggregations = new Dictionary<string, Aggregation>
                 {
-                    { "sub", new Aggregation() { PrimaryAggregation = new Cardinality { FieldName = "fieldB" } } }
+                    { "sub", new Aggregation() { PrimaryAggregation = new CardinalityAggregation { FieldName = "fieldB" } } }
                 }
             };
 

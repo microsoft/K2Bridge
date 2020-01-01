@@ -7,18 +7,18 @@ namespace K2Bridge.Visitors
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(Avg avg)
+        public void Visit(AvgAggregation avgAggregation)
         {
-            ValidateField(avg.FieldName);
+            ValidateField(avgAggregation.FieldName);
 
-            avg.KQL = $"{KQLOperators.Avg}({avg.FieldName})";
+            avgAggregation.KQL = $"{KQLOperators.Avg}({avgAggregation.FieldName})";
         }
 
-        public void Visit(Cardinality cardinality)
+        public void Visit(CardinalityAggregation cardinalityAggregation)
         {
-            ValidateField(cardinality.FieldName);
+            ValidateField(cardinalityAggregation.FieldName);
 
-            cardinality.KQL = $"{KQLOperators.DCount}({cardinality.FieldName})";
+            cardinalityAggregation.KQL = $"{KQLOperators.DCount}({cardinalityAggregation.FieldName})";
         }
 
         private static void ValidateField(string value)

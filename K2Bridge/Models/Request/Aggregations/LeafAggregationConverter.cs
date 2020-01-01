@@ -35,11 +35,11 @@ namespace K2Bridge.Models.Request.Aggregations
                     break;
 
                 case "avg":
-                    leafAggregation = first.Value.ToObject<Avg>(serializer);
+                    leafAggregation = first.Value.ToObject<AvgAggregation>(serializer);
                     break;
 
                 case "cardinality":
-                    leafAggregation = first.Value.ToObject<Cardinality>(serializer);
+                    leafAggregation = first.Value.ToObject<CardinalityAggregation>(serializer);
                     break;
             }
 

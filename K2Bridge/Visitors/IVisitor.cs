@@ -32,9 +32,9 @@ namespace K2Bridge.Visitors
         void Visit(DateHistogramAggregation dateHistogramAggregation);
 
         // Metric Aggregations
-        void Visit(Avg avg);
+        void Visit(AvgAggregation avgAggregation);
 
-        void Visit(Cardinality cardinality);
+        void Visit(CardinalityAggregation cardinalityAggregation);
 
         void Visit(QueryString queryString);
     }
