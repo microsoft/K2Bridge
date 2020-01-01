@@ -16,9 +16,6 @@ namespace K2Bridge
     /// </summary>
     public class Program
     {
-        private const string ConfigFileName = "appsettings.json";
-        private const string LocalConfigFileName = "appsettings.local.json";
-
         public static void Main(string[] args)
         {
             RunAspNetCore(args);
