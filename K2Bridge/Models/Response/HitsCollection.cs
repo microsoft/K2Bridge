@@ -29,7 +29,7 @@ namespace K2Bridge.Models.Response
         [JsonProperty("hits")]
         public IEnumerable<Hit> Hits
         {
-            get { return this.hits; }
+            get { return hits; }
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace K2Bridge.Models.Response
         /// <param name="docCount">int representing doc count.</param>
         public void AddToTotal(int docCount)
         {
-            this.Total += docCount;
+            Total += docCount;
         }
     }
 }

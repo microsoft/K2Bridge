@@ -30,7 +30,7 @@ namespace K2BridgeUnitTests
             var queryInBodyPayload = ValidQueryContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             // Act
-            var uat = this.GetController();
+            var uat = GetController();
             var result = await uat.SearchInternal(true, true, queryInBodyPayload);
 
             // Assert
@@ -45,7 +45,7 @@ namespace K2BridgeUnitTests
             var queryInBodyPayload = InValidQueryContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             // Act
-            var uat = this.GetController();
+            var uat = GetController();
 
             // Assert
             Assert.ThrowsAsync<ArgumentException>(() => uat.SearchInternal(true, true, queryInBodyPayload));

@@ -5,8 +5,8 @@
 namespace K2Bridge.Models.Response
 {
     using System;
-    using Newtonsoft.Json;
     using System.Data;
+    using Newtonsoft.Json;
 
     public class DateHistogramBucket : IBucket
     {

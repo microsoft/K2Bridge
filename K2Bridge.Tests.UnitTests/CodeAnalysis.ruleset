@@ -68,13 +68,16 @@
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeAnalysis.CSharp.CodeStyle">
     <Rule Id="CS0168" Action="Error" />
   </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0003" Action="Info" />
+  </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1005" Action="Error" />
     <Rule Id="SA1009" Action="Error" />
     <Rule Id="SA1024" Action="Error" />
     <Rule Id="SA1027" Action="Error" />
     <Rule Id="SA1028" Action="Error" />
-    <Rule Id="SA1101" Action="Error" />
+    <Rule Id="SA1101" Action="None" />
     <Rule Id="SA1108" Action="Error" />
     <Rule Id="SA1116" Action="Error" />
     <Rule Id="SA1117" Action="Error" />
@@ -106,9 +109,9 @@
     <Rule Id="SA1512" Action="Error" />
     <Rule Id="SA1515" Action="Error" />
     <Rule Id="SA1516" Action="Error" />
-    <Rule Id="SA1600" Action="Hidden" />
-    <Rule Id="SA1601" Action="Hidden" />
-    <Rule Id="SA1602" Action="Hidden" />
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1601" Action="None" />
+    <Rule Id="SA1602" Action="None" />
     <Rule Id="SA1604" Action="Error" />
     <Rule Id="SA1633" Action="Error" />
     <Rule Id="SA1636" Action="Error" />

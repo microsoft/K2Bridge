@@ -4,9 +4,6 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
-    using K2Bridge.Models.Request.Queries;
-
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(Models.Request.Queries.RangeClause rangeClause)

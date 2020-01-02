@@ -59,7 +59,7 @@ namespace K2Bridge
             }
 
             // Use the visitor and build the KQL string from the esDSL object
-            elasticSearchDSL.Accept(this.visitor);
+            elasticSearchDSL.Accept(visitor);
             var queryData = new QueryData(
                 elasticSearchDSL.KQL,
                 elasticSearchDSL.IndexName,

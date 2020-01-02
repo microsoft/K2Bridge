@@ -50,11 +50,11 @@ namespace K2Bridge.Controllers
         {
             try
             {
-                return await this.PassthroughInternalAsync(this.HttpContext);
+                return await PassthroughInternalAsync(HttpContext);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "An error occured when sending a passthrough request");
+                logger.LogError(ex, "An error occured when sending a passthrough request");
                 throw;
             }
         }
@@ -74,7 +74,7 @@ namespace K2Bridge.Controllers
                 context.Request.Path = context.Request.Path.Value.Replace("::", ":.");
             }
 
-            var httpClient = this.clientFactory.CreateClient("elasticFallback");
+            var httpClient = clientFactory.CreateClient("elasticFallback");
 
             HttpRequestMessageFeature hreqmf = new HttpRequestMessageFeature(context);
             HttpRequestMessage remoteHttpRequestMessage = hreqmf.HttpRequestMessage;

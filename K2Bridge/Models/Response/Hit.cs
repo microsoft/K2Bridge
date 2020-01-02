@@ -10,7 +10,6 @@ namespace K2Bridge.Models.Response
     using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using Flurl.Util;
 
     public class Hit
     {
@@ -104,7 +103,7 @@ namespace K2Bridge.Models.Response
 
         public void AddSource(string keyName, object value)
         {
-            this.Source.Add(keyName, value == null ? null : JToken.FromObject(value));
+            Source.Add(keyName, value == null ? null : JToken.FromObject(value));
         }
     }
 }

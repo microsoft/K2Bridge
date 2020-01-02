@@ -21,7 +21,7 @@ namespace VisitorsTests
                 Order = "ASC",
             };
 
-            return this.VisitSortQuery(sortClause);
+            return VisitSortQuery(sortClause);
         }
 
         [TestCase(ExpectedResult = "")]
@@ -32,7 +32,7 @@ namespace VisitorsTests
                 FieldName = "_myInternalField",
             };
 
-            return this.VisitSortQuery(sortClause);
+            return VisitSortQuery(sortClause);
         }
 
         [TestCase]
@@ -43,7 +43,7 @@ namespace VisitorsTests
                 Order = "Desc",
             };
 
-            Assert.Throws(typeof(IllegalClauseException), () => this.VisitSortQuery(sortClause));
+            Assert.Throws(typeof(IllegalClauseException), () => VisitSortQuery(sortClause));
         }
 
         [TestCase]
@@ -54,7 +54,7 @@ namespace VisitorsTests
                 FieldName = "myField",
             };
 
-            Assert.Throws(typeof(IllegalClauseException), () => this.VisitSortQuery(sortClause));
+            Assert.Throws(typeof(IllegalClauseException), () => VisitSortQuery(sortClause));
         }
 
         private string VisitSortQuery(SortClause clause)

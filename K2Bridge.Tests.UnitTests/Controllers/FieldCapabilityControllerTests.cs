@@ -23,7 +23,7 @@ namespace K2Bridge.Tests.UnitTests.Controllers
         public async Task WhenCorrectInputReturnContentResult()
         {
             // Arrange
-            var ctr = this.GetController();
+            var ctr = GetController();
 
             // Act
             var result = await ctr.Process("indexname");

@@ -6,9 +6,7 @@ namespace K2Bridge.KustoConnector
 {
     using System;
     using System.Data;
-    using System.Linq;
     using K2Bridge.Models;
-    using K2Bridge.Models.Response;
     using Kusto.Data;
     using Kusto.Data.Common;
     using Kusto.Data.Net.Client;
@@ -31,7 +29,7 @@ namespace K2Bridge.KustoConnector
         /// <param name="loggerFactory"></param>
         public KustoManager(KustoConnectionDetails connectionDetails, ILoggerFactory loggerFactory)
         {
-            this.logger = loggerFactory.CreateLogger<KustoManager>();
+            logger = loggerFactory.CreateLogger<KustoManager>();
 
             var conn = new KustoConnectionStringBuilder(
                 connectionDetails.KustoClusterUrl,
@@ -45,14 +43,14 @@ namespace K2Bridge.KustoConnector
             conn.ClientVersionForTracing =
                 typeof(KustoManager).Assembly.GetName().Version.ToString();
 
-            this.queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
-            this.adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
+            queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
+            adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
         }
 
         public IDataReader ExecuteControlCommand(string command)
         {
-            var result = this.adminClient.ExecuteControlCommand(command);
-            this.logger.LogDebug($"Columns received from control command: {result.FieldCount}");
+            var result = adminClient.ExecuteControlCommand(command);
+            logger.LogDebug($"Columns received from control command: {result.FieldCount}");
 
             return result;
         }
@@ -60,7 +58,7 @@ namespace K2Bridge.KustoConnector
         public (TimeSpan timeTaken, IDataReader reader) ExecuteQuery(QueryData queryData)
         {
             // Use the kusto client to execute the query
-            return this.queryClient.ExecuteMonitoredQuery(queryData.KQL);
+            return queryClient.ExecuteMonitoredQuery(queryData.KQL);
         }
     }
 }

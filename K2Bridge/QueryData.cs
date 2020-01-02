@@ -22,11 +22,11 @@ namespace K2Bridge
                 throw new ArgumentException("query string and index name cannot be empty or null");
             }
 
-            this.KQL = kql;
-            this.IndexName = indexName;
-            this.HighlightText = highlightText;
-            this.HighlightPreTag = string.Empty;
-            this.HighlightPostTag = string.Empty;
+            KQL = kql;
+            IndexName = indexName;
+            HighlightText = highlightText;
+            HighlightPreTag = string.Empty;
+            HighlightPostTag = string.Empty;
         }
 
         public string KQL { get; private set; }

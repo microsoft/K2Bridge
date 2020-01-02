@@ -25,7 +25,7 @@ namespace K2Bridge.RewriteRules
         public void ApplyRule(RewriteContext context)
         {
             context.HttpContext.Request.Path =
-                this.RewritePath(context.HttpContext.Request.Path);
+                RewritePath(context.HttpContext.Request.Path);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace K2Bridge.RewriteRules
 
             var segments = requestPath.ToString().Split('/');
             var lastSegment = segments[^1];
-            if (lastSegment != string.Empty)
+            if (!string.IsNullOrEmpty(lastSegment))
             {
                 // no trailing slash at the end
                 // check if the last segment is a valid filename

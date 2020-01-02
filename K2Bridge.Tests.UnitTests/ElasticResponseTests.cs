@@ -38,9 +38,9 @@ namespace Tests
                     new Dictionary<string, object> {
                     },
                 });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
 
-            return JsonConvert.SerializeObject(this.SetRandomProperties(response).First());
+            return JsonConvert.SerializeObject(SetRandomProperties(response).First());
         }
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"highlight\":{}}")]
@@ -54,8 +54,8 @@ namespace Tests
                         { "somefield3", "somevalue3" },
                     },
                 });
-            var response = reader.ReadHits(this.query);
-            return JsonConvert.SerializeObject(this.SetRandomProperties(response).First());
+            var response = reader.ReadHits(query);
+            return JsonConvert.SerializeObject(SetRandomProperties(response).First());
         }
 
         [TestCase(ExpectedResult = new[] {
@@ -76,9 +76,9 @@ namespace Tests
                         { "somefield6", "somevalue6" },
                     },
             });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
 
-            return this.SetRandomProperties(response).Select(r => JsonConvert.SerializeObject(r)).ToArray();
+            return SetRandomProperties(response).Select(r => JsonConvert.SerializeObject(r)).ToArray();
         }
 
 
@@ -91,7 +91,7 @@ namespace Tests
                         { "somefield1", (decimal)2 },
                     },
             });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -104,7 +104,7 @@ namespace Tests
                         { "somefield1", (sbyte)0 },
                     },
             });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -117,7 +117,7 @@ namespace Tests
                         { "somefield1", false },
                     },
             });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -130,7 +130,7 @@ namespace Tests
                         { "somefield1", 1 },
                     },
             });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -143,7 +143,7 @@ namespace Tests
                         { "somefield1", DateTime.Now },
                     },
             });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -156,7 +156,7 @@ namespace Tests
                         { "somefield1", "somevalue1" },
                     },
             });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -169,7 +169,7 @@ namespace Tests
                         { "somefield1", DBNull.Value },
                     },
             });
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
             return response.First().Source.GetValue("somefield1").Type;
         }
 
@@ -198,7 +198,7 @@ namespace Tests
                         },
                 });
 
-            var response = reader.ReadHits(this.query);
+            var response = reader.ReadHits(query);
             var hash = new Dictionary<string, int>();
             foreach (var hit in response)
             {

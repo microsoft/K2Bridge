@@ -46,23 +46,23 @@ namespace K2Bridge.HttpMessages
         {
             var response = context.HttpContext.Response;
 
-            if (this.responseMessage == null)
+            if (responseMessage == null)
             {
                 var message = "Response message cannot be null";
                 throw new InvalidOperationException(message);
             }
 
-            using (this.responseMessage)
+            using (responseMessage)
             {
-                response.StatusCode = (int)this.responseMessage.StatusCode;
+                response.StatusCode = (int)responseMessage.StatusCode;
 
                 var responseFeature = context.HttpContext.Features.Get<IHttpResponseFeature>();
                 if (responseFeature != null)
                 {
-                    responseFeature.ReasonPhrase = this.responseMessage.ReasonPhrase;
+                    responseFeature.ReasonPhrase = responseMessage.ReasonPhrase;
                 }
 
-                var responseHeaders = this.responseMessage.Headers;
+                var responseHeaders = responseMessage.Headers;
 
                 // Ignore the Transfer-Encoding header if it is just "chunked".
                 // We let the host decide about whether the response should be chunked or not.
@@ -77,9 +77,9 @@ namespace K2Bridge.HttpMessages
                     response.Headers.Append(header.Key, header.Value.ToArray());
                 }
 
-                if (this.responseMessage.Content != null)
+                if (responseMessage.Content != null)
                 {
-                    var contentHeaders = this.responseMessage.Content.Headers;
+                    var contentHeaders = responseMessage.Content.Headers;
 
                     // Copy the response content headers only after ensuring they are complete.
                     // We ask for Content-Length first because HttpContent lazily computes this
@@ -91,7 +91,7 @@ namespace K2Bridge.HttpMessages
                         response.Headers.Append(header.Key, header.Value.ToArray());
                     }
 
-                    await this.responseMessage.Content.CopyToAsync(response.Body);
+                    await responseMessage.Content.CopyToAsync(response.Body);
                 }
             }
         }

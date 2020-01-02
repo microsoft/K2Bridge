@@ -44,11 +44,11 @@ namespace K2Bridge.Models
                 throw new ArgumentException("Kusto AAD Tenant ID is emtpy");
             }
 
-            this.KustoClusterUrl = kustoClusterUrl;
-            this.KustoDatabase = kustoDatabase;
-            this.KustoAadClientId = kustoAadClientId;
-            this.KustoAadClientSecret = kustoAadClientSecret;
-            this.KustoAadTenantId = kustoAadTenantId;
+            KustoClusterUrl = kustoClusterUrl;
+            KustoDatabase = kustoDatabase;
+            KustoAadClientId = kustoAadClientId;
+            KustoAadClientSecret = kustoAadClientSecret;
+            KustoAadTenantId = kustoAadTenantId;
         }
 
         public string KustoClusterUrl { get; private set; }

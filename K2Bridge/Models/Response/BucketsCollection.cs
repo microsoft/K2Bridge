@@ -14,12 +14,12 @@ namespace K2Bridge.Models.Response
         [JsonProperty("buckets")]
         public IEnumerable<IBucket> Buckets
         {
-            get { return this.buckets; }
+            get { return buckets; }
         }
 
         public void AddBucket(IBucket bucket)
         {
-            this.buckets.Add(bucket);
+            buckets.Add(bucket);
         }
 
         public void AddBuckets(IEnumerable<IBucket> buckets)

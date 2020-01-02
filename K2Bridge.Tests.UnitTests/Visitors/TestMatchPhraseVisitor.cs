@@ -17,7 +17,7 @@ namespace VisitorsTests
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", "MyPhrase");
 
-            return this.VisitQuery(matchPhraseClause);
+            return VisitQuery(matchPhraseClause);
         }
 
         [TestCase(ExpectedResult = "MyField == \"\"")]
@@ -25,7 +25,7 @@ namespace VisitorsTests
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", null);
 
-            return this.VisitQuery(matchPhraseClause);
+            return VisitQuery(matchPhraseClause);
         }
 
         [TestCase]
@@ -33,7 +33,7 @@ namespace VisitorsTests
         {
             var matchPhraseClause = CreateMatchPhraseClause(null, "myPhrase");
 
-            Assert.Throws(typeof(IllegalClauseException), () => this.VisitQuery(matchPhraseClause));
+            Assert.Throws(typeof(IllegalClauseException), () => VisitQuery(matchPhraseClause));
         }
 
         private static MatchPhraseClause CreateMatchPhraseClause(string fieldName, string phrase)

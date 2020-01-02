@@ -245,13 +245,13 @@ namespace Tests
             ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)")]
         public string TestRangeQueries(string queryString)
         {
-            return this.TestRangeClause(queryString);
+            return TestRangeClause(queryString);
         }
 
         [TestCase(queryTimestampRangeSingleNoPair)]
         public void TestRangeQueriesMissingValues(string queryString)
         {
-            Assert.Throws(typeof(IllegalClauseException), () => this.TestRangeClause(queryString));
+            Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
         }
 
         [TestCase(queryString, ExpectedResult = "where ((* contains \"TEST_RESULT\"))")]

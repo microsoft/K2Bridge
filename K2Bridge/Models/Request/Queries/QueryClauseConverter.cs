@@ -31,14 +31,14 @@ namespace K2Bridge.Models.Request.Queries
             // if we know this is a Bool Clause, deserialize accordingly
             if (objectType == typeof(BoolQuery))
             {
-                return this.DeserializeBoolQuery(jo, serializer);
+                return DeserializeBoolQuery(jo, serializer);
             }
 
             // if its an 'inner' bool, the type might indicate IQuery, but in fact its a bool
             if (((JProperty)jo.First).Name == "bool")
             {
                 var body = ((JProperty)jo.First).Value;
-                return this.DeserializeBoolQuery(body, serializer);
+                return DeserializeBoolQuery(body, serializer);
             }
 
             // Its really a leaf
@@ -50,10 +50,10 @@ namespace K2Bridge.Models.Request.Queries
         {
             return new BoolQuery
             {
-                Must = this.TokenToIQueryClauseList(token["must"], serializer),
-                MustNot = this.TokenToIQueryClauseList(token["must_not"], serializer),
-                Should = this.TokenToIQueryClauseList(token["should"], serializer),
-                ShouldNot = this.TokenToIQueryClauseList(token["should_not"], serializer),
+                Must = TokenToIQueryClauseList(token["must"], serializer),
+                MustNot = TokenToIQueryClauseList(token["must_not"], serializer),
+                Should = TokenToIQueryClauseList(token["should"], serializer),
+                ShouldNot = TokenToIQueryClauseList(token["should_not"], serializer),
             };
         }
 

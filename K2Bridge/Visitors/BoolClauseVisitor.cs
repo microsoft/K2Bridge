@@ -12,10 +12,10 @@ namespace K2Bridge.Visitors
     {
         public void Visit(BoolQuery boolQuery)
         {
-            this.AddListInternal(boolQuery.Must, KQLOperators.And, false /* positive */, boolQuery);
-            this.AddListInternal(boolQuery.MustNot, KQLOperators.And, true /* negative */, boolQuery);
-            this.AddListInternal(boolQuery.Should, KQLOperators.Or, false /* positive */, boolQuery);
-            this.AddListInternal(boolQuery.ShouldNot, KQLOperators.Or, true /* negative */, boolQuery);
+            AddListInternal(boolQuery.Must, KQLOperators.And, false /* positive */, boolQuery);
+            AddListInternal(boolQuery.MustNot, KQLOperators.And, true /* negative */, boolQuery);
+            AddListInternal(boolQuery.Should, KQLOperators.Or, false /* positive */, boolQuery);
+            AddListInternal(boolQuery.ShouldNot, KQLOperators.Or, true /* negative */, boolQuery);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace K2Bridge.Visitors
                 }
             }
 
-            this.KQLListToString(kqlExpressions, delimiterKeyword, boolQuery);
+            KQLListToString(kqlExpressions, delimiterKeyword, boolQuery);
         }
 
         /// <summary>

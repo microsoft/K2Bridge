@@ -22,8 +22,8 @@ namespace K2Bridge.DAL
         /// <param name="logger">A logger.</param>
         public KustoDataAccess(IQueryExecutor kustoClient, ILogger<KustoDataAccess> logger)
         {
-            this.Logger = logger;
-            this.Kusto = kustoClient;
+            Logger = logger;
+            Kusto = kustoClient;
         }
 
         private IQueryExecutor Kusto { get; set; }
@@ -39,7 +39,7 @@ namespace K2Bridge.DAL
         {
             var response = new FieldCapabilityResponse();
             string kustoCommand = $".show database schema | where TableName=='{indexName}' and ColumnName!='' | project ColumnName, ColumnType";
-            using (IDataReader kustoResults = this.Kusto.ExecuteControlCommand(kustoCommand))
+            using (IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand))
             {
                 while (kustoResults.Read())
                 {
@@ -47,12 +47,12 @@ namespace K2Bridge.DAL
                     var fieldCapabilityElement = FieldCapabilityElement.Create(record);
                     if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
                     {
-                        this.Logger.LogWarning($"Field: {fieldCapabilityElement.Name} doesn't have a type.");
+                        Logger.LogWarning($"Field: {fieldCapabilityElement.Name} doesn't have a type.");
                     }
 
                     response.AddField(fieldCapabilityElement);
 
-                    this.Logger.LogDebug($"Found field: {fieldCapabilityElement.Name} with type: {fieldCapabilityElement.Type}");
+                    Logger.LogDebug($"Found field: {fieldCapabilityElement.Name} with type: {fieldCapabilityElement.Type}");
                 }
             }
 
@@ -67,7 +67,7 @@ namespace K2Bridge.DAL
         public IndexListResponseElement GetIndexList(string indexName)
         {
             var response = new IndexListResponseElement();
-            using (IDataReader kustoResults = this.Kusto.ExecuteControlCommand($".show tables | search TableName: '{indexName}' | project TableName"))
+            using (IDataReader kustoResults = Kusto.ExecuteControlCommand($".show tables | search TableName: '{indexName}' | project TableName"))
             {
                 while (kustoResults.Read())
                 {
@@ -75,7 +75,7 @@ namespace K2Bridge.DAL
                     var termBucket = TermBucket.Create(record);
                     response.Aggregations.IndexCollection.AddBucket(termBucket);
 
-                    this.Logger.LogDebug($"Found index/table: {termBucket.Key}");
+                    Logger.LogDebug($"Found index/table: {termBucket.Key}");
                 }
             }
 

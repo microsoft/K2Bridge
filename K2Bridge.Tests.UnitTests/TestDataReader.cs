@@ -25,11 +25,11 @@ namespace Tests
 
         public int RecordsAffected => 1;
 
-        public int FieldCount => this.items[this.index].Count;
+        public int FieldCount => items[index].Count;
 
-        public object this[int i] => this.items[this.index].ElementAt(i).Value;
+        public object this[int i] => items[index].ElementAt(i).Value;
 
-        public object this[string name] => this.items[this.index][name];
+        public object this[string name] => items[index][name];
 
         public void Close()
         {
@@ -83,7 +83,7 @@ namespace Tests
 
         public long GetInt64(int i) => (long)this[i];
 
-        public string GetName(int i) => this.items[this.index].Keys.ElementAt(i);
+        public string GetName(int i) => items[index].Keys.ElementAt(i);
 
         public int GetOrdinal(string name)
         {
@@ -121,8 +121,8 @@ namespace Tests
 
         public bool Read()
         {
-            this.index++;
-            if (this.items.Count > this.index)
+            index++;
+            if (items.Count > index)
             {
                 return true;
             }

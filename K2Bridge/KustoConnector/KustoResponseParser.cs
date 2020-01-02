@@ -28,7 +28,7 @@ namespace K2Bridge.KustoConnector
         /// <param name="loggerFactory">ILoggerFactory object for logger initialization.</param>
         public KustoResponseParser(ILoggerFactory loggerFactory)
         {
-            this.logger = loggerFactory.CreateLogger<KustoResponseParser>();
+            logger = loggerFactory.CreateLogger<KustoResponseParser>();
         }
 
         /// <summary>
@@ -75,13 +75,13 @@ namespace K2Bridge.KustoConnector
                 {
                     // Read results and transform to Elastic form
                     var response = ReadResponse(queryData, reader, timeTaken);
-                    this.logger.LogDebug($"Aggs processed: {response.GetAllAggregations().Count()}");
-                    this.logger.LogDebug($"Hits processed: {response.GetAllHits().Count()}");
+                    logger.LogDebug($"Aggs processed: {response.GetAllAggregations().Count()}");
+                    logger.LogDebug($"Hits processed: {response.GetAllHits().Count()}");
                     return response;
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogWarning($"Error reading kusto response: {ex.Message}");
+                    logger.LogWarning($"Error reading kusto response: {ex.Message}");
                     throw;
                 }
             }

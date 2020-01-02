@@ -27,7 +27,7 @@ namespace K2Bridge
         /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
-            this.Configuration = configuration;
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -36,8 +36,8 @@ namespace K2Bridge
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(this.Configuration as IConfigurationRoot));
-            services.AddSingleton<ListenerDetails>(s => ListenerDetails.MakeFromConfiguration(this.Configuration as IConfigurationRoot));
+            services.AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+            services.AddSingleton<ListenerDetails>(s => ListenerDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
             services.AddTransient<IQueryExecutor, KustoManager>();
             services.AddTransient<IVisitor, ElasticSearchDSLVisitor>();

@@ -13,7 +13,7 @@ namespace K2Bridge.Visitors
     {
         public void Visit(QueryStringClause queryStringClause)
         {
-            List<string> phraseList = this.Parse(queryStringClause.Phrase);
+            List<string> phraseList = Parse(queryStringClause.Phrase);
             if (phraseList != null)
             {
                 foreach (var match in phraseList)
@@ -43,7 +43,7 @@ namespace K2Bridge.Visitors
 
             var regex = new Regex("\\s+AND\\s+|\\s+OR\\s+|\\s*NOT\\s+|\"[^\"]*\"|\\S+|\\s+");
             var matches = regex.Matches(phrase);
-            return matches.Select(i => i.ToString()).Select(this.Translate).ToList();
+            return matches.Select(i => i.ToString()).Select(Translate).ToList();
         }
 
         private string Translate(string match)
@@ -59,7 +59,7 @@ namespace K2Bridge.Visitors
                 return str.ToLower();
             }
 
-            return this.ToQuotedString(str);
+            return ToQuotedString(str);
         }
 
         private string ToQuotedString(string str)

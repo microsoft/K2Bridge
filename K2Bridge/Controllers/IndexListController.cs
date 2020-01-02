@@ -28,9 +28,9 @@ namespace K2Bridge.Controllers
         /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
         public IndexListController(IKustoDataAccess kustoDataAcess, ILogger<IndexListController> logger)
         {
-            this.Logger = logger;
-            this.Kusto = kustoDataAcess;
-            this.indexNamePattern = new Regex("/(.*?)/.*?");
+            Logger = logger;
+            Kusto = kustoDataAcess;
+            indexNamePattern = new Regex("/(.*?)/.*?");
         }
 
         private IKustoDataAccess Kusto { get; set; }
@@ -45,10 +45,10 @@ namespace K2Bridge.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Process()
         {
-            string indexName = this.IndexNameFromURL(this.HttpContext.Request.Path.ToString());
-            var response = this.Kusto.GetIndexList(indexName);
+            string indexName = IndexNameFromURL(HttpContext.Request.Path.ToString());
+            var response = Kusto.GetIndexList(indexName);
 
-            return this.Ok(response);
+            return Ok(response);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace K2Bridge.Controllers
         /// <returns>An index name, or null if not found.</returns>
         private string IndexNameFromURL(string rawUrl)
         {
-            var match = this.indexNamePattern.Match(rawUrl);
+            var match = indexNamePattern.Match(rawUrl);
             if (match.Success)
             {
                 // In a Regex, Groups[0] is always the entire phrase capture,

@@ -12,7 +12,7 @@ namespace K2Bridge.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="ListenerDetails"/> class.
         /// </summary>
-        /// <param name="prefixes">The address prefix to listen on. e.g. http://contoso.com:8080/index/</param>
+        /// <param name="prefixes">The address prefix to listen on. e.g. "http://contoso.com:8080/index/".</param>
         /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint.</param>
         private ListenerDetails(string[] prefixes, string metadataEndpoint)
         {
@@ -26,8 +26,8 @@ namespace K2Bridge.Models
                 throw new ArgumentException("URI for metadata Elasticsearch endpoint is required, for example http://127.0.0.1:8080");
             }
 
-            this.Prefixes = prefixes;
-            this.MetadataEndpoint = metadataEndpoint;
+            Prefixes = prefixes;
+            MetadataEndpoint = metadataEndpoint;
         }
 
         public string[] Prefixes { get; private set; }

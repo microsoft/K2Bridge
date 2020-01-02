@@ -15,14 +15,14 @@ namespace K2Bridge.Models.Response.Metadata
         [JsonProperty("fields")]
         public IDictionary<string, FieldCapabilityElement> Fields
         {
-            get { return this.fields; }
+            get { return fields; }
         }
 
         public void AddField(FieldCapabilityElement fieldCapabilityElement)
         {
             if (fieldCapabilityElement == null)
             {
-                throw new ArgumentNullException("fieldCapabilityElement");
+                throw new ArgumentNullException(nameof(fieldCapabilityElement));
             }
 
             if (string.IsNullOrEmpty(fieldCapabilityElement.Name))
@@ -30,7 +30,7 @@ namespace K2Bridge.Models.Response.Metadata
                 throw new ArgumentNullException("fieldCapabilityElement.Name");
             }
 
-            this.fields.Add(fieldCapabilityElement.Name, fieldCapabilityElement);
+            fields.Add(fieldCapabilityElement.Name, fieldCapabilityElement);
         }
     }
 }

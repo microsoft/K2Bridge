@@ -63,8 +63,8 @@ namespace K2Bridge.Controllers
         // once Kibana sends the right ContentType the line below can be commented in.
         // [FromBody] IEnumerable<string> rawQueryData
         {
-            var reqStrings = await this.ExtractRequestStrings(this.Request);
-            return await this.SearchInternal(totalHits, ignoreThrottled, reqStrings);
+            var reqStrings = await ExtractRequestStrings(Request);
+            return await SearchInternal(totalHits, ignoreThrottled, reqStrings);
         }
 
         /// <summary>
@@ -82,14 +82,14 @@ namespace K2Bridge.Controllers
                 throw new ArgumentException("Invalid request payload", nameof(rawQueryData));
             }
 
-            this.logger.LogDebug($"Elastic search request:\n{rawQueryData[0]}\n{rawQueryData[1]}");
-            var translatedResponse = this.translator.Translate(rawQueryData[0], rawQueryData[1]);
-            this.logger.LogDebug($"Translated query:\n{translatedResponse.KQL}");
+            logger.LogDebug($"Elastic search request:\n{rawQueryData[0]}\n{rawQueryData[1]}");
+            var translatedResponse = translator.Translate(rawQueryData[0], rawQueryData[1]);
+            logger.LogDebug($"Translated query:\n{translatedResponse.KQL}");
 
-            var (timeTaken, dataReader) = this.queryExecutor.ExecuteQuery(translatedResponse);
-            var elasticResponse = this.responseParser.ParseElasticResponse(dataReader, translatedResponse, timeTaken);
+            var (timeTaken, dataReader) = queryExecutor.ExecuteQuery(translatedResponse);
+            var elasticResponse = responseParser.ParseElasticResponse(dataReader, translatedResponse, timeTaken);
 
-            return this.Ok(elasticResponse);
+            return Ok(elasticResponse);
         }
 
         /// <summary>

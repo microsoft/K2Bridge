@@ -29,8 +29,8 @@ namespace K2Bridge.Controllers
         /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
         public FieldCapabilityController(IKustoDataAccess kustoDataAccess, ILogger<FieldCapabilityController> logger)
         {
-            this.Logger = logger;
-            this.Kusto = kustoDataAccess;
+            Logger = logger;
+            Kusto = kustoDataAccess;
         }
 
         private IKustoDataAccess Kusto { get; set; }
@@ -45,9 +45,9 @@ namespace K2Bridge.Controllers
         [HttpPost]
         public async Task<IActionResult> Process(string indexName)
         {
-            var response = this.Kusto.GetFieldCaps(indexName);
+            var response = Kusto.GetFieldCaps(indexName);
 
-            this.Response.Headers.Add("X-K2-CorrelationId", this.HttpContext.TraceIdentifier);
+            Response.Headers.Add("X-K2-CorrelationId", HttpContext.TraceIdentifier);
 
             return new ContentResult()
             {
