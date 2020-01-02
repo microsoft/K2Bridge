@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models.Request.Queries
 {
@@ -8,7 +9,7 @@ namespace K2Bridge.Models.Request.Queries
     using K2Bridge.Visitors;
 
     /// <summary>
-    /// Represents a boolean clause
+    /// Represents a boolean clause.
     /// </summary>
     internal class BoolQuery : KQLBase, IVisitable, IQuery
     {

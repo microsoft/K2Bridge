@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models.Request.Aggregations
 {
@@ -11,7 +12,7 @@ namespace K2Bridge.Models.Request.Aggregations
     internal class DateHistogramAggregationConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns a DateHistogramAggregation object
+        /// Read the given json and returns a DateHistogramAggregation object.
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>

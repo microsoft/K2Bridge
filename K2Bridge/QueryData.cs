@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge
 {
@@ -8,6 +9,12 @@ namespace K2Bridge
 
     public struct QueryData
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="QueryData"/> struct.
+        /// </summary>
+        /// <param name="kql"></param>
+        /// <param name="indexName"></param>
+        /// <param name="highlightText"></param>
         public QueryData(string kql, string indexName, Dictionary<string, string> highlightText)
         {
             if (string.IsNullOrEmpty(kql) || string.IsNullOrEmpty(indexName))

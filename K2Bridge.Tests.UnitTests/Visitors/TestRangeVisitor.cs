@@ -1,35 +1,18 @@
-using System;
-using K2Bridge;
-using K2Bridge.Models.Request.Queries;
-using K2Bridge.Visitors;
-using NUnit.Framework;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace VisitorsTests
 {
+    using System;
+    using K2Bridge;
+    using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Visitors;
+    using NUnit.Framework;
+
     [TestFixture]
     public class TestRangeVisitor
     {
-        private static string VisitRangeClause(RangeClause clause)
-        {
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(clause);
-            return clause.KQL;
-        }
-
-        private static RangeClause CreateRangeClause(string fieldName,
-            Decimal? gte, Decimal? gt, Decimal? lte, Decimal? lt, String? format)
-        {
-            return new RangeClause
-            {
-                FieldName = fieldName,
-                GTEValue = gte,
-                GTValue = gt,
-                LTValue = lt,
-                LTEValue = lte,
-                Format = format
-            };
-        }
-
         [TestCase(ExpectedResult = "myField >= 3 and myField < 5")]
         public string TestBasicRangeVisitor()
         {
@@ -58,7 +41,6 @@ namespace VisitorsTests
         [TestCase]
         public void TestMissingGTERangeVisitor()
         {
-
             var rangeClause = CreateRangeClause("myField", null, null, null, 5, "other");
 
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
@@ -86,6 +68,27 @@ namespace VisitorsTests
             var rangeClause = CreateRangeClause("myField", 5, null, null, null, "epoch_millis");
 
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
+        }
+
+        private static string VisitRangeClause(RangeClause clause)
+        {
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(clause);
+            return clause.KQL;
+        }
+
+        private static RangeClause CreateRangeClause(
+            string fieldName, Decimal? gte, Decimal? gt, Decimal? lte, Decimal? lt, String? format)
+        {
+            return new RangeClause
+            {
+                FieldName = fieldName,
+                GTEValue = gte,
+                GTValue = gt,
+                LTValue = lt,
+                LTEValue = lte,
+                Format = format,
+            };
         }
     }
 }

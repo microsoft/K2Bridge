@@ -1,54 +1,27 @@
-using System.Collections.Generic;
-using K2Bridge.Models.Request;
-using K2Bridge.Models.Request.Queries;
-using K2Bridge.Visitors;
-using NUnit.Framework;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace VisitorsTests
 {
+    using System.Collections.Generic;
+    using K2Bridge.Models.Request;
+    using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Visitors;
+    using NUnit.Framework;
+
     [TestFixture]
     public class TestBoolVisitor
     {
-        private string VisitQuery(BoolQuery query)
-        {
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(query);
-            return query.KQL;
-        }
-
-        private IEnumerable<IQuery> CreateSimpleLeafList(string singleValue)
-        {
-            var lst = new LinkedList<string>();
-            lst.AddFirst(singleValue);
-            return CreateSimpleLeafList(lst);
-        }
-
-        private IEnumerable<IQuery> CreateSimpleLeafList(IEnumerable<string> values)
-        {
-            var lst = new LinkedList<ILeafClause>();
-
-            foreach (var value in values)
-            {
-                var item = new QueryStringClause
-                {
-                    Phrase = value
-                };
-
-                lst.AddLast(item);
-            }
-
-            return lst;
-        }
-
         [TestCase(ExpectedResult = "((* contains \"ItemA\"))")]
         public string TestOneBoolQueryInMustVisit()
         {
             var boolQuery = new BoolQuery
             {
-                Must = CreateSimpleLeafList("ItemA"),
+                Must = this.CreateSimpleLeafList("ItemA"),
             };
 
-            return VisitQuery(boolQuery);
+            return this.VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "not ((* contains \"ItemB\"))")]
@@ -56,10 +29,10 @@ namespace VisitorsTests
         {
             var boolQuery = new BoolQuery
             {
-                MustNot = CreateSimpleLeafList("ItemB"),
+                MustNot = this.CreateSimpleLeafList("ItemB"),
             };
 
-            return VisitQuery(boolQuery);
+            return this.VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemC\"))")]
@@ -67,10 +40,10 @@ namespace VisitorsTests
         {
             var boolQuery = new BoolQuery
             {
-                Should = CreateSimpleLeafList("ItemC"),
+                Should = this.CreateSimpleLeafList("ItemC"),
             };
 
-            return VisitQuery(boolQuery);
+            return this.VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "not ((* contains \"ItemD\"))")]
@@ -78,10 +51,10 @@ namespace VisitorsTests
         {
             var boolQuery = new BoolQuery
             {
-                ShouldNot = CreateSimpleLeafList("ItemD"),
+                ShouldNot = this.CreateSimpleLeafList("ItemD"),
             };
 
-            return VisitQuery(boolQuery);
+            return this.VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemA1\")) and " +
@@ -98,10 +71,10 @@ namespace VisitorsTests
 
             var boolQuery = new BoolQuery
             {
-                Must = CreateSimpleLeafList(lst)
+                Must = this.CreateSimpleLeafList(lst),
             };
 
-            return VisitQuery(boolQuery);
+            return this.VisitQuery(boolQuery);
         }
 
         [TestCase(ExpectedResult = "((* contains \"ItemA\"))\n| " +
@@ -112,13 +85,44 @@ namespace VisitorsTests
         {
             var boolQuery = new BoolQuery
             {
-                Must = CreateSimpleLeafList("ItemA"),
-                MustNot = CreateSimpleLeafList("ItemB"),
-                Should = CreateSimpleLeafList("ItemC"),
-                ShouldNot = CreateSimpleLeafList("ItemD")
+                Must = this.CreateSimpleLeafList("ItemA"),
+                MustNot = this.CreateSimpleLeafList("ItemB"),
+                Should = this.CreateSimpleLeafList("ItemC"),
+                ShouldNot = this.CreateSimpleLeafList("ItemD"),
             };
 
-            return VisitQuery(boolQuery);
+            return this.VisitQuery(boolQuery);
+        }
+
+        private string VisitQuery(BoolQuery query)
+        {
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(query);
+            return query.KQL;
+        }
+
+        private IEnumerable<IQuery> CreateSimpleLeafList(string singleValue)
+        {
+            var lst = new LinkedList<string>();
+            lst.AddFirst(singleValue);
+            return this.CreateSimpleLeafList(lst);
+        }
+
+        private IEnumerable<IQuery> CreateSimpleLeafList(IEnumerable<string> values)
+        {
+            var lst = new LinkedList<ILeafClause>();
+
+            foreach (var value in values)
+            {
+                var item = new QueryStringClause
+                {
+                    Phrase = value,
+                };
+
+                lst.AddLast(item);
+            }
+
+            return lst;
         }
     }
 }

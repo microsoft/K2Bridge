@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Visitors
 {
@@ -8,7 +9,7 @@ namespace K2Bridge.Visitors
     using K2Bridge.Models.Request.Queries;
 
     /// <summary>
-    /// IVisitor defines all the different visit methods overloads to handle all supported query types
+    /// IVisitor defines all the different visit methods overloads to handle all supported query types.
     /// </summary>
     internal interface IVisitor
     {

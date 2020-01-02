@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models
 {
@@ -7,7 +8,7 @@ namespace K2Bridge.Models
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
-    /// Holds the different connection details for the kusto cluster. such as database name and credentials
+    /// Holds the different connection details for the kusto cluster. such as database name and credentials.
     /// </summary>
     internal class KustoConnectionDetails
     {

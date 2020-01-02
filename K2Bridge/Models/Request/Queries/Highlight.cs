@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models.Request.Queries
 {
@@ -7,7 +8,7 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Represents the highlighting tags for matching terms
+    /// Represents the highlighting tags for matching terms.
     /// </summary>
     internal class Highlight
     {

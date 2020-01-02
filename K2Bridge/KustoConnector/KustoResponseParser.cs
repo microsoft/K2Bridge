@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.KustoConnector
 {
@@ -12,7 +13,7 @@ namespace K2Bridge.KustoConnector
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Provides parsing methods for kusto response objects
+    /// Provides parsing methods for kusto response objects.
     /// </summary>
     public class KustoResponseParser : IResponseParser
     {
@@ -35,7 +36,7 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="kustoResponseDataSet">KustoResponseDataSet - Kusto parsed response.</param>
         /// <param name="query">QueryData containing query information.</param>
-        /// <returns>IEnumerable<Hit> - collection of hits.</returns>
+        /// <returns>IEnumerable.<Hit> - collection of hits.</returns>
         public static IEnumerable<Hit> ReadHits(KustoResponseDataSet kustoResponseDataSet, QueryData query)
         {
             if (kustoResponseDataSet[HitsTableName] != null)
@@ -65,7 +66,7 @@ namespace K2Bridge.KustoConnector
         /// <param name="reader">Kusto IDataReader response.</param>
         /// <param name="queryData">QueryData containing query information.</param>
         /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
-        /// <returns>"ElasticResponse"</returns>
+        /// <returns>"ElasticResponse".</returns>
         public ElasticResponse ParseElasticResponse(IDataReader reader, QueryData queryData, TimeSpan timeTaken)
         {
             using (reader)

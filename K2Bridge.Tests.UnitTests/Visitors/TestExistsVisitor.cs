@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
-using K2Bridge.Models.Request;
-using K2Bridge.Models.Request.Queries;
-using K2Bridge.Visitors;
-using NUnit.Framework;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace VisitorsTests
 {
+    using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Visitors;
+    using NUnit.Framework;
+
     [TestFixture]
     public class TestExistsVisitor
     {
@@ -14,7 +16,7 @@ namespace VisitorsTests
         {
             var existsClause = new ExistsClause
             {
-                FieldName = "MyField"
+                FieldName = "MyField",
             };
 
             var visitor = new ElasticSearchDSLVisitor();

@@ -1,35 +1,23 @@
-using K2Bridge;
-using K2Bridge.Models.Request.Queries;
-using K2Bridge.Visitors;
-using NUnit.Framework;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace VisitorsTests
 {
+    using K2Bridge;
+    using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Visitors;
+    using NUnit.Framework;
+
     [TestFixture]
     public class TestMatchPhraseVisitor
     {
-        private string VisitQuery(MatchPhraseClause clause)
-        {
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(clause);
-            return clause.KQL;
-        }
-
-        private static MatchPhraseClause CreateMatchPhraseClause(string fieldName, string phrase)
-        {
-            return new MatchPhraseClause
-            {
-                FieldName = fieldName,
-                Phrase = phrase
-            };
-        }
-
         [TestCase(ExpectedResult = "MyField == \"MyPhrase\"")]
         public string TestValidMatchPhraseVisit()
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", "MyPhrase");
 
-            return VisitQuery(matchPhraseClause);
+            return this.VisitQuery(matchPhraseClause);
         }
 
         [TestCase(ExpectedResult = "MyField == \"\"")]
@@ -37,7 +25,7 @@ namespace VisitorsTests
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", null);
 
-            return VisitQuery(matchPhraseClause);
+            return this.VisitQuery(matchPhraseClause);
         }
 
         [TestCase]
@@ -45,8 +33,23 @@ namespace VisitorsTests
         {
             var matchPhraseClause = CreateMatchPhraseClause(null, "myPhrase");
 
+            Assert.Throws(typeof(IllegalClauseException), () => this.VisitQuery(matchPhraseClause));
+        }
 
-            Assert.Throws(typeof(IllegalClauseException), () => VisitQuery(matchPhraseClause));
+        private static MatchPhraseClause CreateMatchPhraseClause(string fieldName, string phrase)
+        {
+            return new MatchPhraseClause
+            {
+                FieldName = fieldName,
+                Phrase = phrase,
+            };
+        }
+
+        private string VisitQuery(MatchPhraseClause clause)
+        {
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(clause);
+            return clause.KQL;
         }
     }
 }

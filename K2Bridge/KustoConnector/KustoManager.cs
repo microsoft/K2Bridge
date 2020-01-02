@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.KustoConnector
 {
@@ -14,7 +15,7 @@ namespace K2Bridge.KustoConnector
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The kusto manager handles the connection to the kusto cluster
+    /// The kusto manager handles the connection to the kusto cluster.
     /// </summary>
     internal class KustoManager : IQueryExecutor
     {
@@ -23,6 +24,11 @@ namespace K2Bridge.KustoConnector
         private readonly ICslAdminProvider adminClient;
         private readonly ILogger<KustoManager> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KustoManager"/> class.
+        /// </summary>
+        /// <param name="connectionDetails"></param>
+        /// <param name="loggerFactory"></param>
         public KustoManager(KustoConnectionDetails connectionDetails, ILoggerFactory loggerFactory)
         {
             this.logger = loggerFactory.CreateLogger<KustoManager>();

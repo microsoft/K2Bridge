@@ -70,7 +70,7 @@
     <Rule Id="SA1024" Action="Error" /> <!-- ColonsMustBeSpacedCorrectly -->
     <Rule Id="SA1027" Action="Error" /> <!-- Tabs and spaces used correctly -->
     <Rule Id="SA1600" Action="Error" /> <!-- Elements should be documented -->
-    <Rule Id="SA1633" Action="Warning" /> <!-- File should have header -->
+    <Rule Id="SA1633" Action="Error" /> <!-- File should have header -->
     <Rule Id="SA0001" Action="Warning" /> <!-- XML comments -->
     <Rule Id="SA1101" Action="Error" /> <!-- Prefix local calls with this -->
     <Rule Id="SA1407" Action="Error" /> <!-- Arithmetic expressions should declare precedence -->
@@ -110,6 +110,7 @@
     <Rule Id="SA1312" Action="Error" /> <!--  -->
     <Rule Id="SA1300" Action="Error" /> <!--  -->
     <Rule Id="SA1028" Action="Error" /> <!--  -->
+    <Rule Id="SA1636" Action="Error" />
   </Rules>
 <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.CodeStyle" RuleNamespace="Microsoft.CodeAnalysis.CSharp.CodeStyle">
 <Rule Id="CS0168" Action="Error" />

@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models.Response
 {
@@ -34,14 +35,14 @@ namespace K2Bridge.Models.Response
         /// <summary>
         /// Add all hits.
         /// </summary>
-        /// <param name="hits">IEnumerable<Hit> collection of hits.</param>
+        /// <param name="hits">IEnumerable.<Hit> collection of hits.</param>
         public void AddHits(IEnumerable<Hit> hits)
         {
             this.hits.AddRange(hits);
         }
 
         /// <summary>
-        /// Calculating HitsCollection.Total by summing up the DocCount values of every DateHistogramBucket
+        /// Calculating HitsCollection.Total by summing up the DocCount values of every DateHistogramBucket.
         /// </summary>
         /// <param name="docCount">int representing doc count.</param>
         public void AddToTotal(int docCount)

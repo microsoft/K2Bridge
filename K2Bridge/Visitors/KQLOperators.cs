@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Visitors
 {
     /// <summary>
-    /// Provides some constants to be used across the visitors classes
+    /// Provides some constants to be used across the visitors classes.
     /// </summary>
     public static class KQLOperators
     {

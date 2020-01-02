@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("K2Bridge.Tests.UnitTests")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DynamicProxyGenAssembly2")]
@@ -12,7 +13,7 @@ namespace K2Bridge
     using Serilog;
 
     /// <summary>
-    /// Entry point for the K2 program
+    /// Entry point for the K2 program.
     /// </summary>
     public class Program
     {

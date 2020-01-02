@@ -1,28 +1,16 @@
-using K2Bridge.Models.Request.Queries;
-using K2Bridge.Visitors;
-using NUnit.Framework;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace VisitorsTests
 {
+    using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Visitors;
+    using NUnit.Framework;
+
     [TestFixture]
     public class TestQueryVisitor
     {
-        private static string VisitQuery(QueryStringClause queryStringClause)
-        {
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(queryStringClause);
-            return queryStringClause.KQL;
-        }
-
-        private static QueryStringClause CreateQueryStringClause(string phrase, bool wildcard)
-        {
-            return new QueryStringClause
-            {
-                Phrase = phrase,
-                Wildcard = wildcard
-            };
-        }
-
         [TestCase(ExpectedResult = "(* contains \"myPharse\")")]
         public string TestBasicQueryVisitor()
         {
@@ -67,5 +55,22 @@ namespace VisitorsTests
 
             return VisitQuery(queryClause);
         }
+
+        private static string VisitQuery(QueryStringClause queryStringClause)
+        {
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(queryStringClause);
+            return queryStringClause.KQL;
+        }
+
+        private static QueryStringClause CreateQueryStringClause(string phrase, bool wildcard)
+        {
+            return new QueryStringClause
+            {
+                Phrase = phrase,
+                Wildcard = wildcard,
+            };
+        }
+
     }
 }

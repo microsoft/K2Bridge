@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Visitors
 {
@@ -18,7 +19,7 @@ namespace K2Bridge.Visitors
         }
 
         /// <summary>
-        /// Create a list of clauses of a specific type (must / must not / should / should not)
+        /// Create a list of clauses of a specific type (must / must not / should / should not).
         /// </summary>
         private void AddListInternal(IEnumerable<IQuery> lst, string delimiterKeyword, bool negativeCondition, BoolQuery boolQuery)
         {
@@ -52,7 +53,7 @@ namespace K2Bridge.Visitors
         }
 
         /// <summary>
-        /// Joins the list of kql commands and modifies the given BoolQuery
+        /// Joins the list of kql commands and modifies the given BoolQuery.
         /// </summary>
         private void KQLListToString(List<string> kqlList, string joinString, BoolQuery boolQuery)
         {

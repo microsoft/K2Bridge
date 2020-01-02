@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models.Request
 {
@@ -10,7 +11,7 @@ namespace K2Bridge.Models.Request
     internal class SortClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns a SortClause object
+        /// Read the given json and returns a SortClause object.
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>

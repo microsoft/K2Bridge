@@ -1,12 +1,15 @@
-﻿using System;
-using System.Data;
-using K2Bridge.KustoConnector;
-using Kusto.Data.Common;
-using NSubstitute;
-using NUnit.Framework;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace Tests.KustoConnector
 {
+    using System.Data;
+    using K2Bridge.KustoConnector;
+    using Kusto.Data.Common;
+    using NSubstitute;
+    using NUnit.Framework;
+
     [TestFixture]
     public class CslQueryProviderExtensionsTests
     {

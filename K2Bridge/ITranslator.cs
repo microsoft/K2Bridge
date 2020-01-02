@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge
 {
     /// <summary>
-    /// An interface for query translation
+    /// An interface for query translation.
     /// </summary>
     public interface ITranslator
     {

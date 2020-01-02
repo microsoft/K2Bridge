@@ -5,11 +5,16 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <CodeAnalysisRuleSet>custom.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Flurl" Version="2.8.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="8.0.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.1" />
@@ -29,12 +34,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0-rc4" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.1" />
-
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="stylecop.json" />
-  </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.local.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -45,7 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Traces\" />
     <Folder Include="RewriteRules\" />
     <Folder Include="HttpMessages\" />
     <Folder Include="DAL\" />
@@ -55,8 +55,9 @@
     <Content Remove="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="stylecop.json" />
+    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
+  
   <ItemGroup>
     <Compile Remove="Helpers\RewriteRequestsMissingTrailingSlashes.Rulecs" />
   </ItemGroup>

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Tests.UnitTests.Controllers
 {
@@ -14,6 +15,19 @@ namespace K2Bridge.Tests.UnitTests.Controllers
 
     public class IndexListControllerTests
     {
+        [Test]
+        public async Task WhenCorrectInputReturnOkResult()
+        {
+            // Arrange
+            var ctr = this.GetController();
+
+            // Act
+            var result = await ctr.Process();
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
         private IndexListController GetController()
         {
             var mockDAL = new Mock<IKustoDataAccess>();
@@ -27,22 +41,9 @@ namespace K2Bridge.Tests.UnitTests.Controllers
             {
                 ControllerContext = new ControllerContext()
                 {
-                    HttpContext = new DefaultHttpContext()
-                }
+                    HttpContext = new DefaultHttpContext(),
+                },
             };
-        }
-
-        [Test]
-        public async Task WhenCorrectInputReturnOkResult()
-        {
-            // Arrange
-            var ctr = GetController();
-
-            // Act
-            var result = await ctr.Process();
-
-            // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
         }
     }
 }

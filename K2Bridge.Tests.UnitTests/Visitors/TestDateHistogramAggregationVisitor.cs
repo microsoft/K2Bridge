@@ -1,10 +1,13 @@
-﻿using System;
-using K2Bridge.Models.Request.Aggregations;
-using K2Bridge.Visitors;
-using NUnit.Framework;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace VisitorsTests
 {
+    using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Visitors;
+    using NUnit.Framework;
+
     [TestFixture]
     public class TestDateHistogramAggregationVisitor
     {
@@ -14,7 +17,7 @@ namespace VisitorsTests
             var histogramAggregation = new DateHistogramAggregation()
             {
                 Metric = "wibble",
-                FieldName = "wobble"
+                FieldName = "wobble",
             };
 
             var visitor = new ElasticSearchDSLVisitor();
@@ -33,7 +36,7 @@ namespace VisitorsTests
             {
                 Metric = "wibble",
                 FieldName = "wobble",
-                Interval = interval
+                Interval = interval,
             };
 
             var visitor = new ElasticSearchDSLVisitor();

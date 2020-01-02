@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.KustoConnector
 {
@@ -9,7 +10,7 @@ namespace K2Bridge.KustoConnector
     using K2Bridge.Models.Response;
 
     /// <summary>
-    /// Provides extension methods for kusto response objects
+    /// Provides extension methods for kusto response objects.
     /// </summary>
     internal static class ReaderExtensions
     {

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models.Request.Queries
 {
@@ -11,7 +12,7 @@ namespace K2Bridge.Models.Request.Queries
     internal class ExistsClauseConverter : ReadOnlyJsonConverter
     {
         /// <summary>
-        /// Read the given json and returns an ExistsClause object
+        /// Read the given json and returns an ExistsClause object.
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="objectType"></param>

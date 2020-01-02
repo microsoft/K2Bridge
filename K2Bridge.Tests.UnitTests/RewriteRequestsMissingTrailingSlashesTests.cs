@@ -1,9 +1,13 @@
-﻿using K2Bridge.RewriteRules;
-using Microsoft.AspNetCore.Http;
-using NUnit.Framework;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2BridgeUnitTests
 {
+    using K2Bridge.RewriteRules;
+    using Microsoft.AspNetCore.Http;
+    using NUnit.Framework;
+
     [TestFixture]
     public class RewriteRequestsMissingTrailingSlashesTests
     {

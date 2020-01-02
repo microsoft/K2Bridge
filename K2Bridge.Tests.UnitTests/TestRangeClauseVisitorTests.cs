@@ -1,21 +1,16 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
 namespace Tests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using K2Bridge.KustoConnector;
-    using Newtonsoft.Json;
-    using NUnit.Framework;
-    using System.Linq;
-    using Newtonsoft.Json.Linq;
-    using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
+    using NUnit.Framework;
 
     [TestFixture]
     public class TestRangeClauseVisitorTests
     {
-        //Numeric RangeClause Query Tests
+        // Numeric RangeClause Query Tests
         [TestCase(ExpectedResult = "MyField >= 0 and MyField < 10")]
         public string TestValidRangeClauseVisitNumberBetweenTwoInts()
         {
@@ -34,7 +29,7 @@ namespace Tests
             return RangeClauseToKQL(CreateRangeClause(10.10m, 20.20m));
         }
 
-        //Time RangeClause Query Tests
+        // Time RangeClause Query Tests
         [TestCase(ExpectedResult = "MyField >= fromUnixTimeMilli(0) and MyField <= fromUnixTimeMilli(10)")]
         public string TestValidTimeRangeClauseVisitNumberBetweenTwoInts()
         {
@@ -62,7 +57,7 @@ namespace Tests
                 GTValue = null,
                 LTEValue = null,
                 LTValue = max,
-                Format = null
+                Format = null,
             };
         }
 
@@ -75,7 +70,7 @@ namespace Tests
                 GTValue = null,
                 LTEValue = max,
                 LTValue = null,
-                Format = "epoch_millis"
+                Format = "epoch_millis",
             };
         }
 
@@ -85,5 +80,5 @@ namespace Tests
             visitor.Visit(rangeClause);
             return rangeClause.KQL;
         }
-    } 
+    }
 }

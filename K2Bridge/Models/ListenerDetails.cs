@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models
 {
@@ -9,10 +10,10 @@ namespace K2Bridge.Models
     internal class ListenerDetails
     {
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
         /// <param name="prefixes"></param>
-        /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint</param>
+        /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint.</param>
         /// <param name="isHandleMetadata"></param>
         private ListenerDetails(string[] prefixes, string metadataEndpoint, bool isHandleMetadata)
         {

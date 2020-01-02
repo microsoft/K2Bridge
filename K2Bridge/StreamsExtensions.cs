@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
+
 namespace K2Bridge
 {
     using System.IO;
 
     /// <summary>
-    /// Streams extension methods
+    /// Streams extension methods.
     /// </summary>
     internal static class StreamsExtensions
     {

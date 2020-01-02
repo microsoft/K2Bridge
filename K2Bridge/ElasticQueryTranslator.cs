@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge
 {
@@ -10,20 +11,20 @@ namespace K2Bridge
     using Newtonsoft.Json;
 
     /// <summary>
-    /// ElasticQueryTranslator provides the functionality for translating a Kibana query into KQL
+    /// ElasticQueryTranslator provides the functionality for translating a Kibana query into KQL.
     /// </summary>
     internal class ElasticQueryTranslator : ITranslator
     {
         private readonly IVisitor visitor;
 
         /// <summary>
-        /// Constructor
+        /// Constructor.
         /// </summary>
-        /// <param name="visitor">The visitor to accept the translation request</param>
+        /// <param name="visitor">The visitor to accept the translation request.</param>
         public ElasticQueryTranslator(IVisitor visitor) => this.visitor = visitor;
 
         /// <summary>
-        /// Translate a given request into QueryData
+        /// Translate a given request into QueryData.
         /// </summary>
         /// <param name="header"></param>
         /// <param name="query"></param>

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models.Request
 {
@@ -12,7 +13,7 @@ namespace K2Bridge.Models.Request
     /// <summary>
     /// ElasticSearchDSL (Elastic Search Domain Specific Language) represents
     /// the different properties of the elasticsearch query as deserialized from
-    /// the json object sent from Kibana. This object will be sent for transformation
+    /// the json object sent from Kibana. This object will be sent for transformation.
     /// </summary>
     internal class ElasticSearchDSL : KQLBase, IVisitable
     {

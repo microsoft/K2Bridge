@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Visitors
 {
@@ -8,12 +9,12 @@ namespace K2Bridge.Visitors
     using K2Bridge.Models.Request;
 
     /// <summary>
-    /// Main visitor entry point
+    /// Main visitor entry point.
     /// </summary>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         /// <summary>
-        /// Accept a given visitable object and build the valid Kusto query based on that KQL
+        /// Accept a given visitable object and build the valid Kusto query based on that KQL.
         /// </summary>
         /// <param name="elasticSearchDSL"></param>
         public void Visit(ElasticSearchDSL elasticSearchDSL)

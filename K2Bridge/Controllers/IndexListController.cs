@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
+// Licensed under the MIT license.
+// See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Controllers
 {
@@ -12,7 +13,7 @@ namespace K2Bridge.Controllers
     /// <summary>
     /// Handles Index List requests.
     /// The original request produced by Kibana is in the format of:
-    /// POST /*/_search?ignore_unavailable=true HTTP/1.1
+    /// POST /*/_search?ignore_unavailable=true HTTP/1.1.
     /// </summary>
     [Route("/*/")]
     [ApiController]
@@ -39,7 +40,7 @@ namespace K2Bridge.Controllers
         /// <summary>
         /// Process the request.
         /// </summary>
-        /// <returns>The table list in the Kusto database</returns>
+        /// <returns>The table list in the Kusto database.</returns>
         [HttpPost(template: "_search")]
         [Produces("application/json")]
         public async Task<IActionResult> Process()
