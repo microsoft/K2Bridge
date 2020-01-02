@@ -12,10 +12,9 @@ namespace K2Bridge.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="ListenerDetails"/> class.
         /// </summary>
-        /// <param name="prefixes">URI to listen on to.</param>
+        /// <param name="prefixes">The address prefix to listen on. e.g. http://contoso.com:8080/index/</param>
         /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint.</param>
-        /// <param name="isHandleMetadata"></param>
-        private ListenerDetails(string[] prefixes, string metadataEndpoint, bool isHandleMetadata)
+        private ListenerDetails(string[] prefixes, string metadataEndpoint)
         {
             if (prefixes == null || prefixes.Length == 0)
             {
@@ -29,19 +28,15 @@ namespace K2Bridge.Models
 
             this.Prefixes = prefixes;
             this.MetadataEndpoint = metadataEndpoint;
-            this.IsHandleMetadata = isHandleMetadata;
         }
 
         public string[] Prefixes { get; private set; }
 
         public string MetadataEndpoint { get; private set; }
 
-        public bool IsHandleMetadata { get; private set; }
-
         public static ListenerDetails MakeFromConfiguration(IConfigurationRoot config) =>
             new ListenerDetails(
                 new string[] { config["bridgeListenerAddress"] },
-                config["metadataElasticAddress"],
-                bool.Parse(config["isHandleMetadata"] ?? "true"));
+                config["metadataElasticAddress"]);
     }
 }

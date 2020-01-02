@@ -335,7 +335,7 @@ ASALocalRun/
 /K2Bridge/Traces
 
 # Ignore local/private settings
-/**/*.local.json
+/**/appsettings.*.json
 
 # Ignore downloaded charts
 charts/k2bridge/charts
