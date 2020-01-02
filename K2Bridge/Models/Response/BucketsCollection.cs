@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Response
 
     public class BucketsCollection
     {
-        private List<IBucket> buckets = new List<IBucket>();
+        private readonly List<IBucket> buckets = new List<IBucket>();
 
         [JsonProperty("buckets")]
         public IEnumerable<IBucket> Buckets

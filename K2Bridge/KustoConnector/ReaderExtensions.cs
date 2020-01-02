@@ -14,9 +14,9 @@ namespace K2Bridge.KustoConnector
     /// </summary>
     internal static class ReaderExtensions
     {
-        private static readonly Random random = new Random();
+        private static readonly Random RandomId = new Random();
 
-        private static Dictionary<Type, Func<IDataRecord, int, object>> readerSwitch = new Dictionary<Type, Func<IDataRecord, int, object>>
+        private static readonly Dictionary<Type, Func<IDataRecord, int, object>> ReaderSwitch = new Dictionary<Type, Func<IDataRecord, int, object>>
         {
             { typeof(bool), (reader, index) => reader.ReadValueOrDbNull(index, () => reader.GetBoolean(index)) },
             { typeof(sbyte), (reader, index) => reader.ReadValueOrDbNull(index, () => (sbyte)reader.GetValue(index) == 0 ? false : true) },
@@ -35,13 +35,13 @@ namespace K2Bridge.KustoConnector
             while (reader.Read())
             {
                 var hit = Hit.Create((IDataRecord)reader, query);
-                hit.Id = random.Next().ToString();
+                hit.Id = RandomId.Next().ToString();
                 yield return hit;
             }
         }
 
         internal static object ReadValue(this IDataRecord record, int index) =>
-            readerSwitch.GetDictionaryValueOrDefault(
+            ReaderSwitch.GetDictionaryValueOrDefault(
                                 record.GetFieldType(index),
                                 typeof(object))(record, index);
 
@@ -51,16 +51,14 @@ namespace K2Bridge.KustoConnector
             Func<object> readFunc) =>
             record.IsDBNull(index) ? (object)null : readFunc();
 
-
         private static TVal GetDictionaryValueOrDefault<TKey, TVal>(this Dictionary<TKey, TVal> dictionary, TKey key, TKey defaultKey)
         {
             if (!dictionary.ContainsKey(defaultKey))
             {
-                throw new ArgumentException("default key does not exist");
+                throw new ArgumentException($"Key: {defaultKey} does not exist");
             }
 
-            TVal response;
-            if (dictionary.TryGetValue(key, out response))
+            if (dictionary.TryGetValue(key, out TVal response))
             {
                 return response;
             }

@@ -11,23 +11,14 @@ namespace K2Bridge.Visitors
             dateHistogramAggregation.KQL = $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldName} = ";
             if (!string.IsNullOrEmpty(dateHistogramAggregation.Interval))
             {
-                var period = dateHistogramAggregation.Interval[dateHistogramAggregation.Interval.Length - 1];
-                switch (period)
+                var period = dateHistogramAggregation.Interval[^1];
+                dateHistogramAggregation.KQL += period switch
                 {
-                    case 'w':
-                        dateHistogramAggregation.KQL += $"{KQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})";
-                        break;
-                    case 'M':
-                        dateHistogramAggregation.KQL += $"{KQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})";
-                        break;
-                    case 'y':
-                        dateHistogramAggregation.KQL += $"{KQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})";
-                        break;
-                    default:
-                        // todatetime is redundent but we'll keep it for now
-                        dateHistogramAggregation.KQL += $"bin({KQLOperators.ToDateTime}({dateHistogramAggregation.FieldName}), {dateHistogramAggregation.Interval})";
-                        break;
-                }
+                    'w' => $"{KQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
+                    'M' => $"{KQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
+                    'y' => $"{KQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
+                    _ => $"bin({dateHistogramAggregation.FieldName}, {dateHistogramAggregation.Interval})",
+                };
             }
             else
             {
@@ -35,7 +26,7 @@ namespace K2Bridge.Visitors
             }
 
             // todatetime is redundent but we'll keep it for now
-            dateHistogramAggregation.KQL += $" | {KQLOperators.OrderBy} {KQLOperators.ToDateTime}({dateHistogramAggregation.FieldName}) asc";
+            dateHistogramAggregation.KQL += $"{KQLOperators.CommandSeparator}{KQLOperators.OrderBy} {dateHistogramAggregation.FieldName} asc";
         }
     }
 }

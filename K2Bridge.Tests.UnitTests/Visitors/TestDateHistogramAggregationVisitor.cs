@@ -11,7 +11,7 @@ namespace VisitorsTests
     [TestFixture]
     public class TestDateHistogramAggregationVisitor
     {
-        [TestCase(ExpectedResult = "wibble by wobble = wobble | order by todatetime(wobble) asc")]
+        [TestCase(ExpectedResult = "wibble by wobble = wobble\n| order by wobble asc")]
         public string DateHistogramAggregationConstructsQuery()
         {
             var histogramAggregation = new DateHistogramAggregation()
@@ -26,10 +26,10 @@ namespace VisitorsTests
             return histogramAggregation.KQL;
         }
 
-        [TestCase("w", ExpectedResult = "wibble by wobble = startofweek(wobble) | order by todatetime(wobble) asc")]
-        [TestCase("y", ExpectedResult = "wibble by wobble = startofyear(wobble) | order by todatetime(wobble) asc")]
-        [TestCase("M", ExpectedResult = "wibble by wobble = startofmonth(wobble) | order by todatetime(wobble) asc")]
-        [TestCase("z", ExpectedResult = "wibble by wobble = bin(todatetime(wobble), z) | order by todatetime(wobble) asc")]
+        [TestCase("w", ExpectedResult = "wibble by wobble = startofweek(wobble)\n| order by wobble asc")]
+        [TestCase("y", ExpectedResult = "wibble by wobble = startofyear(wobble)\n| order by wobble asc")]
+        [TestCase("M", ExpectedResult = "wibble by wobble = startofmonth(wobble)\n| order by wobble asc")]
+        [TestCase("z", ExpectedResult = "wibble by wobble = bin(wobble, z)\n| order by wobble asc")]
         public string DateHistogramAggregationWithStartOfWeekIntervalConstructsQuery(string interval)
         {
             var histogramAggregation = new DateHistogramAggregation()

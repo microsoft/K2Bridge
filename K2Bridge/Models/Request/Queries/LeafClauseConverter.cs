@@ -28,26 +28,15 @@ namespace K2Bridge.Models.Request.Queries
             JObject jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            switch (first.Name)
+            return first.Name switch
             {
-                case "exists":
-                    return first.Value.ToObject<ExistsClause>(serializer);
-
-                case "match_phrase":
-                    return first.Value.ToObject<MatchPhraseClause>(serializer);
-
-                case "range":
-                    return first.Value.ToObject<RangeClause>(serializer);
-
-                case "query_string":
-                    return first.ToObject<QueryStringClause>(serializer);
-
-                case "bool":
-                    return ((JProperty)jo.First).Value.ToObject<BoolQuery>(serializer);
-
-                default:
-                    return null;
-            }
+                "exists" => first.Value.ToObject<ExistsClause>(serializer),
+                "match_phrase" => first.Value.ToObject<MatchPhraseClause>(serializer),
+                "range" => first.Value.ToObject<RangeClause>(serializer),
+                "query_string" => first.ToObject<QueryStringClause>(serializer),
+                "bool" => ((JProperty)jo.First).Value.ToObject<BoolQuery>(serializer),
+                _ => null,
+            };
         }
     }
 }

@@ -9,10 +9,10 @@ namespace K2Bridge.Models.Response
 
     public class HitsCollection
     {
-        private List<Hit> hits = new List<Hit>();
+        private readonly List<Hit> hits = new List<Hit>();
 
         /// <summary>
-        /// Gets or sets Total.
+        /// Gets the Total.
         /// </summary>
         [JsonProperty("total")]
         public int Total { get; private set; }

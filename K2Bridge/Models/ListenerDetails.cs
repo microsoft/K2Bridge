@@ -10,9 +10,9 @@ namespace K2Bridge.Models
     internal class ListenerDetails
     {
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="ListenerDetails"/> class.
         /// </summary>
-        /// <param name="prefixes"></param>
+        /// <param name="prefixes">URI to listen on to.</param>
         /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint.</param>
         /// <param name="isHandleMetadata"></param>
         private ListenerDetails(string[] prefixes, string metadataEndpoint, bool isHandleMetadata)

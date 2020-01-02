@@ -27,12 +27,10 @@ namespace K2Bridge.RewriteRules
                 context.HttpContext.Request.QueryString = context.HttpContext.Request.QueryString;
                 context.HttpContext.Request.Method = HttpMethods.Post;
                 var mem = new MemoryStream();
-                using (var writer = new StreamWriter(mem))
-                {
-                    writer.WriteLine();
-                    mem.Seek(0, SeekOrigin.Current);
-                    context.HttpContext.Request.Body = mem;
-                }
+                using StreamWriter writer = new StreamWriter(mem);
+                writer.WriteLine();
+                mem.Seek(0, SeekOrigin.Current);
+                context.HttpContext.Request.Body = mem;
             }
         }
     }

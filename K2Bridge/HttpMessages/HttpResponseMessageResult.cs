@@ -84,7 +84,7 @@ namespace K2Bridge.HttpMessages
                     // Copy the response content headers only after ensuring they are complete.
                     // We ask for Content-Length first because HttpContent lazily computes this
                     // and only afterwards writes the value into the content headers.
-                    var unused = contentHeaders.ContentLength;
+                    _ = contentHeaders.ContentLength;
 
                     foreach (var header in contentHeaders)
                     {

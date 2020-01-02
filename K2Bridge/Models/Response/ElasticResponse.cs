@@ -10,16 +10,10 @@ namespace K2Bridge.Models.Response
 
     public class ElasticResponse
     {
-        private List<ResponseElement> responses = new List<ResponseElement> { new ResponseElement() };
+        private readonly List<ResponseElement> responses = new List<ResponseElement> { new ResponseElement() };
 
         [JsonProperty("responses")]
-        public IEnumerable<ResponseElement> Responses
-        {
-            get
-            {
-                return this.responses;
-            }
-        }
+        public IEnumerable<ResponseElement> Responses => this.responses;
 
         public void AddAggregation(IBucket bucket)
         {

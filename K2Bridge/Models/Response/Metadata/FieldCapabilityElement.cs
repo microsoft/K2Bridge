@@ -38,29 +38,18 @@ namespace K2Bridge.Models.Response.Metadata
 
         private static string ElasticTypeFromKustoType(string type)
         {
-            switch (type)
+            return type switch
             {
-                case "System.Int32":
-                    return "integer";
-                case "System.Int64":
-                    return "long";
-                case "System.Single":
-                    return "float";
-                case "System.Double":
-                    return "double";
-
-                case "System.SByte":
-                    return "boolean";
-                case "System.Object":
-                    return "object";
-                case "System.String":
-                    // Elastic support text and keyword string types. Text is interpreted as something that can't be aggregated, hence we need to choose keyword.
-                    return "keyword";
-                case "System.DateTime":
-                    return "date";
-                default:
-                    throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type");
-            }
+                "System.Int32" => "integer",
+                "System.Int64" => "long",
+                "System.Single" => "float",
+                "System.Double" => "double",
+                "System.SByte" => "boolean",
+                "System.Object" => "object",
+                "System.String" => "keyword",// Elastic support text and keyword string types. Text is interpreted as something that can't be aggregated, hence we need to choose keyword.
+                "System.DateTime" => "date",
+                _ => throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type"),
+            };
         }
     }
 }

@@ -18,7 +18,7 @@ namespace K2Bridge
         private readonly IVisitor visitor;
 
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of the <see cref="ElasticQueryTranslator"/> class.
         /// </summary>
         /// <param name="visitor">The visitor to accept the translation request.</param>
         public ElasticQueryTranslator(IVisitor visitor) => this.visitor = visitor;
@@ -41,17 +41,20 @@ namespace K2Bridge
             elasticSearchDSL.HighlightText = new Dictionary<string, string>();
 
             var qs = elasticSearchDSL.Query.Bool.Must.GetEnumerator();
-            while (qs.MoveNext()) {
-                if (qs.Current == null) {
+            while (qs.MoveNext())
+            {
+                if (qs.Current == null)
+                {
                     continue;
                 }
 
-                if (qs.Current is QueryStringClause) {
-                    var q = (QueryStringClause)qs.Current;
-                    elasticSearchDSL.HighlightText.Add("*", q.Phrase);
-                } else if (qs.Current is MatchPhraseClause) {
-                    var q = (MatchPhraseClause)qs.Current;
-                    elasticSearchDSL.HighlightText.Add(q.FieldName, q.Phrase);
+                if (qs.Current is QueryStringClause queryStringClause)
+                {
+                    elasticSearchDSL.HighlightText.Add("*", queryStringClause.Phrase);
+                }
+                else if (qs.Current is MatchPhraseClause matchPhraseClause)
+                {
+                    elasticSearchDSL.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
                 }
             }
 
@@ -62,7 +65,8 @@ namespace K2Bridge
                 elasticSearchDSL.IndexName,
                 elasticSearchDSL.HighlightText);
 
-            if (elasticSearchDSL.Highlight != null && elasticSearchDSL.Highlight.PreTags.Count > 0) {
+            if (elasticSearchDSL.Highlight != null && elasticSearchDSL.Highlight.PreTags.Count > 0)
+            {
                 queryData.HighlightPreTag = elasticSearchDSL.Highlight.PreTags[0];
                 queryData.HighlightPostTag = elasticSearchDSL.Highlight.PostTags[0];
             }
