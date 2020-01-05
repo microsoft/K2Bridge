@@ -12,6 +12,7 @@ namespace K2BridgeUnitTests
     using K2Bridge.KustoConnector;
     using K2Bridge.Models.Response;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
@@ -60,6 +61,7 @@ namespace K2BridgeUnitTests
             mockQueryExecutor.Setup(exec => exec.ExecuteQuery(It.IsAny<QueryData>())).Returns((new TimeSpan(), Substitute.For<IDataReader>()));
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
+            var mockConfiguration = new Mock<IConfiguration>();
             mockResponseParser.Setup(exec =>
                 exec.ParseElasticResponse(
                     It.IsAny<IDataReader>(),
@@ -67,7 +69,7 @@ namespace K2BridgeUnitTests
                     It.IsAny<TimeSpan>()))
                 .Returns(new ElasticResponse());
 
-            return new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object);
+            return new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object, mockConfiguration.Object);
         }
     }
 }

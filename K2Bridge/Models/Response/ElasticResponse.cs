@@ -49,5 +49,10 @@ namespace K2Bridge.Models.Response
         {
             responses[0].TookMilliseconds += timeTaken.Milliseconds;
         }
+
+        internal void AppendBackendQuery(string query)
+        {
+            responses[0].BackendQuery = query;
+        }
     }
 }

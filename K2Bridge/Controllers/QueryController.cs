@@ -12,6 +12,7 @@ namespace K2Bridge.Controllers
     using K2Bridge.Models.Response;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -25,6 +26,8 @@ namespace K2Bridge.Controllers
         private readonly ITranslator translator;
         private readonly ILogger<QueryController> logger;
         private readonly IResponseParser responseParser;
+        private readonly IConfiguration configuration;
+        private readonly bool outputBackendQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryController"/> class.
@@ -36,12 +39,16 @@ namespace K2Bridge.Controllers
             IQueryExecutor queryExecutor,
             ITranslator translator,
             ILogger<QueryController> logger,
-            IResponseParser responseParser)
+            IResponseParser responseParser,
+            IConfiguration configuration)
         {
             this.queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
             this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.responseParser = responseParser ?? throw new ArgumentNullException(nameof(responseParser));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+
+            bool.TryParse(this.configuration["outputBackendQuery"], out this.outputBackendQuery);
         }
 
         /// <summary>
@@ -88,6 +95,10 @@ namespace K2Bridge.Controllers
 
             var (timeTaken, dataReader) = queryExecutor.ExecuteQuery(translatedResponse);
             var elasticResponse = responseParser.ParseElasticResponse(dataReader, translatedResponse, timeTaken);
+            if (outputBackendQuery)
+            {
+                elasticResponse.AppendBackendQuery(translatedResponse.KQL);
+            }
 
             return Ok(elasticResponse);
         }
