@@ -1,0 +1,44 @@
+steps:
+
+- task: HelmInstaller@1
+  displayName: Install helm
+  inputs:
+    helmVersionToInstall: $(HELM_VERSION)
+
+- task: KubectlInstaller@0
+  displayName: Install kubectl
+  inputs:
+    kubectlVersion: $(AKS_VERSION)
+
+- task: AzureCLI@1
+  displayName: Login to AKS
+  inputs:
+    azureSubscription: $(TERRAFORM_SERVICE_CONNECTION)
+    scriptLocation: inlineScript
+    inlineScript: |
+      set -eux  # fail on error
+      az aks get-credentials -g "$RESOURCE_GROUP" -n "$AKS_NAME"
+
+- bash: |
+    set -eu  # fail on error
+
+    KUBERNETES_NAMESPACE="build$(Build.BuildId)"
+    if [ "$(Build.SourceBranch)" = "refs/heads/master" ]; then
+      KUBERNETES_NAMESPACE="master"
+    fi
+    if [ "$(RUN_SET_NAMESPACE)" != "" ]; then
+      KUBERNETES_NAMESPACE="$(RUN_SET_NAMESPACE)"
+    fi
+
+    echo "Namespace: $KUBERNETES_NAMESPACE"
+
+    # Create namespace
+    # Idempotent equivalent of `kubectl create namespace $KUBERNETES_NAMESPACE`
+    printf "apiVersion: v1\nkind: Namespace\nmetadata:\n name: "$KUBERNETES_NAMESPACE | kubectl apply -f -
+
+    # Set active namespace
+    kubectl config set-context --current --namespace=$KUBERNETES_NAMESPACE
+
+    echo "##vso[task.setvariable variable=KUBERNETES_NAMESPACE]$KUBERNETES_NAMESPACE"
+
+  displayName: Create AKS namespace

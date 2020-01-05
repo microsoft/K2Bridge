@@ -23,5 +23,4 @@ RUN dotnet test K2Bridge.Tests.UnitTests "--logger:trx;LogFileName=/app/TestResu
 FROM mcr.microsoft.com/dotnet/core/aspnet:$DOTNET_VERSION AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
-EXPOSE 8080
 ENTRYPOINT ["dotnet", "K2Bridge.dll"]

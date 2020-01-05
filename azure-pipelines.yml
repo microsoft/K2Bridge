@@ -1,3 +1,14 @@
+# CI/CD Azure DevOps deployment pipeline.
+# The following variables can be optionally set for each pipeline run:
+# - RUN_FLAG_TERRAFORM: Set to 1 to have `terraform apply`. By default
+#   `terraform apply` only runs on the master branch.
+# - RUN_FLAG_PROMOTE: Set to 1 to promote the Docker image to `latest` tag if
+#   tests are successful. By default this is only done on the master branch.
+# - RUN_SET_NAMESPACE: Set to a string to deploy to the given AKS namespace,
+#   and not delete the namespace after the build. By default the build deploys to
+#   the `master` AKS namespace if run on the master branch, and otherwise to a
+#   temporary AKS namespace that is deleted at the end of the build.
+
 trigger:
   branches:
     include:
@@ -16,15 +27,20 @@ pr:
 name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 
 variables:
-  ACR_NAME: k2dev
-  ACR_PUSH_SERVICE_CONNECTION: k2dev-acr-push
+- group: K2Bridge CI-CD pipeline
+- name: SEMANTIC_VERSION
+  value: "0.0.$(Build.BuildId)"
+
+pool:
+  vmImage: ubuntu-latest
 
 stages:
 
 - stage: CI
 
   jobs:
-  - job: Pre_build
+
+  - job: Security_analysis
     displayName: Security Analysis
 
     pool:
@@ -106,19 +122,14 @@ stages:
         failOnAlert: true
 
   - job: Build
-    dependsOn: Pre_build
-
-    pool:
-      # Docker container must be built on Linux to run on Linux
-      vmImage: 'ubuntu-latest'
 
     steps:
 
     - bash: |
-        # Only build first stage of Dockerfile (build and test)
-        docker build --target build -t k2bridgetest .
+        # Only build first stage of Dockerfile (build and unit test)
+        docker build --target build -t k2bridge-build .
         # Temporarily create container in order to extract test results file
-        id=$(docker create k2bridgetest)
+        id=$(docker create k2bridge-build)
         docker cp $id:/app/TestResult.xml .
         docker rm $id
       displayName: Docker build & test
@@ -134,10 +145,10 @@ stages:
     - task: HelmInstaller@1
       displayName: Helm installer
       inputs:
-        helmVersionToInstall: 3.0.2
+        helmVersionToInstall: $(HELM_VERSION)
 
     - task: AzureCLI@1
-      displayName: Push Helm chart to ACR
+      displayName: Push to ACR
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -149,16 +160,126 @@ stages:
           az acr login
           # Reuses the cached build stage from the previous docker build task
           docker build \
-            -t "$ACR_NAME.azurecr.io/k2bridge:latest" \
-            -t "$ACR_NAME.azurecr.io/k2bridge:0.0.$(Build.BuildId)" \
+            -t "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
             .
-          docker push "$ACR_NAME.azurecr.io/k2bridge:latest"
-          docker push "$ACR_NAME.azurecr.io/k2bridge:0.0.$(Build.BuildId)"
+          docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
 
           # Push Helm chart
           helm repo add elastic https://helm.elastic.co
           helm repo update
           helm dependency update charts/k2bridge
           empty_dir="$(Build.StagingDirectory)/charts_out"
-          helm package charts/k2bridge -d $empty_dir
+          helm package --version "$SEMANTIC_VERSION" charts/k2bridge -d $empty_dir
           az acr helm push --force "$(ls $empty_dir/*)"
+
+  - job: Terraform
+    steps:
+
+    - bash: |
+        set -eu
+        az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
+        oid=$(az ad sp show --id  $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
+        echo "##vso[task.setvariable variable=AKS_SP_OBJECT_ID]$oid"
+      displayName: Get AKS SP object ID
+      env:
+        password: $(AKS_SP_CLIENT_SECRET)
+
+    - template: infrastructure/terraform-tasks-template.yml
+      parameters:
+        TerraformArguments: >-
+          -var resource_group=$(RESOURCE_GROUP)
+          -var vnet_name=$(VNET_NAME)
+          -var aks_name=$(AKS_NAME)
+          -var aks_version=$(AKS_VERSION)
+          -var aks_sp_client_id=$(AKS_SP_CLIENT_ID)
+          -var aks_sp_object_id=$(AKS_SP_OBJECT_ID)
+        # For additional security, pass secret through environment instead of command line.
+        # Terraform recognizes TF_VAR prefixed environment variables.
+        TerraformEnvVariables:
+          TF_VAR_aks_sp_client_secret: $(AKS_SP_CLIENT_SECRET)
+
+  - job: Deploy_K2Bridge 
+    displayName: Deploy K2Bridge 
+    dependsOn:
+    - Build
+    - Security_analysis
+    - Terraform
+    steps:
+
+    - template: infrastructure/setup-k8s-clients-template.yml
+
+    - task: AzureCLI@1
+      displayName: Log into ACR Helm repo
+      inputs:
+        azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          az acr helm repo add -n "$(ACR_NAME)"
+
+    - bash: |
+        set -eux  # fail on error
+        helm show chart $(ACR_NAME)/k2bridge
+        # List charts before deploying (for job log, useful if rerunning job)
+        helm list
+        # Deploy chart
+        helm upgrade --install k2bridge $(ACR_NAME)/k2bridge \
+          --version "$SEMANTIC_VERSION" \
+          --wait --timeout 45m \
+          --set image.repository=$(ACR_NAME).azurecr.io/k2bridge \
+          --set image.tag=$SEMANTIC_VERSION \
+          --set replicaCount=2 \
+          --set settings.kustoClusterUrl="https://$KUSTO_INSTANCE.kusto.windows.net" \
+          --set settings.kustoDatabase="$KUSTO_DATABASE" \
+          --set settings.kustoAadClientId="$KUSTO_CLIENT_ID" \
+          --set settings.kustoAadClientSecret="$secret" \
+          --set settings.kustoAadTenantId="$TENANT_ID"
+        # List charts after deploying (for job log)
+        helm list
+      displayName: Install Helm chart
+      env:
+        secret: $(KUSTO_CLIENT_SECRET)
+
+    - bash: |
+        set -eux
+        kubectl run --attach --rm --restart=Never --image=curlimages/curl smoke-test-$RANDOM -- \
+          --max-time 5 --retry 99999 --retry-max-time 1200 http://k2bridge:8080
+      displayName: Smoke test
+
+  - job: Promote
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), variables['RUN_FLAG_PROMOTE']))
+    dependsOn:
+    - Deploy_K2Bridge
+    steps:
+
+    - task: AzureCLI@1
+      displayName: Tag Docker image as latest
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          az configure --defaults acr="$ACR_NAME"
+          docker tag \
+            "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
+            "$ACR_NAME.azurecr.io/k2bridge:latest"
+          docker push "$ACR_NAME.azurecr.io/k2bridge:latest"
+
+  - job: Cleanup 
+    dependsOn:
+    - Terraform
+    - Deploy_K2Bridge
+    # Do not delete AKS namespace:
+    # - if pipeline was canceled or failed before a Kubernetes namespace was generated
+    # - if deploying on master branch
+    # - if namespace was manually set with RUN_SET_NAMESPACE
+    condition: and(always(), not(variables['RUN_SET_NAMESPACE']))
+    steps:
+
+    - template: infrastructure/setup-k8s-clients-template.yml
+
+    - bash: |
+        set -eux
+        kubectl delete namespace "$KUBERNETES_NAMESPACE"
+      displayName: Delete namespace
+      condition: and(variables['KUBERNETES_NAMESPACE'], not(eq(variables['KUBERNETES_NAMESPACE'], 'master')))

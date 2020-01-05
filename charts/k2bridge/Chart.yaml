@@ -5,7 +5,6 @@ name: k2bridge
 version: 0.1.0
 dependencies:
   - name: elasticsearch
-    alias: "k2bridgeelasticsearch"
     version: 6.5.0
     repository: "@elastic"
     tags:

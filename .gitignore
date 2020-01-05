@@ -339,3 +339,7 @@ ASALocalRun/
 
 # Ignore downloaded charts
 charts/k2bridge/charts
+
+# terraform generated files
+.terraform*
+*.tfstate*

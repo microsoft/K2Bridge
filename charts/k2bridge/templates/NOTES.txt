@@ -26,6 +26,6 @@ provider the first time.
 
 3. Optionally deploy Kibana by running these commands:
   echo "Use this command to install Kibana"
-  helm install kibana elastic/kibana --set image=docker.elastic.co/kibana/kibana-oss --set imageTag={{ .Values.k2bridgeelasticsearch.imageTag }} --set elasticsearchHosts=http://{{ include "k2bridge.fullname" . }}:{{ .Values.service.port }}
+  helm install kibana elastic/kibana --set image=docker.elastic.co/kibana/kibana-oss --set imageTag={{ .Values.elasticsearch.imageTag }} --set elasticsearchHosts=http://{{ include "k2bridge.fullname" . }}:{{ .Values.service.port }}
   echo "Use http://127.0.0.1:5601 to connect to Kibana"
   kubectl port-forward service/kibana-kibana 5601

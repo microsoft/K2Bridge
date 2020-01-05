@@ -22,13 +22,13 @@ settings:
 service:
   type: ClusterIP
   port: 8080
-  targetPort: 8080
+  targetPort: 80
 
 ingress:
   enabled: false
   annotations: {}
 
-k2bridgeelasticsearch:
+elasticsearch:
 
   clusterName: k2bridgees
   masterService:  k2bridgees-master
