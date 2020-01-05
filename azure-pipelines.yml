@@ -260,6 +260,8 @@ stages:
         inlineScript: |
           set -eux  # fail on error
           az configure --defaults acr="$ACR_NAME"
+          az acr login
+          docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
             "$ACR_NAME.azurecr.io/k2bridge:latest"
