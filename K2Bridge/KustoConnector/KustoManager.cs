@@ -56,8 +56,6 @@ namespace K2Bridge.KustoConnector
         {
             logger.LogDebug("Calling adminClient.ExecuteControlCommand with the command: {@command}", command);
             var result = adminClient.ExecuteControlCommand(command);
-            logger.LogDebug("Result: {@result}", result);
-
             return result;
         }
 
@@ -72,7 +70,8 @@ namespace K2Bridge.KustoConnector
 
             // Use the kusto client to execute the query
             var (timeTaken, dataReader) = queryClient.ExecuteMonitoredQuery(queryData.KQL);
-            logger.LogDebug("DataReader: {@dataReader} columns. timeTaken: {@timeTaken}", dataReader, timeTaken);
+            var fieldCount = dataReader.FieldCount;
+            logger.LogDebug("FieldCount: {@fieldCount}. timeTaken: {@timeTaken}", fieldCount, timeTaken);
             return (timeTaken, dataReader);
         }
     }

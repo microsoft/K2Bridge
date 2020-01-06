@@ -22,7 +22,7 @@ namespace K2Bridge.Tests.UnitTests.Controllers
             var ctr = GetController();
 
             // Act
-            var result = await ctr.Process();
+            var result = await ctr.Process("testIndexName");
 
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
