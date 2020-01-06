@@ -69,14 +69,14 @@ namespace K2Bridge.KustoConnector
         /// <returns>"ElasticResponse".</returns>
         public ElasticResponse ParseElasticResponse(IDataReader reader, QueryData queryData, TimeSpan timeTaken)
         {
+            // TODO: remove the using statement as the Dispose and Close should be responsibility of the caller.
             using (reader)
             {
                 try
                 {
                     // Read results and transform to Elastic form
                     var response = ReadResponse(queryData, reader, timeTaken);
-                    logger.LogDebug($"Aggs processed: {response.GetAllAggregations().Count()}");
-                    logger.LogDebug($"Hits processed: {response.GetAllHits().Count()}");
+                    logger.LogDebug("Response: {@response}", response);
                     return response;
                 }
                 catch (Exception ex)
@@ -94,7 +94,7 @@ namespace K2Bridge.KustoConnector
         /// <param name="reader">Kusto IDataReader response.</param>
         /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
         /// <returns>ElasticResponse object.</returns>
-        private static ElasticResponse ReadResponse(
+        private ElasticResponse ReadResponse(
             QueryData query,
             IDataReader reader,
             TimeSpan timeTaken)
@@ -103,10 +103,13 @@ namespace K2Bridge.KustoConnector
 
             response.AddTook(timeTaken);
 
+            this.logger.LogDebug("Reading response using reader.");
             var parsedKustoResponse = ReadDataResponse(reader);
 
             if (parsedKustoResponse[AggregationTableName] != null)
             {
+                this.logger.LogDebug("Parsing aggregations");
+
                 // read aggregations
                 foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                 {
@@ -116,6 +119,7 @@ namespace K2Bridge.KustoConnector
             }
 
             // read hits
+            this.logger.LogDebug("Reading Hits using QueryData: {@query}", query);
             var hits = ReadHits(parsedKustoResponse, query);
             response.AddHits(hits);
 

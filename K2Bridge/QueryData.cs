@@ -38,5 +38,11 @@ namespace K2Bridge
         public string HighlightPreTag { get; set; }
 
         public string HighlightPostTag { get; set; }
+
+        // Pretty print
+        public override string ToString()
+        {
+            return Newtonsoft.Json.Linq.JObject.FromObject(this).ToString();
+        }
     }
 }

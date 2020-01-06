@@ -38,22 +38,30 @@ namespace K2Bridge.DAL
         public FieldCapabilityResponse GetFieldCaps(string indexName)
         {
             var response = new FieldCapabilityResponse();
-            string kustoCommand = $".show database schema | where TableName=='{indexName}' and ColumnName!='' | project ColumnName, ColumnType";
-            using (IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand))
+            try
             {
-                while (kustoResults.Read())
+                Logger.LogDebug("Index name: {@indexName}", indexName);
+                string kustoCommand = $".show database schema | where TableName=='{indexName}' and ColumnName!='' | project ColumnName, ColumnType";
+                using (IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand))
                 {
-                    var record = kustoResults;
-                    var fieldCapabilityElement = FieldCapabilityElement.Create(record);
-                    if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
+                    while (kustoResults.Read())
                     {
-                        Logger.LogWarning($"Field: {fieldCapabilityElement.Name} doesn't have a type.");
+                        var record = kustoResults;
+                        var fieldCapabilityElement = FieldCapabilityElement.Create(record);
+                        if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
+                        {
+                            Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
+                        }
+
+                        response.AddField(fieldCapabilityElement);
+
+                        Logger.LogDebug("Found field: {@fieldCapabilityElement}", fieldCapabilityElement);
                     }
-
-                    response.AddField(fieldCapabilityElement);
-
-                    Logger.LogDebug($"Found field: {fieldCapabilityElement.Name} with type: {fieldCapabilityElement.Type}");
                 }
+            }
+            catch (System.Exception ex)
+            {
+                Logger.LogError(ex, "Error while executing GetFieldCaps.");
             }
 
             return response;
@@ -67,16 +75,25 @@ namespace K2Bridge.DAL
         public IndexListResponseElement GetIndexList(string indexName)
         {
             var response = new IndexListResponseElement();
-            using (IDataReader kustoResults = Kusto.ExecuteControlCommand($".show tables | search TableName: '{indexName}' | project TableName"))
+            try
             {
-                while (kustoResults.Read())
-                {
-                    var record = kustoResults;
-                    var termBucket = TermBucket.Create(record);
-                    response.Aggregations.IndexCollection.AddBucket(termBucket);
+                Logger.LogDebug("Index name: {@indexName}", indexName);
 
-                    Logger.LogDebug($"Found index/table: {termBucket.Key}");
+                using (IDataReader kustoResults = Kusto.ExecuteControlCommand($".show tables | search TableName: '{indexName}' | project TableName"))
+                {
+                    while (kustoResults.Read())
+                    {
+                        var record = kustoResults;
+                        var termBucket = TermBucket.Create(record);
+                        response.Aggregations.IndexCollection.AddBucket(termBucket);
+
+                        Logger.LogDebug("Found index/table: {@termBucket}", termBucket);
+                    }
                 }
+            }
+            catch (System.Exception ex)
+            {
+                Logger.LogError(ex, "Error while executing GetIndexList.");
             }
 
             return response;

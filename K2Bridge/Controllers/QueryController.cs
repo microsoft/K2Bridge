@@ -86,6 +86,15 @@ namespace K2Bridge.Controllers
         {
             if (rawQueryData == null || rawQueryData.Length < 2)
             {
+                if (rawQueryData == null)
+                {
+                    this.logger.LogError("Invalid request body. rawQueryData is null.");
+                }
+                else
+                {
+                    this.logger.LogError($"Invalid request body. rawQueryData.Length is {rawQueryData.Length}");
+                }
+
                 throw new ArgumentException("Invalid request payload", nameof(rawQueryData));
             }
 

@@ -8,6 +8,7 @@ namespace K2Bridge
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -15,63 +16,80 @@ namespace K2Bridge
     /// </summary>
     internal class ElasticQueryTranslator : ITranslator
     {
-        private readonly IVisitor visitor;
+        private readonly IVisitor Visitor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElasticQueryTranslator"/> class.
         /// </summary>
         /// <param name="visitor">The visitor to accept the translation request.</param>
-        public ElasticQueryTranslator(IVisitor visitor) => this.visitor = visitor;
+        /// <param name="logger">Logger.</param>
+        public ElasticQueryTranslator(IVisitor visitor, ILogger<ElasticQueryTranslator> logger)
+        {
+            Visitor = visitor;
+            Logger = logger;
+        }
+
+        private ILogger Logger { get; set; }
 
         /// <summary>
         /// Translate a given request into QueryData.
         /// </summary>
-        /// <param name="header"></param>
-        /// <param name="query"></param>
-        /// <returns></returns>
+        /// <param name="header">A header.</param>
+        /// <param name="query">A query.</param>
+        /// <returns>A <see cref="QueryData"/>.</returns>
         public QueryData Translate(string header, string query)
         {
-            // Prepare the esDSL object, except some fields such as the query field which will be built later
-            var elasticSearchDSL = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
-
-            // deserialize the headers and extract the index name
-            var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
-            elasticSearchDSL.IndexName = headerDictionary["index"];
-
-            elasticSearchDSL.HighlightText = new Dictionary<string, string>();
-
-            var qs = elasticSearchDSL.Query.Bool.Must.GetEnumerator();
-            while (qs.MoveNext())
+            try
             {
-                if (qs.Current == null)
+                Logger.LogDebug("Translate params: header:{@header}, query:{@query}", header, query);
+
+                // Prepare the esDSL object, except some fields such as the query field which will be built later
+                var elasticSearchDSL = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
+
+                // deserialize the headers and extract the index name
+                var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
+                elasticSearchDSL.IndexName = headerDictionary["index"];
+
+                elasticSearchDSL.HighlightText = new Dictionary<string, string>();
+
+                var qs = elasticSearchDSL.Query.Bool.Must.GetEnumerator();
+                while (qs.MoveNext())
                 {
-                    continue;
+                    if (qs.Current == null)
+                    {
+                        continue;
+                    }
+
+                    if (qs.Current is QueryStringClause queryStringClause)
+                    {
+                        elasticSearchDSL.HighlightText.Add("*", queryStringClause.Phrase);
+                    }
+                    else if (qs.Current is MatchPhraseClause matchPhraseClause)
+                    {
+                        elasticSearchDSL.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
+                    }
                 }
 
-                if (qs.Current is QueryStringClause queryStringClause)
+                // Use the visitor and build the KQL string from the esDSL object
+                elasticSearchDSL.Accept(Visitor);
+                var queryData = new QueryData(
+                    elasticSearchDSL.KQL,
+                    elasticSearchDSL.IndexName,
+                    elasticSearchDSL.HighlightText);
+
+                if (elasticSearchDSL.Highlight != null && elasticSearchDSL.Highlight.PreTags.Count > 0)
                 {
-                    elasticSearchDSL.HighlightText.Add("*", queryStringClause.Phrase);
+                    queryData.HighlightPreTag = elasticSearchDSL.Highlight.PreTags[0];
+                    queryData.HighlightPostTag = elasticSearchDSL.Highlight.PostTags[0];
                 }
-                else if (qs.Current is MatchPhraseClause matchPhraseClause)
-                {
-                    elasticSearchDSL.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
-                }
+
+                return queryData;
             }
-
-            // Use the visitor and build the KQL string from the esDSL object
-            elasticSearchDSL.Accept(visitor);
-            var queryData = new QueryData(
-                elasticSearchDSL.KQL,
-                elasticSearchDSL.IndexName,
-                elasticSearchDSL.HighlightText);
-
-            if (elasticSearchDSL.Highlight != null && elasticSearchDSL.Highlight.PreTags.Count > 0)
+            catch (System.Exception ex)
             {
-                queryData.HighlightPreTag = elasticSearchDSL.Highlight.PreTags[0];
-                queryData.HighlightPostTag = elasticSearchDSL.Highlight.PostTags[0];
+                Logger.LogError(ex, "Failed to execute translate.");
+                throw;
             }
-
-            return queryData;
         }
     }
 }

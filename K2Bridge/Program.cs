@@ -17,6 +17,10 @@ namespace K2Bridge
     /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Entry point.
+        /// </summary>
+        /// <param name="args">Program args.</param>
         public static void Main(string[] args)
         {
             RunAspNetCore(args);
@@ -32,7 +36,8 @@ namespace K2Bridge
             // initialize logger
             // TODO: move logger settings to config.
             Log.Logger = new LoggerConfiguration()
-                .Enrich.FromLogContext()
+
+                // .Enrich.FromLogContext()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .CreateLogger();

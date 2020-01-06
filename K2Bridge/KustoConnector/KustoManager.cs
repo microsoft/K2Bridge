@@ -18,6 +18,7 @@ namespace K2Bridge.KustoConnector
     internal class KustoManager : IQueryExecutor
     {
         private const string KustoApplicationNameForTracing = "K2Bridge";
+        private static readonly string ASSEMBLYVERSION = typeof(KustoManager).Assembly.GetName().Version.ToString();
         private readonly ICslQueryProvider queryClient;
         private readonly ICslAdminProvider adminClient;
         private readonly ILogger<KustoManager> logger;
@@ -25,8 +26,8 @@ namespace K2Bridge.KustoConnector
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoManager"/> class.
         /// </summary>
-        /// <param name="connectionDetails"></param>
-        /// <param name="loggerFactory"></param>
+        /// <param name="connectionDetails">Kusto Connection Details.</param>
+        /// <param name="loggerFactory">A logger.</param>
         public KustoManager(KustoConnectionDetails connectionDetails, ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<KustoManager>();
@@ -40,25 +41,39 @@ namespace K2Bridge.KustoConnector
                     connectionDetails.KustoAadTenantId);
 
             conn.ApplicationNameForTracing = KustoApplicationNameForTracing;
-            conn.ClientVersionForTracing =
-                typeof(KustoManager).Assembly.GetName().Version.ToString();
+            conn.ClientVersionForTracing = ASSEMBLYVERSION;
 
             queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
         }
 
+        /// <summary>
+        /// Executes a Control command in Kusto.
+        /// </summary>
+        /// <param name="command">The command to execute.</param>
+        /// <returns>A data reader with a result.</returns>
         public IDataReader ExecuteControlCommand(string command)
         {
+            logger.LogDebug("Calling adminClient.ExecuteControlCommand with the command: {@command}", command);
             var result = adminClient.ExecuteControlCommand(command);
-            logger.LogDebug($"Columns received from control command: {result.FieldCount}");
+            logger.LogDebug("Result: {@result}", result);
 
             return result;
         }
 
+        /// <summary>
+        /// Executes a Monitored Query in Kusto.
+        /// </summary>
+        /// <param name="queryData">A Query data.</param>
+        /// <returns>A data reader with response and time taken.</returns>
         public (TimeSpan timeTaken, IDataReader reader) ExecuteQuery(QueryData queryData)
         {
+            logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
+
             // Use the kusto client to execute the query
-            return queryClient.ExecuteMonitoredQuery(queryData.KQL);
+            var (timeTaken, dataReader) = queryClient.ExecuteMonitoredQuery(queryData.KQL);
+            logger.LogDebug("DataReader: {@dataReader} columns. timeTaken: {@timeTaken}", dataReader, timeTaken);
+            return (timeTaken, dataReader);
         }
     }
 }
