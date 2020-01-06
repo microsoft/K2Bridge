@@ -12,7 +12,7 @@ image:
 settings:
   bridgeListenerAddress: "http://*:8080/"
   metadataElasticAddress: "http://k2bridgees-master:9200"
-  isHandleMetadata: true
+  outputBackendQuery: false
   kustoClusterUrl: "https://mykustoinstance.kusto.windows.net"
   kustoDatabase: "mykustodatabase"
   kustoAadClientId: "00000000-0000-0000-0000-000000000000"

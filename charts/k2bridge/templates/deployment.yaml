@@ -30,13 +30,13 @@ spec:
           envFrom:
           - configMapRef:
               name: {{ include "k2bridge.fullname" . }}
-          env: 
+          env:
             - name: bridgeListenerAddress
               value: "{{ .Values.settings.bridgeListenerAddress }}"
             - name: metadataElasticAddress
               value: "{{ .Values.settings.metadataElasticAddress }}"
-            - name: isHandleMetadata
-              value: "{{ .Values.settings.isHandleMetadata }}"
+            - name: outputBackendQuery
+              value: "{{ .Values.settings.outputBackendQuery }}"
             - name: kustoClusterUrl
               value: "{{ .Values.settings.kustoClusterUrl }}"
             - name: kustoDatabase
