@@ -23,3 +23,11 @@ module "aks" {
   aks_sp_object_id = var.aks_sp_object_id
   aks_sp_client_secret = var.aks_sp_client_secret
 }
+
+module "kusto" {
+  source = "./kusto"
+  kusto_name = var.kusto_name
+  resource_group_name = var.resource_group
+  location = var.location
+  kusto_admin_sp_object_id = var.kusto_admin_sp_object_id
+}

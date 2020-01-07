@@ -193,6 +193,8 @@ stages:
           -var aks_version=$(AKS_VERSION)
           -var aks_sp_client_id=$(AKS_SP_CLIENT_ID)
           -var aks_sp_object_id=$(AKS_SP_OBJECT_ID)
+          -var kusto_name=$(KUSTO_NAME)
+          -var kusto_admin_sp_object_id=$(AKS_SP_OBJECT_ID)
         # For additional security, pass secret through environment instead of command line.
         # Terraform recognizes TF_VAR prefixed environment variables.
         TerraformEnvVariables:

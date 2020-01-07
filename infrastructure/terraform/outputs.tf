@@ -18,3 +18,11 @@ output "kube_config" {
 output "kubernetes_version" {
   value = module.aks.kubernetes_version
 }
+
+output "kusto_name" {
+  value = module.kusto.name
+}
+
+output "kusto_uri" {
+  value = module.kusto.uri
+}
