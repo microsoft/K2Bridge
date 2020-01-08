@@ -87,7 +87,6 @@ Note that the name of the index must be an exact match to the table name.
 
 Notes: 
  - To run on other kubernetes providers, change in `values.yaml` the elasticsearch storageClassName to fit the one suggested by the provider. 
-```
 
 ## Contributing
 
