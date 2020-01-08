@@ -47,8 +47,6 @@ namespace K2Bridge.Controllers
         {
             var response = Kusto.GetFieldCaps(indexName);
 
-            Response.Headers.Add("X-K2-CorrelationId", HttpContext.TraceIdentifier);
-
             return new ContentResult()
             {
                 Content = JsonConvert.SerializeObject(response),

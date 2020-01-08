@@ -52,3 +52,12 @@ spec:
               value: "{{ .Values.settings.kustoAadTenantId }}"
             - name: useAspNetCore
               value: "false"
+          volumeMounts:
+            - name: appsettings-volume
+              mountPath: /app/settings
+      volumes:
+        - name: appsettings-volume
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: {{ include "k2bridge.fullname" . }}-appsettings

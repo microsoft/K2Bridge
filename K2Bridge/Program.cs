@@ -7,8 +7,11 @@
 
 namespace K2Bridge
 {
+    using System;
+    using System.IO;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
     using Serilog;
 
@@ -18,37 +21,39 @@ namespace K2Bridge
     public class Program
     {
         /// <summary>
+        /// Creates the Configuration for the app.
+        /// The config is stored in appsettings.json.
+        /// It can also be found on appsettings.Development.json (you local env)
+        /// Or in /settings/appsettings.json when deployed to a container.
+        /// </summary>
+        public static IConfiguration Configuration { get; } = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+            .AddJsonFile("settings/appsettings.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables()
+            .Build();
+
+        /// <summary>
         /// Entry point.
         /// </summary>
         /// <param name="args">Program args.</param>
         public static void Main(string[] args)
         {
-            RunAspNetCore(args);
-            Log.Logger.Information("***** ALPHA VERSION. MICROSOFT INTERNAL ONLY! *****");
-        }
-
-        /// <summary>
-        /// Use Asp.Net Core Api platform.
-        /// </summary>
-        /// <param name="args">commandline arguments.</param>
-        private static void RunAspNetCore(string[] args)
-        {
             // initialize logger
-            // TODO: move logger settings to config.
             Log.Logger = new LoggerConfiguration()
-
-                // .Enrich.FromLogContext()
-                .MinimumLevel.Debug()
-                .WriteTo.Console()
+                .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
+
             CreateWebHostBuilder(args).Build().Run();
         }
 
         private static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
-                    .UseSerilog()
-                    .UseStartup<Startup>();
+                .UseConfiguration(Configuration)
+                .UseSerilog()
+                .UseStartup<Startup>();
         }
     }
 }

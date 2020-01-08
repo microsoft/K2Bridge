@@ -4,6 +4,7 @@
 
 namespace K2Bridge.DAL
 {
+    using System;
     using System.Data;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models.Response;
@@ -59,7 +60,7 @@ namespace K2Bridge.DAL
                     }
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex, "Error while executing GetFieldCaps.");
             }
@@ -91,7 +92,7 @@ namespace K2Bridge.DAL
                     }
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex, "Error while executing GetIndexList.");
             }

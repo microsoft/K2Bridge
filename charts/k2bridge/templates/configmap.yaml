@@ -10,9 +10,44 @@ metadata:
 data:
   bridgeListenerAddress: "{{ .Values.settings.bridgeListenerAddress }}"
   metadataElasticAddress: "{{ .Values.settings.metadataElasticAddress }}"
-  isHandleMetadata: "{{ .Values.settings.isHandleMetadata }}"
   kustoClusterUrl: "{{ .Values.settings.kustoClusterUrl }}"
   kustoDatabase: "{{ .Values.settings.kustoDatabase }}"
   kustoAadClientId: "{{ .Values.settings.kustoAadClientId }}"
   kustoAadTenantId: "{{ .Values.settings.kustoAadTenantId }}"
-  useAspNetCore: "false"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "k2bridge.fullname" . }}-appsettings
+  labels:
+    app.kubernetes.io/name: {{ include "k2bridge.name" . }}
+    helm.sh/chart: {{ include "k2bridge.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  appsettings.json: |
+    {
+      "Serilog": {
+        "Using": [ "Serilog.Sinks.Console" ],
+        "MinimumLevel": {
+          "Default": "Debug",
+          "Override": {
+            "Microsoft": "Warning",
+            "Microsoft.AspNetCore": "Warning",
+            "Serilog.AspNetCore.RequestLoggingMiddleware": "Warning",
+            "System": "Warning"
+          }
+        },
+        "WriteTo": [
+          {
+            "Name": "Console",
+            "Args": {
+              "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
+            }
+          }
+        ],
+        "Enrich": [ "FromLogContext", "WithCorrelationId", "WithCorrelationIdHeader" ]
+      }
+    }

@@ -5,6 +5,7 @@
 namespace K2Bridge
 {
     using System;
+    using System.IO;
     using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
@@ -52,6 +53,8 @@ namespace K2Bridge
                 elasticClient.BaseAddress = new Uri(listenerDetails.MetadataEndpoint);
             });
 
+            services.AddHttpContextAccessor();
+
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -65,6 +68,8 @@ namespace K2Bridge
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Log.Logger.Information("***** ALPHA VERSION. MICROSOFT INTERNAL ONLY! *****");
+
             if (env.IsDevelopment() || env.IsEnvironment("local"))
             {
                 app.UseDeveloperExceptionPage();
