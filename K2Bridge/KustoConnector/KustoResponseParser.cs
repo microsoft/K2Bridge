@@ -7,7 +7,6 @@ namespace K2Bridge.KustoConnector
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Linq;
     using K2Bridge.Models.Response;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
