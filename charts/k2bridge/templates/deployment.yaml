@@ -61,3 +61,5 @@ spec:
             # Provide the name of the ConfigMap containing the files you want
             # to add to the container
             name: {{ include "k2bridge.fullname" . }}-appsettings
+      {{ if .Values.privateRegistry }}imagePullSecrets:
+        - name: {{.Values.privateRegistry}}{{ end }}

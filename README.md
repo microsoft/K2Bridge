@@ -26,12 +26,22 @@ Running Kibana and KibanaKustoBridge locally for testing and development, see [h
 
 ### Build the Docker container
 
-You can build the container on a local Docker installation:
+Define arguments:
 
 ```sh
 
 CONTAINER_NAME=[CONTAINER_NAME]
-REPOSITORY_NAME=[YOUR_IMAGE_REPO_NAME]
+REGISTRY_NAME=[YOUR_AZURE_CONTAINER_REGISTRY_NAME]
+REPOSITORY_NAME=$REGISTRY_NAME.azurecr.io
+
+# if pulling from private ACR
+IMAGE_PULL_SECRET_NAME=[YOUR ACR PULL SECRET NAME]
+
+```
+
+You can build the container on a local Docker installation:
+
+```sh
 
 docker build -t $CONTAINER_NAME .
 docker push $REPOSITORY_NAME/$CONTAINER_NAME
@@ -41,23 +51,33 @@ Or you can build the container remotely on Azure Container Registry:
 
 ```sh
 
-CONTAINER_NAME=[CONTAINER_NAME]
-REGISTRY_NAME=[YOUR_AZURE_CONTAINER_REGISTRY_NAME]
-REPOSITORY_NAME=$REGISTRY_NAME.azurecr.io
-
 az acr build -r $REGISTRY_NAME -t $CONTAINER_NAME .
 ```
 
 ### Run on Azure Kubernetes Service
 
-Ensure your AKS instance can [pull images from ACR](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration), e.g.:
+Ensure your AKS instance can [pull images from ACR](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration).
+
+Using option A (needs owner role on ACR):
 
 ```sh
 az aks update -n myAKSCluster -g myResourceGroup --attach-acr $REGISTRY_NAME
 ```
 
-Download the Elasticsearch helm chart dependency:
+OR option B:
 
+```sh
+kubectl create secret docker-registry $IMAGE_PULL_SECRET_NAME --docker-server <acrname>.azurecr.io --docker-email <email> --docker-username=<client id> --docker-password <client password>
+```
+
+Download the Elasticsearch helm chart dependency (and k2 helm chart):
+
+If the k2 chart is fetched from acr:
+```sh
+az acr helm repo add -n "<acr name>"
+```
+
+Elasticsearch chart:
 ```sh
 helm repo add elastic https://helm.elastic.co
 helm repo update
@@ -67,13 +87,22 @@ helm dependency update charts/k2bridge
 Deploy
 
 ```sh
-KUSTO_INSTANCE=[YOUR_KUSTO_INSTANCE_NAME]
-KUSTO_DATABASE=[YOUR_KUSTO_DATABASE_NAME]
-KUSTO_CLIENT_ID=[SERVICE_PRINCIPAL_CLIENT_ID]
-KUSTO_CLIENT_SECRET=[SERVICE_PRINCIPAL_CLIENT_SECRET]
-KUSTO_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
+ADX_INSTANCE=[YOUR_ADX_INSTANCE_NAME]
+ADX_DATABASE=[YOUR_ADX_DATABASE_NAME]
+ADX_CLIENT_ID=[SERVICE_PRINCIPAL_CLIENT_ID]
+ADX_CLIENT_SECRET=[SERVICE_PRINCIPAL_CLIENT_SECRET]
+ADX_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
+REGION=[ADX region]
+```
 
-helm install k2bridge charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.kustoClusterUrl="https://$KUSTO_INSTANCE.kusto.windows.net" --set settings.kustoDatabase="$KUSTO_DATABASE" --set settings.kustoAadClientId="$KUSTO_CLIENT_ID" --set settings.kustoAadClientSecret="$KUSTO_CLIENT_SECRET" --set settings.kustoAadTenantId="$KUSTO_TENANT_ID" --set replicaCount=2
+local chart:
+```sh
+helm install k2bridge charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.kustoClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.kustoDatabase="$ADX_DATABASE" --set settings.kustoAadClientId="$ADX_CLIENT_ID" --set settings.kustoAadClientSecret="$ADX_CLIENT_SECRET" --set settings.kustoAadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [-set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
+```
+
+remote chart:
+```sh
+helm install k2bridge $REGISTRY_NAME/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.kustoClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.kustoDatabase="$ADX_DATABASE" --set settings.kustoAadClientId="$ADX_CLIENT_ID" --set settings.kustoAadClientSecret="$ADX_CLIENT_SECRET" --set settings.kustoAadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [-set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
 ```
 
 The command output will suggest a helm command to run to deploy Kibana, similar to:
@@ -85,8 +114,8 @@ helm install kibana elastic/kibana --set image=docker.elastic.co/kibana/kibana-o
 In a new installation of Kibana, you will need to configure the indexes. Navigate to Management -> Index Patterns and create new indexes.
 Note that the name of the index must be an exact match to the table name.
 
-Notes: 
- - To run on other kubernetes providers, change in `values.yaml` the elasticsearch storageClassName to fit the one suggested by the provider. 
+Notes:
+ - To run on other kubernetes providers, change in `values.yaml` the elasticsearch storageClassName to fit the one suggested by the provider.
 
 ## Contributing
 

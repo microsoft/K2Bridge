@@ -4,6 +4,9 @@
 
 replicaCount: 2
 
+# Image pull secret
+# privateRegistry: acr-auth
+
 image:
   repository: repo-placeholder/k2bridge
   tag: latest
