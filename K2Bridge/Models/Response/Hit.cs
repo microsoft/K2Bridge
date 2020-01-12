@@ -7,7 +7,6 @@ namespace K2Bridge.Models.Response
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using K2Bridge.KustoConnector;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -15,6 +14,11 @@ namespace K2Bridge.Models.Response
     {
         private const string TYPE = "_doc";
         private const int VERSION = 1;
+
+        private static readonly Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>
+        {
+            { typeof(sbyte), (value) => (sbyte)value != 0 },
+        };
 
         [JsonProperty("_index")]
         public string Index { get; set; }
@@ -43,34 +47,6 @@ namespace K2Bridge.Models.Response
         [JsonProperty("highlight", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> Highlight { get; set; }
 
-        public static Hit Create(IDataRecord record, QueryData query)
-        {
-            var hit = new Hit() { Index = query.IndexName };
-            hit.Highlight = new Dictionary<string, object>();
-
-            for (int index = 0; index < record.FieldCount; index++)
-            {
-                var name = record.GetName(index);
-                var value = record.ReadValue(index);
-                hit.AddSource(name, value);
-
-                if (query.HighlightText == null || value == null)
-                {
-                    continue;
-                }
-
-                // Elastic only highlights string values, but we try to highlight everything we can here.
-                // To mimic elastic: check for type of value here and skip if != string.
-                if ((query.HighlightText.ContainsKey(name) && query.HighlightText[name].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase)) ||
-                    (query.HighlightText.ContainsKey("*") && query.HighlightText["*"].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase)))
-                {
-                    hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + value.ToString() + query.HighlightPostTag });
-                }
-            }
-
-            return hit;
-        }
-
         public static Hit Create(DataRow row, QueryData query)
         {
             var hit = new Hit() { Index = query.IndexName };
@@ -81,7 +57,7 @@ namespace K2Bridge.Models.Response
             for (int index = 0; index < row.ItemArray.Length; index++)
             {
                 var name = columns[index].ColumnName;
-                var value = row[name];
+                var value = GetValue(columns[index], row[name]);
                 hit.AddSource(name, value);
 
                 if (query.HighlightText == null || value == null)
@@ -105,5 +81,18 @@ namespace K2Bridge.Models.Response
         {
             Source.Add(keyName, value == null ? null : JToken.FromObject(value));
         }
+
+        private static object GetValue(DataColumn column, object value)
+        {
+            if (value == null) {
+                return null;
+            }
+            var type = column.DataType;
+            if (Converters.ContainsKey(type)) {
+                return Converters[type](value);
+            }
+            return value;
+        }
+
     }
 }
