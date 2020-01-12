@@ -47,11 +47,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   kubernetes_version  = var.aks_version
 
   default_node_pool {
-    name            = "default"
-    node_count      = 6
-    vm_size         = "Standard_D2s_v3"
-    os_disk_size_gb = 30
-    vnet_subnet_id  = var.subnet_id
+    type                  = "VirtualMachineScaleSets"
+    name                  = "default"
+    node_count            = 6
+    vm_size               = "Standard_D2s_v3"
+    os_disk_size_gb       = 30
+    vnet_subnet_id        = var.subnet_id
+    enable_auto_scaling   = true
+    max_count             = 15
+    min_count             = 5
   }
 
   addon_profile {
