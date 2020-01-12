@@ -4,14 +4,18 @@
 
 namespace K2Bridge.Tests.UnitTests.DAL
 {
+    using System;
     using System.Collections.Generic;
     using global::Tests;
+    using FluentAssertions;
+    using FluentAssertions.Json;
     using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models.Response;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
+    using Newtonsoft.Json.Linq;
 
     public class KustoDataAccessTests
     {
@@ -23,21 +27,92 @@ namespace K2Bridge.Tests.UnitTests.DAL
         public void WhenGetFieldCapsWithValidIndexReturnFieldCaps()
         {
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommand(It.IsNotNull<string>()))
-                .Returns(new TestDataReader(
-                new List<Dictionary<string, object>>() {
-                    new Dictionary<string, object> {
-                        { "testName", "somevalue1" },
-                        { "type", "System.Int32" },
-                    },
-                }));
 
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, new Mock<ILogger<KustoDataAccess>>().Object);
-            var response = kusto.GetFieldCaps("testIndexName");
+            Func<string, string, Dictionary<string, object>> column = (name, type) =>
+                new Dictionary<string, object> {
+                    { "ColumnName", name },
+                    { "ColumnType", type },
+                };
 
-            Assert.IsNotNull(response);
-            Assert.IsNotNull(response.Fields);
-            Assert.AreEqual(response.Fields["somevalue1"].Name, "somevalue1");
+            var testData = new List<Dictionary<string, object>>() {
+                column("mybool", "System.SByte"),
+                column("myint", "System.Int32"),
+                column("mylong", "System.Int64"),
+                column("myreal", "System.Double"),
+                column("mystring", "System.String"),
+                column("mydatetime", "System.DateTime"),
+                column("mydynamic", "System.Object"),
+
+                // TODO add missing Kusto types
+                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1452
+                // column("myguid", "System.Guid"),
+                // column("mytimespan", "System.TimeSpan"),
+                // column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
+            };
+            using (var testReader = new TestDataReader(testData))
+            {
+                mockQueryExecutor.Setup(exec => exec.ExecuteControlCommand(It.IsNotNull<string>()))
+                    .Returns(testReader);
+
+                var kusto = new KustoDataAccess(mockQueryExecutor.Object, new Mock<ILogger<KustoDataAccess>>().Object);
+                var response = kusto.GetFieldCaps("testIndexName");
+
+                JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
+                  {
+                    ""fields"": {
+                      ""mybool"": {
+                        ""boolean"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""boolean""
+                        }
+                      },
+                      ""myint"": {
+                        ""integer"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""integer""
+                        }
+                      },
+                      ""mylong"": {
+                        ""long"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""long""
+                        }
+                      },
+                      ""myreal"": {
+                        ""double"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""double""
+                        }
+                      },
+                      ""mystring"": {
+                        ""keyword"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""keyword""
+                        }
+                      },
+                      ""mydatetime"": {
+                        ""date"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""date""
+                        }
+                      },
+                      ""mydynamic"": {
+                        ""object"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""object""
+                        }
+                      }
+                    }
+                  }
+                  "));
+            }
         }
 
         [Test]
