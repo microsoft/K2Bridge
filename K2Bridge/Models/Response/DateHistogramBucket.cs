@@ -45,7 +45,7 @@ namespace K2Bridge.Models.Response
             {
                 DocCount = Convert.ToInt32(count),
                 Key = Convert.ToInt64(dateBucket.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds),
-                KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz").Remove(26, 1), // this should be converted to the timezone requested (all others in utc)
+                KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
             };
         }
     }
