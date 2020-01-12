@@ -51,3 +51,19 @@ Once the degbugger attaches, press the play button again.
 4. Entries from the Kusto table should appear in the search result
 
 ![Example](./images/search_example.png)
+
+##### End2End tests
+
+The end-to-end test suite requires an existing installation of K2Bridge, as
+well as a standalone installation of Elasticsearch, to run parallel queries
+and compare the outputs.
+
+A convenient way to run the tests locally is to connect to a Kubernetes
+cluster that already has the services deployed.
+
+```
+az aks get-credentials -g $RESOURCE_GROUP -n aks-k2bridge-qa
+kubectl port-forward service/elasticsearchqa-master 9200 &
+kubectl port-forward service/k2bridge 8080 &
+dotnet test K2Bridge.Tests.End2End
+```

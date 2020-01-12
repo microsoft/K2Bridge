@@ -15,8 +15,24 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish K2Bridge -c Release -o out
 
-# Run tests
+# Run unit tests
 RUN dotnet test K2Bridge.Tests.UnitTests "--logger:trx;LogFileName=/app/TestResult.xml" 
+
+# Build end2end tests
+RUN dotnet build K2Bridge.Tests.End2End
+
+# Build image for executing End2End tests in Kubernetes
+
+FROM mcr.microsoft.com/dotnet/core/sdk:$DOTNET_VERSION AS end2endtest
+
+COPY --from=build /app/K2Bridge ./K2Bridge
+COPY --from=build /app/K2Bridge.Tests.End2End ./K2Bridge.Tests.End2End
+
+# Create a FIFO pipe allowing to fetch test outputs before container terminates
+RUN mkfifo /test-result-pipe
+
+# Run the created image to execute End2End tests
+CMD ["bash", "-x", "-c", "dotnet test K2Bridge.Tests.End2End '--logger:trx;LogFileName=/app/TestResult.xml' ; cat /app/TestResult.xml > /test-result-pipe ; sleep 5"]
 
 # Build runtime image
 

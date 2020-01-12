@@ -30,6 +30,8 @@ variables:
 - group: K2Bridge CI-CD pipeline
 - name: SEMANTIC_VERSION
   value: "0.0.$(Build.BuildId)"
+- name: KUSTO_DB
+  value: "build$(Build.BuildId)"
 
 pool:
   vmImage: ubuntu-latest
@@ -164,6 +166,13 @@ stages:
             .
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
 
+          # Build end-to-end test image
+          docker build \
+            --target end2endtest \
+            -t "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION" \
+            .
+          docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
+
           # Push Helm chart
           helm repo add elastic https://helm.elastic.co
           helm repo update
@@ -200,6 +209,22 @@ stages:
         TerraformEnvVariables:
           TF_VAR_aks_sp_client_secret: $(AKS_SP_CLIENT_SECRET)
 
+  - job: Deploy_Kusto 
+    displayName: Provision Kusto database 
+    dependsOn:
+    - Terraform
+
+    steps:
+
+        - task: AzureCLI@1
+          displayName: Provision Kusto database
+          inputs:
+            azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
+            scriptLocation: inlineScript
+            inlineScript: |
+              set -eux  # fail on error
+              az kusto database create -g "$(RESOURCE_GROUP)" --cluster-name "$(KUSTO_NAME)" -n "$(KUSTO_DB)"
+
   - job: Deploy_K2Bridge 
     displayName: Deploy K2Bridge 
     dependsOn:
@@ -216,8 +241,10 @@ stages:
         azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
         scriptLocation: inlineScript
         inlineScript: |
-          set -eux  # fail on error
+          set -eu  # fail on error
           az acr helm repo add -n "$(ACR_NAME)"
+          KUSTO_URI=$(az kusto cluster show -g $(RESOURCE_GROUP) -n $(KUSTO_NAME) --query uri -o tsv)
+          echo "##vso[task.setvariable variable=KUSTO_URI]$KUSTO_URI"
 
     - bash: |
         set -eux  # fail on error
@@ -231,16 +258,16 @@ stages:
           --set image.repository=$(ACR_NAME).azurecr.io/k2bridge \
           --set image.tag=$SEMANTIC_VERSION \
           --set replicaCount=2 \
-          --set settings.kustoClusterUrl="https://$KUSTO_INSTANCE.kusto.windows.net" \
-          --set settings.kustoDatabase="$KUSTO_DATABASE" \
-          --set settings.kustoAadClientId="$KUSTO_CLIENT_ID" \
+          --set settings.kustoClusterUrl="$KUSTO_URI" \
+          --set settings.kustoDatabase="$(KUSTO_DB)" \
+          --set settings.kustoAadClientId="$(AKS_SP_CLIENT_ID)" \
           --set settings.kustoAadClientSecret="$secret" \
           --set settings.kustoAadTenantId="$TENANT_ID"
         # List charts after deploying (for job log)
         helm list
       displayName: Install Helm chart
       env:
-        secret: $(KUSTO_CLIENT_SECRET)
+        secret: $(AKS_SP_CLIENT_SECRET)
 
     - bash: |
         set -eux
@@ -248,10 +275,74 @@ stages:
           --max-time 5 --retry 99999 --retry-max-time 1200 http://k2bridge:8080
       displayName: Smoke test
 
+  - job: Deploy_Elasticsearch 
+    displayName: Deploy Elasticsearch
+    dependsOn:
+    - Terraform
+    variables:
+      KUBERNETES_NAMESPACE: $[dependencies.Terraform.outputs['GenerateNS.KUBERNETES_NAMESPACE']]
+    steps:
+
+    - template: infrastructure/setup-k8s-clients-template.yml
+
+    - bash: |
+        set -eux  # fail on error
+        helm list
+        helm repo add elastic https://helm.elastic.co
+        helm upgrade --install elasticsearchqa elastic/elasticsearch \
+          --wait --timeout 45m \
+          --set image=docker.elastic.co/elasticsearch/elasticsearch-oss \
+          --set imageTag=6.8.5 \
+          --set clusterName=elasticsearchqa
+      displayName: Deploy Elasticsearch
+
+  - job: Test 
+    dependsOn:
+    - Terraform
+    - Deploy_Kusto
+    - Deploy_K2Bridge
+    - Deploy_Elasticsearch
+    variables:
+      KUBERNETES_NAMESPACE: $[dependencies.Terraform.outputs['GenerateNS.KUBERNETES_NAMESPACE']]
+    steps:
+
+    - template: infrastructure/setup-k8s-clients-template.yml
+
+    - task: AzureCLI@1
+      displayName: End-to-end test
+      inputs:
+        azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          podName="e2e-test-$RANDOM"
+          KUSTO_URI=$(az kusto cluster show -g $(RESOURCE_GROUP) -n $(KUSTO_NAME) --query uri -o tsv)
+          AAD_TOKEN=$(az account get-access-token --resource "$KUSTO_URI" --query accessToken -o tsv)
+          kubectl run --restart=Never \
+            --image=$(ACR_NAME).azurecr.io/k2bridge-test:$SEMANTIC_VERSION \
+            --env=K2BRIDGE_URL=http://k2bridge:8080 \
+            --env=ELASTICSEARCH_URL=http://elasticsearchqa-master:9200 \
+            --env=KUSTO_URI=$KUSTO_URI \
+            --env=KUSTO_DB=$(KUSTO_DB) \
+            --env=AAD_TOKEN=$AAD_TOKEN \
+            "$podName"
+          kubectl wait --timeout 45m --for=condition=ContainersReady pod "$podName"
+          # Read test output from FIFO within container
+          kubectl exec "$podName" cat /test-result-pipe > TestResult.xml
+          kubectl delete pod "$podName"
+
+    - task: PublishTestResults@2
+      displayName: Publish test results
+      condition: succeededOrFailed()
+      inputs:
+        testRunner: VSTest
+        testResultsFiles: 'TestResult.xml'
+        failTaskOnFailedTests: true
+
   - job: Promote
     condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), variables['RUN_FLAG_PROMOTE']))
     dependsOn:
-    - Deploy_K2Bridge
+    - Test
     steps:
 
     - task: AzureCLI@1
@@ -272,7 +363,7 @@ stages:
   - job: Cleanup 
     dependsOn:
     - Terraform
-    - Deploy_K2Bridge
+    - Test
     # Do not delete AKS namespace:
     # - if pipeline was canceled or failed before a Kubernetes namespace was generated
     # - if deploying on master branch
@@ -282,8 +373,13 @@ stages:
 
     - template: infrastructure/setup-k8s-clients-template.yml
 
-    - bash: |
-        set -eux
-        kubectl delete namespace "$KUBERNETES_NAMESPACE"
-      displayName: Delete namespace
+    - task: AzureCLI@1
+      displayName: Delete AKS namespace and Kusto database
       condition: and(variables['KUBERNETES_NAMESPACE'], not(eq(variables['KUBERNETES_NAMESPACE'], 'master')))
+      inputs:
+        azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          kubectl delete namespace "$KUBERNETES_NAMESPACE"
+          az kusto database delete -g "$(RESOURCE_GROUP)" --cluster-name "$(KUSTO_NAME)" -n "$(KUSTO_DB)" -y

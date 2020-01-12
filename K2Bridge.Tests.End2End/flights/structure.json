@@ -1,0 +1,90 @@
+{
+  "aliases": {},
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "AvgTicketPrice": {
+          "type": "double"
+        },
+        "Cancelled": {
+          "type": "boolean"
+        },
+        "Carrier": {
+          "type": "keyword"
+        },
+        "Dest": {
+          "type": "text"
+        },
+        "DestAirportID": {
+          "type": "keyword"
+        },
+        "DestCityName": {
+          "type": "keyword"
+        },
+        "DestCountry": {
+          "type": "keyword"
+        },
+        "DestLocation": {
+          "type": "geo_point"
+        },
+        "DestRegion": {
+          "type": "keyword"
+        },
+        "DestWeather": {
+          "type": "keyword"
+        },
+        "DistanceKilometers": {
+          "type": "double"
+        },
+        "DistanceMiles": {
+          "type": "double"
+        },
+        "FlightDelay": {
+          "type": "boolean"
+        },
+        "FlightDelayMin": {
+          "type": "long"
+        },
+        "FlightDelayType": {
+          "type": "keyword"
+        },
+        "FlightNum": {
+          "type": "keyword"
+        },
+        "FlightTimeHour": {
+          "type": "double"
+        },
+        "FlightTimeMin": {
+          "type": "double"
+        },
+        "Origin": {
+          "type": "text"
+        },
+        "OriginAirportID": {
+          "type": "keyword"
+        },
+        "OriginCityName": {
+          "type": "keyword"
+        },
+        "OriginCountry": {
+          "type": "keyword"
+        },
+        "OriginLocation": {
+          "type": "geo_point"
+        },
+        "OriginRegion": {
+          "type": "keyword"
+        },
+        "OriginWeather": {
+          "type": "keyword"
+        },
+        "dayOfWeek": {
+          "type": "integer"
+        },
+        "timestamp": {
+          "type": "date"
+        }
+      }
+    }
+  }
+}

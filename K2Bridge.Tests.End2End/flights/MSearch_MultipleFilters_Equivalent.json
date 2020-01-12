@@ -1,0 +1,93 @@
+{
+  "version": true,
+  "size": 500,
+  "sort": [
+    {
+      "timestamp": {
+        "order": "desc",
+        "unmapped_type": "boolean"
+      }
+    }
+  ],
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "date_histogram": {
+        "field": "timestamp",
+        "interval": "30d",
+        "time_zone": "Asia/Jerusalem",
+        "min_doc_count": 1
+      }
+    }
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "Catania",
+            "analyze_wildcard": true,
+            "default_field": "*"
+          }
+        },
+        {
+          "exists": {
+            "field": "Carrier"
+          }
+        },
+        {
+          "range": {
+            "DistanceKilometers": {
+              "gte": 100,
+              "lt": 200
+            }
+          }
+        },
+        {
+          "range": {
+            "timestamp": {
+              "gte": 1420647100399,
+              "lte": 1578413500399,
+              "format": "epoch_millis"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": [
+        {
+          "match_phrase": {
+            "FlightDelayType": {
+              "query": "No Delay"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "highlight": {
+    "pre_tags": [
+      "@kibana-highlighted-field@"
+    ],
+    "post_tags": [
+      "@/kibana-highlighted-field@"
+    ],
+    "fields": {
+      "*": {}
+    },
+    "fragment_size": 2147483647
+  }
+}
