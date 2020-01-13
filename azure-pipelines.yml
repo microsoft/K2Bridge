@@ -181,6 +181,33 @@ stages:
           helm package --version "$SEMANTIC_VERSION" charts/k2bridge -d $empty_dir
           az acr helm push --force "$(ls $empty_dir/*)"
 
+  - job: Test_Coverage_Report
+    displayName: Test Coverage Report
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '3.x'
+
+    # Run all tests with "/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura" to generate the code coverage file
+    - task: DotNetCoreCLI@2
+      displayName: dotnet test
+      inputs:
+        command: test
+        arguments: '/p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+        projects: 'K2Bridge.Tests.UnitTests/K2Bridge.Tests.UnitTests.csproj'
+        nobuild: true
+
+    # Publish the code coverage result (summary and web site)
+    # The summary allows to view the coverage percentage in the summary tab
+    # The web site allows to view which lines are covered directly in Azure Pipeline
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(Build.SourcesDirectory)/K2Bridge.Tests.UnitTests/coverage.cobertura.xml'
+        failIfCoverageEmpty: true
+
   - job: Terraform
     steps:
 

@@ -343,3 +343,8 @@ charts/k2bridge/charts
 # terraform generated files
 .terraform*
 *.tfstate*
+
+# Test Coverage Reports
+*/Report/
+Report/
+*/coverage.cobertura.xml
