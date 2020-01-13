@@ -16,7 +16,7 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accept a given visitable object and build the valid Kusto query based on that KQL.
         /// </summary>
-        /// <param name="elasticSearchDSL"></param>
+        /// <param name="elasticSearchDSL">An Elasticsearch DSL query.</param>
         public void Visit(ElasticSearchDSL elasticSearchDSL)
         {
             var kqlSB = new StringBuilder();
@@ -29,7 +29,7 @@ namespace K2Bridge.Visitors
             // when an index-pattern doesn't have a default time filter the query element can be empty
             var kqlQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KQL) ? $"| {elasticSearchDSL.Query.KQL}" : string.Empty;
 
-            kqlSB.Append($"{KQLOperators.Let} _data = {KQLOperators.Materialize}({elasticSearchDSL.IndexName} {kqlQueryExpression});");
+            kqlSB.Append($"{KQLOperators.Let} _data = {elasticSearchDSL.IndexName} {kqlQueryExpression};");
 
             // aggregations
             // TODO: process the entire list
