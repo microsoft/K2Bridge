@@ -28,24 +28,27 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="connectionDetails">Kusto Connection Details.</param>
         /// <param name="loggerFactory">A logger.</param>
-        public KustoManager(KustoConnectionDetails connectionDetails, ILoggerFactory loggerFactory)
+        public KustoManager(IConnectionDetails connectionDetails, ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<KustoManager>();
 
             var conn = new KustoConnectionStringBuilder(
-                connectionDetails.KustoClusterUrl,
-                connectionDetails.KustoDatabase)
+                connectionDetails.ClusterUrl,
+                connectionDetails.DefaultDatabaseName)
                 .WithAadApplicationKeyAuthentication(
-                    connectionDetails.KustoAadClientId,
-                    connectionDetails.KustoAadClientSecret,
-                    connectionDetails.KustoAadTenantId);
+                    connectionDetails.AadClientId,
+                    connectionDetails.AadClientSecret,
+                    connectionDetails.AadTenantId);
 
             conn.ApplicationNameForTracing = KustoApplicationNameForTracing;
             conn.ClientVersionForTracing = ASSEMBLYVERSION;
 
             queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
+            ConnectionDetails = connectionDetails;
         }
+
+        public IConnectionDetails ConnectionDetails { get; set;}
 
         /// <summary>
         /// Executes a Control command in Kusto.

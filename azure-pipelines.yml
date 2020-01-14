@@ -285,11 +285,11 @@ stages:
           --set image.repository=$(ACR_NAME).azurecr.io/k2bridge \
           --set image.tag=$SEMANTIC_VERSION \
           --set replicaCount=2 \
-          --set settings.kustoClusterUrl="$KUSTO_URI" \
-          --set settings.kustoDatabase="$(KUSTO_DB)" \
-          --set settings.kustoAadClientId="$(AKS_SP_CLIENT_ID)" \
-          --set settings.kustoAadClientSecret="$secret" \
-          --set settings.kustoAadTenantId="$TENANT_ID"
+          --set settings.adxClusterUrl="$KUSTO_URI" \
+          --set settings.adxDefaultDatabaseName="$(KUSTO_DB)" \
+          --set settings.aadClientId="$(AKS_SP_CLIENT_ID)" \
+          --set settings.aadClientSecret="$secret" \
+          --set settings.aadTenantId="$TENANT_ID"
         # List charts after deploying (for job log)
         helm list
       displayName: Install Helm chart

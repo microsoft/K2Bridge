@@ -37,19 +37,19 @@ spec:
               value: "{{ .Values.settings.metadataElasticAddress }}"
             - name: outputBackendQuery
               value: "{{ .Values.settings.outputBackendQuery }}"
-            - name: kustoClusterUrl
-              value: "{{ .Values.settings.kustoClusterUrl }}"
-            - name: kustoDatabase
-              value: "{{ .Values.settings.kustoDatabase }}"
-            - name: kustoAadClientId
-              value: "{{ .Values.settings.kustoAadClientId }}"
-            - name: kustoAadClientSecret
+            - name: adxClusterUrl
+              value: "{{ .Values.settings.adxClusterUrl }}"
+            - name: adxDefaultDatabaseName
+              value: "{{ .Values.settings.adxDefaultDatabaseName }}"
+            - name: aadClientId
+              value: "{{ .Values.settings.aadClientId }}"
+            - name: aadClientSecret
               valueFrom:
                 secretKeyRef:
                   name: kusto-credentials
-                  key: kustoAadClientSecret
-            - name: kustoAadTenantId
-              value: "{{ .Values.settings.kustoAadTenantId }}"
+                  key: aadClientSecret
+            - name: aadTenantId
+              value: "{{ .Values.settings.aadTenantId }}"
             - name: useAspNetCore
               value: "false"
           volumeMounts:

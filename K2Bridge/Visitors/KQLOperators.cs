@@ -26,6 +26,12 @@ namespace K2Bridge.Visitors
         public const string StartOfMonth = "startofmonth";
         public const string StartOfYear = "startofyear";
         public const string ToDateTime = "todatetime";
+        public const string Database = "database";
+        public const string Databases = "databases";
+        public const string Schema = "schema";
+        public const string Project = "project";
+        public const string Search = "search";
+        public const string Distinct = "distinct";
         public const string CommandSeparator = "\n| ";
     }
 }

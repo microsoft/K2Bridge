@@ -10,10 +10,10 @@ metadata:
 data:
   bridgeListenerAddress: "{{ .Values.settings.bridgeListenerAddress }}"
   metadataElasticAddress: "{{ .Values.settings.metadataElasticAddress }}"
-  kustoClusterUrl: "{{ .Values.settings.kustoClusterUrl }}"
-  kustoDatabase: "{{ .Values.settings.kustoDatabase }}"
-  kustoAadClientId: "{{ .Values.settings.kustoAadClientId }}"
-  kustoAadTenantId: "{{ .Values.settings.kustoAadTenantId }}"
+  adxClusterUrl: "{{ .Values.settings.adxClusterUrl }}"
+  adxDefaultDatabaseName: "{{ .Values.settings.adxDefaultDatabaseName }}"
+  aadClientId: "{{ .Values.settings.aadClientId }}"
+  aadTenantId: "{{ .Values.settings.aadTenantId }}"
 
 ---
 

@@ -212,16 +212,25 @@ namespace K2Bridge.Tests.End2End
         public void Search_Equivalent()
         {
             var es = esClient.Search();
-            var k2 = k2Client.Search();
+            var k2 = k2Client.Search($"{kustoDatabase}:{INDEX}");
             AssertJsonIdentical(k2.Result, es.Result);
         }
 
         [Test]
         [Description("/{index}/_field_caps field capabilities Kibana query")]
-        public void FieldCaps_Equivalent()
+        public void FieldCaps_Equivalent_WithoutDatabaseName()
         {
             var es = esClient.FieldCaps(INDEX);
             var k2 = k2Client.FieldCaps(INDEX);
+            AssertJsonIdentical(k2.Result, es.Result);
+        }
+
+        [Test]
+        [Description("/{index}/_field_caps field capabilities Kibana query")]
+        public void FieldCaps_Equivalent_WithDatabaseName()
+        {
+            var es = esClient.FieldCaps(INDEX);
+            var k2 = k2Client.FieldCaps($"{kustoDatabase}%3A{INDEX}");
             AssertJsonIdentical(k2.Result, es.Result);
         }
 

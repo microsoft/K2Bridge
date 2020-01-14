@@ -8,6 +8,7 @@ namespace K2Bridge.Tests.End2End
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
@@ -173,8 +174,11 @@ namespace K2Bridge.Tests.End2End
         /// <summary>
         /// API operation for wildcard index search (hitting the IndexList endpoint).
         /// </summary>
+        /// <param name="optionalIndexToKeep">Optional input with index name to keep.
+        /// if this is not null, all other index names will be removed and it will be
+        /// normalized by removing the database name from kusto's db:table pair.</param>
         /// <returns><c>JToken</c> with parsed response</returns>
-        public async Task<JToken> Search()
+        public async Task<JToken> Search(string optionalIndexToKeep = null)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, "/*/_search/"))
             {
@@ -205,6 +209,10 @@ namespace K2Bridge.Tests.End2End
                 // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
                 DeleteValue(result, "aggregations.indices.doc_count_error_upper_bound");
                 DeleteValue(result, "aggregations.indices.sum_other_doc_count");
+                if (!string.IsNullOrEmpty(optionalIndexToKeep))
+                {
+                    NormalizeIndexNamesForIndexList(result, "aggregations.indices.buckets[*].key", optionalIndexToKeep);
+                }
                 return result;
             }
         }
@@ -255,6 +263,32 @@ namespace K2Bridge.Tests.End2End
             // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1461
             DeleteValue(result, $"{searchBase}backendQuery");
         }
+
+        /// <summary>
+        /// Replaces the occourances that meets jsonPath and value is equal to indexName
+        /// by removing the database name from the pair databasename:tablemame.
+        /// Any other occurrence whose value does not equal indexName is removed
+        /// </summary>
+        /// <param name="parent">JSON element at which to start search.</param>
+        /// <param name="jsonPath">JSONPath search pattern to replace.</param>
+        /// <param name="indexName">index Name to keep and normalize.</param>
+        private static void NormalizeIndexNamesForIndexList(JToken parent, string jsonPath, string indexName)
+        {
+            var tokens = parent.SelectTokens(jsonPath).Where(j => j is JValue).Select(j => j as JValue).ToArray();
+            for(var index = 0; index < tokens.Length ; index++)
+            {
+                if (tokens[index].Value.Equals(indexName))
+                {
+                    var tableName = indexName.Split(':')[1];
+                    tokens[index].Value = tableName;
+                }
+                else
+                {
+                    tokens[index].Parent.Parent.Remove();
+                }
+            }
+        }
+
 
         /// <summary>
         /// Replaces values designated by a JSONPath search pattern with a placeholder string.

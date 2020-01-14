@@ -6,9 +6,9 @@ namespace K2Bridge.Tests.UnitTests.DAL
 {
     using System;
     using System.Collections.Generic;
-    using global::Tests;
     using FluentAssertions;
     using FluentAssertions.Json;
+    using global::Tests;
     using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models.Response;
@@ -16,9 +16,19 @@ namespace K2Bridge.Tests.UnitTests.DAL
     using Moq;
     using NUnit.Framework;
     using Newtonsoft.Json.Linq;
+    using K2Bridge.Models;
 
     public class KustoDataAccessTests
     {
+        static object[] indexNames = {
+            new string[]{"databaseName:tableName", "databaseName", "tableName"},
+            new string[]{"*", "*", "*"},
+            new string[]{"tableName", string.Empty, "tableName"},
+            new string[]{":", string.Empty, string.Empty},
+            new string[]{"tableName", "databaseName", "tableName"},
+        };
+
+
         public KustoDataAccessTests()
         {
         }
@@ -27,7 +37,9 @@ namespace K2Bridge.Tests.UnitTests.DAL
         public void WhenGetFieldCapsWithValidIndexReturnFieldCaps()
         {
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-
+            var mockDetails = new Mock<IConnectionDetails>();
+            mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(string.Empty);
+            mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
                 new Dictionary<string, object> {
                     { "ColumnName", name },
@@ -119,6 +131,9 @@ namespace K2Bridge.Tests.UnitTests.DAL
         public void WhenGetIndexListWithValidIndexReturnFieldCaps()
         {
             var mockQueryExecutor = new Mock<IQueryExecutor>();
+            var mockDetails = new Mock<IConnectionDetails>();
+            mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(string.Empty);
+            mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommand(It.IsNotNull<string>()))
                 .Returns(new TestDataReader(
                 new List<Dictionary<string, object>>() {
@@ -126,14 +141,37 @@ namespace K2Bridge.Tests.UnitTests.DAL
                         { "1", "somevalue1" },
                     },
                 }));
-
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, new Mock<ILogger<KustoDataAccess>>().Object);
-            var response = kusto.GetIndexList("testIndex");
+            var indexResponse = kusto.GetIndexList("testIndex");
 
-            Assert.IsNotNull(response);
-            var itr = response.Aggregations.IndexCollection.Buckets.GetEnumerator();
+            Assert.IsNotNull(indexResponse);
+            var itr = indexResponse.Aggregations.IndexCollection.Buckets.GetEnumerator();
             itr.MoveNext();
             Assert.AreEqual(((TermBucket)itr.Current).Key, "somevalue1");
+        }
+
+        [TestCaseSource("indexNames")]
+        public void DatabaseAndTableNamesAreSetOnKustoQuery(string indexName, string databaseName, string tableName)
+        {
+            var mockQueryExecutor = new Mock<IQueryExecutor>();
+            var mockDetails = new Mock<IConnectionDetails>();
+            mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(databaseName);
+            mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
+            var searchString = $"search TableName: '{tableName}' | search DatabaseName: '{databaseName}' |";
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommand(It.Is<string>(s => s.Contains(searchString))))
+                .Returns(new TestDataReader(
+                new List<Dictionary<string, object>>() {
+                    new Dictionary<string, object> {
+                        { "1", "somevalue1" },
+                    },
+                }));
+            var kusto = new KustoDataAccess(mockQueryExecutor.Object, new Mock<ILogger<KustoDataAccess>>().Object);
+            var indexResponse = kusto.GetIndexList(indexName);
+
+            Assert.IsNotNull(indexResponse, $"null response for indexname {indexName}");
+            var itr = indexResponse.Aggregations.IndexCollection.Buckets.GetEnumerator();
+            itr.MoveNext();
+            Assert.NotNull((itr.Current), $"failed to provide valid search term with database name {databaseName} and table name {tableName} from indexname {indexName}. expexted: {searchString}");
         }
     }
 }

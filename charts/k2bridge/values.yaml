@@ -16,11 +16,11 @@ settings:
   bridgeListenerAddress: "http://*:8080/"
   metadataElasticAddress: "http://k2bridgees-master:9200"
   outputBackendQuery: false
-  kustoClusterUrl: "https://mykustoinstance.kusto.windows.net"
-  kustoDatabase: "mykustodatabase"
-  kustoAadClientId: "00000000-0000-0000-0000-000000000000"
-  kustoAadClientSecret: "secret/pa$$w0rd"
-  kustoAadTenantId: "00000000-0000-0000-0000-000000000000"
+  adxClusterUrl: "https://myadxinstance.region.kusto.windows.net"
+  adxDefaultDatabaseName: "myadxdatabase"
+  aadClientId: "00000000-0000-0000-0000-000000000000"
+  aadClientSecret: "secret/pa$$w0rd"
+  aadTenantId: "00000000-0000-0000-0000-000000000000"
 
 service:
   type: ClusterIP

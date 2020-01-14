@@ -37,11 +37,12 @@ namespace K2Bridge
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+            services.AddScoped<IConnectionDetails, KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
             services.AddSingleton<ListenerDetails>(s => ListenerDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
             services.AddTransient<IQueryExecutor, KustoManager>();
-            services.AddTransient<IVisitor, ElasticSearchDSLVisitor>();
+            services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(s =>
+                new ElasticSearchDSLVisitor(KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot).DefaultDatabaseName));
             services.AddSingleton((Serilog.ILogger)Log.Logger);
             services.AddTransient<IKustoDataAccess, KustoDataAccess>();
             services.AddTransient<IResponseParser, KustoResponseParser>();

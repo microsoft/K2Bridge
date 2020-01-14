@@ -10,63 +10,83 @@ namespace K2Bridge.Models
     /// <summary>
     /// Holds the different connection details for the kusto cluster. such as database name and credentials.
     /// </summary>
-    internal class KustoConnectionDetails
+    internal class KustoConnectionDetails : IConnectionDetails
     {
         private KustoConnectionDetails(
-            string kustoClusterUrl,
-            string kustoDatabase,
-            string kustoAadClientId,
-            string kustoAadClientSecret,
-            string kustoAadTenantId)
+            string clusterUrl,
+            string defaultDatabaseName,
+            string aadClientId,
+            string aadClientSecret,
+            string aadTenantId)
         {
-            if (string.IsNullOrEmpty(kustoClusterUrl))
+            if (string.IsNullOrEmpty(clusterUrl))
             {
                 throw new ArgumentException("Kusto Cluster URL is empty");
             }
 
-            if (string.IsNullOrEmpty(kustoDatabase))
+            if (string.IsNullOrEmpty(defaultDatabaseName))
             {
-                throw new ArgumentException("Kusto database name is empty");
+                throw new ArgumentException("Kusto default database name is empty");
             }
 
-            if (string.IsNullOrEmpty(kustoAadClientId))
+            if (string.IsNullOrEmpty(aadClientId))
             {
                 throw new ArgumentException("Kusto AAD Client ID is empty");
             }
 
-            if (string.IsNullOrEmpty(kustoAadClientSecret))
+            if (string.IsNullOrEmpty(aadClientSecret))
             {
                 throw new ArgumentException("Kusto AAD Client Secret is empty");
             }
 
-            if (string.IsNullOrEmpty(kustoAadTenantId))
+            if (string.IsNullOrEmpty(aadTenantId))
             {
                 throw new ArgumentException("Kusto AAD Tenant ID is emtpy");
             }
 
-            KustoClusterUrl = kustoClusterUrl;
-            KustoDatabase = kustoDatabase;
-            KustoAadClientId = kustoAadClientId;
-            KustoAadClientSecret = kustoAadClientSecret;
-            KustoAadTenantId = kustoAadTenantId;
+            ClusterUrl = clusterUrl;
+            DefaultDatabaseName = defaultDatabaseName;
+            AadClientId = aadClientId;
+            AadClientSecret = aadClientSecret;
+            AadTenantId = aadTenantId;
         }
 
-        public string KustoClusterUrl { get; private set; }
+        /// <summary>
+        /// Gets and Sets Kusto Cluster URL.
+        /// </summary>
+        public string ClusterUrl { get; private set; }
 
-        public string KustoDatabase { get; private set; }
+        /// <summary>
+        /// Gets and Sets Kusto Default Database Name.
+        /// </summary>
+        public string DefaultDatabaseName { get; private set; }
 
-        public string KustoAadClientId { get; private set; }
+        /// <summary>
+        /// Gets and Sets Kusto AAD Client ID.
+        /// </summary>
+        public string AadClientId { get; private set; }
 
-        public string KustoAadClientSecret { get; private set; }
+        /// <summary>
+        /// Gets and Sets Kusto Client Secert.
+        /// </summary>
+        public string AadClientSecret { get; private set; }
 
-        public string KustoAadTenantId { get; private set; }
+        /// <summary>
+        /// Gets and Sets Kusto AAD Tenant ID.
+        /// </summary>
+        public string AadTenantId { get; private set; }
 
+        /// <summary>
+        /// Creates a Kusto Connection Details object using configuration.
+        /// </summary>
+        /// <param name="config">Configuration element.</param>
+        /// <returns>A Kusto Connection Details Object.</returns>
         public static KustoConnectionDetails MakeFromConfiguration(IConfigurationRoot config) =>
             new KustoConnectionDetails(
-                config["kustoClusterUrl"],
-                config["kustoDatabase"],
-                config["kustoAadClientId"],
-                config["kustoAadClientSecret"],
-                config["kustoAadTenantId"]);
+                config["adxClusterUrl"],
+                config["adxDefaultDatabaseName"],
+                config["aadClientId"],
+                config["aadClientSecret"],
+                config["aadTenantId"]);
     }
 }

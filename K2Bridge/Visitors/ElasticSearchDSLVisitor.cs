@@ -6,6 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
     using System.Text;
+    using K2Bridge.Models;
     using K2Bridge.Models.Request;
 
     /// <summary>
@@ -13,6 +14,13 @@ namespace K2Bridge.Visitors
     /// </summary>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        private string defaultDatabaseName;
+
+        public ElasticSearchDSLVisitor(string defaultDatabaseName = "")
+        {
+            this.defaultDatabaseName = defaultDatabaseName;
+        }
+
         /// <summary>
         /// Accept a given visitable object and build the valid Kusto query based on that KQL.
         /// </summary>
@@ -28,8 +36,8 @@ namespace K2Bridge.Visitors
 
             // when an index-pattern doesn't have a default time filter the query element can be empty
             var kqlQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KQL) ? $"| {elasticSearchDSL.Query.KQL}" : string.Empty;
-
-            kqlSB.Append($"{KQLOperators.Let} _data = {elasticSearchDSL.IndexName} {kqlQueryExpression};");
+            var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(elasticSearchDSL.IndexName, defaultDatabaseName);
+            kqlSB.Append($"{KQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {kqlQueryExpression};");
 
             // aggregations
             // TODO: process the entire list
