@@ -136,8 +136,8 @@ namespace Tests
             return response.First().Source.GetValue("somefield1").Type;
         }
 
-        [TestCase(ExpectedResult = JTokenType.Date)]
-        public JTokenType TestDateAreReadType()
+        [TestCase(ExpectedResult = JTokenType.String)]
+        public JTokenType TestDateAreReadAsStringType()
         {
             var results = (
                 new List<Dictionary<string, object>>() {
@@ -147,6 +147,37 @@ namespace Tests
             });
             var response = BuildHits(results, query);
             return response.First().Source.GetValue("somefield1").Type;
+        }
+
+        [TestCase(ExpectedResult = new[] {
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2020-01-10T16:27:51.3640182\"},\"highlight\":{}}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T13:45:23.133\"},\"highlight\":{}}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T05:04:23.1\"},\"highlight\":{}}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T05:04:23\"},\"highlight\":{}}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T00:00:00\"},\"highlight\":{}}", })]
+        public string[] TestDateTimezone()
+        {
+            var results = (
+                new List<Dictionary<string, object>>() {
+                    new Dictionary<string, object> {
+                        // 16:27 UTC
+                        { "somefield1", new DateTime(637142704713640182, DateTimeKind.Utc) },
+                    },
+                    new Dictionary<string, object> {
+                        { "somefield1", new DateTime(2017, 1, 2, 13, 45, 23, 133, DateTimeKind.Utc) },
+                    },
+                    new Dictionary<string, object> {
+                        { "somefield1", new DateTime(2017, 1, 2, 5, 4, 23, 100, DateTimeKind.Utc) },
+                    },
+                    new Dictionary<string, object> {
+                        { "somefield1", new DateTime(2017, 1, 2, 5, 4, 23, DateTimeKind.Utc) },
+                    },
+                    new Dictionary<string, object> {
+                        { "somefield1", new DateTime(2017, 1, 2, 0, 0, 0, DateTimeKind.Utc) },
+                    },
+            });
+            var response = BuildHits(results, query);
+            return SetRandomProperties(response).Select(r => JsonConvert.SerializeObject(r)).ToArray();
         }
 
         [TestCase(ExpectedResult = JTokenType.String)]

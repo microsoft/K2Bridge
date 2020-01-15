@@ -18,6 +18,10 @@ namespace K2Bridge.Models.Response
         private static readonly Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>
         {
             { typeof(sbyte), (value) => (sbyte)value != 0 },
+
+            // Elasticsearch returns timestamp fields in UTC in ISO-8601 but without Timezone.
+            // Use a String type to control serialization to mimic this behavior.
+            { typeof(DateTime), (value) => ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") },
         };
 
         [JsonProperty("_index")]
