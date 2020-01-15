@@ -17,7 +17,7 @@ RUN dotnet publish K2Bridge -c Release -o out
 
 # Run unit tests. "exit 0" prevents failing build on test failures.
 # (dotnet test returns a non-zero exit code on test failures, which would stop the docker build otherwise)
-RUN dotnet test K2Bridge.Tests.UnitTests "--logger:trx;LogFileName=/app/TestResult.xml" ; exit 0
+RUN dotnet test K2Bridge.Tests.UnitTests --logger "trx;LogFileName=/app/TestResult.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura ; exit 0
 
 # Fail build if no test result file produced (indicates an issue with the test runner itself)
 RUN test -s /app/TestResult.xml
