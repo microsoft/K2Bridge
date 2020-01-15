@@ -19,16 +19,17 @@ namespace K2Bridge.KustoConnector
         private const string AggregationTableName = "aggs";
         private const string HitsTableName = "hits";
         private static readonly Random Random = new Random();
-        private readonly ILogger<KustoResponseParser> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoResponseParser"/> class.
         /// </summary>
         /// <param name="loggerFactory">ILoggerFactory object for logger initialization.</param>
-        public KustoResponseParser(ILoggerFactory loggerFactory)
+        public KustoResponseParser(ILogger<KustoResponseParser> logger)
         {
-            logger = loggerFactory.CreateLogger<KustoResponseParser>();
+            Logger = logger;
         }
+
+        private ILogger Logger { get; set; }
 
         /// <summary>
         /// Read Hits from KustoResponseDataSet response.
@@ -75,12 +76,12 @@ namespace K2Bridge.KustoConnector
                 {
                     // Read results and transform to Elastic form
                     var response = ReadResponse(queryData, reader, timeTaken);
-                    logger.LogDebug("Response: {@response}", response);
+                    Logger.LogDebug("Response: {@response}", response);
                     return response;
                 }
                 catch (Exception ex)
                 {
-                    logger.LogWarning($"Error reading kusto response: {ex.Message}");
+                    Logger.LogWarning($"Error reading kusto response: {ex.Message}");
                     throw;
                 }
             }
@@ -102,12 +103,12 @@ namespace K2Bridge.KustoConnector
 
             response.AddTook(timeTaken);
 
-            this.logger.LogDebug("Reading response using reader.");
+            Logger.LogDebug("Reading response using reader.");
             var parsedKustoResponse = ReadDataResponse(reader);
 
             if (parsedKustoResponse[AggregationTableName] != null)
             {
-                this.logger.LogDebug("Parsing aggregations");
+                Logger.LogDebug("Parsing aggregations");
 
                 // read aggregations
                 foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
@@ -118,7 +119,7 @@ namespace K2Bridge.KustoConnector
             }
 
             // read hits
-            this.logger.LogDebug("Reading Hits using QueryData: {@query}", query);
+            Logger.LogDebug("Reading Hits using QueryData: {@query}", query);
             var hits = ReadHits(parsedKustoResponse, query);
             response.AddHits(hits);
 

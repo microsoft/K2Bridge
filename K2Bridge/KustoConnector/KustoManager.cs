@@ -21,16 +21,15 @@ namespace K2Bridge.KustoConnector
         private static readonly string ASSEMBLYVERSION = typeof(KustoManager).Assembly.GetName().Version.ToString();
         private readonly ICslQueryProvider queryClient;
         private readonly ICslAdminProvider adminClient;
-        private readonly ILogger<KustoManager> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoManager"/> class.
         /// </summary>
         /// <param name="connectionDetails">Kusto Connection Details.</param>
         /// <param name="loggerFactory">A logger.</param>
-        public KustoManager(IConnectionDetails connectionDetails, ILoggerFactory loggerFactory)
+        public KustoManager(IConnectionDetails connectionDetails, ILogger<KustoManager> logger)
         {
-            logger = loggerFactory.CreateLogger<KustoManager>();
+            this.Logger = logger;
 
             var conn = new KustoConnectionStringBuilder(
                 connectionDetails.ClusterUrl,
@@ -50,6 +49,8 @@ namespace K2Bridge.KustoConnector
 
         public IConnectionDetails ConnectionDetails { get; set;}
 
+        private ILogger Logger { get; set; }
+
         /// <summary>
         /// Executes a Control command in Kusto.
         /// </summary>
@@ -57,7 +58,7 @@ namespace K2Bridge.KustoConnector
         /// <returns>A data reader with a result.</returns>
         public IDataReader ExecuteControlCommand(string command)
         {
-            logger.LogDebug("Calling adminClient.ExecuteControlCommand with the command: {@command}", command);
+            Logger.LogDebug("Calling adminClient.ExecuteControlCommand with the command: {@command}", command);
             var result = adminClient.ExecuteControlCommand(command);
             return result;
         }
@@ -69,12 +70,12 @@ namespace K2Bridge.KustoConnector
         /// <returns>A data reader with response and time taken.</returns>
         public (TimeSpan timeTaken, IDataReader reader) ExecuteQuery(QueryData queryData)
         {
-            logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
+            Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
 
             // Use the kusto client to execute the query
             var (timeTaken, dataReader) = queryClient.ExecuteMonitoredQuery(queryData.KQL);
             var fieldCount = dataReader.FieldCount;
-            logger.LogDebug("FieldCount: {@fieldCount}. timeTaken: {@timeTaken}", fieldCount, timeTaken);
+            Logger.LogDebug("FieldCount: {@fieldCount}. timeTaken: {@timeTaken}", fieldCount, timeTaken);
             return (timeTaken, dataReader);
         }
     }
