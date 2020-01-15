@@ -67,7 +67,7 @@ az aks update -n myAKSCluster -g myResourceGroup --attach-acr $REGISTRY_NAME
 OR option B:
 
 ```sh
-kubectl create secret docker-registry $IMAGE_PULL_SECRET_NAME --docker-server <acrname>.azurecr.io --docker-email <email> --docker-username=<client id> --docker-password <client password>
+kubectl create secret docker-registry $IMAGE_PULL_SECRET_NAME --docker-server <acrname>.azurecr.io --docker-email <email> --docker-username <client id> --docker-password <client password>
 ```
 
 Download the Elasticsearch helm chart dependency (and k2 helm chart):
@@ -97,12 +97,12 @@ REGION=[ADX region]
 
 local chart:
 ```sh
-helm install k2bridge charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [-set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
+helm install k2bridge charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
 ```
 
 remote chart:
 ```sh
-helm install k2bridge $REGISTRY_NAME/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [-set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
+helm install k2bridge $REGISTRY_NAME/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
 ```
 
 The command output will suggest a helm command to run to deploy Kibana, similar to:
