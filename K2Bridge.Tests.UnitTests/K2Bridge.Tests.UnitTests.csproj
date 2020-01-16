@@ -40,8 +40,26 @@
     <Folder Include="Visitors\" />
     <Folder Include="Controllers\" />
     <Folder Include="DAL\" />
+    <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\K2Bridge\K2Bridge.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Data\simple_k2_query.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\simple_k2_query %28copy%29.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\simple_k2_query %28copy%29.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\invalid_k2_query_no_bool.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\invalid_k2_query_no_query.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

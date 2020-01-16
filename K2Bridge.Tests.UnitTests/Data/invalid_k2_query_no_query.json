@@ -1,0 +1,48 @@
+﻿{
+  "version": true,
+  "size": 500,
+  "sort": [
+    {
+      "timestamp": {
+        "order": "desc",
+        "unmapped_type": "boolean"
+      }
+    }
+  ],
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "date_histogram": {
+        "field": "timestamp",
+        "interval": "1M",
+        "time_zone": "UTC",
+        "min_doc_count": 1
+      }
+    }
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "timestamp",
+      "format": "date_time"
+    }
+  ],
+  "notquery": "not a real value",
+  "highlight": {
+    "pre_tags": [
+      "@kibana-highlighted-field@"
+    ],
+    "post_tags": [
+      "@/kibana-highlighted-field@"
+    ],
+    "fields": {
+      "*": {}
+    },
+    "fragment_size": 2147483647
+  }
+}

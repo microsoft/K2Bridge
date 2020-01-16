@@ -4,6 +4,7 @@
 
 namespace K2Bridge
 {
+    using System;
     using System.Collections.Generic;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
@@ -39,6 +40,11 @@ namespace K2Bridge
         /// <returns>A <see cref="QueryData"/>.</returns>
         public QueryData Translate(string header, string query)
         {
+            if (string.IsNullOrEmpty(header))
+            {
+                throw new ArgumentException("Argument can not be empty", "header");
+            }
+
             try
             {
                 Logger.LogDebug("Translate params: header:{@header}, query:{@query}", header, query);
@@ -51,6 +57,16 @@ namespace K2Bridge
                 elasticSearchDSL.IndexName = headerDictionary["index"];
 
                 elasticSearchDSL.HighlightText = new Dictionary<string, string>();
+
+                if (elasticSearchDSL.Query == null)
+                {
+                    throw new ArgumentException("Query cannot be null");
+                }
+
+                if (elasticSearchDSL.Query.Bool == null)
+                {
+                    throw new ArgumentException("Query.Bool cannot be null");
+                }
 
                 var qs = elasticSearchDSL.Query.Bool.Must.GetEnumerator();
                 while (qs.MoveNext())
@@ -85,7 +101,7 @@ namespace K2Bridge
 
                 return queryData;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex, "Failed to execute translate.");
                 throw;

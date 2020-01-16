@@ -98,8 +98,11 @@ namespace K2Bridge.Controllers
                 throw new ArgumentException("Invalid request payload", nameof(rawQueryData));
             }
 
-            logger.LogDebug($"Elastic search request:\n{rawQueryData[0]}\n{rawQueryData[1]}");
-            var translatedResponse = translator.Translate(rawQueryData[0], rawQueryData[1]);
+            var header = rawQueryData[0];
+            var query = rawQueryData[1];
+
+            logger.LogDebug($"Elastic search request:\n{header}\n{query}");
+            var translatedResponse = translator.Translate(header, query);
             logger.LogDebug($"Translated query:\n{translatedResponse.KQL}");
 
             var (timeTaken, dataReader) = queryExecutor.ExecuteQuery(translatedResponse);
