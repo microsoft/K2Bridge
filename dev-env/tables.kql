@@ -1,0 +1,88 @@
+// === logs ===
+
+.drop table kibana_sample_data_logs_raw
+
+.create table kibana_sample_data_logs_raw (raw: dynamic)
+
+kibana_sample_data_logs_raw
+//| limit 10
+| evaluate bag_unpack(raw)
+| evaluate bag_unpack(_source)
+| project-away _id, _index, _score, _type
+| getschema 
+| order by ColumnName asc 
+
+
+.drop table kibana_sample_data_logs
+
+.set kibana_sample_data_logs <|
+kibana_sample_data_logs_raw
+//| limit 10
+| evaluate bag_unpack(raw)
+| evaluate bag_unpack(_source)
+| project timestamp, agent, bytes, clientip, extension, geo, host, index, ip, machine, memory, message, phpmemory, referer, request, response, tags, url
+ 
+
+
+
+// === ecommerce ===
+
+.drop table kibana_sample_data_ecommerce_raw
+
+.create table kibana_sample_data_ecommerce_raw (raw: dynamic)
+
+kibana_sample_data_ecommerce_raw		
+| limit 10
+| evaluate bag_unpack(raw)
+| evaluate bag_unpack(_source)
+
+kibana_sample_data_ecommerce_raw		
+//| limit 10
+| evaluate bag_unpack(raw)
+| evaluate bag_unpack(_source)
+| project-away _id, _index, _score, _type
+| getschema 
+| order by ColumnName asc 
+
+
+.drop table kibana_sample_data_ecommerce
+
+.set kibana_sample_data_ecommerce <|
+kibana_sample_data_ecommerce_raw
+//| limit 10
+| evaluate bag_unpack(raw)
+| evaluate bag_unpack(_source)
+| project category, currency, customer_first_name, customer_full_name, customer_gender, customer_id, customer_last_name, customer_phone, day_of_week, day_of_week_i, email, geoip, manufacturer, order_date, order_id, products, sku, taxful_total_price, taxless_total_price, total_quantity, total_unique_products, type, user
+ 
+
+
+
+// === flights ===
+
+.drop table kibana_sample_data_flights_raw
+
+.create table kibana_sample_data_flights_raw (raw: dynamic)
+
+kibana_sample_data_flights_raw		
+| limit 10
+| evaluate bag_unpack(raw)
+| evaluate bag_unpack(_source)
+
+kibana_sample_data_flights_raw		
+//| limit 10
+| evaluate bag_unpack(raw)
+| evaluate bag_unpack(_source)
+| project-away _id, _index, _score, _type
+| getschema 
+| order by ColumnName asc 
+
+
+.drop table kibana_sample_data_flights
+
+.set kibana_sample_data_flights <|
+kibana_sample_data_flights_raw
+//| limit 10
+| evaluate bag_unpack(raw)
+| evaluate bag_unpack(_source)
+| project timestamp, dayOfWeek, Dest, DestAirportID, DestCityName, DestCountry, DestLocation, DestRegion, DestWeather, toreal(DistanceKilometers), toreal(DistanceMiles), FlightDelay, FlightDelayMin, FlightDelayType, FlightNum, toint(FlightTimeHour), toint(FlightTimeMin), Origin, OriginAirportID, OriginCityName, OriginCountry, OriginLocation, OriginRegion, OriginWeather
+ 
