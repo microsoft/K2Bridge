@@ -15,9 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "K2Bridge.Tests.Integration", "K2Bridge.Tests.Integration\K2Bridge.Tests.Integration.csproj", "{33FA4328-B9EB-49BE-97E5-00FEE9D821A4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "K2Bridge.Tests.UnitTests", "K2Bridge.Tests.UnitTests\K2Bridge.Tests.UnitTests.csproj", "{B219CDAD-7641-4ECB-8B96-EB47E25DE5AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K2Bridge.Tests.UnitTests", "K2Bridge.Tests.UnitTests\K2Bridge.Tests.UnitTests.csproj", "{B219CDAD-7641-4ECB-8B96-EB47E25DE5AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K2Bridge.Tests.End2End", "K2Bridge.Tests.End2End\K2Bridge.Tests.End2End.csproj", "{F3E3BB7B-558C-4312-A236-E420DE33DD67}"
 EndProject
@@ -31,10 +29,6 @@ Global
 		{F1641EEA-CA25-4FF3-9786-F823202EF7B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1641EEA-CA25-4FF3-9786-F823202EF7B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1641EEA-CA25-4FF3-9786-F823202EF7B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{33FA4328-B9EB-49BE-97E5-00FEE9D821A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{33FA4328-B9EB-49BE-97E5-00FEE9D821A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{33FA4328-B9EB-49BE-97E5-00FEE9D821A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{33FA4328-B9EB-49BE-97E5-00FEE9D821A4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B219CDAD-7641-4ECB-8B96-EB47E25DE5AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B219CDAD-7641-4ECB-8B96-EB47E25DE5AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B219CDAD-7641-4ECB-8B96-EB47E25DE5AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
