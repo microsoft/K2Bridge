@@ -220,8 +220,8 @@ stages:
         TerraformEnvVariables:
           TF_VAR_aks_sp_client_secret: $(AKS_SP_CLIENT_SECRET)
 
-  - job: Deploy_Kusto 
-    displayName: Provision Kusto database 
+  - job: Deploy_Kusto
+    displayName: Provision Kusto database
     dependsOn:
     - Terraform
 
@@ -236,8 +236,8 @@ stages:
               set -eux  # fail on error
               az kusto database create -g "$(RESOURCE_GROUP)" --cluster-name "$(KUSTO_NAME)" -n "$(KUSTO_DB)"
 
-  - job: Deploy_K2Bridge 
-    displayName: Deploy K2Bridge 
+  - job: Deploy_K2Bridge
+    displayName: Deploy K2Bridge
     dependsOn:
     - Build
     - Security_analysis
@@ -286,7 +286,7 @@ stages:
           --max-time 5 --retry 99999 --retry-max-time 1200 http://k2bridge:8080
       displayName: Smoke test
 
-  - job: Deploy_Elasticsearch 
+  - job: Deploy_Elasticsearch
     displayName: Deploy Elasticsearch
     dependsOn:
     - Terraform
@@ -304,10 +304,20 @@ stages:
           --wait --timeout 45m \
           --set image=docker.elastic.co/elasticsearch/elasticsearch-oss \
           --set imageTag=6.8.5 \
-          --set clusterName=elasticsearchqa
+          --set clusterName=elasticsearchqa \
+          --set replicas=1 \
+          --set persistence.enabled=false \
+          --set minimumMasterNodes=1 \
+          --set antiAffinity="soft" \
+          --set esJavaOpts="-Xmx128m -Xms128m" \
+          --set resources.requests.cpu="100m" \
+          --set resources.requests.memory="512M" \
+          --set limits.cpu="1000m" \
+          --set limits.memory="512M"
+
       displayName: Deploy Elasticsearch
 
-  - job: Test 
+  - job: Test
     dependsOn:
     - Terraform
     - Deploy_Kusto
@@ -371,7 +381,7 @@ stages:
             "$ACR_NAME.azurecr.io/k2bridge:latest"
           docker push "$ACR_NAME.azurecr.io/k2bridge:latest"
 
-  - job: Cleanup 
+  - job: Cleanup
     dependsOn:
     - Terraform
     - Test
