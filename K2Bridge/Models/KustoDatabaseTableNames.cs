@@ -41,7 +41,7 @@ namespace K2Bridge.Models
         {
             if (string.IsNullOrEmpty(indexName))
             {
-                throw new ArgumentException("Input cannot be null");
+                throw new ArgumentException("Input can not be null");
             }
 
             if (indexName.Equals(Wildcard, StringComparison.CurrentCultureIgnoreCase))

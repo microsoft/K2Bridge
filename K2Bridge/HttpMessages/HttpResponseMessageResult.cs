@@ -48,7 +48,7 @@ namespace K2Bridge.HttpMessages
 
             if (responseMessage == null)
             {
-                var message = "Response message cannot be null";
+                var message = "Response message can not be null";
                 throw new InvalidOperationException(message);
             }
 

@@ -19,7 +19,7 @@ namespace K2Bridge
         {
             if (string.IsNullOrEmpty(kql) || string.IsNullOrEmpty(indexName))
             {
-                throw new ArgumentException("query string and index name cannot be empty or null");
+                throw new ArgumentException("query string and index name can not be empty or null");
             }
 
             KQL = kql;

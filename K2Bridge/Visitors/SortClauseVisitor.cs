@@ -4,12 +4,20 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using K2Bridge.Models.Request;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(SortClause sortClause)
         {
+            if (sortClause == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(sortClause));
+            }
+
             if (string.IsNullOrEmpty(sortClause.FieldName))
             {
                 throw new IllegalClauseException(

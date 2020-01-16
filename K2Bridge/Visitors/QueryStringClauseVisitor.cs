@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -13,7 +14,14 @@ namespace K2Bridge.Visitors
     {
         public void Visit(QueryStringClause queryStringClause)
         {
-            List<string> phraseList = Parse(queryStringClause.Phrase);
+            if (queryStringClause == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(queryStringClause));
+            }
+
+            var phraseList = Parse(queryStringClause.Phrase);
             if (phraseList != null)
             {
                 foreach (var match in phraseList)
@@ -34,7 +42,7 @@ namespace K2Bridge.Visitors
             }
         }
 
-        private List<string> Parse(string phrase)
+        private IEnumerable<string> Parse(string phrase)
         {
             if (string.IsNullOrWhiteSpace(phrase))
             {
@@ -43,7 +51,7 @@ namespace K2Bridge.Visitors
 
             var regex = new Regex("\\s+AND\\s+|\\s+OR\\s+|\\s*NOT\\s+|\"[^\"]*\"|\\S+|\\s+");
             var matches = regex.Matches(phrase);
-            return matches.Select(i => i.ToString()).Select(Translate).ToList();
+            return matches.Select(i => i.ToString()).Select(Translate);
         }
 
         private string Translate(string match)

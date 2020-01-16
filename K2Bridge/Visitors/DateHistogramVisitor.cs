@@ -4,11 +4,28 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
+    using K2Bridge.Models.Request.Aggregations;
+
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(Models.Request.Aggregations.DateHistogramAggregation dateHistogramAggregation)
+        public void Visit(DateHistogramAggregation dateHistogramAggregation)
         {
-            dateHistogramAggregation.KQL = $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldName} = ";
+            if (dateHistogramAggregation == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(dateHistogramAggregation));
+            }
+
+            if (string.IsNullOrEmpty(dateHistogramAggregation.Metric) ||
+                string.IsNullOrEmpty(dateHistogramAggregation.FieldName))
+            {
+                throw new IllegalClauseException();
+            }
+
+            dateHistogramAggregation.KQL =
+                $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldName} = ";
             if (!string.IsNullOrEmpty(dateHistogramAggregation.Interval))
             {
                 var period = dateHistogramAggregation.Interval[^1];

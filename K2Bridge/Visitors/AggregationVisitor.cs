@@ -4,10 +4,20 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
+    using K2Bridge.Models.Request.Aggregations;
+
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(Models.Request.Aggregations.Aggregation aggregation)
+        public void Visit(Aggregation aggregation)
         {
+            if (aggregation == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(aggregation));
+            }
+
             if (aggregation.PrimaryAggregation == null)
             {
                 return;

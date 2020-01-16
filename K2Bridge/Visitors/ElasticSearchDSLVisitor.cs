@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
     using K2Bridge.Models;
@@ -27,6 +28,13 @@ namespace K2Bridge.Visitors
         /// <param name="elasticSearchDSL">An Elasticsearch DSL query.</param>
         public void Visit(ElasticSearchDSL elasticSearchDSL)
         {
+            if (elasticSearchDSL == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(elasticSearchDSL));
+            }
+
             var kqlSB = new StringBuilder();
 
             kqlSB.Append($"{KQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');

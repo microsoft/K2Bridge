@@ -47,7 +47,7 @@ namespace Tests.KustoConnector
             } catch {
                 return;
             }
-            Assert.Fail($"Cannot retrieve kusto database and table names for malformed indexName: {indexName}");
+            Assert.Fail($"can not retrieve kusto database and table names for malformed indexName: {indexName}");
         }
 
         [TestCaseSource("noColonCases")]

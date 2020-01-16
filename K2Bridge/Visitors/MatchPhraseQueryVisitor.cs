@@ -4,12 +4,20 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using K2Bridge.Models.Request.Queries;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(MatchPhraseClause matchPhraseClause)
         {
+            if (matchPhraseClause == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(matchPhraseClause));
+            }
+
             // Must have a field name
             if (string.IsNullOrEmpty(matchPhraseClause.FieldName))
             {

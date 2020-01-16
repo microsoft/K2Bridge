@@ -4,12 +4,20 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using K2Bridge.Models.Request.Aggregations;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(AvgAggregation avgAggregation)
         {
+            if (avgAggregation == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(avgAggregation));
+            }
+
             ValidateField(avgAggregation.FieldName);
 
             avgAggregation.KQL = $"{KQLOperators.Avg}({avgAggregation.FieldName})";
@@ -17,6 +25,13 @@ namespace K2Bridge.Visitors
 
         public void Visit(CardinalityAggregation cardinalityAggregation)
         {
+            if (cardinalityAggregation == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(cardinalityAggregation));
+            }
+
             ValidateField(cardinalityAggregation.FieldName);
 
             cardinalityAggregation.KQL = $"{KQLOperators.DCount}({cardinalityAggregation.FieldName})";

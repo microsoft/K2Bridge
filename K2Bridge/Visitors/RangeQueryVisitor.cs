@@ -4,10 +4,20 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
+    using K2Bridge.Models.Request.Queries;
+
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        public void Visit(Models.Request.Queries.RangeClause rangeClause)
+        public void Visit(RangeClause rangeClause)
         {
+            if (rangeClause == null)
+            {
+                throw new ArgumentException(
+                    "Argument cannot be null",
+                    nameof(rangeClause));
+            }
+
             if (string.IsNullOrEmpty(rangeClause.FieldName))
             {
                 throw new IllegalClauseException("RangeClause clause must have a valid FieldName property");
