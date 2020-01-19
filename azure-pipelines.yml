@@ -29,7 +29,7 @@ name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 variables:
 - group: K2Bridge CI-CD pipeline
 - name: SEMANTIC_VERSION
-  value: "0.0.$(Build.BuildId)"
+  value: "0.2.$(Build.BuildId)"
 - name: KUSTO_DB
   value: "build$(Build.BuildId)"
 
@@ -38,12 +38,13 @@ pool:
 
 stages:
 
-- stage: CI
-
+- stage: security_analysis
+  displayName: Security Analysis
+  dependsOn: []
   jobs:
 
-  - job: Security_analysis
-    displayName: Security Analysis
+  - job: run_analysis
+    displayName: Run Analysis
 
     pool:
       # CredScan only runs on Windows
@@ -123,8 +124,13 @@ stages:
         alertWarningLevel: 'Medium'
         failOnAlert: true
 
-  - job: Build
-
+- stage: build
+  displayName: Build
+  dependsOn: []
+  jobs:
+      
+  - job: build_and_unittest
+    displayName: Build with UnitTests
     steps:
 
     - bash: |
@@ -155,35 +161,54 @@ stages:
         summaryFileLocation: 'coverage.cobertura.xml'
         failIfCoverageEmpty: true
 
+  - job: push_artifacts
+    displayName: Push Artifacts to ACR
+    dependsOn: build_and_unittest
+    steps:
+
     - task: HelmInstaller@1
       displayName: Helm installer
       inputs:
         helmVersionToInstall: $(HELM_VERSION)
 
     - task: AzureCLI@1
-      displayName: Push to ACR
+      displayName: Login to ACR
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
         inlineScript: |
           set -eux  # fail on error
 
-          # Build and push Docker image
           az configure --defaults acr="$ACR_NAME"
           az acr login
-          # Reuses the cached build stage from the previous docker build task
-          docker build \
-            -t "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            .
+
+    - bash: |
+        set -eux  # fail on error
+
+        # Build Docker image
+        # Reuses the cached build stage from the previous docker build task
+        docker build \
+          -t "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
+          .
+      displayName: Build Runtime Image
+
+    - task: AzureCLI@1
+      displayName: Push Image
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+
+          # Push Docker image          
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
 
-          # Build end-to-end test image
-          docker build \
-            --target end2endtest \
-            -t "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION" \
-            .
-          docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
-
+    - task: AzureCLI@1
+      displayName: Push Helm Charts to ACR
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
           # Push Helm chart
           helm repo add elastic https://helm.elastic.co
           helm repo update
@@ -192,7 +217,15 @@ stages:
           helm package --version "$SEMANTIC_VERSION" charts/k2bridge -d $empty_dir
           az acr helm push --force "$(ls $empty_dir/*)"
 
+- stage: integration
+  displayName: Integration Tests
+  dependsOn:
+  - security_analysis
+  - build
+  jobs:
+
   - job: Terraform
+    displayName: Prepare Terraform
     steps:
 
     - bash: |
@@ -222,9 +255,7 @@ stages:
 
   - job: Deploy_Kusto
     displayName: Provision Kusto database
-    dependsOn:
-    - Terraform
-
+    dependsOn: Terraform
     steps:
 
         - task: AzureCLI@1
@@ -238,10 +269,7 @@ stages:
 
   - job: Deploy_K2Bridge
     displayName: Deploy K2Bridge
-    dependsOn:
-    - Build
-    - Security_analysis
-    - Terraform
+    dependsOn: Terraform
     steps:
 
     - template: infrastructure/setup-k8s-clients-template.yml
@@ -288,8 +316,7 @@ stages:
 
   - job: Deploy_Elasticsearch
     displayName: Deploy Elasticsearch
-    dependsOn:
-    - Terraform
+    dependsOn: Terraform
     variables:
       KUBERNETES_NAMESPACE: $[dependencies.Terraform.outputs['GenerateNS.KUBERNETES_NAMESPACE']]
     steps:
@@ -317,12 +344,45 @@ stages:
 
       displayName: Deploy Elasticsearch
 
+  - job: e2e_image
+    displayName: Prepare E2E Image
+    steps:
+
+    - task: AzureCLI@1
+      displayName: Login to ACR
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+
+          az configure --defaults acr="$ACR_NAME"
+          az acr login
+
+    - bash: |
+          # Build end-to-end test image
+          docker build \
+            --target end2endtest \
+            -t "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION" \
+            .
+      displayName: Build E2E-Test Image
+
+    - task: AzureCLI@1
+      displayName: Push Image
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
+
   - job: Test
+    displayName: Run Tests
     dependsOn:
     - Terraform
     - Deploy_Kusto
     - Deploy_K2Bridge
     - Deploy_Elasticsearch
+    - e2e_image
     variables:
       KUBERNETES_NAMESPACE: $[dependencies.Terraform.outputs['GenerateNS.KUBERNETES_NAMESPACE']]
     steps:
@@ -360,27 +420,6 @@ stages:
         testResultsFiles: 'TestResult.xml'
         failTaskOnFailedTests: true
 
-  - job: Promote
-    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), variables['RUN_FLAG_PROMOTE']))
-    dependsOn:
-    - Test
-    steps:
-
-    - task: AzureCLI@1
-      displayName: Tag Docker image as latest
-      inputs:
-        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
-        scriptLocation: inlineScript
-        inlineScript: |
-          set -eux  # fail on error
-          az configure --defaults acr="$ACR_NAME"
-          az acr login
-          docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
-          docker tag \
-            "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_NAME.azurecr.io/k2bridge:latest"
-          docker push "$ACR_NAME.azurecr.io/k2bridge:latest"
-
   - job: Cleanup
     dependsOn:
     - Terraform
@@ -404,3 +443,29 @@ stages:
           set -eux  # fail on error
           kubectl delete namespace "$KUBERNETES_NAMESPACE"
           az kusto database delete -g "$(RESOURCE_GROUP)" --cluster-name "$(KUSTO_NAME)" -n "$(KUSTO_DB)" -y
+          
+- stage: release
+  displayName: Release Artifacts
+  dependsOn:
+  - integration
+  jobs:
+
+  - job: Promote
+    displayName: Promote Latest Image
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), variables['RUN_FLAG_PROMOTE']))
+    steps:
+
+    - task: AzureCLI@1
+      displayName: Tag Docker image as latest
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          az configure --defaults acr="$ACR_NAME"
+          az acr login
+          docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
+          docker tag \
+            "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
+            "$ACR_NAME.azurecr.io/k2bridge:latest"
+          docker push "$ACR_NAME.azurecr.io/k2bridge:latest"
