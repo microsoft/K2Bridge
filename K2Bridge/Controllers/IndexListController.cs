@@ -35,9 +35,12 @@ namespace K2Bridge.Controllers
         /// <summary>
         /// Process the request.
         /// </summary>
+        /// <param name="indexName">The index to process.</param>
         /// <returns>The table list in the Kusto database.</returns>
         [Produces("application/json")]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IActionResult> Process(string indexName)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             var response = Kusto.GetIndexList(indexName);
 

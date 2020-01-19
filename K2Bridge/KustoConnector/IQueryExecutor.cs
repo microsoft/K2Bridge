@@ -19,6 +19,5 @@ namespace K2Bridge.KustoConnector
         (TimeSpan timeTaken, IDataReader reader) ExecuteQuery(QueryData query);
 
         IDataReader ExecuteControlCommand(string query);
-
     }
 }

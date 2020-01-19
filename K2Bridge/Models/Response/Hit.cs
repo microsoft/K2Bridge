@@ -88,15 +88,18 @@ namespace K2Bridge.Models.Response
 
         private static object GetValue(DataColumn column, object value)
         {
-            if (value == null) {
+            if (value == null)
+            {
                 return null;
             }
+
             var type = column.DataType;
-            if (Converters.ContainsKey(type)) {
+            if (Converters.ContainsKey(type))
+            {
                 return Converters[type](value);
             }
+
             return value;
         }
-
     }
 }

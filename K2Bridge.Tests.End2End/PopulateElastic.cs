@@ -25,35 +25,30 @@ namespace K2Bridge.Tests.End2End
         /// <param name="index">Name of the Elasticsearch index to create.</param>
         /// <param name="structure">JSON file containing the Elasticsearch index structure.</param>
         /// <param name="dataFile">Gzipped JSON file containing the data to be loaded.</param>
-        /// <returns>Bulk Insert operation result</returns>
+        /// <returns>Bulk Insert operation result.</returns>
         public static async Task<JToken> Populate(TestElasticClient esClient, string index, string structure, string dataFile)
         {
             // Create index
-            var createResult = await CreateIndex(esClient, index, structure);
+            _ = await CreateIndex(esClient, index, structure);
 
             // Log information to console.
             // Can't use Console.WriteLine here: https://github.com/nunit/nunit3-vs-adapter/issues/266
             TestContext.Progress.WriteLine($"Decompressing {dataFile} and bulk inserting content into Elasticsearch");
 
             // Populate index
-            using (Stream fs = File.OpenRead(dataFile))
-            {
-                using (GZipStream decompressionStream = new GZipStream(fs, CompressionMode.Decompress))
-                {
-                    using (var reader = new StreamReader(decompressionStream))
-                    {
-                        return await BulkInsert(esClient, index, reader);
-                    }
-                }
-            }
+            using Stream fs = File.OpenRead(dataFile);
+            using GZipStream decompressionStream = new GZipStream(fs, CompressionMode.Decompress);
+            using var reader = new StreamReader(decompressionStream);
+            return await BulkInsert(esClient, index, reader);
         }
 
         /// <summary>
         /// API operation to create an index. Also deletes the index before creating it, if it already exists.
         /// </summary>
+        /// <param name="client"></param>
         /// <param name="indexName">Index to be created.</param>
         /// <param name="structureJson">JSON definition of the Elasticsearch index.</param>
-        /// <returns>Create index operation result</returns>
+        /// <returns>Create index operation result.</returns>
         public static async Task<JToken> CreateIndex(TestElasticClient client, string indexName, string structureJson)
         {
             // Delete Elasticsearch index if it exists (for idempotent runs)
@@ -63,12 +58,12 @@ namespace K2Bridge.Tests.End2End
             }
 
             // Create Elasticsearch index and define mappings
-            using (var request = new HttpRequestMessage(HttpMethod.Put, indexName))
+            using var request = new HttpRequestMessage(HttpMethod.Put, indexName)
             {
-                request.Content = new StringContent(structureJson);
-                request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
-                return await client.JsonQuery(request);
-            }
+                Content = new StringContent(structureJson),
+            };
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+            return await client.JsonQuery(request);
         }
 
         /// <summary>
@@ -76,7 +71,7 @@ namespace K2Bridge.Tests.End2End
         /// </summary>
         /// <param name="indexName">Index where data is to be inserted.</param>
         /// <param name="reader">A stream containing JSON documents, one per line.</param>
-        /// <returns>Bulk Insert operation result</returns>
+        /// <returns>Bulk Insert operation result.</returns>
         private static async Task<JToken> BulkInsert(TestElasticClient client, string indexName, StreamReader reader)
         {
             // Change data to format required by Bulk Insert API (pairs of lines with index definition and data)
@@ -89,15 +84,15 @@ namespace K2Bridge.Tests.End2End
             }
 
             // Bulk insert data
-            using (var request = new HttpRequestMessage(HttpMethod.Post, $"{indexName}/_doc/_bulk"))
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{indexName}/_doc/_bulk")
             {
-                request.Content = new StringContent(ndJson.ToString());
-                request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-ndjson");
-                var result = await client.JsonQuery(request);
-                var hasErrors = result.SelectToken("errors") as JValue;
-                Assert.IsFalse((bool)hasErrors.Value, "{0}", result);
-                return result;
-            }
+                Content = new StringContent(ndJson.ToString()),
+            };
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-ndjson");
+            var result = await client.JsonQuery(request);
+            var hasErrors = result.SelectToken("errors") as JValue;
+            Assert.IsFalse((bool)hasErrors.Value, "{0}", result);
+            return result;
         }
     }
 }

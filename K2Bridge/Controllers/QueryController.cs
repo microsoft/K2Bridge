@@ -35,6 +35,8 @@ namespace K2Bridge.Controllers
         /// <param name="queryExecutor"></param>
         /// <param name="translator"></param>
         /// <param name="logger"></param>
+        /// <param name="responseParser"></param>
+        /// <param name="configuration"></param>
         public QueryController(
             IQueryExecutor queryExecutor,
             ITranslator translator,
@@ -48,7 +50,7 @@ namespace K2Bridge.Controllers
             this.responseParser = responseParser ?? throw new ArgumentNullException(nameof(responseParser));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-            bool.TryParse(this.configuration["outputBackendQuery"], out this.outputBackendQuery);
+            _ = bool.TryParse(this.configuration["outputBackendQuery"], out outputBackendQuery);
         }
 
         /// <summary>
@@ -82,17 +84,19 @@ namespace K2Bridge.Controllers
         /// <param name="ignoreThrottled"></param>
         /// <param name="rawQueryData">Body Payload.</param>
         /// <returns>An ElasticResponse object.</returns>
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         internal async Task<IActionResult> SearchInternal(bool totalHits, bool ignoreThrottled, string[] rawQueryData)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             if (rawQueryData == null || rawQueryData.Length < 2)
             {
                 if (rawQueryData == null)
                 {
-                    this.logger.LogError("Invalid request body. rawQueryData is null.");
+                    logger.LogError("Invalid request body. rawQueryData is null.");
                 }
                 else
                 {
-                    this.logger.LogError($"Invalid request body. rawQueryData.Length is {rawQueryData.Length}");
+                    logger.LogError($"Invalid request body. rawQueryData.Length is {rawQueryData.Length}");
                 }
 
                 throw new ArgumentException("Invalid request payload", nameof(rawQueryData));

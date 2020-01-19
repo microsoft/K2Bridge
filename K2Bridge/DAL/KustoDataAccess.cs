@@ -8,9 +8,9 @@ namespace K2Bridge.DAL
     using System.Data;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
-    using K2Bridge.Visitors;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Metadata;
+    using K2Bridge.Visitors;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -46,21 +46,19 @@ namespace K2Bridge.DAL
                 Logger.LogDebug("Index name: {@indexName}", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
                 string kustoCommand = $".show {KQLOperators.Databases} {KQLOperators.Schema} | {KQLOperators.Where} TableName=='{tableName}' {KQLOperators.And} DatabaseName=='{databaseName}' {KQLOperators.And} ColumnName!='' | {KQLOperators.Project} ColumnName, ColumnType";
-                using (IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand))
+                using IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand);
+                while (kustoResults.Read())
                 {
-                    while (kustoResults.Read())
+                    var record = kustoResults;
+                    var fieldCapabilityElement = FieldCapabilityElement.Create(record);
+                    if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
                     {
-                        var record = kustoResults;
-                        var fieldCapabilityElement = FieldCapabilityElement.Create(record);
-                        if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
-                        {
-                            Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
-                        }
-
-                        response.AddField(fieldCapabilityElement);
-
-                        Logger.LogDebug("Found field: {@fieldCapabilityElement}", fieldCapabilityElement);
+                        Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
                     }
+
+                    response.AddField(fieldCapabilityElement);
+
+                    Logger.LogDebug("Found field: {@fieldCapabilityElement}", fieldCapabilityElement);
                 }
             }
             catch (Exception ex)
@@ -68,6 +66,7 @@ namespace K2Bridge.DAL
                 Logger.LogError(ex, "Error while executing GetFieldCaps.");
             }
 
+            // TODO: should we return an empty response in case of an error? or just throw?
             return response;
         }
 
@@ -84,16 +83,14 @@ namespace K2Bridge.DAL
                 Logger.LogDebug("Index name: {@indexName}", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
                 string kustoCommand = $".show {KQLOperators.Databases} {KQLOperators.Schema} | {KQLOperators.Where} TableName != '' | {KQLOperators.Distinct} TableName, DatabaseName | {KQLOperators.Search} TableName: '{tableName}' | {KQLOperators.Search} DatabaseName: '{databaseName}' |  {KQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
-                using (IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand))
+                using IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand);
+                while (kustoResults.Read())
                 {
-                    while (kustoResults.Read())
-                    {
-                        var record = kustoResults;
-                        var termBucket = TermBucket.Create(record);
-                        response.Aggregations.IndexCollection.AddBucket(termBucket);
+                    var record = kustoResults;
+                    var termBucket = TermBucket.Create(record);
+                    response.Aggregations.IndexCollection.AddBucket(termBucket);
 
-                        Logger.LogDebug("Found index/table: {@termBucket}", termBucket);
-                    }
+                    Logger.LogDebug("Found index/table: {@termBucket}", termBucket);
                 }
             }
             catch (Exception ex)
@@ -101,6 +98,7 @@ namespace K2Bridge.DAL
                 Logger.LogError(ex, "Error while executing GetIndexList.");
             }
 
+            // TODO: should we return an empty response in case of an error? or just throw?
             return response;
         }
     }

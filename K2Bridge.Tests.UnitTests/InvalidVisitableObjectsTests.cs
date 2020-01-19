@@ -18,7 +18,7 @@ namespace Tests
         // verify the IllegalClauseException has at least the 3 common CTors (best practice).
 
         /// <summary>
-        /// Has a default ctor
+        /// Has a default ctor.
         /// </summary>
         [TestCase]
         public void IllegalClauseExceptionHasDefaultCtor()
@@ -36,7 +36,7 @@ namespace Tests
         }
 
         /// <summary>
-        /// Has a custom message ctor
+        /// Has a custom message ctor.
         /// </summary>
         [TestCase]
         public void IllegalClauseExceptionHasCustomCtor()
@@ -53,7 +53,7 @@ namespace Tests
         }
 
         /// <summary>
-        /// Has a ctor with inner exception
+        /// Has a ctor with inner exception.
         /// </summary>
         [TestCase]
         public void IllegalClauseExceptionHasCustomWithInnerExcCtor()
@@ -183,7 +183,6 @@ namespace Tests
                 () => visitor.Visit((DateHistogramAggregation)null),
                 Throws.TypeOf<ArgumentException>());
         }
-
 
         [TestCase]
         public void TestInvalidBoolQuery()

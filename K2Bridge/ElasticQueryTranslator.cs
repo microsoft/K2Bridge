@@ -17,7 +17,7 @@ namespace K2Bridge
     /// </summary>
     internal class ElasticQueryTranslator : ITranslator
     {
-        private readonly IVisitor Visitor;
+        private readonly IVisitor visitor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElasticQueryTranslator"/> class.
@@ -26,7 +26,7 @@ namespace K2Bridge
         /// <param name="logger">Logger.</param>
         public ElasticQueryTranslator(IVisitor visitor, ILogger<ElasticQueryTranslator> logger)
         {
-            Visitor = visitor;
+            this.visitor = visitor;
             Logger = logger;
         }
 
@@ -42,7 +42,7 @@ namespace K2Bridge
         {
             if (string.IsNullOrEmpty(header))
             {
-                throw new ArgumentException("Argument can not be empty", "header");
+                throw new ArgumentException("Argument can not be empty", nameof(header));
             }
 
             try
@@ -87,7 +87,7 @@ namespace K2Bridge
                 }
 
                 // Use the visitor and build the KQL string from the esDSL object
-                elasticSearchDSL.Accept(Visitor);
+                elasticSearchDSL.Accept(visitor);
                 var queryData = new QueryData(
                     elasticSearchDSL.KQL,
                     elasticSearchDSL.IndexName,

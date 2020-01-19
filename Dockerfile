@@ -3,6 +3,7 @@
 
 ARG DOTNET_VERSION=3.0
 
+# STAGE: Base build and test
 FROM mcr.microsoft.com/dotnet/core/sdk:$DOTNET_VERSION AS build
 WORKDIR /app
 
@@ -15,18 +16,21 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish K2Bridge -c Release -o out
 
+# Test for lint issues, UnitTests project causes the main to build too
+RUN dotnet build K2Bridge.Tests.UnitTests -p:TreatWarningsAsErrors=true -warnaserror
+
 # Run unit tests. "exit 0" prevents failing build on test failures.
 # (dotnet test returns a non-zero exit code on test failures, which would stop the docker build otherwise)
-RUN dotnet test K2Bridge.Tests.UnitTests --logger "trx;LogFileName=/app/TestResult.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura ; exit 0
+RUN dotnet test K2Bridge.Tests.UnitTests --no-build --logger "trx;LogFileName=/app/TestResult.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura ; exit 0
 
 # Fail build if no test result file produced (indicates an issue with the test runner itself)
 RUN test -s /app/TestResult.xml
 
 # Build end2end tests
-RUN dotnet build K2Bridge.Tests.End2End
+RUN dotnet build K2Bridge.Tests.End2End -p:TreatWarningsAsErrors=true -warnaserror
 
-# Build image for executing End2End tests in Kubernetes
 
+# STAGE: Build image for executing End2End tests in Kubernetes
 FROM mcr.microsoft.com/dotnet/core/sdk:$DOTNET_VERSION AS end2endtest
 
 COPY --from=build /app/K2Bridge ./K2Bridge
@@ -38,8 +42,8 @@ RUN mkfifo /test-result-pipe
 # Run the created image to execute End2End tests
 CMD ["bash", "-x", "-c", "dotnet test K2Bridge.Tests.End2End '--logger:trx;LogFileName=/app/TestResult.xml' ; cat /app/TestResult.xml > /test-result-pipe ; sleep 5"]
 
-# Build runtime image
 
+# STAGE: Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:$DOTNET_VERSION AS runtime
 WORKDIR /app
 COPY --from=build /app/out .

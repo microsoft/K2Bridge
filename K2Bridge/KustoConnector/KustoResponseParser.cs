@@ -23,7 +23,7 @@ namespace K2Bridge.KustoConnector
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoResponseParser"/> class.
         /// </summary>
-        /// <param name="loggerFactory">ILoggerFactory object for logger initialization.</param>
+        /// <param name="logger">ILoggerFactory object for logger initialization.</param>
         public KustoResponseParser(ILogger<KustoResponseParser> logger)
         {
             Logger = logger;

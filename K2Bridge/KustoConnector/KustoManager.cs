@@ -26,10 +26,10 @@ namespace K2Bridge.KustoConnector
         /// Initializes a new instance of the <see cref="KustoManager"/> class.
         /// </summary>
         /// <param name="connectionDetails">Kusto Connection Details.</param>
-        /// <param name="loggerFactory">A logger.</param>
+        /// <param name="logger">A logger.</param>
         public KustoManager(IConnectionDetails connectionDetails, ILogger<KustoManager> logger)
         {
-            this.Logger = logger;
+            Logger = logger;
 
             var conn = new KustoConnectionStringBuilder(
                 connectionDetails.ClusterUrl,
@@ -47,7 +47,7 @@ namespace K2Bridge.KustoConnector
             ConnectionDetails = connectionDetails;
         }
 
-        public IConnectionDetails ConnectionDetails { get; set;}
+        public IConnectionDetails ConnectionDetails { get; set; }
 
         private ILogger Logger { get; set; }
 

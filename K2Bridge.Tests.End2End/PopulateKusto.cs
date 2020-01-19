@@ -32,9 +32,13 @@ namespace K2Bridge.Tests.End2End
         /// <summary>
         ///  Populate the Kusto backend with test data.
         /// </summary>
+        /// <param name="kusto"></param>
+        /// <param name="db"></param>
+        /// <param name="table"></param>
+        /// <param name="mapping"></param>
         /// <param name="structure">JSON file containing the Elasticsearch index structure. Elasticsearch types will be converted to Kusto types. Note that the method only supported a small set of Elasticsearch types.</param>
         /// <param name="dataFile">Gzipped JSON file containing the data to be loaded.</param>
-        /// <returns>Bulk Insert operation result</returns>
+        /// <returns>Bulk Insert operation result.</returns>
         public static async Task<IKustoIngestionResult> Populate(KustoConnectionStringBuilder kusto, string db, string table, string mapping, string structure, string dataFile)
         {
             var struc = JObject.Parse(structure);
@@ -80,33 +84,32 @@ namespace K2Bridge.Tests.End2End
             TestContext.Progress.WriteLine($"Ingesting {dataFile} as compressed data into Kusto");
 
             // Populate Kusto
-            using (Stream fs = File.OpenRead(dataFile))
-            {
-                return await KustoIngest(kusto, db, table, mapping, fs);
-            }
+            using Stream fs = File.OpenRead(dataFile);
+            return await KustoIngest(kusto, db, table, mapping, fs);
         }
 
         /// <summary>
         /// Ingest data into Kusto.
         /// </summary>
-        /// <param name="table">Name of table to ingest into</param>
-        /// <param name="mappingName">Name of table mapping to ingest with</param>
-        /// <param name="stream">input JSON data stream</param>
-        /// <returns></returns>
+        /// <param name="table">Name of table to ingest into.</param>
+        /// <param name="mappingName">Name of table mapping to ingest with.</param>
+        /// <param name="stream">input JSON data stream.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         private static async Task<IKustoIngestionResult> KustoIngest(KustoConnectionStringBuilder kusto, string db, string table, string mappingName, Stream stream)
         {
             // Create a disposable client that will execute the ingestion
-            using (IKustoIngestClient client = KustoIngestFactory.CreateDirectIngestClient(kusto))
+            using IKustoIngestClient client = KustoIngestFactory.CreateDirectIngestClient(kusto);
+            var ingestProps = new KustoIngestionProperties(db, table)
             {
-                var ingestProps = new KustoIngestionProperties(db, table);
-                ingestProps.JSONMappingReference = mappingName;
-                ingestProps.Format = DataSourceFormat.json;
-                ingestProps.Format = DataSourceFormat.json;
-                var ssOptions = new StreamSourceOptions();
-                ssOptions.CompressionType = DataSourceCompressionType.GZip;
+                JSONMappingReference = mappingName,
+                Format = DataSourceFormat.json,
+            };
+            var ssOptions = new StreamSourceOptions
+            {
+                CompressionType = DataSourceCompressionType.GZip,
+            };
 
-                return await client.IngestFromStreamAsync(stream, ingestProps, ssOptions);
-            }
+            return await client.IngestFromStreamAsync(stream, ingestProps, ssOptions);
         }
     }
 }

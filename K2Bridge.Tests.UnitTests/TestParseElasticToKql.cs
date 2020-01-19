@@ -13,7 +13,7 @@ namespace Tests
     [TestFixture]
     public class TestParseElasticToKql
     {
-        const string queryExists = @"
+        private const string QueryExists = @"
             {""bool"":
                 {""must"":
                     [
@@ -30,7 +30,7 @@ namespace Tests
                 }
             }";
 
-        const string queryMatchPhraseSingle = @"
+        private const string QueryMatchPhraseSingle = @"
             {""bool"":
                 {""must"":
                     [
@@ -49,7 +49,7 @@ namespace Tests
                 }
             }";
 
-        const string queryMatchPhraseMulti = @"
+        private const string QueryMatchPhraseMulti = @"
             {""bool"":
                 {""must"":
                     [
@@ -73,7 +73,7 @@ namespace Tests
                 }
             }";
 
-        const string queryTimestampRangeSingle = @"
+        private const string QueryTimestampRangeSingle = @"
             {""bool"":
                 {""must"":
                     [
@@ -92,7 +92,7 @@ namespace Tests
                 }
             }";
 
-        const string queryBetweenRangeSingle = @"
+        private const string QueryBetweenRangeSingle = @"
             {""bool"":
                 {""must"":
                     [
@@ -111,7 +111,7 @@ namespace Tests
                 }
             }";
 
-        const string queryTimestampRangeSingleNoPair = @"
+        private const string QueryTimestampRangeSingleNoPair = @"
             {""bool"":
                 {""must"":
                     [
@@ -130,7 +130,7 @@ namespace Tests
                 }
             }";
 
-        const string queryString = @"
+        private const string QueryString = @"
             {""bool"":
                 {""must"":
                     [
@@ -150,7 +150,7 @@ namespace Tests
                 }
             }";
 
-        const string combinedQuery = @"
+        private const string CombinedQuery = @"
             {""bool"":
                 {""must"":
                     [
@@ -185,7 +185,7 @@ namespace Tests
                 }
             }";
 
-        const string notQueryStringClause = @"
+        private const string NotQueryStringClause = @"
             {""bool"":
                 {""must"":
                     [
@@ -213,10 +213,10 @@ namespace Tests
             }";
 
         [TestCase(
-            queryMatchPhraseSingle,
+            QueryMatchPhraseSingle,
             ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\")")]
         [TestCase(
-            queryMatchPhraseMulti,
+            QueryMatchPhraseMulti,
             ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\") and (TEST_FIELD_2 == \"TEST_RESULT_2\")")]
         public string TestMatchPhraseQueries(string queryString)
         {
@@ -227,7 +227,7 @@ namespace Tests
         }
 
         [TestCase(
-            queryExists,
+            QueryExists,
             ExpectedResult = "where (isnotnull(TEST_FIELD))")]
         public string TestExistsClause(string queryString)
         {
@@ -238,23 +238,23 @@ namespace Tests
         }
 
         [TestCase(
-            queryTimestampRangeSingle,
+            QueryTimestampRangeSingle,
             ExpectedResult = "where (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
         [TestCase(
-            queryBetweenRangeSingle,
+            QueryBetweenRangeSingle,
             ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)")]
         public string TestRangeQueries(string queryString)
         {
             return TestRangeClause(queryString);
         }
 
-        [TestCase(queryTimestampRangeSingleNoPair)]
+        [TestCase(QueryTimestampRangeSingleNoPair)]
         public void TestRangeQueriesMissingValues(string queryString)
         {
             Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
         }
 
-        [TestCase(queryString, ExpectedResult = "where ((* contains \"TEST_RESULT\"))")]
+        [TestCase(QueryString, ExpectedResult = "where ((* contains \"TEST_RESULT\"))")]
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -263,8 +263,8 @@ namespace Tests
             return query.KQL;
         }
 
-        [TestCase(combinedQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\")) and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
-        [TestCase(notQueryStringClause, ExpectedResult = "where ((* contains \"TEST_RESULT\"))\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
+        [TestCase(CombinedQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\")) and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
+        [TestCase(NotQueryStringClause, ExpectedResult = "where ((* contains \"TEST_RESULT\"))\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);

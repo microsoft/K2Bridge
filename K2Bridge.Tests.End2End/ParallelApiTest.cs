@@ -111,6 +111,7 @@ namespace K2Bridge.Tests.End2End
         /// Test class initializer populating the Kusto and Elasticsearch parallel backends
         /// with identical data.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         [OneTimeSetUp]
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "Parameter context required by test framework")]
         public static async Task Init()
@@ -126,10 +127,8 @@ namespace K2Bridge.Tests.End2End
 
             if (!File.Exists("flights.json.gz"))
             {
-                using (var wc = new WebClient())
-                {
-                    wc.DownloadFile("https://raw.githubusercontent.com/elastic/kibana/v6.8.5/src/server/sample_data/data_sets/flights/flights.json.gz", "flights.json.gz");
-                }
+                using var wc = new WebClient();
+                wc.DownloadFile("https://raw.githubusercontent.com/elastic/kibana/v6.8.5/src/server/sample_data/data_sets/flights/flights.json.gz", "flights.json.gz");
             }
 
             await PopulateBothBackends($"{FLIGHTSDIR}/structure.json", "flights.json.gz");
@@ -237,30 +236,28 @@ namespace K2Bridge.Tests.End2End
         /// <summary>
         /// Utility method for local development. Assuming the current user is logged
         /// in with a service principal that is authorized to write to the Kusto database,
-        /// calls <c>az account get-access-token<c> to retrieve an AAD token to connect
+        /// calls 'az account get-access-token' to retrieve an AAD token to connect
         /// to Kusto.
         /// </summary>
-        /// <param name="uri">Resource URI to get an AAD token for</param>
-        /// <returns>An AAD access token</returns>
+        /// <param name="uri">Resource URI to get an AAD token for.</param>
+        /// <returns>An AAD access token.</returns>
         private static string GetAADToken(string uri)
         {
             // Create process
-            using (var az = new Process())
+            using var az = new Process();
+            az.StartInfo.FileName = "az";
+            az.StartInfo.Arguments = $"account get-access-token --query accessToken -o tsv --resource {uri}";
+            az.StartInfo.UseShellExecute = false;
+            az.StartInfo.RedirectStandardOutput = true;
+            az.Start();
+            string strOutput = az.StandardOutput.ReadToEnd();
+            az.WaitForExit(10000);
+            if (az.ExitCode != 0)
             {
-                az.StartInfo.FileName = "az";
-                az.StartInfo.Arguments = $"account get-access-token --query accessToken -o tsv --resource {uri}";
-                az.StartInfo.UseShellExecute = false;
-                az.StartInfo.RedirectStandardOutput = true;
-                az.Start();
-                string strOutput = az.StandardOutput.ReadToEnd();
-                az.WaitForExit(10000);
-                if (az.ExitCode != 0)
-                {
-                    throw new Exception("Error running az account get-access-token");
-                }
-
-                return strOutput.Trim();
+                throw new Exception("Error running az account get-access-token");
             }
+
+            return strOutput.Trim();
         }
 
         private static async Task PopulateBothBackends(string structureJsonFile, string dataGzippedJsonFile)

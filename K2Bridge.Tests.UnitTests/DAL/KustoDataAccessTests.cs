@@ -11,23 +11,22 @@ namespace K2Bridge.Tests.UnitTests.DAL
     using global::Tests;
     using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using NUnit.Framework;
     using Newtonsoft.Json.Linq;
-    using K2Bridge.Models;
+    using NUnit.Framework;
 
     public class KustoDataAccessTests
     {
-        static object[] indexNames = {
-            new string[]{"databaseName:tableName", "databaseName", "tableName"},
-            new string[]{"*", "*", "*"},
-            new string[]{"tableName", string.Empty, "tableName"},
-            new string[]{":", string.Empty, string.Empty},
-            new string[]{"tableName", "databaseName", "tableName"},
+        private static object[] indexNames = {
+            new string[] { "databaseName:tableName", "databaseName", "tableName" },
+            new string[] { "*", "*", "*" },
+            new string[] { "tableName", string.Empty, "tableName" },
+            new string[] { ":", string.Empty, string.Empty },
+            new string[] { "tableName", "databaseName", "tableName" },
         };
-
 
         public KustoDataAccessTests()
         {
@@ -61,15 +60,14 @@ namespace K2Bridge.Tests.UnitTests.DAL
                 // column("mytimespan", "System.TimeSpan"),
                 // column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
             };
-            using (var testReader = new TestDataReader(testData))
-            {
-                mockQueryExecutor.Setup(exec => exec.ExecuteControlCommand(It.IsNotNull<string>()))
-                    .Returns(testReader);
+            using var testReader = new TestDataReader(testData);
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommand(It.IsNotNull<string>()))
+.Returns(testReader);
 
-                var kusto = new KustoDataAccess(mockQueryExecutor.Object, new Mock<ILogger<KustoDataAccess>>().Object);
-                var response = kusto.GetFieldCaps("testIndexName");
+            var kusto = new KustoDataAccess(mockQueryExecutor.Object, new Mock<ILogger<KustoDataAccess>>().Object);
+            var response = kusto.GetFieldCaps("testIndexName");
 
-                JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
+            JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {
                     ""fields"": {
                       ""mybool"": {
@@ -124,7 +122,6 @@ namespace K2Bridge.Tests.UnitTests.DAL
                     }
                   }
                   "));
-            }
         }
 
         [Test]
@@ -171,7 +168,7 @@ namespace K2Bridge.Tests.UnitTests.DAL
             Assert.IsNotNull(indexResponse, $"null response for indexname {indexName}");
             var itr = indexResponse.Aggregations.IndexCollection.Buckets.GetEnumerator();
             itr.MoveNext();
-            Assert.NotNull((itr.Current), $"failed to provide valid search term with database name {databaseName} and table name {tableName} from indexname {indexName}. expexted: {searchString}");
+            Assert.NotNull(itr.Current, $"failed to provide valid search term with database name {databaseName} and table name {tableName} from indexname {indexName}. expexted: {searchString}");
         }
     }
 }

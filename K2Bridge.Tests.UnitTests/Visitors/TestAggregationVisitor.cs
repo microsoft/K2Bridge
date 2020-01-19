@@ -55,7 +55,6 @@ namespace VisitorsTests
             return aggregateClause.KQL;
         }
 
-
         [TestCase(ExpectedResult = "dcount(fieldA)")]
         public string TestMetricAggregation_Cardinality()
         {

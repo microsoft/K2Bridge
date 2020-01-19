@@ -18,10 +18,10 @@ namespace K2Bridge
     /// <summary>
     /// Entry point for the K2 program.
     /// </summary>
-    public class Program
+    public static class Program
     {
         /// <summary>
-        /// Creates the Configuration for the app.
+        /// Gets the Configuration for the app.
         /// The config is stored in appsettings.json.
         /// It can also be found on appsettings.Development.json (you local env)
         /// Or in /settings/appsettings.json when deployed to a container.

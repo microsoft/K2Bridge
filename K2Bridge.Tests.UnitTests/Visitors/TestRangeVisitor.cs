@@ -78,7 +78,11 @@ namespace VisitorsTests
         }
 
         private static RangeClause CreateRangeClause(
-            string fieldName, Decimal? gte, Decimal? gt, Decimal? lte, Decimal? lt, String? format)
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+#pragma warning disable SA1114 // Parameter list should follow declaration
+            string fieldName, decimal? gte, decimal? gt, decimal? lte, decimal? lt, string? format)
+#pragma warning restore SA1114 // Parameter list should follow declaration
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         {
             return new RangeClause
             {

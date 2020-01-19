@@ -5,7 +5,6 @@
 namespace K2Bridge
 {
     using System;
-    using System.IO;
     using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;

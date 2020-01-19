@@ -30,6 +30,8 @@ namespace K2BridgeUnitTests
             Assert.AreEqual("2017-01-02T13:04:05.060Z", bucket.KeyAsString);
             Assert.AreEqual(1483362245060, bucket.Key);
             Assert.AreEqual(234, bucket.DocCount);
+
+            table.Dispose();
         }
     }
 }

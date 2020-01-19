@@ -15,7 +15,7 @@ namespace K2Bridge.Visitors
     /// </summary>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        private string defaultDatabaseName;
+        private readonly string defaultDatabaseName;
 
         public ElasticSearchDSLVisitor(string defaultDatabaseName = "")
         {

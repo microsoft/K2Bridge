@@ -23,10 +23,10 @@ namespace K2Bridge.RewriteRules
         {
             // a workaround an illegal path. the app can' read a path
             // containing :. and replaces it, with a valid token
-            if (context.HttpContext.Request.Path.Value.Contains("_template")
-                && context.HttpContext.Request.Path.Value.Contains(":."))
+            if (context.HttpContext.Request.Path.Value.Contains("_template", System.StringComparison.OrdinalIgnoreCase)
+                && context.HttpContext.Request.Path.Value.Contains(":.", System.StringComparison.OrdinalIgnoreCase))
             {
-                context.HttpContext.Request.Path = context.HttpContext.Request.Path.Value.Replace(":.", "::");
+                context.HttpContext.Request.Path = context.HttpContext.Request.Path.Value.Replace(":.", "::", System.StringComparison.OrdinalIgnoreCase);
             }
         }
     }

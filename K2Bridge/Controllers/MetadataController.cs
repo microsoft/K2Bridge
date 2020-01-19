@@ -69,9 +69,9 @@ namespace K2Bridge.Controllers
             // a workaround for an illegal template path. Converts the URL back to :. format
             // A Rewrite rule initiall replaces the following :. into ::, and now we convert back.
             // /_template/kibana_index_template:.kibana
-            if (context.Request.Path.Value.Contains("_template"))
+            if (context.Request.Path.Value.Contains("_template", StringComparison.OrdinalIgnoreCase))
             {
-                context.Request.Path = context.Request.Path.Value.Replace("::", ":.");
+                context.Request.Path = context.Request.Path.Value.Replace("::", ":.", StringComparison.OrdinalIgnoreCase);
             }
 
             var httpClient = clientFactory.CreateClient("elasticFallback");

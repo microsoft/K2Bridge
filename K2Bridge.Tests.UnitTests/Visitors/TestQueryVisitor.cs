@@ -71,6 +71,5 @@ namespace VisitorsTests
                 Wildcard = wildcard,
             };
         }
-
     }
 }

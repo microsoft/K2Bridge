@@ -40,23 +40,23 @@ namespace K2Bridge.Tests.End2End
 
         public static async Task<TestElasticClient> Create(string baseAddress, string dumpFileName)
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri(baseAddress);
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri(baseAddress),
+            };
 
             // validate backend host is reachable
-            using (var request = new HttpRequestMessage(HttpMethod.Get, string.Empty))
-            {
-                var response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-                return new TestElasticClient(client, dumpFileName);
-            }
+            using var request = new HttpRequestMessage(HttpMethod.Get, string.Empty);
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            return new TestElasticClient(client, dumpFileName);
         }
 
         /// <summary>
         /// Queries the backend and parses the result as JSON.
         /// </summary>
-        /// <param name="request">Request to backend</param>
-        /// <returns>Backend response as parsed JSON</returns>
+        /// <param name="request">Request to backend.</param>
+        /// <returns>Backend response as parsed JSON.</returns>
         public async Task<JToken> JsonQuery(HttpRequestMessage request)
         {
             var response = await client.SendAsync(request);
@@ -90,19 +90,17 @@ namespace K2Bridge.Tests.End2End
         ///   },
         ///   "tagline" : "You Know, for Search"
         /// }
-        /// </c>
+        /// </c>.
         /// </remarks>
         /// <returns>Cluster general information.</returns>
         public async Task<JToken> ClusterInfo()
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Get, string.Empty))
-            {
-                var result = await JsonQuery(request);
-                MaskValue(result, "name");
-                MaskValue(result, "cluster_name");
-                MaskValue(result, "cluster_uuid");
-                return result;
-            }
+            using var request = new HttpRequestMessage(HttpMethod.Get, string.Empty);
+            var result = await JsonQuery(request);
+            MaskValue(result, "name");
+            MaskValue(result, "cluster_name");
+            MaskValue(result, "cluster_uuid");
+            return result;
         }
 
         /// <summary>
@@ -116,59 +114,57 @@ namespace K2Bridge.Tests.End2End
         {
             JObject query = JObject.Parse(File.ReadAllText(jsonQueryFile));
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, "_msearch"))
+            using var request = new HttpRequestMessage(HttpMethod.Post, "_msearch");
+            var payload = new StringBuilder();
+            payload.AppendLine($"{{\"index\":\"{indexName}\"}}");
+            payload.AppendLine(query.ToString(Formatting.None));
+            request.Content = new StringContent(payload.ToString());
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-ndjson");
+            var result = await JsonQuery(request);
+            MaskSearchCommon(result, "responses[*].");
+
+            // TODO: returned by ES but not by K2
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
+            DeleteValue(result, "responses[*].hits.hits[*].fields");
+
+            // TODO: returned by ES but not by K2
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
+            DeleteValue(result, "responses[*].hits.hits[*].sort");
+
+            // TODO: returned by K2 but not by ES
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
+            // TODO: Fix substringhighlighting
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1481
+            DeleteValue(result, "responses[*].hits.hits[*].highlight");
+
+            foreach (JToken token in result.SelectTokens("$..*"))
             {
-                var payload = new StringBuilder();
-                payload.AppendLine($"{{\"index\":\"{indexName}\"}}");
-                payload.AppendLine(query.ToString(Formatting.None));
-                request.Content = new StringContent(payload.ToString());
-                request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-ndjson");
-                var result = await JsonQuery(request);
-                MaskSearchCommon(result, "responses[*].");
-
-                // TODO: returned by ES but not by K2
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
-                DeleteValue(result, "responses[*].hits.hits[*].fields");
-
-                // TODO: returned by ES but not by K2
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
-                DeleteValue(result, "responses[*].hits.hits[*].sort");
-
-                // TODO: returned by K2 but not by ES
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
-                // TODO: Fix substringhighlighting
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1481
-                DeleteValue(result, "responses[*].hits.hits[*].highlight");
-
-                foreach (JToken token in result.SelectTokens("$..*"))
+                // TODO: Kusto does not preserve all 32 bit range, so we compare only first 16 bits of decimal values
+                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1466
+                if (token.Type == JTokenType.Float)
                 {
-                    // TODO: Kusto does not preserve all 32 bit range, so we compare only first 16 bits of decimal values
-                    // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1466
-                    if (token.Type == JTokenType.Float)
-                    {
-                        var v = (JValue)token;
-                        v.Value = Convert.ToSingle(v.Value, CultureInfo.InvariantCulture);
-                    }
-
-                    // TODO: K2 returns boolean as int
-                    // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1463
-                    if (token.Type == JTokenType.Boolean)
-                    {
-                        var v = token as JValue;
-                        v.Value = Convert.ToInt16(v.Value, CultureInfo.InvariantCulture);
-                    }
+                    var v = (JValue)token;
+                    v.Value = Convert.ToSingle(v.Value, CultureInfo.InvariantCulture);
                 }
 
-                // TODO: distinct timestamp formats for aggregation keys
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1464
-                NormalizeTimestamps(result, "responses[*].aggregations.*.buckets[*].key_as_string");
-
-                // TODO: distinct timestamp formats for timestamp attributes
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1487
-                DeleteValue(result, "responses[*].hits.hits[*]._source.timestamp");
-
-                return result;
+                // TODO: K2 returns boolean as int
+                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1463
+                if (token.Type == JTokenType.Boolean)
+                {
+                    var v = token as JValue;
+                    v.Value = Convert.ToInt16(v.Value, CultureInfo.InvariantCulture);
+                }
             }
+
+            // TODO: distinct timestamp formats for aggregation keys
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1464
+            NormalizeTimestamps(result, "responses[*].aggregations.*.buckets[*].key_as_string");
+
+            // TODO: distinct timestamp formats for timestamp attributes
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1487
+            DeleteValue(result, "responses[*].hits.hits[*]._source.timestamp");
+
+            return result;
         }
 
         /// <summary>
@@ -177,77 +173,76 @@ namespace K2Bridge.Tests.End2End
         /// <param name="optionalIndexToKeep">Optional input with index name to keep.
         /// if this is not null, all other index names will be removed and it will be
         /// normalized by removing the database name from kusto's db:table pair.</param>
-        /// <returns><c>JToken</c> with parsed response</returns>
+        /// <returns><c>JToken</c> with parsed response.</returns>
         public async Task<JToken> Search(string optionalIndexToKeep = null)
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Post, "/*/_search/"))
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/*/_search/")
             {
-                request.Content = new StringContent("{\"size\":0,\"aggs\":{\"indices\":{\"terms\":{\"field\":\"_index\",\"size\":200}}}}");
-                request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+                Content = new StringContent("{\"size\":0,\"aggs\":{\"indices\":{\"terms\":{\"field\":\"_index\",\"size\":200}}}}"),
+            };
+            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
-                var result = await JsonQuery(request);
+            var result = await JsonQuery(request);
 
-                MaskSearchCommon(result, string.Empty);
+            MaskSearchCommon(result, string.Empty);
 
-                // TODO: K2Bridge always returns 0 for doc_count
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-                MaskValue(result, "aggregations.indices.buckets[*].doc_count");
+            // TODO: K2Bridge always returns 0 for doc_count
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
+            MaskValue(result, "aggregations.indices.buckets[*].doc_count");
 
-                // TODO: K2Bridge always returns 0 for total
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-                MaskValue(result, "hits.total");
+            // TODO: K2Bridge always returns 0 for total
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
+            MaskValue(result, "hits.total");
 
-                // TODO: K2Bridge returns null
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-                MaskValue(result, "hits.max_score");
+            // TODO: K2Bridge returns null
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
+            MaskValue(result, "hits.max_score");
 
-                // TODO: K2Bridge returns extra status field
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-                DeleteValue(result, "status");
+            // TODO: K2Bridge returns extra status field
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
+            DeleteValue(result, "status");
 
-                // TODO: K2Bridge does not return these two fields
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-                DeleteValue(result, "aggregations.indices.doc_count_error_upper_bound");
-                DeleteValue(result, "aggregations.indices.sum_other_doc_count");
-                if (!string.IsNullOrEmpty(optionalIndexToKeep))
-                {
-                    NormalizeIndexNamesForIndexList(result, "aggregations.indices.buckets[*].key", optionalIndexToKeep);
-                }
-                return result;
+            // TODO: K2Bridge does not return these two fields
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
+            DeleteValue(result, "aggregations.indices.doc_count_error_upper_bound");
+            DeleteValue(result, "aggregations.indices.sum_other_doc_count");
+            if (!string.IsNullOrEmpty(optionalIndexToKeep))
+            {
+                NormalizeIndexNamesForIndexList(result, "aggregations.indices.buckets[*].key", optionalIndexToKeep);
             }
+
+            return result;
         }
 
         /// <summary>
         /// API operation for field capabilities search.
         /// </summary>
         /// <param name="indexName">Index name to query.</param>
-        /// <returns><c>JToken</c> with parsed response</returns>
+        /// <returns><c>JToken</c> with parsed response.</returns>
         public async Task<JToken> FieldCaps(string indexName)
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Post, $"{indexName}/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false"))
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{indexName}/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false");
+            var result = await JsonQuery(request);
+
+            // Use generic Elasticsearch type for geo_point
+            ReplaceType(result, "geo_point", "object", false);
+
+            // Remove extra fields returned by Elasticsearch (prefixed by _)
+            JObject fields = (JObject)result.SelectToken($"$.fields");
+            var removes = new List<string>();
+            foreach (var field in fields)
             {
-                var result = await JsonQuery(request);
-
-                // Use generic Elasticsearch type for geo_point
-                ReplaceType(result, "geo_point", "object", false);
-
-                // Remove extra fields returned by Elasticsearch (prefixed by _)
-                JObject fields = (JObject)result.SelectToken($"$.fields");
-                var removes = new List<string>();
-                foreach (var field in fields)
+                if (field.Key.StartsWith("_", StringComparison.Ordinal))
                 {
-                    if (field.Key.StartsWith("_", StringComparison.Ordinal))
-                    {
-                        removes.Add(field.Key);
-                    }
+                    removes.Add(field.Key);
                 }
-
-                removes.ForEach(f => fields.Remove(f));
-
-                ReplaceType(result, "text", "keyword", true);
-
-                return result;
             }
+
+            removes.ForEach(f => fields.Remove(f));
+
+            ReplaceType(result, "text", "keyword", true);
+
+            return result;
         }
 
         private static void MaskSearchCommon(JToken result, string searchBase)
@@ -267,7 +262,7 @@ namespace K2Bridge.Tests.End2End
         /// <summary>
         /// Replaces the occourances that meets jsonPath and value is equal to indexName
         /// by removing the database name from the pair databasename:tablemame.
-        /// Any other occurrence whose value does not equal indexName is removed
+        /// Any other occurrence whose value does not equal indexName is removed.
         /// </summary>
         /// <param name="parent">JSON element at which to start search.</param>
         /// <param name="jsonPath">JSONPath search pattern to replace.</param>
@@ -275,7 +270,7 @@ namespace K2Bridge.Tests.End2End
         private static void NormalizeIndexNamesForIndexList(JToken parent, string jsonPath, string indexName)
         {
             var tokens = parent.SelectTokens(jsonPath).Where(j => j is JValue).Select(j => j as JValue).ToArray();
-            for(var index = 0; index < tokens.Length ; index++)
+            for (var index = 0; index < tokens.Length; index++)
             {
                 if (tokens[index].Value.Equals(indexName))
                 {
@@ -288,7 +283,6 @@ namespace K2Bridge.Tests.End2End
                 }
             }
         }
-
 
         /// <summary>
         /// Replaces values designated by a JSONPath search pattern with a placeholder string.
@@ -360,8 +354,8 @@ namespace K2Bridge.Tests.End2End
         /// <summary>
         /// Ensures an HTTP call was successful and parse its response message into JSON.
         /// </summary>
-        /// <param name="response">The HTTP response from <c>HttpClient</c></param>
-        /// <returns><c>JToken</c> with parsed response</returns>
+        /// <param name="response">The HTTP response from <c>HttpClient</c>.</param>
+        /// <returns><c>JToken</c> with parsed response.</returns>
         private async Task<JToken> ParseJsonResponse(HttpResponseMessage response)
         {
             var responseData = await response.Content.ReadAsStringAsync();
@@ -376,7 +370,7 @@ namespace K2Bridge.Tests.End2End
 
             var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None }
 ;
-            var data = JsonConvert.DeserializeObject<JToken>(responseData, settings);
+            _ = JsonConvert.DeserializeObject<JToken>(responseData, settings); // data
             var actual = JToken.Parse(responseData);
             return actual;
         }

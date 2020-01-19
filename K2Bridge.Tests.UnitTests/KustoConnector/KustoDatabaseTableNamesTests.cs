@@ -10,28 +10,28 @@ namespace Tests.KustoConnector
     [TestFixture]
     public class KustoDatabaseTableNamesTests
     {
-        static object[] badInputCases = {
-            new string[]{string.Empty},
-            new string[]{null},
+        private static object[] badInputCases = {
+            new string[] { string.Empty },
+            new string[] { null },
         };
 
-        static object[] noColonCases = {
-            new string[]{"table.name"},
-            new string[]{"tableName"},
+        private static object[] noColonCases = {
+            new string[] { "table.name" },
+            new string[] { "tableName" },
         };
 
-        static object[] colonEmptyStringCases = {
+        private static object[] colonEmptyStringCases = {
             new TestCaseData(":").Returns((string.Empty, string.Empty)),
             new TestCaseData("database:").Returns(("database", string.Empty)),
             new TestCaseData(":table").Returns((string.Empty, "table")),
         };
 
-        static object[] correctStringCases = {
+        private static object[] correctStringCases = {
             new TestCaseData("database:tablename").Returns(("database", "tablename")),
             new TestCaseData("database:table:name").Returns(("database", "table:name")), // multiple colons output as database name
         };
 
-        static object[] defaultDatabaseTests = {
+        private static object[] defaultDatabaseTests = {
             new TestCaseData("tablename", "database").Returns(("database", "tablename")),
             new TestCaseData("database:tablename", "notdatabase").Returns(("database", "tablename")),
             new TestCaseData("database:tablename", string.Empty).Returns(("database", "tablename")),
@@ -42,11 +42,15 @@ namespace Tests.KustoConnector
         [TestCaseSource("badInputCases")]
         public void ExceptionOnEmptyInputIndexName(string indexName)
         {
-            try{
+            try
+            {
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, string.Empty);
-            } catch {
+            }
+            catch
+            {
                 return;
             }
+
             Assert.Fail($"can not retrieve kusto database and table names for malformed indexName: {indexName}");
         }
 

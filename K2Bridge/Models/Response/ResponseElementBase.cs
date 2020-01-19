@@ -27,6 +27,5 @@ namespace K2Bridge.Models.Response
 
         [JsonProperty("backendQuery")]
         public string BackendQuery { get; set; } = string.Empty;
-
     }
 }
