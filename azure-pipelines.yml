@@ -159,6 +159,7 @@ stages:
       inputs:
         codeCoverageTool: 'Cobertura'
         summaryFileLocation: 'coverage.cobertura.xml'
+        pathToSources: '$(Build.SourcesDirectory)/K2Bridge/'
         failIfCoverageEmpty: true
 
   - job: push_artifacts
