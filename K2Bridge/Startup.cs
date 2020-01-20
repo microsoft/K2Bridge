@@ -5,6 +5,7 @@
 namespace K2Bridge
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using K2Bridge.Controllers;
     using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
@@ -20,6 +21,7 @@ namespace K2Bridge
     using Microsoft.OpenApi.Models;
     using Serilog;
 
+    [ExcludeFromCodeCoverage]
     public class Startup
     {
         /// <summary>
@@ -39,13 +41,13 @@ namespace K2Bridge
             services.AddControllers();
             services.AddScoped<IConnectionDetails, KustoConnectionDetails>(
                 s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
-            services.AddSingleton<ListenerDetails>(
-                s => ListenerDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+            services.AddSingleton(
+                s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
             services.AddTransient<IQueryExecutor, KustoManager>();
             services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(
                 s => new ElasticSearchDSLVisitor(KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot).DefaultDatabaseName));
-            services.AddSingleton((Serilog.ILogger)Log.Logger);
+            services.AddSingleton(Log.Logger);
             services.AddTransient<IKustoDataAccess, KustoDataAccess>();
             services.AddTransient<IResponseParser, KustoResponseParser>(
                 ctx => new KustoResponseParser(
@@ -55,8 +57,8 @@ namespace K2Bridge
             // use this http client factory to issue requests to the metadata elastic instance
             services.AddHttpClient(MetadataController.ElasticMetadataClientName, (svcProvider, elasticClient) =>
             {
-                var listenerDetails = svcProvider.GetRequiredService<ListenerDetails>();
-                elasticClient.BaseAddress = new Uri(listenerDetails.MetadataEndpoint);
+                var metadataConnectionDetails = svcProvider.GetRequiredService<MetadataConnectionDetails>();
+                elasticClient.BaseAddress = new Uri(metadataConnectionDetails.MetadataEndpoint);
             });
 
             services.AddHttpContextAccessor();
@@ -93,7 +95,6 @@ namespace K2Bridge
                 .Add(new RewriteTrailingSlashesRule());
             app.UseRewriter(options);
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

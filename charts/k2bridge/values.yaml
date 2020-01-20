@@ -13,7 +13,7 @@ image:
   pullPolicy: Always
 
 settings:
-  bridgeListenerAddress: "http://*:8080/"
+  bridgeListenerAddress: "http://k2bridge:80/"
   metadataElasticAddress: "http://k2bridgees-master:9200"
   outputBackendQuery: false
   adxClusterUrl: "https://myadxinstance.region.kusto.windows.net"

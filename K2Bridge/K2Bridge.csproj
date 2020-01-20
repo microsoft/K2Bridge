@@ -64,5 +64,6 @@
   
   <ItemGroup>
     <Compile Remove="Helpers\RewriteRequestsMissingTrailingSlashes.Rulecs" />
+    <Compile Remove="StreamsExtensions.cs" />
   </ItemGroup>
 </Project>

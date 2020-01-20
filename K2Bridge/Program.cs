@@ -8,6 +8,7 @@
 namespace K2Bridge
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
@@ -18,6 +19,7 @@ namespace K2Bridge
     /// <summary>
     /// Entry point for the K2 program.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public static class Program
     {
         /// <summary>
@@ -50,8 +52,16 @@ namespace K2Bridge
 
         private static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
+            var bridgeListenerAddress = Configuration["bridgeListenerAddress"];
+            if (string.IsNullOrEmpty(bridgeListenerAddress))
+            {
+                throw new UriFormatException(
+                    $"{nameof(bridgeListenerAddress)} is not a valid URI. Please configure the listening address");
+            }
+
             return WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(Configuration)
+                .UseUrls(bridgeListenerAddress)
                 .UseSerilog()
                 .UseStartup<Startup>();
         }
