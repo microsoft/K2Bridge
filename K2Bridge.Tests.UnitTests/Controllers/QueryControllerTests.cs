@@ -5,14 +5,17 @@
 namespace K2BridgeUnitTests
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
+    using System.IO;
+    using System.Text;
     using System.Threading.Tasks;
     using K2Bridge;
     using K2Bridge.Controllers;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models.Response;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
@@ -22,17 +25,26 @@ namespace K2BridgeUnitTests
     public class QueryControllerTests
     {
         private const string ValidQueryContent = "{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}\n{\"version\":true,\"size\":500,\"sort\":[{\"timestamp\":{\"order\":\"desc\",\"unmapped_type\":\"boolean\"}}],\"_source\":{\"excludes\":[]},\"aggs\":{\"2\":{\"date_histogram\":{\"field\":\"timestamp\",\"interval\":\"1d\",\"time_zone\":\"America/Los_Angeles\",\"min_doc_count\":1}}},\"stored_fields\":[\"*\"],\"script_fields\":{},\"docvalue_fields\":[{\"field\":\"timestamp\",\"format\":\"date_time\"}],\"query\":{\"bool\":{\"must\":[{\"match_all\":{}},{\"range\":{\"timestamp\":{\"gte\":1561673881638,\"lte\":1566712210749,\"format\":\"epoch_millis\"}}}],\"filter\":[],\"should\":[],\"must_not\":[]}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"timeout\":\"30000ms\"}";
-        private const string InValidQueryContent = "{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}";
+
+        private static readonly object[] InValidQueryContent = {
+            new TestCaseData("{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}").SetName("SearchInternal_WhenNoQuery_IsInvalid"),
+            new TestCaseData(null).SetName("SearchInternal_WhenNullValue_IsInvalid"),
+            new TestCaseData(string.Empty).SetName("SearchInternal_WhenEmptyValue_IsInvalid"),
+        };
+
+        private static readonly object[] IntegrationTestCases = {
+            new TestCaseData("{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}\n{\"version\":true,\"size\":500,\"sort\":[{\"timestamp\":{\"order\":\"desc\",\"unmapped_type\":\"boolean\"}}],\"_source\":{\"excludes\":[]},\"aggs\":{\"2\":{\"date_histogram\":{\"field\":\"timestamp\",\"interval\":\"1d\",\"time_zone\":\"America/Los_Angeles\",\"min_doc_count\":1}}},\"stored_fields\":[\"*\"],\"script_fields\":{},\"docvalue_fields\":[{\"field\":\"timestamp\",\"format\":\"date_time\"}],\"query\":{\"bool\":{\"must\":[{\"match_all\":{}},{\"range\":{\"timestamp\":{\"gte\":1561673881638,\"lte\":1566712210749,\"format\":\"epoch_millis\"}}}],\"filter\":[],\"should\":[],\"must_not\":[]}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"timeout\":\"30000ms\"}", typeof(OkObjectResult)).SetName("QueryController_WhenQueryIsValid_ReturnsOk"),
+            new TestCaseData(string.Empty, typeof(BadRequestObjectResult)).SetName("QueryController_WhenQueryIsValid_ReturnsOk"),
+        };
 
         [Test]
-        public async Task Search_ReturnsAnActionResult_OKfromKusto()
+        public void SearchInternal_ReturnsAnActionResult_OKfromKusto()
         {
             // Arrange
-            var queryInBodyPayload = ValidQueryContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var uat = GetController();
 
             // Act
-            var uat = GetController();
-            var result = await uat.SearchInternal(true, true, queryInBodyPayload);
+            var result = uat.SearchInternal(true, true, ValidQueryContent);
 
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -40,16 +52,195 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void Search_ReturnsAnActionResult_FailsInvalidRequestData()
+        public void QueryController_WhenNoArgs_ThrowsOnInit()
         {
             // Arrange
-            var queryInBodyPayload = InValidQueryContent.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var mockTranslator = new Mock<ITranslator>();
+            var mockLogger = new Mock<ILogger<QueryController>>();
+            var mockResponseParser = new Mock<IResponseParser>();
+            var mockQueryExecutor = new Mock<IQueryExecutor>();
+
+            Assert.Throws<ArgumentNullException>(() => {
+                new QueryController(mockQueryExecutor.Object, null, mockLogger.Object, mockResponseParser.Object);
+            });
+
+            Assert.Throws<ArgumentNullException>(() => {
+                new QueryController(null, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object);
+            });
+
+            Assert.Throws<ArgumentNullException>(() => {
+                new QueryController(mockQueryExecutor.Object, mockTranslator.Object, null, mockResponseParser.Object);
+            });
+
+            Assert.Throws<ArgumentNullException>(() => {
+                new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, null);
+            });
+        }
+
+        [Test]
+        public void SearchInternal_OnValidInput_TranslatesAndExecutesQuery()
+        {
+            // Arrange
+            (string header, string query) = ControllerExtractMethods.SplitQueryBody(ValidQueryContent);
+            var queryData = new QueryData(query, header, new Dictionary<string, string>());
+            var ts = new TimeSpan(1);
+            var reader = Substitute.For<IDataReader>();
+            var mockTranslator = new Mock<ITranslator>();
+            mockTranslator.Setup(translator => translator.Translate(
+                header, query)).Returns(queryData);
+            var mockQueryExecutor = new Mock<IQueryExecutor>();
+            mockQueryExecutor.Setup(exec => exec.ExecuteQuery(queryData)).Returns((ts, reader));
+            var mockLogger = new Mock<ILogger<QueryController>>();
+            var mockResponseParser = new Mock<IResponseParser>();
+            mockResponseParser.Setup(exec =>
+                exec.ParseElasticResponse(
+                    reader,
+                    queryData,
+                    ts));
+            var uat = new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object);
 
             // Act
+            uat.SearchInternal(true, true, ValidQueryContent);
+
+            // Assert
+            mockTranslator.Verify(
+                translator => translator.Translate(header, query), Times.Once());
+            mockQueryExecutor.Verify(
+                 executor => executor.ExecuteQuery(queryData), Times.Once());
+            mockResponseParser.Verify(
+                parsr => parsr.ParseElasticResponse(reader, queryData, ts), Times.Once());
+        }
+
+        [TestCaseSource("InValidQueryContent")]
+        public void SearchInternal_OnInvaliddRequestData_FailsArgumentException(string input)
+        {
+            // Arrange
             var uat = GetController();
 
             // Assert
-            Assert.ThrowsAsync<ArgumentException>(() => uat.SearchInternal(true, true, queryInBodyPayload));
+            Assert.Throws<ArgumentException>(() => uat.SearchInternal(true, true, input));
+        }
+
+        [TestCaseSource("IntegrationTestCases")]
+        public async Task SearchInternal_PostRequest_ReturnsExpectedResult(string content, Type resultType)
+        {
+            if (resultType == null)
+            {
+                throw new ArgumentException("result type");
+            }
+
+            // Arrange
+            var mockTranslator = new Mock<ITranslator>();
+            var mockLogger = new Mock<ILogger<QueryController>>();
+            var mockResponseParser = new Mock<IResponseParser>();
+            var mockQueryExecutor = new Mock<IQueryExecutor>();
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+            // Controller needs a controller context
+            var controllerContext = new ControllerContext() {
+                HttpContext = httpContext,
+            };
+            var controller = new QueryController(
+                mockQueryExecutor.Object,
+                mockTranslator.Object,
+                mockLogger.Object,
+                mockResponseParser.Object) { ControllerContext = controllerContext };
+
+            // Act
+            var result = await controller.Search(true, true);
+
+            // Assert
+            Assert.IsInstanceOf(resultType, result, $"result {result.ToString()} is not of expected type {resultType.Name}");
+        }
+
+        [Test]
+        public async Task Search_PostRequestErrorInTranslator_ReturnsError()
+        {
+            // Arrange
+            var mockTranslator = new Mock<ITranslator>();
+            mockTranslator.Setup(translate => translate.Translate(It.IsAny<string>(), It.IsAny<string>())).Throws(new Exception("test"));
+            var mockLogger = new Mock<ILogger<QueryController>>();
+            var mockResponseParser = new Mock<IResponseParser>();
+            var mockQueryExecutor = new Mock<IQueryExecutor>();
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
+
+            // Controller needs a controller context
+            var controllerContext = new ControllerContext() {
+                HttpContext = httpContext,
+            };
+            var controller = new QueryController(
+                mockQueryExecutor.Object,
+                mockTranslator.Object,
+                mockLogger.Object,
+                mockResponseParser.Object) { ControllerContext = controllerContext };
+
+            // Act
+            var result = await controller.Search(true, true);
+
+            // Assert
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
+        }
+
+        [Test]
+        public async Task Search_PostRequestErrorInParser_ReturnsError()
+        {
+            // Arrange
+            var mockTranslator = new Mock<ITranslator>();
+            var mockLogger = new Mock<ILogger<QueryController>>();
+            var mockResponseParser = new Mock<IResponseParser>();
+            mockResponseParser.Setup(parser => parser.ParseElasticResponse(It.IsAny<IDataReader>(), It.IsAny<QueryData>(), It.IsAny<TimeSpan>())).Throws(new Exception("test"));
+            var mockQueryExecutor = new Mock<IQueryExecutor>();
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
+
+            // Controller needs a controller context
+            var controllerContext = new ControllerContext() {
+                HttpContext = httpContext,
+            };
+            var controller = new QueryController(
+                mockQueryExecutor.Object,
+                mockTranslator.Object,
+                mockLogger.Object,
+                mockResponseParser.Object) { ControllerContext = controllerContext };
+
+            // Act
+            var result = await controller.Search(true, true);
+
+            // Assert
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
+        }
+
+        [Test]
+        public async Task Search_PostRequestErrorInExecutor_ReturnsError()
+        {
+            // Arrange
+            var mockTranslator = new Mock<ITranslator>();
+            var mockLogger = new Mock<ILogger<QueryController>>();
+            var mockResponseParser = new Mock<IResponseParser>();
+            var mockQueryExecutor = new Mock<IQueryExecutor>();
+            mockQueryExecutor.Setup(executor => executor.ExecuteQuery(It.IsAny<QueryData>())).Throws(new Exception("test"));
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
+
+            // Controller needs a controller context
+            var controllerContext = new ControllerContext() {
+                HttpContext = httpContext,
+            };
+            var controller = new QueryController(
+                mockQueryExecutor.Object,
+                mockTranslator.Object,
+                mockLogger.Object,
+                mockResponseParser.Object) { ControllerContext = controllerContext };
+
+            // Act
+            var result = await controller.Search(true, true);
+
+            // Assert
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
         }
 
         private QueryController GetController()
@@ -61,7 +252,6 @@ namespace K2BridgeUnitTests
             mockQueryExecutor.Setup(exec => exec.ExecuteQuery(It.IsAny<QueryData>())).Returns((new TimeSpan(), Substitute.For<IDataReader>()));
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
-            var mockConfiguration = new Mock<IConfiguration>();
             mockResponseParser.Setup(exec =>
                 exec.ParseElasticResponse(
                     It.IsAny<IDataReader>(),
@@ -69,7 +259,7 @@ namespace K2BridgeUnitTests
                     It.IsAny<TimeSpan>()))
                 .Returns(new ElasticResponse());
 
-            return new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object, mockConfiguration.Object);
+            return new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object);
         }
     }
 }

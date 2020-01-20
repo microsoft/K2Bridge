@@ -5,6 +5,7 @@
 namespace K2Bridge
 {
     using System;
+    using K2Bridge.Controllers;
     using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
@@ -36,18 +37,23 @@ namespace K2Bridge
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddScoped<IConnectionDetails, KustoConnectionDetails>(s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
-            services.AddSingleton<ListenerDetails>(s => ListenerDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+            services.AddScoped<IConnectionDetails, KustoConnectionDetails>(
+                s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+            services.AddSingleton<ListenerDetails>(
+                s => ListenerDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
             services.AddTransient<IQueryExecutor, KustoManager>();
-            services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(s =>
-                new ElasticSearchDSLVisitor(KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot).DefaultDatabaseName));
+            services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(
+                s => new ElasticSearchDSLVisitor(KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot).DefaultDatabaseName));
             services.AddSingleton((Serilog.ILogger)Log.Logger);
             services.AddTransient<IKustoDataAccess, KustoDataAccess>();
-            services.AddTransient<IResponseParser, KustoResponseParser>();
+            services.AddTransient<IResponseParser, KustoResponseParser>(
+                ctx => new KustoResponseParser(
+                    ctx.GetRequiredService<Microsoft.Extensions.Logging.ILogger<KustoResponseParser>>(),
+                    bool.Parse((Configuration as IConfigurationRoot)["outputBackendQuery"])));
 
-            // use this http client factory to issue requests to the fallback elastic instance
-            services.AddHttpClient("elasticFallback", (svcProvider, elasticClient) =>
+            // use this http client factory to issue requests to the metadata elastic instance
+            services.AddHttpClient(MetadataController.ElasticMetadataClientName, (svcProvider, elasticClient) =>
             {
                 var listenerDetails = svcProvider.GetRequiredService<ListenerDetails>();
                 elasticClient.BaseAddress = new Uri(listenerDetails.MetadataEndpoint);

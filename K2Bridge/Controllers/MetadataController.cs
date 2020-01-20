@@ -21,6 +21,7 @@ namespace K2Bridge.Controllers
     [ApiController]
     public class MetadataController : ControllerBase
     {
+        internal const string ElasticMetadataClientName = "elasticMetadata";
         private readonly IHttpClientFactory clientFactory;
         private readonly ILogger<MetadataController> logger;
 
@@ -50,43 +51,42 @@ namespace K2Bridge.Controllers
         {
             try
             {
-                return await PassthroughInternalAsync(HttpContext);
+                return await PassthroughInternal();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                logger.LogError(ex, "An error occured when sending a passthrough request");
-                throw;
+                return BadRequest(exception);
             }
         }
 
         /// <summary>
-        /// Take the original HTTP request and send it to the fallback elastic instance (passthrough).
+        /// Forwards an http message to the metadata client
         /// </summary>
-        /// <param name="context">The original HTTP context.</param>
-        /// <returns>The HTTP response delivered by the fallback elastic instance.</returns>
-        internal async Task<IActionResult> PassthroughInternalAsync(HttpContext context)
+        /// <param name="clientFactory">HTTP client factory that will be used to initialize an http client.</param>
+        /// <param name="message">The original HTTP message.</param>
+        /// <returns>HTTP response.</returns>
+        internal static async Task<HttpResponseMessage> ForwardMessageToMetadataClient(IHttpClientFactory clientFactory, HttpRequestMessage message)
         {
-            // a workaround for an illegal template path. Converts the URL back to :. format
-            // A Rewrite rule initiall replaces the following :. into ::, and now we convert back.
-            // /_template/kibana_index_template:.kibana
-            if (context.Request.Path.Value.Contains("_template", StringComparison.OrdinalIgnoreCase))
-            {
-                context.Request.Path = context.Request.Path.Value.Replace("::", ":.", StringComparison.OrdinalIgnoreCase);
-            }
-
-            var httpClient = clientFactory.CreateClient("elasticFallback");
-
-            HttpRequestMessageFeature hreqmf = new HttpRequestMessageFeature(context);
-            HttpRequestMessage remoteHttpRequestMessage = hreqmf.HttpRequestMessage;
-            remoteHttpRequestMessage.Headers.Clear();
+            var httpClient = clientFactory.CreateClient(ElasticMetadataClientName);
 
             // update the target host of the request
-            remoteHttpRequestMessage.RequestUri =
-                new Uri(httpClient.BaseAddress, remoteHttpRequestMessage.RequestUri.AbsolutePath);
+            message.RequestUri =
+                new Uri(httpClient.BaseAddress, message.RequestUri.AbsolutePath);
+            message.Headers.Clear();
+            return await httpClient.SendAsync(message);
+        }
 
-            var remoteResponse = await httpClient.SendAsync(remoteHttpRequestMessage);
-            context.Response.RegisterForDispose(remoteResponse);
-
+        /// <summary>
+        /// Internal implementation of the pass through API.
+        /// </summary>
+        /// <returns>Http response from the metadata client.</returns>
+        internal async Task<IActionResult> PassthroughInternal()
+        {
+            HttpContext.Request.Path = ControllerExtractMethods.ReplaceBackTemplateString(HttpContext.Request.Path.Value);
+            var remoteResponse = await ForwardMessageToMetadataClient(
+            clientFactory,
+            new HttpRequestMessageFeature(HttpContext).HttpRequestMessage);
+            HttpContext.Response.RegisterForDispose(remoteResponse);
             return new HttpResponseMessageResult(remoteResponse);
         }
     }

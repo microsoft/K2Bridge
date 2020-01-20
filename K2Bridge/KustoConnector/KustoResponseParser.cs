@@ -19,14 +19,17 @@ namespace K2Bridge.KustoConnector
         private const string AggregationTableName = "aggs";
         private const string HitsTableName = "hits";
         private static readonly Random Random = new Random();
+        private readonly bool outputBackendQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoResponseParser"/> class.
         /// </summary>
-        /// <param name="logger">ILoggerFactory object for logger initialization.</param>
-        public KustoResponseParser(ILogger<KustoResponseParser> logger)
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <param name="outputBackendQuery">Outputs the backend query during parse.</param>
+        public KustoResponseParser(ILogger<KustoResponseParser> logger, bool outputBackendQuery)
         {
             Logger = logger;
+            this.outputBackendQuery = outputBackendQuery;
         }
 
         private ILogger Logger { get; set; }
@@ -122,6 +125,10 @@ namespace K2Bridge.KustoConnector
             Logger.LogDebug("Reading Hits using QueryData: {@query}", query);
             var hits = ReadHits(parsedKustoResponse, query);
             response.AddHits(hits);
+            if (outputBackendQuery)
+            {
+                response.AppendBackendQuery(query.KQL);
+            }
 
             return response;
         }

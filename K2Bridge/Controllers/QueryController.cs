@@ -12,7 +12,6 @@ namespace K2Bridge.Controllers
     using K2Bridge.Models.Response;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -26,31 +25,24 @@ namespace K2Bridge.Controllers
         private readonly ITranslator translator;
         private readonly ILogger<QueryController> logger;
         private readonly IResponseParser responseParser;
-        private readonly IConfiguration configuration;
-        private readonly bool outputBackendQuery;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryController"/> class.
         /// </summary>
-        /// <param name="queryExecutor"></param>
-        /// <param name="translator"></param>
-        /// <param name="logger"></param>
-        /// <param name="responseParser"></param>
-        /// <param name="configuration"></param>
+        /// <param name="queryExecutor">IQueryExecutor instance used to execute kusto queries.</param>
+        /// <param name="translator">ITranslator instance used to translate elastic queries to kusto.</param>
+        /// <param name="logger">ILogger instance used to log.</param>
+        /// <param name="responseParser">IResponseParser instance used to parse kusto response.</param>
         public QueryController(
             IQueryExecutor queryExecutor,
             ITranslator translator,
             ILogger<QueryController> logger,
-            IResponseParser responseParser,
-            IConfiguration configuration)
+            IResponseParser responseParser)
         {
             this.queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
             this.translator = translator ?? throw new ArgumentNullException(nameof(translator));
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
             this.responseParser = responseParser ?? throw new ArgumentNullException(nameof(responseParser));
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-
-            _ = bool.TryParse(this.configuration["outputBackendQuery"], out outputBackendQuery);
         }
 
         /// <summary>
@@ -72,73 +64,61 @@ namespace K2Bridge.Controllers
         // once Kibana sends the right ContentType the line below can be commented in.
         // [FromBody] IEnumerable<string> rawQueryData
         {
-            var reqStrings = await ExtractRequestStrings(Request);
-            return await SearchInternal(totalHits, ignoreThrottled, reqStrings);
+            try
+            {
+                return SearchInternal(totalHits, ignoreThrottled, await ExtractBodyAsync());
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception);
+            }
         }
 
         /// <summary>
         /// Internal implementation of the search API logic.
         /// Mainly used to improve testability (as certain parameters needs to be extracted from the body).
         /// </summary>
-        /// <param name="totalHits"></param>
-        /// <param name="ignoreThrottled"></param>
+        /// <param name="totalHits">Total Hits.</param>
+        /// <param name="ignoreThrottled">Ignore Throttles.</param>
         /// <param name="rawQueryData">Body Payload.</param>
         /// <returns>An ElasticResponse object.</returns>
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        internal async Task<IActionResult> SearchInternal(bool totalHits, bool ignoreThrottled, string[] rawQueryData)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        internal IActionResult SearchInternal(bool totalHits, bool ignoreThrottled, string rawQueryData)
         {
-            if (rawQueryData == null || rawQueryData.Length < 2)
+            // Extract Query
+            if (rawQueryData == null)
             {
-                if (rawQueryData == null)
-                {
-                    logger.LogError("Invalid request body. rawQueryData is null.");
-                }
-                else
-                {
-                    logger.LogError($"Invalid request body. rawQueryData.Length is {rawQueryData.Length}");
-                }
-
+                logger.LogError("Invalid request body. rawQueryData is null.");
                 throw new ArgumentException("Invalid request payload", nameof(rawQueryData));
             }
 
-            var header = rawQueryData[0];
-            var query = rawQueryData[1];
-
-            logger.LogDebug($"Elastic search request:\n{header}\n{query}");
-            var translatedResponse = translator.Translate(header, query);
-            logger.LogDebug($"Translated query:\n{translatedResponse.KQL}");
-
-            var (timeTaken, dataReader) = queryExecutor.ExecuteQuery(translatedResponse);
-            var elasticResponse = responseParser.ParseElasticResponse(dataReader, translatedResponse, timeTaken);
-            if (outputBackendQuery)
+            (string header, string query) = ControllerExtractMethods.SplitQueryBody(rawQueryData);
+            if (string.IsNullOrEmpty(header) || string.IsNullOrEmpty(query))
             {
-                elasticResponse.AppendBackendQuery(translatedResponse.KQL);
+                logger.LogError("Invalid request body. header or query are empty.");
+                throw new ArgumentException("Invalid arguments query or header are empty");
             }
 
+            // Translate Query
+            var translatedQuery = translator.Translate(header, query);
+            logger.LogDebug($"Translated query:\n{translatedQuery.KQL}");
+
+            // Execute Query
+            var (timeTaken, dataReader) = queryExecutor.ExecuteQuery(translatedQuery);
+
+            // Parse Response
+            var elasticResponse = responseParser.ParseElasticResponse(dataReader, translatedQuery, timeTaken);
             return Ok(elasticResponse);
         }
 
         /// <summary>
-        /// Extracts the request and request metadata strings from the HttpRequest object.
+        /// Reads the body of an HttpRequest.
         /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        private async Task<string[]> ExtractRequestStrings(HttpRequest request)
+        /// <param name="request">Input request.</param>
+        /// <returns>The body as string.</returns>
+        private async Task<string> ExtractBodyAsync()
         {
-            string[] lst = null;
-            using (var reader = new StreamReader(request.Body))
-            {
-                var content = await reader.ReadToEndAsync();
-                if (!string.IsNullOrEmpty(content))
-                {
-                    lst = content.Split(
-                        new[] { "\r\n", "\r", "\n" },
-                        StringSplitOptions.RemoveEmptyEntries);
-                }
-            }
-
-            return lst;
+            using var reader = new StreamReader(Request.Body);
+            return await reader.ReadToEndAsync();
         }
     }
 }

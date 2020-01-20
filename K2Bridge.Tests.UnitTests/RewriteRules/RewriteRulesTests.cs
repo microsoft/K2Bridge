@@ -40,10 +40,10 @@ namespace K2BridgeUnitTests.RewriteRules
         };
 
         private static readonly object[] RewriteRequestForTemplatePath = {
-            new TestCaseData("/myindex:./_template").Returns("/myindex::/_template").SetName("TemplateRewriteRules_ValidInput_SetTemplate"),
-            new TestCaseData("/myindex/_template").Returns("/myindex/_template").SetName("TemplateRewriteRules_NoIllegalChars_NotChanged"),
-            new TestCaseData("/myindex:./nottemplate").Returns("/myindex:./nottemplate").SetName("TemplateRewriteRules_NotTemplate_NotChanged"),
-            new TestCaseData("/myindex/nottemplatetemplate").Returns("/myindex/nottemplatetemplate").SetName("TemplateRewriteRules_NoIllegalCharAndNotTemplate_NotChanged"),
+            new TestCaseData("/_template/myindex:.someindex/").Returns("/_template/myindex::someindex/").SetName("TemplateRewriteRules_ValidInput_SetTemplate"),
+            new TestCaseData("/_template/myindex/").Returns("/_template/myindex/").SetName("TemplateRewriteRules_NoIllegalChars_NotChanged"),
+            new TestCaseData("/nottemplate/myindex:.").Returns("/nottemplate/myindex:.").SetName("TemplateRewriteRules_NotTemplate_NotChanged"),
+            new TestCaseData("/nottemplatetemplate/myindex/").Returns("/nottemplatetemplate/myindex/").SetName("TemplateRewriteRules_NoIllegalCharAndNotTemplate_NotChanged"),
         };
 
         [TestCaseSource("RewriteMissingTrailsPath")]
