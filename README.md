@@ -1,6 +1,6 @@
-# Kibana Kusto Bridge
+# K2Bridge
 
-**A bridge connecting Kibana to Kusto (Azure Data Explorer) as its backend database**
+K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) (ADX, or codename Kusto) as its backend database.
 
 ---
 
@@ -9,124 +9,44 @@
 
 ## Description
 
-## Installation
+The K2Bridge solution is a proxy capable of communicating with the Kibana application and translate its queries to [KQL](https://docs.microsoft.com/en-us/azure/kusto/query/), the query language of the Azure Data Explorer service.
+The solution currently targets the "Discover" tab in Kibana to enable users to quickly and interactively explore their data. It supports the filters and well as the search box in the screen with both simple term search and Lucene expressions.
 
-See the Installation document
+### How does it work
 
-## Development
+![Architecture](./docs/images/architecture.png)
 
-Running Kibana and KibanaKustoBridge locally for testing and development, see [here](./docs/development.md)
+The K2Bridge is the endpoint exposed to clients and the one Kibana connects to. Internally, a small elasticsearch is being used to service metadata related requests (like: which index-patterns we have, etc.). Note that no business data is actually saved in this internal instance and it can be considered as an implementation detail (could be removed in the future).
+The bridge accept each request and redirects business (data) requests to ADX and metadata requests to the metadata store.
 
-### Requirements
+### Some differences you should know about
 
-* Helm 3
-* Docker (or Azure CLI if building remotely on Azure Container Registry)
-* An Azure Data Explorer instance
-* An Azure AD service principal authorized to view data in Kusto
+1. Partial support for Azure Data Explorer's `dynamic column` - those columns represent objects with unknown schema. Those columns are visible in the item view as "flat" properties, however, their 1-click search icons (the +/-) are disabled. Additionally, those columns won't appear in the add filter option.
 
-### Build the Docker container
+TODO: update if/when we add support for dynamic columns. https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1253
 
-Define arguments:
+Options for better interaction with dynamic columns:
+    * Use Lucene expressions in the search box with a fully qualified property path. For example: propertyA.propertyB:myValue
+    * If possible, consider promoting some/all properties in a dynamic column to regular-discreet columns in Azure Data Explorer. By doing so, you'll also get a potential performance boost when search.
 
-```sh
+1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features.
+TODO: how would they give feedback?
+1. We have used and tested the OSS version of Kibana. Using other versions might work but you would probably need to disable various modules.
 
-CONTAINER_NAME=[CONTAINER_NAME]
-REGISTRY_NAME=[YOUR_AZURE_CONTAINER_REGISTRY_NAME]
-REPOSITORY_NAME=$REGISTRY_NAME.azurecr.io
+## Installing
 
-# if pulling from private ACR
-IMAGE_PULL_SECRET_NAME=[YOUR ACR PULL SECRET NAME]
+K2Bridge deploys to Kubernetes. Instructions are available [here](./docs/installation.md).
+TODO: replace with a quick install guide when images are public.
 
-```
+## Developing
 
-You can build the container on a local Docker installation:
-
-```sh
-
-docker build -t $CONTAINER_NAME .
-docker push $REPOSITORY_NAME/$CONTAINER_NAME
-```
-
-Or you can build the container remotely on Azure Container Registry:
-
-```sh
-
-az acr build -r $REGISTRY_NAME -t $CONTAINER_NAME .
-```
-
-### Run on Azure Kubernetes Service
-
-Ensure your AKS instance can [pull images from ACR](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration).
-
-Using option A (needs owner role on ACR):
-
-```sh
-az aks update -n myAKSCluster -g myResourceGroup --attach-acr $REGISTRY_NAME
-```
-
-OR option B:
-
-```sh
-kubectl create secret docker-registry $IMAGE_PULL_SECRET_NAME --docker-server <acrname>.azurecr.io --docker-email <email> --docker-username <client id> --docker-password <client password>
-```
-
-Download the Elasticsearch helm chart dependency (and k2 helm chart):
-
-If the k2 chart is fetched from acr:
-```sh
-az acr helm repo add -n "<acr name>"
-```
-
-Elasticsearch chart:
-```sh
-helm repo add elastic https://helm.elastic.co
-helm repo update
-helm dependency update charts/k2bridge
-```
-
-Deploy
-
-```sh
-ADX_INSTANCE=[YOUR_ADX_INSTANCE_NAME]
-ADX_DATABASE=[YOUR_ADX_DATABASE_NAME]
-ADX_CLIENT_ID=[SERVICE_PRINCIPAL_CLIENT_ID]
-ADX_CLIENT_SECRET=[SERVICE_PRINCIPAL_CLIENT_SECRET]
-ADX_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
-REGION=[ADX region]
-```
-
-local chart:
-```sh
-helm install k2bridge charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
-```
-
-remote chart:
-```sh
-helm install k2bridge $REGISTRY_NAME/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
-```
-
-The command output will suggest a helm command to run to deploy Kibana, similar to:
-
-```sh
-helm install kibana elastic/kibana --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.5 --set elasticsearchHosts=http://k2bridge:8080
-```
-
-In a new installation of Kibana, you will need to configure the indexes. Navigate to Management -> Index Patterns and create new indexes.
-Note that the name of the index must be an exact match to the table name.
-
-Notes:
- - To run on other kubernetes providers, change in `values.yaml` the elasticsearch storageClassName to fit the one suggested by the provider.
+Information on how to run Kibana and K2Bridge locally for development and testing can be found [here](./docs/development.md).
 
 ## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
