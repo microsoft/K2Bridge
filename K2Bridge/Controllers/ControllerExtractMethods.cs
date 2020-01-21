@@ -17,10 +17,10 @@ namespace K2Bridge.Controllers
         private const string TemplateString = @"/_template/";
 
         /// <summary>
-        /// Partitions a request string by new line characther and
+        /// Partitions a NDJson query body by new line characther and
         /// returns the first and second elements if exist as tuple.
         /// </summary>
-        /// <param name="queryBody">request string.</param>
+        /// <param name="queryBody">query body.</param>
         /// <returns>Tuple of first and second elements.</returns>
         internal static (string, string) SplitQueryBody(string queryBody)
         {
