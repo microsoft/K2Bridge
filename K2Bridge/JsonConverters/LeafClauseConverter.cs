@@ -2,23 +2,20 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Queries
+namespace K2Bridge.JsonConverters
 {
     using System;
-    using K2Bridge.Models.Request;
+    using K2Bridge.Models.Request.Queries;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
+    /// <summary>
+    /// A converter able to deserialize a query leaf element from an Elasticsearch query to <see cref="ILeafClause"/>.
+    /// The actual type returned will change based on the actual leaf query (see implementation of the interface).
+    /// </summary>
     internal class LeafClauseConverter : ReadOnlyJsonConverter
     {
-        /// <summary>
-        /// Read the given json and returns an object.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="objectType"></param>
-        /// <param name="existingValue"></param>
-        /// <param name="serializer"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public override object ReadJson(
             JsonReader reader,
             Type objectType,

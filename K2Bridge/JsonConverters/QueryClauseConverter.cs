@@ -2,24 +2,23 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Queries
+namespace K2Bridge.JsonConverters
 {
     using System;
     using System.Collections.Generic;
     using K2Bridge.Models.Request;
+    using K2Bridge.Models.Request.Queries;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
+    /// <summary>
+    /// A converter able to deserialize the query element in an Elasticsearch query
+    /// Since the query element is a compound (vs. leaf) this can return
+    /// a <see cref="BoolQuery"/> or <see cref="ILeafClause"/> object.
+    /// </summary>
     internal class QueryClauseConverter : ReadOnlyJsonConverter
     {
-        /// <summary>
-        /// Read the given json and returns an object.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="objectType"></param>
-        /// <param name="existingValue"></param>
-        /// <param name="serializer"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public override object ReadJson(
             JsonReader reader,
             Type objectType,
@@ -46,6 +45,11 @@ namespace K2Bridge.Models.Request.Queries
             return leaf;
         }
 
+        private static IEnumerable<IQuery> TokenToIQueryClauseList(JToken token, JsonSerializer serializer)
+        {
+            return token != null ? token.ToObject<List<IQuery>>(serializer) : new List<IQuery>();
+        }
+
         private BoolQuery DeserializeBoolQuery(JToken token, JsonSerializer serializer)
         {
             return new BoolQuery
@@ -55,11 +59,6 @@ namespace K2Bridge.Models.Request.Queries
                 Should = TokenToIQueryClauseList(token["should"], serializer),
                 ShouldNot = TokenToIQueryClauseList(token["should_not"], serializer),
             };
-        }
-
-        private IEnumerable<IQuery> TokenToIQueryClauseList(JToken token, JsonSerializer serializer)
-        {
-            return token != null ? token.ToObject<List<IQuery>>(serializer) : new List<IQuery>();
         }
     }
 }

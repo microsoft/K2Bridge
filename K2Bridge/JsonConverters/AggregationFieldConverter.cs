@@ -2,23 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations
+namespace K2Bridge.JsonConverters
 {
     using System;
-    using K2Bridge.Models.Request;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
+    /// <summary>
+    /// A converter able to deserialize a 'field' property in an Elasticsearch query.
+    /// </summary>
     internal class AggregationFieldConverter : ReadOnlyJsonConverter
     {
-        /// <summary>
-        /// Read the given json and returns an object.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="objectType"></param>
-        /// <param name="existingValue"></param>
-        /// <param name="serializer"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public override object ReadJson(
             JsonReader reader,
             Type objectType,

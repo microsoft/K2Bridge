@@ -2,24 +2,20 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations
+namespace K2Bridge.JsonConverters
 {
     using System;
     using System.Collections.Generic;
-    using K2Bridge.Models.Request;
+    using K2Bridge.Models.Request.Aggregations;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
+    /// <summary>
+    /// A converter able to deserialize the aggs element in an Elasticsearch query to <see cref="Aggregation"/>.
+    /// </summary>
     internal class AggregationConverter : ReadOnlyJsonConverter
     {
-        /// <summary>
-        /// Read the given json and returns an Aggregation object.
-        /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="objectType"></param>
-        /// <param name="existingValue"></param>
-        /// <param name="serializer"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public override object ReadJson(
             JsonReader reader,
             Type objectType,

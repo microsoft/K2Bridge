@@ -4,7 +4,7 @@
 
 namespace K2Bridge.Models.Request
 {
-    using K2Bridge.Models.Request.Queries;
+    using K2Bridge.JsonConverters;
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(QueryClauseConverter))]
