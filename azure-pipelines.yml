@@ -28,8 +28,10 @@ name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 
 variables:
 - group: K2Bridge CI-CD pipeline
+- name: MAJOR_MINOR_VERSION
+  value: "0.2" # ONLY UPDATE THIS
 - name: SEMANTIC_VERSION
-  value: "0.2.$(Build.BuildId)"
+  value: "$(MAJOR_MINOR_VERSION).$(Build.BuildId)"
 - name: KUSTO_DB
   value: "build$(Build.BuildId)"
 
@@ -135,7 +137,7 @@ stages:
 
     - bash: |
         # Only build first stage of Dockerfile (build and unit test)
-        docker build --target build -t k2bridge-build .
+        docker build --target build --build-arg VersionPrefix="$(SEMANTIC_VERSION)" -t k2bridge-build .
         # Temporarily create container in order to extract test results file
         id=$(docker create k2bridge-build)
         docker cp $id:/app/TestResult.xml .
@@ -186,9 +188,9 @@ stages:
     - bash: |
         set -eux  # fail on error
 
-        # Build Docker image
+        # Build runtime Docker image
         # Reuses the cached build stage from the previous docker build task
-        docker build \
+        docker build --build-arg VersionPrefix="$SEMANTIC_VERSION" \
           -t "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
           .
       displayName: Build Runtime Image
@@ -362,8 +364,8 @@ stages:
 
     - bash: |
           # Build end-to-end test image
-          docker build \
-            --target end2endtest \
+          docker build --target end2endtest \
+            --build-arg VersionPrefix="$SEMANTIC_VERSION" \
             -t "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION" \
             .
       displayName: Build E2E-Test Image

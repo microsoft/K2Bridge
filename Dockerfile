@@ -6,6 +6,7 @@ ARG DOTNET_VERSION=3.0
 # STAGE: Base build and test
 FROM mcr.microsoft.com/dotnet/core/sdk:$DOTNET_VERSION AS build
 WORKDIR /app
+ARG VersionPrefix
 
 # Copy csproj and restore as distinct layers. This caches a Docker layer with downloaded
 # dependencies, making the next build faster if only code files have been changed.
@@ -14,7 +15,7 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet publish K2Bridge -c Release -o out
+RUN dotnet publish K2Bridge -c Release -o out /p:VersionPrefix=${VersionPrefix}
 
 # Test for lint issues, UnitTests project causes the main to build too
 RUN dotnet build K2Bridge.Tests.UnitTests -p:TreatWarningsAsErrors=true -warnaserror
@@ -27,7 +28,7 @@ RUN dotnet test K2Bridge.Tests.UnitTests --no-build --logger "trx;LogFileName=/a
 RUN test -s /app/TestResult.xml
 
 # Build end2end tests
-RUN dotnet build K2Bridge.Tests.End2End -p:TreatWarningsAsErrors=true -warnaserror
+RUN dotnet build K2Bridge.Tests.End2End /p:TreatWarningsAsErrors=true -warnaserror /p:VersionPrefix=${VersionPrefix}
 
 
 # STAGE: Build image for executing End2End tests in Kubernetes

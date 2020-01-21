@@ -22,6 +22,8 @@ namespace K2Bridge
     [ExcludeFromCodeCoverage]
     public static class Program
     {
+        private static readonly string AssemblyVersion = typeof(Program).Assembly.GetName().Version.ToString();
+
         /// <summary>
         /// Gets the Configuration for the app.
         /// The config is stored in appsettings.json.
@@ -46,6 +48,9 @@ namespace K2Bridge
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .CreateLogger();
+
+            // Log startup message with version as soon as possible
+            Log.Logger.Information($"***** Starting K2Bridge {AssemblyVersion} *****");
 
             CreateWebHostBuilder(args).Build().Run();
         }

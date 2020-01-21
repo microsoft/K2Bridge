@@ -18,7 +18,7 @@ namespace K2Bridge.KustoConnector
     internal class KustoManager : IQueryExecutor
     {
         private const string KustoApplicationNameForTracing = "K2Bridge";
-        private static readonly string ASSEMBLYVERSION = typeof(KustoManager).Assembly.GetName().Version.ToString();
+        private static readonly string AssemblyVersion = typeof(KustoManager).Assembly.GetName().Version.ToString();
         private readonly ICslQueryProvider queryClient;
         private readonly ICslAdminProvider adminClient;
 
@@ -39,8 +39,8 @@ namespace K2Bridge.KustoConnector
                     connectionDetails.AadClientSecret,
                     connectionDetails.AadTenantId);
 
-            conn.ApplicationNameForTracing = KustoApplicationNameForTracing;
-            conn.ClientVersionForTracing = ASSEMBLYVERSION;
+            // Sending both name and version this way for better visibility in Kusto audit logs.
+            conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion}";
 
             queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             adminClient = KustoClientFactory.CreateCslAdminProvider(conn);

@@ -41,9 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.local.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -62,8 +59,4 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   
-  <ItemGroup>
-    <Compile Remove="Helpers\RewriteRequestsMissingTrailingSlashes.Rulecs" />
-    <Compile Remove="StreamsExtensions.cs" />
-  </ItemGroup>
 </Project>
