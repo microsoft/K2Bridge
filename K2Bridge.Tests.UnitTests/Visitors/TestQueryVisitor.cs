@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace VisitorsTests
+namespace K2BridgeUnitTests.Visitors
 {
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
@@ -11,7 +11,7 @@ namespace VisitorsTests
     [TestFixture]
     public class TestQueryVisitor
     {
-        [TestCase(ExpectedResult = "(* contains \"myPharse\")")]
+        [TestCase(ExpectedResult = "* == \"myPharse\"")]
         public string TestBasicQueryVisitor()
         {
             var queryClause = CreateQueryStringClause("myPharse", true);
@@ -30,7 +30,7 @@ namespace VisitorsTests
         */
 
         [TestCase(ExpectedResult =
-            "(* contains \"myPharse\") and (* contains \"herPhrase\")")]
+            "(* == \"myPharse\") and (* == \"herPhrase\")")]
         public string TestMultipleAndPharsesQueryVisitor()
         {
             var queryClause = CreateQueryStringClause("myPharse AND herPhrase", true);
@@ -39,7 +39,7 @@ namespace VisitorsTests
         }
 
         [TestCase(ExpectedResult =
-            "(* contains \"myPharse\") or (* contains \"herPhrase\")")]
+            "(* == \"myPharse\") or (* == \"herPhrase\")")]
         public string TestMultipleOrPharsesQueryVisitor()
         {
             var queryClause = CreateQueryStringClause("myPharse OR herPhrase", true);
@@ -48,7 +48,7 @@ namespace VisitorsTests
         }
 
         [TestCase(ExpectedResult =
-            "not (* contains \"myPharse\") and not (* contains \"herPhrase\")")]
+            "not (* == \"myPharse\") and not (* == \"herPhrase\")")]
         public string TestMultipleNotPharsesQueryVisitor()
         {
             var queryClause = CreateQueryStringClause("NOT myPharse AND NOT herPhrase", true);
@@ -69,6 +69,7 @@ namespace VisitorsTests
             {
                 Phrase = phrase,
                 Wildcard = wildcard,
+                Default = "*",
             };
         }
     }

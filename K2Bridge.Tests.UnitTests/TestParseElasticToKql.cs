@@ -150,6 +150,66 @@ namespace Tests
                 }
             }";
 
+        private const string QueryPrefixString = @"
+            {""bool"":
+                {""must"":
+                    [
+                        {""query_string"":
+             	            {""query"": ""TEST_RESULT*"",
+                             ""analyze_wildcard"": true,
+                             ""default_field"": ""*""
+                            }
+                        }
+                    ],
+                    ""filter"":
+                    [
+                        {""match_all"":{}}
+                    ],
+                    ""should"":[],
+                    ""must_not"":[]
+                }
+            }";
+
+        private const string QueryComplexWildcardString = @"
+            {""bool"":
+                {""must"":
+                    [
+                        {""query_string"":
+             	            {""query"": ""TEST*RESULT*"",
+                             ""analyze_wildcard"": true,
+                             ""default_field"": ""*""
+                            }
+                        }
+                    ],
+                    ""filter"":
+                    [
+                        {""match_all"":{}}
+                    ],
+                    ""should"":[],
+                    ""must_not"":[]
+                }
+            }";
+
+        private const string QueryWildcardString = @"
+            {""bool"":
+                {""must"":
+                    [
+                        {""query_string"":
+             	            {""query"": ""TEST*RESULT"",
+                             ""analyze_wildcard"": true,
+                             ""default_field"": ""*""
+                            }
+                        }
+                    ],
+                    ""filter"":
+                    [
+                        {""match_all"":{}}
+                    ],
+                    ""should"":[],
+                    ""must_not"":[]
+                }
+            }";
+
         private const string CombinedQuery = @"
             {""bool"":
                 {""must"":
@@ -254,7 +314,7 @@ namespace Tests
             Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
         }
 
-        [TestCase(QueryString, ExpectedResult = "where ((* contains \"TEST_RESULT\"))")]
+        [TestCase(QueryString, ExpectedResult = "where (* == \"TEST_RESULT\")")]
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -263,9 +323,42 @@ namespace Tests
             return query.KQL;
         }
 
-        [TestCase(CombinedQuery, ExpectedResult = "where ((* contains \"TEST_RESULT\")) and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
-        [TestCase(NotQueryStringClause, ExpectedResult = "where ((* contains \"TEST_RESULT\"))\n| where not (TEST_FIELD == \"TEST_RESULT_2\")")]
+        [TestCase(CombinedQuery, ExpectedResult = "where (* == \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
+        [TestCase(NotQueryStringClause, ExpectedResult = "where (* == \"TEST_RESULT\") and\n not (TEST_FIELD == \"TEST_RESULT_2\")")]
         public string TestCombinedQueries(string queryString)
+        {
+            var query = JsonConvert.DeserializeObject<Query>(queryString);
+            var visitor = new ElasticSearchDSLVisitor();
+            query.Accept(visitor);
+            return query.KQL;
+        }
+
+        [TestCase(
+            QueryWildcardString,
+            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT\")")]
+        public string TestWildcardQuery(string queryString)
+        {
+            var query = JsonConvert.DeserializeObject<Query>(queryString);
+            var visitor = new ElasticSearchDSLVisitor();
+            query.Accept(visitor);
+            return query.KQL;
+        }
+
+        [TestCase(
+            QueryComplexWildcardString,
+            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT[.\\\\S]*\")")]
+        public string TestComplexWildcardQuery(string queryString)
+        {
+            var query = JsonConvert.DeserializeObject<Query>(queryString);
+            var visitor = new ElasticSearchDSLVisitor();
+            query.Accept(visitor);
+            return query.KQL;
+        }
+
+        [TestCase(
+            QueryPrefixString,
+            ExpectedResult = "where (* hasprefix_cs \"TEST_RESULT\")")]
+        public string TestPrefixQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();

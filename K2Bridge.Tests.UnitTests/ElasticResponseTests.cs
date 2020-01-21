@@ -23,7 +23,8 @@ namespace Tests
 
         private QueryData query = new QueryData("_kql", "_index", null);
 
-        [TestCase(ExpectedResult = "{\"responses\":[{\"aggregations\":{\"2\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"status\":200,\"backendQuery\":\"\"}]}")]
+        [TestCase(ExpectedResult =
+            "{\"responses\":[{\"aggregations\":{\"2\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"status\":200,\"backendQuery\":\"\"}]}")]
         public string DefaultResponseHasExpectedElasticProperties()
         {
             var defaultResponse = new ElasticResponse();

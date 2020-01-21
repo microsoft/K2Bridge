@@ -179,8 +179,31 @@ namespace K2Bridge.Tests.End2End
         public void MSearch_TextFilter_Equivalent()
         {
             ParallelQuery(
-                $"{FLIGHTSDIR}/MSearch_TextFilter_Equivalent.es.json",
-                $"{FLIGHTSDIR}/MSearch_TextFilter_Equivalent.k2.json");
+                $"{FLIGHTSDIR}/MSearch_TextFilter_Equivalent.json");
+        }
+
+        [Test]
+        [Description("/_msearch Kibana aggregation query with text (includes prefix) filter")]
+        public void MSearch_TextFilter_Prefix_Equivalent()
+        {
+            ParallelQuery(
+                $"{FLIGHTSDIR}/MSearch_TextFilter_Prefix_Equivalent.json");
+        }
+
+        [Test]
+        [Description("/_msearch Kibana aggregation query with text (includes wildcard) filter")]
+        public void MSearch_TextFilter_Wildcard_Equivalent()
+        {
+            ParallelQuery(
+                $"{FLIGHTSDIR}/MSearch_TextFilter_Wildcard_Equivalent.json");
+        }
+
+        [Test]
+        [Description("/_msearch Kibana aggregation query with text (includes specific field) filter")]
+        public void MSearch_TextFilter_FieldSpecific_Equivalent()
+        {
+            ParallelQuery(
+                $"{FLIGHTSDIR}/MSearch_TextFilter_FieldSpecific_Equivalent.json");
         }
 
         [Test]

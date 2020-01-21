@@ -9,6 +9,13 @@ namespace K2Bridge.Visitors
     /// </summary>
     public static class KQLOperators
     {
+        /// <summary>
+        /// These are Kusto operators that are used to create
+        /// a KQL query. They are listed to group them in one place
+        /// and in order to avoid hard coded strings in the different
+        /// visitors
+        /// </summary>
+#pragma warning disable SA1600 // Elements should be documented
         public const string And = "and";
         public const string Or = "or";
         public const string Not = "not";
@@ -32,6 +39,10 @@ namespace K2Bridge.Visitors
         public const string Project = "project";
         public const string Search = "search";
         public const string Distinct = "distinct";
+        public const string HasPrefixCS = "hasprefix_cs";
+        public const string MatchRegex = "matches regex";
+        public const string Equal = "==";
         public const string CommandSeparator = "\n| ";
+#pragma warning restore SA1600 // Elements should be documented
     }
 }

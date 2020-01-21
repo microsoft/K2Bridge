@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace VisitorsTests
+namespace K2BridgeUnitTests.Visitors
 {
     using System.Collections.Generic;
     using K2Bridge.Models.Request;
@@ -13,7 +13,7 @@ namespace VisitorsTests
     [TestFixture]
     public class TestBoolVisitor
     {
-        [TestCase(ExpectedResult = "((* contains \"ItemA\"))")]
+        [TestCase(ExpectedResult = "(* == \"ItemA\")")]
         public string TestOneBoolQueryInMustVisit()
         {
             var boolQuery = new BoolQuery
@@ -24,7 +24,7 @@ namespace VisitorsTests
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "not ((* contains \"ItemB\"))")]
+        [TestCase(ExpectedResult = "not (* == \"ItemB\")")]
         public string TestOneBoolQueryInMustNotVisit()
         {
             var boolQuery = new BoolQuery
@@ -35,7 +35,7 @@ namespace VisitorsTests
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "((* contains \"ItemC\"))")]
+        [TestCase(ExpectedResult = "(* == \"ItemC\")")]
         public string TestOneBoolQueryInShouldVisit()
         {
             var boolQuery = new BoolQuery
@@ -46,7 +46,7 @@ namespace VisitorsTests
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "not ((* contains \"ItemD\"))")]
+        [TestCase(ExpectedResult = "not (* == \"ItemD\")")]
         public string TestOneBoolQueryInShouldNotVisit()
         {
             var boolQuery = new BoolQuery
@@ -57,10 +57,10 @@ namespace VisitorsTests
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "((* contains \"ItemA1\")) and " +
-            "((* contains \"ItemA2\")) and " +
-            "((* contains \"ItemA3\")) and " +
-            "((* contains \"ItemA4\"))")]
+        [TestCase(ExpectedResult = "(* == \"ItemA1\") and " +
+            "(* == \"ItemA2\") and " +
+            "(* == \"ItemA3\") and " +
+            "(* == \"ItemA4\")")]
         public string TestMultipleBoolQueryInMustVisit()
         {
             var lst = new LinkedList<string>();
@@ -77,10 +77,10 @@ namespace VisitorsTests
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "((* contains \"ItemA\"))\n| " +
-            "where not ((* contains \"ItemB\"))\n| " +
-            "where ((* contains \"ItemC\"))\n| " +
-            "where not ((* contains \"ItemD\"))")]
+        [TestCase(ExpectedResult = "(* == \"ItemA\") and\n " +
+            "not (* == \"ItemB\") and\n " +
+            "(* == \"ItemC\") and\n " +
+            "not (* == \"ItemD\")")]
         public string TestSimpleBoolQueryVisit()
         {
             var boolQuery = new BoolQuery
@@ -94,21 +94,14 @@ namespace VisitorsTests
             return VisitQuery(boolQuery);
         }
 
-        private string VisitQuery(BoolQuery query)
-        {
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit(query);
-            return query.KQL;
-        }
-
-        private IEnumerable<IQuery> CreateSimpleLeafList(string singleValue)
+        private static IEnumerable<IQuery> CreateSimpleLeafList(string singleValue)
         {
             var lst = new LinkedList<string>();
             lst.AddFirst(singleValue);
             return CreateSimpleLeafList(lst);
         }
 
-        private IEnumerable<IQuery> CreateSimpleLeafList(IEnumerable<string> values)
+        private static IEnumerable<IQuery> CreateSimpleLeafList(IEnumerable<string> values)
         {
             var lst = new LinkedList<ILeafClause>();
 
@@ -123,6 +116,13 @@ namespace VisitorsTests
             }
 
             return lst;
+        }
+
+        private string VisitQuery(BoolQuery query)
+        {
+            var visitor = new ElasticSearchDSLVisitor();
+            visitor.Visit(query);
+            return query.KQL;
         }
     }
 }

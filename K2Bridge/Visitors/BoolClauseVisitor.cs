@@ -71,9 +71,7 @@ namespace K2Bridge.Visitors
             {
                 if (!string.IsNullOrEmpty(boolQuery.KQL))
                 {
-                    boolQuery.KQL += KQLOperators.CommandSeparator;
-                    boolQuery.KQL += KQLOperators.Where;
-                    boolQuery.KQL += " ";
+                    boolQuery.KQL += $" {KQLOperators.And}\n "; // query is now complex - can not use where operator
                 }
 
                 boolQuery.KQL += $"{string.Join(joinString, kqlList)}";

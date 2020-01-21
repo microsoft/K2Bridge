@@ -37,7 +37,7 @@
       "must": [
         {
           "query_string": {
-            "query": "Fontana",
+            "query": "Miami",
             "analyze_wildcard": true,
             "default_field": "*"
           }
