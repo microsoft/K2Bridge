@@ -9,35 +9,6 @@
 #   the `master` AKS namespace if run on the master branch, and otherwise to a
 #   temporary AKS namespace that is deleted at the end of the build.
 
-trigger:
-  branches:
-    include:
-    - master
-    - development
-
-pr:
-  branches:
-    include:
-    - master
-    - development
-  paths:
-    exclude:
-    - '*.md'
-
-name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
-
-variables:
-- group: K2Bridge CI-CD pipeline
-- name: MAJOR_MINOR_VERSION
-  value: "0.2" # ONLY UPDATE THIS
-- name: SEMANTIC_VERSION
-  value: "$(MAJOR_MINOR_VERSION).$(Build.BuildId)"
-- name: KUSTO_DB
-  value: "build$(Build.BuildId)"
-
-pool:
-  vmImage: ubuntu-latest
-
 stages:
 
 - stage: security_analysis

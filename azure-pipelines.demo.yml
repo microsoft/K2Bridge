@@ -1,0 +1,18 @@
+# Demo environment
+
+name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+- group: K2Bridge CI-CD pipeline - demo
+- name: MAJOR_MINOR_VERSION
+  value: "0.2" # ONLY UPDATE THIS
+- name: SEMANTIC_VERSION
+  value: "$(MAJOR_MINOR_VERSION).$(Build.BuildId)"
+- name: KUSTO_DB
+  value: "build$(Build.BuildId)"
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- template: azure-pipelines.yml

@@ -7,7 +7,7 @@ parameters:
   TerraformBackendServiceConnection: $(TERRAFORM_SERVICE_CONNECTION)
   TerraformEnvironmentServiceConnection: $(TERRAFORM_SERVICE_CONNECTION)
   TerraformBackendResourceGroup: $(RESOURCE_GROUP)
-  TerraformBackendStorageAccount: k2terraform
+  TerraformBackendStorageAccount: $(TERRAFORM_STORAGE_ACCOUNT)
   TerraformBackendStorageContainer: terraform
   TerraformBackendLocation: West Europe
   TerraformEnvVariables:
