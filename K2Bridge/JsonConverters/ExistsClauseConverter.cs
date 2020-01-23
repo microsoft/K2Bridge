@@ -21,15 +21,13 @@ namespace K2Bridge.JsonConverters
             object existingValue,
             JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
-            var first = (JProperty)jo.First;
+            var jObject = JObject.Load(reader);
+            var first = (JProperty)jObject.First;
 
-            ExistsClause obj = new ExistsClause
+            return new ExistsClause
             {
                 FieldName = (string)((JValue)first.First).Value,
             };
-
-            return obj;
         }
     }
 }
