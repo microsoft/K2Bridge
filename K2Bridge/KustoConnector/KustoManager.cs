@@ -11,6 +11,7 @@ namespace K2Bridge.KustoConnector
     using Kusto.Data.Common;
     using Kusto.Data.Net.Client;
     using Microsoft.Extensions.Logging;
+    using Prometheus;
 
     /// <summary>
     /// The kusto manager handles the connection to the kusto cluster.
@@ -21,13 +22,14 @@ namespace K2Bridge.KustoConnector
         private static readonly string AssemblyVersion = typeof(KustoManager).Assembly.GetName().Version.ToString();
         private readonly ICslQueryProvider queryClient;
         private readonly ICslAdminProvider adminClient;
+        private readonly IHistogram queryMetric;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoManager"/> class.
         /// </summary>
         /// <param name="connectionDetails">Kusto Connection Details.</param>
         /// <param name="logger">A logger.</param>
-        public KustoManager(IConnectionDetails connectionDetails, ILogger<KustoManager> logger)
+        public KustoManager(IConnectionDetails connectionDetails, ILogger<KustoManager> logger, IHistogram adxQueryDurationMetric)
         {
             Logger = logger;
 
@@ -45,6 +47,7 @@ namespace K2Bridge.KustoConnector
             queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
             ConnectionDetails = connectionDetails;
+            queryMetric = adxQueryDurationMetric;
         }
 
         public IConnectionDetails ConnectionDetails { get; set; }
@@ -73,7 +76,7 @@ namespace K2Bridge.KustoConnector
             Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
 
             // Use the kusto client to execute the query
-            var (timeTaken, dataReader) = queryClient.ExecuteMonitoredQuery(queryData.KQL);
+            var (timeTaken, dataReader) = queryClient.ExecuteMonitoredQuery(queryData.KQL, queryMetric);
             var fieldCount = dataReader.FieldCount;
             Logger.LogDebug("FieldCount: {@fieldCount}. timeTaken: {@timeTaken}", fieldCount, timeTaken);
             return (timeTaken, dataReader);

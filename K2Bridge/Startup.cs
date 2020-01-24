@@ -19,6 +19,7 @@ namespace K2Bridge
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
+    using Prometheus;
     using Serilog;
 
     [ExcludeFromCodeCoverage]
@@ -38,16 +39,22 @@ namespace K2Bridge
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Prometheus Histogram to collect query performance data
+            var adxQueryDurationMetric = Metrics.CreateHistogram("adx_query_duration_seconds", "Histogram of kusto query call processing durations.");
+
             services.AddControllers();
             services.AddScoped<IConnectionDetails, KustoConnectionDetails>(
                 s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
             services.AddSingleton(
                 s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
-            services.AddTransient<IQueryExecutor, KustoManager>();
+
+            services.AddTransient<IQueryExecutor, KustoManager>(s =>
+            new KustoManager(s.GetRequiredService<IConnectionDetails>(), s.GetRequiredService<Microsoft.Extensions.Logging.ILogger<KustoManager>>(), adxQueryDurationMetric));
             services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(
                 s => new ElasticSearchDSLVisitor(KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot).DefaultDatabaseName));
             services.AddSingleton(Log.Logger);
+
             services.AddTransient<IKustoDataAccess, KustoDataAccess>();
             services.AddTransient<IResponseParser, KustoResponseParser>(
                 ctx => new KustoResponseParser(
@@ -93,8 +100,19 @@ namespace K2Bridge
                 .Add(new RewriteTrailingSlashesRule());
             app.UseRewriter(options);
             app.UseRouting();
+
+            // Expose HTTP Metrics:
+            // Number of HTTP requests in progress.
+            // Total number of received HTTP requests.
+            // Duration of HTTP requests.
+            app.UseHttpMetrics();
+
             app.UseEndpoints(endpoints =>
             {
+                // Starts a Prometheus metrics exporter using endpoint routing.
+                // Using The default URL: /metrics.
+                endpoints.MapMetrics();
+
                 endpoints.MapControllers();
 
                 // Special treatment to FieldCapabilityController as it's intentionally not marked with the [ApiController] attribute.

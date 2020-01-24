@@ -42,6 +42,15 @@ TODO: replace with a quick install guide when images are public.
 
 Information on how to run Kibana and K2Bridge locally for development and testing can be found [here](./docs/development.md).
 
+## Prometheus Support
+K2Bridge supports the Prometheus protocol for metrics reporting.
+Supported exposition formats are the 0.0.4 text and protocol buffer formats.
+
+More on the formats can be found at the [Prometheus documentations](https://prometheus.io/docs/instrumenting/exposition_formats/)
+
+Kibana Kusto Bridge would reply based on the content type header, so pointing your browser to:
+`http://bridge-host/metrics/` will return a text representation of the metrics with their documentation.
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).
