@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Request.Queries;
 
@@ -17,19 +16,10 @@ namespace K2Bridge.Visitors
 
         public void Visit(MatchPhraseClause matchPhraseClause)
         {
-            if (matchPhraseClause == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(matchPhraseClause));
-            }
+            Ensure.IsNotNull(matchPhraseClause, nameof(matchPhraseClause));
 
             // Must have a field name
-            if (string.IsNullOrEmpty(matchPhraseClause.FieldName))
-            {
-                throw new IllegalClauseException(
-                    "FieldName must have a valid value");
-            }
+            EnsureClause.StringIsNotNullOrEmpty(matchPhraseClause.FieldName, nameof(matchPhraseClause.FieldName));
 
             // Depends on the exact request there are 3 possible options for match phrase:
             // wildcard, prefix and simple equality

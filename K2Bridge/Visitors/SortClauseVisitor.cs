@@ -4,25 +4,15 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using K2Bridge.Models.Request;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(SortClause sortClause)
         {
-            if (sortClause == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(sortClause));
-            }
-
-            if (string.IsNullOrEmpty(sortClause.FieldName))
-            {
-                throw new IllegalClauseException(
-                    "SortClause must have a valid FieldName property");
-            }
+            Ensure.IsNotNull(sortClause, nameof(sortClause));
+            Ensure.IsNotNull(sortClause, nameof(sortClause));
+            EnsureClause.StringIsNotNullOrEmpty(sortClause.FieldName, nameof(sortClause.FieldName));
 
             if (sortClause.FieldName.StartsWith('_'))
             {
@@ -31,11 +21,7 @@ namespace K2Bridge.Visitors
             }
             else
             {
-                if (string.IsNullOrEmpty(sortClause.Order))
-                {
-                    throw new IllegalClauseException(
-                        "SortClause must have a valid Order property");
-                }
+                EnsureClause.StringIsNotNullOrEmpty(sortClause.Order, nameof(sortClause.Order));
 
                 sortClause.KQL = $"{sortClause.FieldName} {sortClause.Order}";
             }

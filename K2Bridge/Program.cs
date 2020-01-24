@@ -13,7 +13,6 @@ namespace K2Bridge
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.Hosting;
     using Serilog;
 
     /// <summary>

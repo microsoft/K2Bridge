@@ -4,19 +4,13 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using K2Bridge.Models.Request.Aggregations;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(Aggregation aggregation)
         {
-            if (aggregation == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(aggregation));
-            }
+            Ensure.IsNotNull(aggregation, nameof(aggregation));
 
             if (aggregation.PrimaryAggregation == null)
             {
@@ -28,10 +22,8 @@ namespace K2Bridge.Visitors
             // TODO: do something with the sub aggregations to KQL
             if (aggregation.SubAggregations != null)
             {
-                foreach (var aggKeyPair in aggregation.SubAggregations)
+                foreach (var (_, subAgg) in aggregation.SubAggregations)
                 {
-                    string subName = aggKeyPair.Key;
-                    var subAgg = aggKeyPair.Value;
                     subAgg.Accept(this);
 
                     aggregation.KQL += $"{subAgg.KQL}, "; // this won't work when 2+ bucket aggregations are used!

@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using System.Collections.Generic;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
@@ -13,12 +12,7 @@ namespace K2Bridge.Visitors
     {
         public void Visit(BoolQuery boolQuery)
         {
-            if (boolQuery == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(boolQuery));
-            }
+            Ensure.IsNotNull(boolQuery, nameof(boolQuery));
 
             AddListInternal(boolQuery.Must, KQLOperators.And, false /* positive */, boolQuery);
             AddListInternal(boolQuery.MustNot, KQLOperators.And, true /* negative */, boolQuery);
@@ -47,14 +41,7 @@ namespace K2Bridge.Visitors
                 }
 
                 leafQuery.Accept(this);
-                if (negativeCondition)
-                {
-                    kqlExpressions.Add($"{KQLOperators.Not} ({leafQuery.KQL})");
-                }
-                else
-                {
-                    kqlExpressions.Add($"({leafQuery.KQL})");
-                }
+                kqlExpressions.Add($"{(negativeCondition ? $"{KQLOperators.Not} " : string.Empty)}({leafQuery.KQL})");
             }
 
             KQLListToString(kqlExpressions, delimiterKeyword, boolQuery);

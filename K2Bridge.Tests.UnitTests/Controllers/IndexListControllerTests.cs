@@ -31,9 +31,9 @@ namespace K2Bridge.Tests.UnitTests.Controllers
         private IndexListController GetController()
         {
             var mockDAL = new Mock<IKustoDataAccess>();
-            var reponse = new Models.Response.Metadata.FieldCapabilityResponse();
-            reponse.AddField(new Models.Response.Metadata.FieldCapabilityElement { Name = "testFieldName" });
-            mockDAL.Setup(kusto => kusto.GetFieldCaps(It.IsNotNull<string>())).Returns(reponse);
+            var response = new Models.Response.Metadata.FieldCapabilityResponse();
+            response.AddField(new Models.Response.Metadata.FieldCapabilityElement { Name = "testFieldName" });
+            mockDAL.Setup(kusto => kusto.GetFieldCaps(It.IsNotNull<string>())).Returns(response);
             mockDAL.Setup(kusto => kusto.GetIndexList(It.IsNotNull<string>())).Returns(new Models.Response.Metadata.IndexListResponseElement() { });
             var mockLogger = new Mock<ILogger<IndexListController>>();
 

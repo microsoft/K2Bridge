@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using System.Collections.Generic;
     using System.Text;
     using K2Bridge.Models;
@@ -28,16 +27,11 @@ namespace K2Bridge.Visitors
         /// <param name="elasticSearchDSL">An Elasticsearch DSL query.</param>
         public void Visit(ElasticSearchDSL elasticSearchDSL)
         {
-            if (elasticSearchDSL == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(elasticSearchDSL));
-            }
+            Ensure.IsNotNull(elasticSearchDSL, nameof(elasticSearchDSL));
 
-            var kqlSB = new StringBuilder();
+            var kqlSb = new StringBuilder();
 
-            kqlSB.Append($"{KQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');
+            kqlSb.Append($"{KQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');
 
             // base query
             elasticSearchDSL.Query.Accept(this);
@@ -45,28 +39,25 @@ namespace K2Bridge.Visitors
             // when an index-pattern doesn't have a default time filter the query element can be empty
             var kqlQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KQL) ? $"| {elasticSearchDSL.Query.KQL}" : string.Empty;
             var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(elasticSearchDSL.IndexName, defaultDatabaseName);
-            kqlSB.Append($"{KQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {kqlQueryExpression};");
+            kqlSb.Append($"{KQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {kqlQueryExpression};");
 
             // aggregations
             // TODO: process the entire list
-            if (elasticSearchDSL.Aggregations != null && elasticSearchDSL.Aggregations.Count > 0)
+            if (elasticSearchDSL.Aggregations?.Count > 0)
             {
-                kqlSB.Append('\n').Append($"(_data | {KQLOperators.Summarize} ");
+                kqlSb.Append('\n').Append($"(_data | {KQLOperators.Summarize} ");
 
-                foreach (var aggKeyPair in elasticSearchDSL.Aggregations)
+                foreach (var (_, aggregation) in elasticSearchDSL.Aggregations)
                 {
-                    string name = aggKeyPair.Key;
-                    var aggregation = aggKeyPair.Value;
                     aggregation.Accept(this);
-
-                    kqlSB.Append($"{aggregation.KQL} ");
+                    kqlSb.Append($"{aggregation.KQL} ");
                 }
 
-                kqlSB.Append("| as aggs);");
+                kqlSb.Append("| as aggs);");
             }
 
             // hits (projections...)
-            kqlSB.Append("\n(_data ");
+            kqlSb.Append("\n(_data ");
             if (elasticSearchDSL.Size > 0)
             {
                 // we only need to sort if we're returning hits
@@ -83,16 +74,16 @@ namespace K2Bridge.Visitors
 
                 if (orderingList.Count > 0)
                 {
-                    kqlSB.Append($"| {KQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
+                    kqlSb.Append($"| {KQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
                 }
             }
 
             if (elasticSearchDSL.Size >= 0)
             {
-                kqlSB.Append($"| {KQLOperators.Limit} {elasticSearchDSL.Size} | as hits)");
+                kqlSb.Append($"| {KQLOperators.Limit} {elasticSearchDSL.Size} | as hits)");
             }
 
-            elasticSearchDSL.KQL = kqlSB.ToString();
+            elasticSearchDSL.KQL = kqlSb.ToString();
         }
     }
 }

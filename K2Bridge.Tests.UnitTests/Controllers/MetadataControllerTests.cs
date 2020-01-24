@@ -9,6 +9,7 @@ namespace K2BridgeUnitTests
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using K2Bridge;
     using K2Bridge.Controllers;
     using K2Bridge.HttpMessages;
     using Microsoft.AspNetCore.Http;
@@ -71,10 +72,7 @@ namespace K2BridgeUnitTests
         [TestCaseSource("IntegrationTestCases")]
         public async Task<string> PassThroughController_Integration_Tests(string input, string method, Type resultType)
         {
-            if (resultType == null)
-            {
-                throw new ArgumentException("result type");
-            }
+            Ensure.IsNotNull(resultType, nameof(resultType));
 
             // Arrange
             var controllerFixture = GetControllerFixture(input, method);

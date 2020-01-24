@@ -85,14 +85,14 @@ namespace K2Bridge.Tests.UnitTests
             // will fail as query is not valid (missing query)
             Assert.That(
                 () => eqt.Translate("{\"index\":\"myIndex\"}", query),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
 
             query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_bool.json");
 
             // will fail as query is not valid (missing query.bool)
             Assert.That(
                 () => eqt.Translate("{\"index\":\"myIndex\"}", query),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
     }
 }

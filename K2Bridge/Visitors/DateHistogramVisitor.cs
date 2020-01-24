@@ -4,25 +4,15 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using K2Bridge.Models.Request.Aggregations;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(DateHistogramAggregation dateHistogramAggregation)
         {
-            if (dateHistogramAggregation == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(dateHistogramAggregation));
-            }
-
-            if (string.IsNullOrEmpty(dateHistogramAggregation.Metric) ||
-                string.IsNullOrEmpty(dateHistogramAggregation.FieldName))
-            {
-                throw new IllegalClauseException();
-            }
+            Ensure.IsNotNull(dateHistogramAggregation, nameof(dateHistogramAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Metric, nameof(dateHistogramAggregation.Metric));
+            EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.FieldName, nameof(dateHistogramAggregation.FieldName));
 
             dateHistogramAggregation.KQL =
                 $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldName} = ";

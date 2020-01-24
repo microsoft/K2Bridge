@@ -84,7 +84,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((ExistsClause)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -98,7 +98,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((MatchPhraseClause)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -112,7 +112,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((AvgAggregation)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -125,7 +125,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((Aggregation)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -139,7 +139,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((CardinalityAggregation)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -153,7 +153,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((RangeClause)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -167,7 +167,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((SortClause)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -181,7 +181,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((DateHistogramAggregation)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -194,7 +194,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((BoolQuery)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]
@@ -208,7 +208,7 @@ namespace Tests
 
             Assert.That(
                 () => visitor.Visit((BoolQuery)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
     }
 }

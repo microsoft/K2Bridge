@@ -11,9 +11,6 @@ namespace K2Bridge.Models.Request.Aggregations
     [JsonConverter(typeof(AggregationFieldConverter))]
     internal class CardinalityAggregation : MetricAggregation
     {
-        [JsonProperty("field")]
-        public string FieldName { get; set; }
-
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

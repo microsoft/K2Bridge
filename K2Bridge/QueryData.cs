@@ -4,7 +4,6 @@
 
 namespace K2Bridge
 {
-    using System;
     using System.Collections.Generic;
 
     public struct QueryData
@@ -17,10 +16,8 @@ namespace K2Bridge
         /// <param name="highlightText"></param>
         public QueryData(string kql, string indexName, Dictionary<string, string> highlightText)
         {
-            if (string.IsNullOrEmpty(kql) || string.IsNullOrEmpty(indexName))
-            {
-                throw new ArgumentException("query string and index name can not be empty or null");
-            }
+            Ensure.IsNotNullOrEmpty(kql, nameof(kql), "Query string cannot be empty or null");
+            Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), "Index name string cannot be empty or null");
 
             KQL = kql;
             IndexName = indexName;

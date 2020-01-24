@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Models
 {
-    using System;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
@@ -19,30 +18,11 @@ namespace K2Bridge.Models
             string aadClientSecret,
             string aadTenantId)
         {
-            if (string.IsNullOrEmpty(clusterUrl))
-            {
-                throw new ArgumentException("Kusto Cluster URL is empty");
-            }
-
-            if (string.IsNullOrEmpty(defaultDatabaseName))
-            {
-                throw new ArgumentException("Kusto default database name is empty");
-            }
-
-            if (string.IsNullOrEmpty(aadClientId))
-            {
-                throw new ArgumentException("Kusto AAD Client ID is empty");
-            }
-
-            if (string.IsNullOrEmpty(aadClientSecret))
-            {
-                throw new ArgumentException("Kusto AAD Client Secret is empty");
-            }
-
-            if (string.IsNullOrEmpty(aadTenantId))
-            {
-                throw new ArgumentException("Kusto AAD Tenant ID is emtpy");
-            }
+            Ensure.IsNotNullOrEmpty(clusterUrl, "Kusto Cluster URL is empty or null");
+            Ensure.IsNotNullOrEmpty(defaultDatabaseName, "Kusto default database name is empty or null");
+            Ensure.IsNotNullOrEmpty(aadClientId, "Kusto AAD Client ID is empty or null");
+            Ensure.IsNotNullOrEmpty(aadClientSecret, "Kusto AAD Client Secret is empty or null");
+            Ensure.IsNotNullOrEmpty(aadTenantId, "Kusto AAD Tenant ID is empty");
 
             ClusterUrl = clusterUrl;
             DefaultDatabaseName = defaultDatabaseName;

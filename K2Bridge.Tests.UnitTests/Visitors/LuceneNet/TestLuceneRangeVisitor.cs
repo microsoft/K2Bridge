@@ -21,7 +21,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
             var visitor = new LuceneVisitor();
             Assert.That(
                 () => visitor.Visit((LuceneRangeQuery)null),
-                Throws.TypeOf<ArgumentException>());
+                Throws.TypeOf<ArgumentNullException>());
         }
 
         [TestCase]

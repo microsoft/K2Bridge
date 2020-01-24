@@ -4,45 +4,26 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using K2Bridge.Models.Request.Aggregations;
 
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        private const string ExceptionMessage = "Average FieldName must have a valid value";
+
         public void Visit(AvgAggregation avgAggregation)
         {
-            if (avgAggregation == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(avgAggregation));
-            }
-
-            ValidateField(avgAggregation.FieldName);
+            Ensure.IsNotNull(avgAggregation, nameof(avgAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(avgAggregation.FieldName, avgAggregation.FieldName, ExceptionMessage);
 
             avgAggregation.KQL = $"{KQLOperators.Avg}({avgAggregation.FieldName})";
         }
 
         public void Visit(CardinalityAggregation cardinalityAggregation)
         {
-            if (cardinalityAggregation == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(cardinalityAggregation));
-            }
-
-            ValidateField(cardinalityAggregation.FieldName);
+            Ensure.IsNotNull(cardinalityAggregation, nameof(cardinalityAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(cardinalityAggregation.FieldName, cardinalityAggregation.FieldName, ExceptionMessage);
 
             cardinalityAggregation.KQL = $"{KQLOperators.DCount}({cardinalityAggregation.FieldName})";
-        }
-
-        private static void ValidateField(string value)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new IllegalClauseException("Average FieldName must have a valid value");
-            }
         }
     }
 }

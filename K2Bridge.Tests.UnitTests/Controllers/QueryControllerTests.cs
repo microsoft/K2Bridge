@@ -124,10 +124,7 @@ namespace K2BridgeUnitTests
         [TestCaseSource("IntegrationTestCases")]
         public async Task SearchInternal_PostRequest_ReturnsExpectedResult(string content, Type resultType)
         {
-            if (resultType == null)
-            {
-                throw new ArgumentException("result type");
-            }
+            Ensure.IsNotNull(resultType, nameof(resultType));
 
             // Arrange
             var mockTranslator = new Mock<ITranslator>();

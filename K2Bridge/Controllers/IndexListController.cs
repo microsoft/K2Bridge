@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Controllers
 {
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using K2Bridge.DAL;
     using Microsoft.AspNetCore.Mvc;

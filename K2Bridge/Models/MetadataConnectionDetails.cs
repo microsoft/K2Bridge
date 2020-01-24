@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Models
 {
-    using System;
     using Microsoft.Extensions.Configuration;
 
     internal class MetadataConnectionDetails
@@ -15,10 +14,10 @@ namespace K2Bridge.Models
         /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint.</param>
         private MetadataConnectionDetails(string metadataEndpoint)
         {
-            if (string.IsNullOrEmpty(metadataEndpoint))
-            {
-                throw new ArgumentException("URI for metadata Elasticsearch endpoint is required, for example http://127.0.0.1:8080");
-            }
+            Ensure.IsNotNullOrEmpty(
+                metadataEndpoint,
+                nameof(metadataEndpoint),
+                "URI for metadata ElasticSearch endpoint is required, for example http://127.0.0.1:8080");
 
             MetadataEndpoint = metadataEndpoint;
         }

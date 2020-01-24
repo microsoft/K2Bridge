@@ -13,22 +13,12 @@ namespace K2Bridge.Models.Response.Metadata
         private readonly Dictionary<string, FieldCapabilityElement> fields = new Dictionary<string, FieldCapabilityElement>();
 
         [JsonProperty("fields")]
-        public IDictionary<string, FieldCapabilityElement> Fields
-        {
-            get { return fields; }
-        }
+        public IDictionary<string, FieldCapabilityElement> Fields => fields;
 
         public void AddField(FieldCapabilityElement fieldCapabilityElement)
         {
-            if (fieldCapabilityElement == null)
-            {
-                throw new ArgumentNullException(nameof(fieldCapabilityElement));
-            }
-
-            if (string.IsNullOrEmpty(fieldCapabilityElement.Name))
-            {
-                throw new ArgumentNullException("fieldCapabilityElement.Name");
-            }
+            Ensure.IsNotNull(fieldCapabilityElement, nameof(fieldCapabilityElement));
+            Ensure.IsNotNull(fieldCapabilityElement.Name, nameof(fieldCapabilityElement.Name));
 
             fields.Add(fieldCapabilityElement.Name, fieldCapabilityElement);
         }

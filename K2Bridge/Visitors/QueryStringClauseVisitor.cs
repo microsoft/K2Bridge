@@ -27,22 +27,11 @@ namespace K2Bridge.Visitors
         /// <param name="queryStringClause">The query string clause.</param>
         public void Visit(QueryStringClause queryStringClause)
         {
-            if (queryStringClause == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null",
-                    nameof(queryStringClause));
-            }
+            Ensure.IsNotNull(queryStringClause, nameof(queryStringClause));
 
-            if (IsSimplePhrase(queryStringClause.Phrase))
-            {
-                // search the phrase as is in Kusto
-                queryStringClause.KQL =
-                    $"* == \"{queryStringClause.Phrase}\"";
-                return;
-            }
-
-            queryStringClause.KQL = CreateKqlFromLucenePhrase(queryStringClause);
+            queryStringClause.KQL = IsSimplePhrase(queryStringClause.Phrase)
+                ? $"* == \"{queryStringClause.Phrase}\""
+                : CreateKqlFromLucenePhrase(queryStringClause);
         }
 
         /// <summary>

@@ -39,10 +39,7 @@ namespace K2Bridge.Models
         /// <returns>An object with the field caps.</returns>
         public static (string DatabaseName, string TableName) FromElasticIndexName(string indexName, string defaultDatabaseName)
         {
-            if (string.IsNullOrEmpty(indexName))
-            {
-                throw new ArgumentException("Input can not be null");
-            }
+            Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), "Input cannot be null");
 
             if (indexName.Equals(Wildcard, StringComparison.CurrentCultureIgnoreCase))
             {

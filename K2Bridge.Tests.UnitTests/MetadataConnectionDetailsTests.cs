@@ -32,7 +32,7 @@ namespace K2Bridge.Tests.UnitTests
             var configurationRoot = new Mock<IConfigurationRoot>();
 
             // missing 'metadataElasticAddress'
-            Assert.That(() => MetadataConnectionDetails.MakeFromConfiguration(configurationRoot.Object), Throws.TypeOf<ArgumentException>());
+            Assert.That(() => MetadataConnectionDetails.MakeFromConfiguration(configurationRoot.Object), Throws.TypeOf<ArgumentNullException>());
         }
     }
 }

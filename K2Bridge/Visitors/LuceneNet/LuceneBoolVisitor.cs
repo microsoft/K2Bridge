@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Visitors.LuceneNet
 {
-    using System;
     using System.Collections.Generic;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
@@ -53,22 +52,13 @@ namespace K2Bridge.Visitors.LuceneNet
         }
 
         /// <summary>
-        /// Throws exception if obj is not a valid LuceneQuery.
+        /// Throws exception if luceneBoolObj is not a valid LuceneQuery.
         /// </summary>
-        /// <param name="obj">obj to verify.</param>
-        protected static void VerifyValid(ILuceneVisitable obj)
+        /// <param name="luceneBoolObj">luceneBoolObj to verify.</param>
+        protected static void VerifyValid(ILuceneVisitable luceneBoolObj)
         {
-            if (obj == null)
-            {
-                throw new ArgumentException(
-                    "Argument cannot be null");
-            }
-
-            if (obj.LuceneQuery == null)
-            {
-                throw new IllegalClauseException(
-                    "LuceneQuery cannot be null");
-            }
+            Ensure.IsNotNull(luceneBoolObj, nameof(luceneBoolObj));
+            EnsureClause.IsNotNull(luceneBoolObj.LuceneQuery, nameof(luceneBoolObj.LuceneQuery));
         }
     }
 }

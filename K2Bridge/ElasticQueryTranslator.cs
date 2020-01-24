@@ -40,63 +40,52 @@ namespace K2Bridge
         /// <returns>A <see cref="QueryData"/>.</returns>
         public QueryData Translate(string header, string query)
         {
-            if (string.IsNullOrEmpty(header))
-            {
-                throw new ArgumentException("Argument can not be empty", nameof(header));
-            }
+            Ensure.IsNotNullOrEmpty(header, nameof(header));
 
             try
             {
                 Logger.LogDebug("Translate params: header:{@header}, query:{@query}", header, query);
 
                 // Prepare the esDSL object, except some fields such as the query field which will be built later
-                var elasticSearchDSL = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
+                var elasticSearchDsl = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
 
                 // deserialize the headers and extract the index name
                 var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
-                elasticSearchDSL.IndexName = headerDictionary["index"];
+                elasticSearchDsl.IndexName = headerDictionary["index"];
 
-                elasticSearchDSL.HighlightText = new Dictionary<string, string>();
+                elasticSearchDsl.HighlightText = new Dictionary<string, string>();
 
-                if (elasticSearchDSL.Query == null)
+                Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
+                Ensure.IsNotNull(elasticSearchDsl.Query.Bool, nameof(elasticSearchDsl.Query.Bool));
+                Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Must, nameof(elasticSearchDsl.Query.Bool.Must));
+
+                foreach (var element in elasticSearchDsl.Query.Bool.Must)
                 {
-                    throw new ArgumentException("Query cannot be null");
-                }
-
-                if (elasticSearchDSL.Query.Bool == null)
-                {
-                    throw new ArgumentException("Query.Bool cannot be null");
-                }
-
-                var qs = elasticSearchDSL.Query.Bool.Must.GetEnumerator();
-                while (qs.MoveNext())
-                {
-                    if (qs.Current == null)
+                    switch (element)
                     {
-                        continue;
-                    }
-
-                    if (qs.Current is QueryStringClause queryStringClause)
-                    {
-                        elasticSearchDSL.HighlightText.Add("*", queryStringClause.Phrase);
-                    }
-                    else if (qs.Current is MatchPhraseClause matchPhraseClause)
-                    {
-                        elasticSearchDSL.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
+                        case QueryStringClause queryStringClause:
+                            elasticSearchDsl.HighlightText.Add("*", queryStringClause.Phrase);
+                            break;
+                        case MatchPhraseClause matchPhraseClause:
+                            elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
+                            break;
                     }
                 }
 
                 // Use the visitor and build the KQL string from the esDSL object
-                elasticSearchDSL.Accept(visitor);
+                elasticSearchDsl.Accept(visitor);
                 var queryData = new QueryData(
-                    elasticSearchDSL.KQL,
-                    elasticSearchDSL.IndexName,
-                    elasticSearchDSL.HighlightText);
+                    elasticSearchDsl.KQL,
+                    elasticSearchDsl.IndexName,
+                    elasticSearchDsl.HighlightText);
 
-                if (elasticSearchDSL.Highlight != null && elasticSearchDSL.Highlight.PreTags.Count > 0)
+                if (elasticSearchDsl.Highlight != null)
                 {
-                    queryData.HighlightPreTag = elasticSearchDSL.Highlight.PreTags[0];
-                    queryData.HighlightPostTag = elasticSearchDSL.Highlight.PostTags[0];
+                    Ensure.IsNotNullOrEmpty(elasticSearchDsl.Highlight.PreTags, nameof(elasticSearchDsl.Highlight.PreTags));
+                    Ensure.IsNotNullOrEmpty(elasticSearchDsl.Highlight.PostTags, nameof(elasticSearchDsl.Highlight.PostTags));
+
+                    queryData.HighlightPreTag = elasticSearchDsl.Highlight.PreTags[0];
+                    queryData.HighlightPostTag = elasticSearchDsl.Highlight.PostTags[0];
                 }
 
                 return queryData;

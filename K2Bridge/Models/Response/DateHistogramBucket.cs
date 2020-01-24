@@ -32,10 +32,7 @@ namespace K2Bridge.Models.Response
         /// <returns>A new DateHistogramBucket.</returns>
         public static DateHistogramBucket Create(DataRow row)
         {
-            if (row == null)
-            {
-                throw new ArgumentNullException(nameof(row));
-            }
+            Ensure.IsNotNull(row, nameof(row));
 
             var timestamp = row[(int)ColumnNames.Timestamp];
             var count = row[(int)ColumnNames.Count];
