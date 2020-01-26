@@ -369,7 +369,7 @@ stages:
         azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
         scriptLocation: inlineScript
         inlineScript: |
-          set -eux  # fail on error
+          set -eu  # fail on error
           podName="e2e-test-$RANDOM"
           KUSTO_URI=$(az kusto cluster show -g $(RESOURCE_GROUP) -n $(KUSTO_NAME) --query uri -o tsv)
           AAD_TOKEN=$(az account get-access-token --resource "$KUSTO_URI" --query accessToken -o tsv)
@@ -381,6 +381,7 @@ stages:
             --env=KUSTO_DB=$(KUSTO_DB) \
             --env=AAD_TOKEN=$AAD_TOKEN \
             "$podName"
+          set -x  # enable verbose mode, without exposing $AAD_TOKEN
           kubectl wait --timeout 45m --for=condition=ContainersReady pod "$podName"
           # Read test output from FIFO within container
           kubectl exec "$podName" cat /test-result-pipe > TestResult.xml
