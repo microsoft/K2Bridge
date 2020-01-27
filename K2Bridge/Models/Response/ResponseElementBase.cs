@@ -25,7 +25,7 @@ namespace K2Bridge.Models.Response
         [JsonProperty("status")]
         public int Status { get; set; } = STATUS;
 
-        [JsonProperty("backendQuery")]
+        [JsonProperty("_backendQuery")]
         public string BackendQuery { get; set; } = string.Empty;
     }
 }

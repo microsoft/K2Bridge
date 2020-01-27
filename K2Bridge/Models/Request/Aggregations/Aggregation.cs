@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Request.Aggregations
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(AggregationConverter))]
-    internal class Aggregation : KQLBase, IVisitable
+    internal class Aggregation : KustoQLBase, IVisitable
     {
         public LeafAggregation PrimaryAggregation { get; set; }
 

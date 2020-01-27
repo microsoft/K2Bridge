@@ -49,8 +49,8 @@ namespace K2Bridge
                 s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
-            services.AddTransient<IQueryExecutor, KustoManager>(s =>
-            new KustoManager(s.GetRequiredService<IConnectionDetails>(), s.GetRequiredService<Microsoft.Extensions.Logging.ILogger<KustoManager>>(), adxQueryDurationMetric));
+            services.AddTransient<IQueryExecutor, KustoQueryExecutor>(s =>
+            new KustoQueryExecutor(s.GetRequiredService<IConnectionDetails>(), s.GetRequiredService<Microsoft.Extensions.Logging.ILogger<KustoQueryExecutor>>(), adxQueryDurationMetric));
             services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(
                 s => new ElasticSearchDSLVisitor(KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot).DefaultDatabaseName));
             services.AddSingleton(Log.Logger);

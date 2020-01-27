@@ -29,7 +29,7 @@ namespace Tests.KustoConnector
             Assert.AreSame(data, reader);
         }
 
-        /** TODO in Task 1547 (https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1547)
+        /* TODO in Task 1547 (https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1547)
         [TestCase]
         public void FailsOnEmptyQueryString()
         {
@@ -55,7 +55,7 @@ namespace Tests.KustoConnector
                  .And.Message.EqualTo("Value cannot be null or empty. (Parameter 'query')"),
                 () => provider.ExecuteMonitoredQuery(null));
         }
-        **/
+        */
 
         [TestCase]
         public void FailsOnNullProvider()

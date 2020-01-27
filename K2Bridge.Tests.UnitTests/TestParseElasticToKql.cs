@@ -283,7 +283,7 @@ namespace Tests
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
-            return query.KQL;
+            return query.KustoQL;
         }
 
         [TestCase(
@@ -294,7 +294,7 @@ namespace Tests
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
-            return query.KQL;
+            return query.KustoQL;
         }
 
         [TestCase(
@@ -320,7 +320,7 @@ namespace Tests
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
-            return query.KQL;
+            return query.KustoQL;
         }
 
         [TestCase(CombinedQuery, ExpectedResult = "where (* == \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
@@ -330,7 +330,7 @@ namespace Tests
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
-            return query.KQL;
+            return query.KustoQL;
         }
 
         [TestCase(
@@ -341,7 +341,7 @@ namespace Tests
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
-            return query.KQL;
+            return query.KustoQL;
         }
 
         [TestCase(
@@ -352,7 +352,7 @@ namespace Tests
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
-            return query.KQL;
+            return query.KustoQL;
         }
 
         [TestCase(
@@ -363,7 +363,7 @@ namespace Tests
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
-            return query.KQL;
+            return query.KustoQL;
         }
 
         private string TestRangeClause(string queryString)
@@ -371,7 +371,7 @@ namespace Tests
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor();
             query.Accept(visitor);
-            return query.KQL;
+            return query.KustoQL;
         }
     }
 }

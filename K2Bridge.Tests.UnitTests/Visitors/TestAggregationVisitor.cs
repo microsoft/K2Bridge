@@ -20,7 +20,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(aggregateClause);
 
-            return aggregateClause.KQL;
+            return aggregateClause.KustoQL;
         }
 
         [TestCase(ExpectedResult = "avg(fieldA)")]
@@ -34,7 +34,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(aggregateClause);
 
-            return aggregateClause.KQL;
+            return aggregateClause.KustoQL;
         }
 
         [TestCase(ExpectedResult = "avg(fieldB), avg(fieldA)")]
@@ -52,7 +52,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(aggregateClause);
 
-            return aggregateClause.KQL;
+            return aggregateClause.KustoQL;
         }
 
         [TestCase(ExpectedResult = "dcount(fieldA)")]
@@ -66,7 +66,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(aggregateClause);
 
-            return aggregateClause.KQL;
+            return aggregateClause.KustoQL;
         }
 
         [TestCase(ExpectedResult = "dcount(fieldB), dcount(fieldA)")]
@@ -84,7 +84,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(aggregateClause);
 
-            return aggregateClause.KQL;
+            return aggregateClause.KustoQL;
         }
     }
 }

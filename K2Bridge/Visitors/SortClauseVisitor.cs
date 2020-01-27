@@ -17,13 +17,13 @@ namespace K2Bridge.Visitors
             if (sortClause.FieldName.StartsWith('_'))
             {
                 // fields that start with "_" are internal to elastic and we want to disregard them
-                sortClause.KQL = string.Empty;
+                sortClause.KustoQL = string.Empty;
             }
             else
             {
                 EnsureClause.StringIsNotNullOrEmpty(sortClause.Order, nameof(sortClause.Order));
 
-                sortClause.KQL = $"{sortClause.FieldName} {sortClause.Order}";
+                sortClause.KustoQL = $"{sortClause.FieldName} {sortClause.Order}";
             }
         }
     }

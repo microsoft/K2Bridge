@@ -7,6 +7,7 @@ namespace K2Bridge.Models.Response
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using K2Bridge.Models;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -53,6 +54,8 @@ namespace K2Bridge.Models.Response
 
         public static Hit Create(DataRow row, QueryData query)
         {
+            Ensure.IsNotNull(row, nameof(row));
+
             var hit = new Hit() { Index = query.IndexName };
             hit.Highlight = new Dictionary<string, object>();
 

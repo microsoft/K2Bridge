@@ -28,7 +28,7 @@ namespace K2Bridge.Tests.UnitTests
             var mockVisitor = new Mock<IVisitor>();
             mockVisitor.Setup(
                 visitor => visitor.Visit(It.IsNotNull<ElasticSearchDSL>()))
-                .Callback<ElasticSearchDSL>((dsl) => dsl.KQL = "some kql from mock visitor");
+                .Callback<ElasticSearchDSL>((dsl) => dsl.KustoQL = "some kql from mock visitor");
 
             var eqt = new ElasticQueryTranslator(
                 mockVisitor.Object,
@@ -37,7 +37,7 @@ namespace K2Bridge.Tests.UnitTests
             // Should succeed as all arguments are valid. the result is just a simple
             // hard coded mock
             var querydata = eqt.Translate("{\"index\":\"myIndex\"}", query);
-            return querydata.KQL;
+            return querydata.QueryCommandText;
         }
 
         [TestCase]
@@ -49,7 +49,7 @@ namespace K2Bridge.Tests.UnitTests
             var mockVisitor = new Mock<IVisitor>();
             mockVisitor.Setup(
                 visitor => visitor.Visit(It.IsNotNull<ElasticSearchDSL>()))
-                .Callback<ElasticSearchDSL>((dsl) => dsl.KQL = "some kql from mock visitor");
+                .Callback<ElasticSearchDSL>((dsl) => dsl.KustoQL = "some kql from mock visitor");
 
             var eqt = new ElasticQueryTranslator(
                 mockVisitor.Object,
@@ -73,7 +73,7 @@ namespace K2Bridge.Tests.UnitTests
             var mockVisitor = new Mock<IVisitor>();
             mockVisitor.Setup(
                 visitor => visitor.Visit(It.IsNotNull<ElasticSearchDSL>()))
-                .Callback<ElasticSearchDSL>((dsl) => dsl.KQL = "some kql from mock visitor");
+                .Callback<ElasticSearchDSL>((dsl) => dsl.KustoQL = "some kql from mock visitor");
 
             var eqt = new ElasticQueryTranslator(
                 mockVisitor.Object,

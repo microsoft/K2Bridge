@@ -78,7 +78,7 @@ namespace Tests
         {
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(rangeClause);
-            return rangeClause.KQL;
+            return rangeClause.KustoQL;
         }
     }
 }

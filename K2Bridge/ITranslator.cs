@@ -4,6 +4,8 @@
 
 namespace K2Bridge
 {
+    using K2Bridge.Models;
+
     /// <summary>
     /// An interface for query translation.
     /// </summary>

@@ -6,6 +6,7 @@ namespace K2Bridge
 {
     using System;
     using System.Collections.Generic;
+    using K2Bridge.Models;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
@@ -13,7 +14,7 @@ namespace K2Bridge
     using Newtonsoft.Json;
 
     /// <summary>
-    /// ElasticQueryTranslator provides the functionality for translating a Kibana query into KQL.
+    /// ElasticQueryTranslator provides the functionality for translating a Kibana query into Kusto query.
     /// </summary>
     internal class ElasticQueryTranslator : ITranslator
     {
@@ -72,10 +73,10 @@ namespace K2Bridge
                     }
                 }
 
-                // Use the visitor and build the KQL string from the esDSL object
+                // Use the visitor and build the KustoQL string from the esDSL object
                 elasticSearchDsl.Accept(visitor);
                 var queryData = new QueryData(
-                    elasticSearchDsl.KQL,
+                    elasticSearchDsl.KustoQL,
                     elasticSearchDsl.IndexName,
                     elasticSearchDsl.HighlightText);
 

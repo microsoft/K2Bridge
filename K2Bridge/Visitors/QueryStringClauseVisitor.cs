@@ -29,7 +29,7 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(queryStringClause, nameof(queryStringClause));
 
-            queryStringClause.KQL = IsSimplePhrase(queryStringClause.Phrase)
+            queryStringClause.KustoQL = IsSimplePhrase(queryStringClause.Phrase)
                 ? $"* == \"{queryStringClause.Phrase}\""
                 : CreateKqlFromLucenePhrase(queryStringClause);
         }
@@ -65,7 +65,7 @@ namespace K2Bridge.Visitors
             dynamic esQuery = luceneQuery.ESQuery;
             esQuery.Accept(this);
 
-            return esQuery.KQL;
+            return esQuery.KustoQL;
         }
 
         /// <summary>

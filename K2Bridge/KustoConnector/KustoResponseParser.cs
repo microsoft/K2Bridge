@@ -7,6 +7,7 @@ namespace K2Bridge.KustoConnector
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
@@ -42,6 +43,8 @@ namespace K2Bridge.KustoConnector
         /// <returns>IEnumerable.<Hit> - collection of hits.</returns>
         public static IEnumerable<Hit> ReadHits(KustoResponseDataSet kustoResponseDataSet, QueryData query)
         {
+            Ensure.IsNotNull(kustoResponseDataSet, nameof(kustoResponseDataSet));
+
             if (kustoResponseDataSet[HitsTableName] != null)
             {
                 foreach (DataRow row in kustoResponseDataSet[HitsTableName].TableData.Rows)
@@ -127,7 +130,7 @@ namespace K2Bridge.KustoConnector
             response.AddHits(hits);
             if (outputBackendQuery)
             {
-                response.AppendBackendQuery(query.KQL);
+                response.AppendBackendQuery(query.QueryCommandText);
             }
 
             return response;

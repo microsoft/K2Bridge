@@ -19,7 +19,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(sortClause);
 
-            return sortClause.KQL;
+            return sortClause.KustoQL;
         }
 
         [TestCase(ExpectedResult = "wibble asc")]
@@ -30,7 +30,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(sortClause);
 
-            return sortClause.KQL;
+            return sortClause.KustoQL;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(ExistsClauseConverter))]
-    internal class ExistsClause : KQLBase, ILeafClause, IVisitable
+    internal class ExistsClause : KustoQLBase, ILeafClause, IVisitable
     {
         public string FieldName { get; set; }
 

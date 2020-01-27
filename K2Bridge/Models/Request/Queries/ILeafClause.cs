@@ -11,6 +11,6 @@ namespace K2Bridge.Models.Request.Queries
     [JsonConverter(typeof(LeafClauseConverter))]
     internal interface ILeafClause : IQuery
     {
-        string KQL { get; set; }
+        string KustoQL { get; set; }
     }
 }

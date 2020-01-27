@@ -23,7 +23,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(histogramAggregation);
 
-            return histogramAggregation.KQL;
+            return histogramAggregation.KustoQL;
         }
 
         [TestCase("w", ExpectedResult = "wibble by wobble = startofweek(wobble)\n| order by wobble asc")]
@@ -42,7 +42,7 @@ namespace K2BridgeUnitTests.Visitors
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(histogramAggregation);
 
-            return histogramAggregation.KQL;
+            return histogramAggregation.KustoQL;
         }
     }
 }

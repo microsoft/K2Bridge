@@ -15,7 +15,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(avgAggregation, nameof(avgAggregation));
             EnsureClause.StringIsNotNullOrEmpty(avgAggregation.FieldName, avgAggregation.FieldName, ExceptionMessage);
 
-            avgAggregation.KQL = $"{KQLOperators.Avg}({avgAggregation.FieldName})";
+            avgAggregation.KustoQL = $"{KustoQLOperators.Avg}({avgAggregation.FieldName})";
         }
 
         public void Visit(CardinalityAggregation cardinalityAggregation)
@@ -23,7 +23,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(cardinalityAggregation, nameof(cardinalityAggregation));
             EnsureClause.StringIsNotNullOrEmpty(cardinalityAggregation.FieldName, cardinalityAggregation.FieldName, ExceptionMessage);
 
-            cardinalityAggregation.KQL = $"{KQLOperators.DCount}({cardinalityAggregation.FieldName})";
+            cardinalityAggregation.KustoQL = $"{KustoQLOperators.DCount}({cardinalityAggregation.FieldName})";
         }
     }
 }

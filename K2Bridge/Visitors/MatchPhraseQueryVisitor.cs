@@ -32,14 +32,14 @@ namespace K2Bridge.Visitors
                     var phrase = SingleCharPattern.Replace(matchPhraseClause.Phrase, @"[.\\S]");
                     phrase = MultiCharPattern.Replace(phrase, @"[.\\S]*");
 
-                    matchPhraseClause.KQL = $"{matchPhraseClause.FieldName} {KQLOperators.MatchRegex} \"{phrase}\"";
+                    matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
                     break;
                 case MatchPhraseClause.Subtype.Prefix:
-                    matchPhraseClause.KQL = $"{matchPhraseClause.FieldName} {KQLOperators.HasPrefixCS} \"{matchPhraseClause.Phrase}\"";
+                    matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.HasPrefixCS} \"{matchPhraseClause.Phrase}\"";
                     break;
                 default:
                     // Simple subtype
-                    matchPhraseClause.KQL = $"{matchPhraseClause.FieldName} {KQLOperators.Equal} \"{matchPhraseClause.Phrase}\"";
+                    matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase}\"";
                     break;
             }
         }

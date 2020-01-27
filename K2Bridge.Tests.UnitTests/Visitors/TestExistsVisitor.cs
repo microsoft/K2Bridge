@@ -21,7 +21,7 @@ namespace K2BridgeUnitTests.Visitors
 
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(existsClause);
-            return existsClause.KQL;
+            return existsClause.KustoQL;
         }
     }
 }

@@ -48,8 +48,8 @@ namespace K2Bridge.Controllers
         /// <summary>
         /// Perform a Kibana search query against the data backend.
         /// </summary>
-        /// <param name="totalHits"></param>
-        /// <param name="ignoreThrottled"></param>
+        /// <param name="totalHits">totalHits parameter coming from Kibana (currently not used).</param>
+        /// <param name="ignoreThrottled">ignoreThrottled parameter coming from Kibana (currently not used).</param>
         /// <returns>An ElasticResponse object or a passthrough object if an error occured.</returns>
         [HttpPost(template: "_msearch")]
         [Consumes("application/json", "application/x-ndjson")]
@@ -100,7 +100,7 @@ namespace K2Bridge.Controllers
 
             // Translate Query
             var translatedQuery = translator.Translate(header, query);
-            logger.LogDebug($"Translated query:\n{translatedQuery.KQL}");
+            logger.LogDebug($"Translated query:\n{translatedQuery.QueryCommandText}");
 
             // Execute Query
             var (timeTaken, dataReader) = queryExecutor.ExecuteQuery(translatedQuery);

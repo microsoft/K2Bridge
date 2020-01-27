@@ -13,6 +13,7 @@ namespace K2BridgeUnitTests
     using K2Bridge;
     using K2Bridge.Controllers;
     using K2Bridge.KustoConnector;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;

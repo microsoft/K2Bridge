@@ -60,7 +60,7 @@ namespace K2Bridge.Controllers
         }
 
         /// <summary>
-        /// Forwards an http message to the metadata client
+        /// Forwards an http message to the metadata client.
         /// </summary>
         /// <param name="clientFactory">HTTP client factory that will be used to initialize an http client.</param>
         /// <param name="message">The original HTTP message.</param>

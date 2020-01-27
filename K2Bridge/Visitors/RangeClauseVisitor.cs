@@ -19,14 +19,14 @@ namespace K2Bridge.Visitors
                 // default time filter through a rangeClause query uses epoch times with GTE+LTE
                 EnsureClause.IsNotNull(rangeClause.LTEValue, nameof(rangeClause.LTEValue));
 
-                rangeClause.KQL = $"{rangeClause.FieldName} >= fromUnixTimeMilli({rangeClause.GTEValue}) {KQLOperators.And} {rangeClause.FieldName} <= fromUnixTimeMilli({rangeClause.LTEValue})";
+                rangeClause.KustoQL = $"{rangeClause.FieldName} >= fromUnixTimeMilli({rangeClause.GTEValue}) {KustoQLOperators.And} {rangeClause.FieldName} <= fromUnixTimeMilli({rangeClause.LTEValue})";
             }
             else
             {
                 // general "is between" filter on numeric fields uses a rangeClause query with GTE+LT (not LTE like above)
                 EnsureClause.IsNotNull(rangeClause.LTValue, nameof(rangeClause.LTValue));
 
-                rangeClause.KQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
+                rangeClause.KustoQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
             }
         }
     }

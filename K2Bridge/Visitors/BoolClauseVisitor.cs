@@ -14,25 +14,43 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(boolQuery, nameof(boolQuery));
 
-            AddListInternal(boolQuery.Must, KQLOperators.And, false /* positive */, boolQuery);
-            AddListInternal(boolQuery.MustNot, KQLOperators.And, true /* negative */, boolQuery);
-            AddListInternal(boolQuery.Should, KQLOperators.Or, false /* positive */, boolQuery);
-            AddListInternal(boolQuery.ShouldNot, KQLOperators.Or, true /* negative */, boolQuery);
+            AddListInternal(boolQuery.Must, KustoQLOperators.And, false /* positive */, boolQuery);
+            AddListInternal(boolQuery.MustNot, KustoQLOperators.And, true /* negative */, boolQuery);
+            AddListInternal(boolQuery.Should, KustoQLOperators.Or, false /* positive */, boolQuery);
+            AddListInternal(boolQuery.ShouldNot, KustoQLOperators.Or, true /* negative */, boolQuery);
+        }
+
+        /// <summary>
+        /// Joins the list of KustoQL commands and modifies the given BoolQuery.
+        /// </summary>
+        private static void QueryListToString(List<string> queryList, string joinString, BoolQuery boolQuery)
+        {
+            joinString = $" {joinString} ";
+
+            if (queryList?.Count > 0)
+            {
+                if (!string.IsNullOrEmpty(boolQuery.KustoQL))
+                {
+                    boolQuery.KustoQL += $" {KustoQLOperators.And}\n "; // query is now complex - cannot use where operator
+                }
+
+                boolQuery.KustoQL += $"{string.Join(joinString, queryList)}";
+            }
         }
 
         /// <summary>
         /// Create a list of clauses of a specific type (must / must not / should / should not).
         /// </summary>
-        private void AddListInternal(IEnumerable<IQuery> lst, string delimiterKeyword, bool negativeCondition, BoolQuery boolQuery)
+        private void AddListInternal(IEnumerable<IQuery> list, string delimiterKeyword, bool negativeCondition, BoolQuery boolQuery)
         {
-            if (lst == null)
+            if (list == null)
             {
                 return;
             }
 
             var kqlExpressions = new List<string>();
 
-            foreach (dynamic leafQuery in lst)
+            foreach (dynamic leafQuery in list)
             {
                 if (leafQuery == null)
                 {
@@ -41,28 +59,10 @@ namespace K2Bridge.Visitors
                 }
 
                 leafQuery.Accept(this);
-                kqlExpressions.Add($"{(negativeCondition ? $"{KQLOperators.Not} " : string.Empty)}({leafQuery.KQL})");
+                kqlExpressions.Add($"{(negativeCondition ? $"{KustoQLOperators.Not} " : string.Empty)}({leafQuery.KustoQL})");
             }
 
-            KQLListToString(kqlExpressions, delimiterKeyword, boolQuery);
-        }
-
-        /// <summary>
-        /// Joins the list of kql commands and modifies the given BoolQuery.
-        /// </summary>
-        private void KQLListToString(List<string> kqlList, string joinString, BoolQuery boolQuery)
-        {
-            joinString = $" {joinString} ";
-
-            if (kqlList.Count > 0)
-            {
-                if (!string.IsNullOrEmpty(boolQuery.KQL))
-                {
-                    boolQuery.KQL += $" {KQLOperators.And}\n "; // query is now complex - can not use where operator
-                }
-
-                boolQuery.KQL += $"{string.Join(joinString, kqlList)}";
-            }
+            QueryListToString(kqlExpressions, delimiterKeyword, boolQuery);
         }
     }
 }

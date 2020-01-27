@@ -14,26 +14,26 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Metric, nameof(dateHistogramAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.FieldName, nameof(dateHistogramAggregation.FieldName));
 
-            dateHistogramAggregation.KQL =
+            dateHistogramAggregation.KustoQL =
                 $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldName} = ";
             if (!string.IsNullOrEmpty(dateHistogramAggregation.Interval))
             {
                 var period = dateHistogramAggregation.Interval[^1];
-                dateHistogramAggregation.KQL += period switch
+                dateHistogramAggregation.KustoQL += period switch
                 {
-                    'w' => $"{KQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
-                    'M' => $"{KQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
-                    'y' => $"{KQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
+                    'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
+                    'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
+                    'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
                     _ => $"bin({dateHistogramAggregation.FieldName}, {dateHistogramAggregation.Interval})",
                 };
             }
             else
             {
-                dateHistogramAggregation.KQL += dateHistogramAggregation.FieldName;
+                dateHistogramAggregation.KustoQL += dateHistogramAggregation.FieldName;
             }
 
             // todatetime is redundent but we'll keep it for now
-            dateHistogramAggregation.KQL += $"{KQLOperators.CommandSeparator}{KQLOperators.OrderBy} {dateHistogramAggregation.FieldName} asc";
+            dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {dateHistogramAggregation.FieldName} asc";
         }
     }
 }

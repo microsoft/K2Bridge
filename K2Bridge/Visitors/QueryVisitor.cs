@@ -14,7 +14,7 @@ namespace K2Bridge.Visitors
             EnsureClause.IsNotNull(query.Bool, nameof(query.Bool));
 
             query.Bool.Accept(this);
-            query.KQL = !string.IsNullOrEmpty(query.Bool.KQL) ? $"{KQLOperators.Where} {query.Bool.KQL}" : string.Empty;
+            query.KustoQL = !string.IsNullOrEmpty(query.Bool.KustoQL) ? $"{KustoQLOperators.Where} {query.Bool.KustoQL}" : string.Empty;
         }
     }
 }

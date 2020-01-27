@@ -256,7 +256,7 @@ namespace K2Bridge.Tests.End2End
 
             // TODO: remove backendQuery if not enabled
             // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1461
-            DeleteValue(result, $"{searchBase}backendQuery");
+            DeleteValue(result, $"{searchBase}_backendQuery");
         }
 
         /// <summary>

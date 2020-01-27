@@ -56,7 +56,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit((MatchPhraseClause)es);
 
-            return ((MatchPhraseClause)es).KQL;
+            return ((MatchPhraseClause)es).KustoQL;
         }
     }
 }

@@ -6,6 +6,7 @@ namespace K2Bridge.KustoConnector
 {
     using System;
     using System.Data;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
 
     /// <summary>

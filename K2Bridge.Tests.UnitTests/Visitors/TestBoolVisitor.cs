@@ -122,7 +122,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(query);
-            return query.KQL;
+            return query.KustoQL;
         }
     }
 }

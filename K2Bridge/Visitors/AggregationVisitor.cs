@@ -26,11 +26,11 @@ namespace K2Bridge.Visitors
                 {
                     subAgg.Accept(this);
 
-                    aggregation.KQL += $"{subAgg.KQL}, "; // this won't work when 2+ bucket aggregations are used!
+                    aggregation.KustoQL += $"{subAgg.KustoQL}, "; // this won't work when 2+ bucket aggregations are used!
                 }
             }
 
-            aggregation.KQL += aggregation.PrimaryAggregation.KQL;
+            aggregation.KustoQL += aggregation.PrimaryAggregation.KustoQL;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(MatchPhraseClauseConverter))]
-    internal class MatchPhraseClause : KQLBase, IVisitable, ILeafClause
+    internal class MatchPhraseClause : KustoQLBase, IVisitable, ILeafClause
     {
         public enum Subtype
         {

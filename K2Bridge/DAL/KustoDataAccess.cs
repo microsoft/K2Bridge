@@ -45,7 +45,7 @@ namespace K2Bridge.DAL
             {
                 Logger.LogDebug("Index name: {@indexName}", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
-                string kustoCommand = $".show {KQLOperators.Databases} {KQLOperators.Schema} | {KQLOperators.Where} TableName=='{tableName}' {KQLOperators.And} DatabaseName=='{databaseName}' {KQLOperators.And} ColumnName!='' | {KQLOperators.Project} ColumnName, ColumnType";
+                string kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=='{tableName}' {KustoQLOperators.And} DatabaseName=='{databaseName}' {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
                 using IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand);
                 while (kustoResults.Read())
                 {
@@ -82,7 +82,7 @@ namespace K2Bridge.DAL
             {
                 Logger.LogDebug("Index name: {@indexName}", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
-                string kustoCommand = $".show {KQLOperators.Databases} {KQLOperators.Schema} | {KQLOperators.Where} TableName != '' | {KQLOperators.Distinct} TableName, DatabaseName | {KQLOperators.Search} TableName: '{tableName}' | {KQLOperators.Search} DatabaseName: '{databaseName}' |  {KQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
+                string kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
                 using IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand);
                 while (kustoResults.Read())
                 {

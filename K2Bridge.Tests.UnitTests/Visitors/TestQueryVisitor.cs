@@ -60,7 +60,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(queryStringClause);
-            return queryStringClause.KQL;
+            return queryStringClause.KustoQL;
         }
 
         private static QueryStringClause CreateQueryStringClause(string phrase, bool wildcard)

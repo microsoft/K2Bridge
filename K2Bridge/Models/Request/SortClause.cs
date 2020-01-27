@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Request
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(SortClauseConverter))]
-    internal class SortClause : KQLBase, IVisitable
+    internal class SortClause : KustoQLBase, IVisitable
     {
         public string FieldName { get; set; }
 

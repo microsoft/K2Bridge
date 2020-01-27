@@ -49,7 +49,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var visitor = new ElasticSearchDSLVisitor();
             visitor.Visit(clause);
-            return clause.KQL;
+            return clause.KustoQL;
         }
     }
 }

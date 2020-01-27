@@ -33,7 +33,7 @@ namespace K2Bridge.Controllers
         /// <summary>
         /// Replaces occourances of :. with :: for strings containing _template substring
         /// a workaround an illegal path. the app can' read a path
-        /// containing :. and replaces it, with a valid token
+        /// containing :. and replaces it, with a valid token.
         /// </summary>
         /// <param name="templateString">string to replace tokens in.</param>
         /// <returns>string with illegal charachter replaced.</returns>
@@ -45,7 +45,7 @@ namespace K2Bridge.Controllers
         /// <summary>
         /// Replaces back occourances of :: with :. for strings containing _template substring
         /// a workaround an illegal path. the app can' read a path
-        /// containing :. and replaces it, with a valid token
+        /// containing :. and replaces it, with a valid token.
         /// </summary>
         /// <param name="templateString">string to replace tokens in.</param>
         /// <returns>string with charachter replaced back.</returns>

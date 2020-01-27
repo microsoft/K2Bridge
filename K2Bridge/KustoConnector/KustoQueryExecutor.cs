@@ -14,22 +14,26 @@ namespace K2Bridge.KustoConnector
     using Prometheus;
 
     /// <summary>
-    /// The kusto manager handles the connection to the kusto cluster.
+    /// Handles the connection to the kusto cluster and executes queries.
     /// </summary>
-    internal class KustoManager : IQueryExecutor
+    internal class KustoQueryExecutor : IQueryExecutor
     {
         private const string KustoApplicationNameForTracing = "K2Bridge";
-        private static readonly string AssemblyVersion = typeof(KustoManager).Assembly.GetName().Version.ToString();
+        private static readonly string AssemblyVersion = typeof(KustoQueryExecutor).Assembly.GetName().Version.ToString();
         private readonly ICslQueryProvider queryClient;
         private readonly ICslAdminProvider adminClient;
         private readonly IHistogram queryMetric;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="KustoManager"/> class.
+        /// Initializes a new instance of the <see cref="KustoQueryExecutor"/> class.
         /// </summary>
         /// <param name="connectionDetails">Kusto Connection Details.</param>
         /// <param name="logger">A logger.</param>
-        public KustoManager(IConnectionDetails connectionDetails, ILogger<KustoManager> logger, IHistogram adxQueryDurationMetric)
+        /// <param name="adxQueryDurationMetric">A metric to log the total query time to.</param>
+        public KustoQueryExecutor(
+            IConnectionDetails connectionDetails,
+            ILogger<KustoQueryExecutor> logger,
+            IHistogram adxQueryDurationMetric)
         {
             Logger = logger;
 
@@ -50,6 +54,7 @@ namespace K2Bridge.KustoConnector
             queryMetric = adxQueryDurationMetric;
         }
 
+        /// <inheritdoc/>
         public IConnectionDetails ConnectionDetails { get; set; }
 
         private ILogger Logger { get; set; }
@@ -76,7 +81,7 @@ namespace K2Bridge.KustoConnector
             Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
 
             // Use the kusto client to execute the query
-            var (timeTaken, dataReader) = queryClient.ExecuteMonitoredQuery(queryData.KQL, queryMetric);
+            var (timeTaken, dataReader) = queryClient.ExecuteMonitoredQuery(queryData.QueryCommandText, queryMetric);
             var fieldCount = dataReader.FieldCount;
             Logger.LogDebug("FieldCount: {@fieldCount}. timeTaken: {@timeTaken}", fieldCount, timeTaken);
             return (timeTaken, dataReader);

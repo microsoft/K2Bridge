@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Request.Queries
     /// <summary>
     /// Represents a boolean clause.
     /// </summary>
-    internal class BoolQuery : KQLBase, IVisitable, IQuery
+    internal class BoolQuery : KustoQLBase, IVisitable, IQuery
     {
         public IEnumerable<IQuery> Must { get; set; }
 
