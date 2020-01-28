@@ -6,8 +6,8 @@ namespace K2Bridge.Controllers
 {
     using System;
     using System.IO;
+    using System.Net.Http;
     using System.Threading.Tasks;
-    using K2Bridge.HttpMessages;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models.Response;
     using Microsoft.AspNetCore.Http;
@@ -55,7 +55,7 @@ namespace K2Bridge.Controllers
         [Consumes("application/json", "application/x-ndjson")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(ElasticResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(HttpResponseMessageResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(HttpResponseMessage), StatusCodes.Status200OK)]
         public async Task<IActionResult> Search(
             [FromQuery(Name = "rest_total_hits_as_int")] bool totalHits,
             [FromQuery(Name = "ignore_throttled")] bool ignoreThrottled)

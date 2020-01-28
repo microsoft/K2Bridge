@@ -87,7 +87,7 @@ namespace K2Bridge.KustoConnector
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogWarning($"Error reading kusto response: {ex.Message}");
+                    Logger.LogError(ex, "Error reading kusto response.");
                     throw;
                 }
             }

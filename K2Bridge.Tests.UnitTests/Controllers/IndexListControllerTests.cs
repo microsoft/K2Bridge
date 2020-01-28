@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Tests.UnitTests.Controllers
 {
+    using System.Net;
     using System.Threading.Tasks;
     using K2Bridge.Controllers;
     using K2Bridge.DAL;
@@ -25,7 +26,8 @@ namespace K2Bridge.Tests.UnitTests.Controllers
             var result = await ctr.Process("testIndexName");
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual((int)HttpStatusCode.OK, ((ObjectResult)result).StatusCode);
         }
 
         private IndexListController GetController()

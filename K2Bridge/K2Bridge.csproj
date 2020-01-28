@@ -53,7 +53,6 @@
 
   <ItemGroup>
     <Folder Include="RewriteRules\" />
-    <Folder Include="HttpMessages\" />
     <Folder Include="DAL\" />
   </ItemGroup>
 

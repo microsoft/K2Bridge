@@ -43,7 +43,7 @@ namespace K2Bridge.Controllers
         {
             var response = Kusto.GetIndexList(indexName);
 
-            return Ok(response);
+            return StatusCode(response.Status, response);
         }
     }
 }
