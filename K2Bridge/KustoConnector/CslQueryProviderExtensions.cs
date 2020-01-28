@@ -26,24 +26,13 @@ namespace K2Bridge.KustoConnector
             string query,
             IHistogram queryMetric)
         {
-            if (client == null)
-            {
-                throw new ArgumentNullException(nameof(client));
-            }
-
-            /** TODO in Task 1547 (https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1547)
-            if (string.IsNullOrEmpty(query))
-            {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(query));
-            }
+            Ensure.IsNotNull(client, nameof(client));
+            Ensure.IsNotNullOrEmpty(query, nameof(query));
 
             // Timer to be used to report the duration of a query to.
-            **/
             using var timer = queryMetric.NewTimer();
 
-#pragma warning disable CA1062 // Validate arguments of public methods
             var reader = client.ExecuteQuery(query);
-#pragma warning restore CA1062 // Validate arguments of public methods
 
             return (timer.ObserveDuration(), reader);
         }

@@ -70,6 +70,7 @@ namespace K2Bridge.Controllers
             }
             catch (Exception exception)
             {
+                logger.LogError(exception, "Failed to execute search query, returning 500.");
                 return BadRequest(exception);
             }
         }

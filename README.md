@@ -12,7 +12,7 @@ K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://
 The K2Bridge solution is a proxy capable of communicating with the Kibana application and translate its queries to [KQL](https://docs.microsoft.com/en-us/azure/kusto/query/), the query language of the Azure Data Explorer service.
 The solution currently targets the "Discover" tab in Kibana to enable users to quickly and interactively explore their data. It supports the filters and well as the search box in the screen with both simple term search and Lucene expressions.
 
-### How does it work
+## How does it work
 
 ![Architecture](./docs/images/architecture.png)
 
@@ -23,11 +23,11 @@ The bridge accept each request and redirects business (data) requests to ADX and
 
 1. Partial support for Azure Data Explorer's `dynamic column` - those columns represent objects with unknown schema. Those columns are visible in the item view as "flat" properties, however, their 1-click search icons (the +/-) are disabled. Additionally, those columns won't appear in the add filter option.
 
-TODO: update if/when we add support for dynamic columns. https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1253
+    TODO: update if/when we add support for dynamic columns. https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1253
 
-Options for better interaction with dynamic columns:
-    * Use Lucene expressions in the search box with a fully qualified property path. For example: propertyA.propertyB:myValue
-    * If possible, consider promoting some/all properties in a dynamic column to regular-discreet columns in Azure Data Explorer. By doing so, you'll also get a potential performance boost when search.
+    Options for better interaction with dynamic columns:
+        * Use Lucene expressions in the search box with a fully qualified property path. For example: propertyA.propertyB:myValue
+        * If possible, consider promoting some/all properties in a dynamic column to regular-discreet columns in Azure Data Explorer. By doing so, you'll also get a potential performance boost when search.
 
 1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features.
 TODO: how would they give feedback?

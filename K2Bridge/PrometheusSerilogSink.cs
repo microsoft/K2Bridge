@@ -50,9 +50,8 @@ namespace K2Bridge
             ExceptionsCounter.Inc();
 
             var typeName = logEvent.Exception.GetType().Name;
-            LogEventPropertyValue prop;
             using var sourceContext = new StringWriter();
-            if (logEvent.Properties.TryGetValue("SourceContext", out prop))
+            if (logEvent.Properties.TryGetValue("SourceContext", out LogEventPropertyValue prop))
             {
                 prop.Render(sourceContext, SerilogRawFormat);
             }

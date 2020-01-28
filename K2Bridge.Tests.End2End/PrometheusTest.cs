@@ -28,12 +28,11 @@ namespace K2Bridge.Tests.End2End
             using var request = new HttpRequestMessage(HttpMethod.Get, "/metrics");
             var response = await K2Client().Client().SendAsync(request);
             var responseData = await response.Content.ReadAsStringAsync();
+
             Assert.True(
-                responseData.Contains(
-                "# HELP exceptions_by_type Exceptions, by type\n"
-                + "# TYPE exceptions_by_type counter\n"
-                + @"exceptions_by_type{ExceptionType=""JsonReaderException"",SourceContext=""K2Bridge.ElasticQueryTranslator"",ActionName=""K2Bridge.Controllers.QueryController.Search (K2Bridge)""} ",
-                Ordinal), responseData);
+                responseData.Contains(@"exceptions_by_type{ExceptionType=""JsonReaderException"",SourceContext=""K2Bridge.Controllers.QueryController"",ActionName=""K2Bridge.Controllers.QueryController.Search (K2Bridge)""}", Ordinal) &&
+                responseData.Contains(@"exceptions_by_type{ExceptionType=""JsonReaderException"",SourceContext=""K2Bridge.ElasticQueryTranslator"",ActionName=""K2Bridge.Controllers.QueryController.Search (K2Bridge)""}", Ordinal));
+
             Assert.True(
                 responseData.Contains(
                 "# HELP exceptions Exceptions logged\n"
