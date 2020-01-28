@@ -15,6 +15,7 @@ namespace K2Bridge.Tests.End2End
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
+    using NUnit.Framework;
 
     /// <summary>
     /// A low-level client for Elasticsearch operations.
@@ -46,9 +47,11 @@ namespace K2Bridge.Tests.End2End
             };
 
             // validate backend host is reachable
+            TestContext.Progress.WriteLine($"Validating connection to {baseAddress}");
             using var request = new HttpRequestMessage(HttpMethod.Get, string.Empty);
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
+            TestContext.Progress.WriteLine($"Validated connection");
             return new TestElasticClient(client, dumpFileName);
         }
 
@@ -221,7 +224,7 @@ namespace K2Bridge.Tests.End2End
         /// <returns><c>JToken</c> with parsed response.</returns>
         public async Task<JToken> FieldCaps(string indexName)
         {
-            using var request = new HttpRequestMessage(HttpMethod.Post, $"{indexName}/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false");
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"/{indexName}/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false");
             var result = await JsonQuery(request);
 
             // Use generic Elasticsearch type for geo_point
@@ -243,6 +246,10 @@ namespace K2Bridge.Tests.End2End
             ReplaceType(result, "text", "keyword", true);
 
             return result;
+        }
+
+        public HttpClient Client() {
+            return client;
         }
 
         private static void MaskSearchCommon(JToken result, string searchBase)

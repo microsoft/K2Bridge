@@ -37,12 +37,14 @@ namespace K2Bridge.Visitors
         public const string ToDateTime = "todatetime";
         public const string Database = "database";
         public const string Databases = "databases";
+        public const string Functions = "functions";
         public const string Schema = "schema";
         public const string Project = "project";
         public const string Search = "search";
         public const string Distinct = "distinct";
         public const string HasPrefixCS = "hasprefix_cs";
         public const string MatchRegex = "matches regex";
+        public const string GetSchema = "getschema";
         public const string Equal = "==";
         public const string CommandSeparator = "\n| ";
 #pragma warning restore SA1600 // Elements should be documented

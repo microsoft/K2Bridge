@@ -44,8 +44,10 @@ namespace K2Bridge
         public static void Main(string[] args)
         {
             // initialize logger
+            // Prometheus sink is configured in addition to any sinks defined in appsettings.json.
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
+                .WriteTo.Sink(new PrometheusSerilogSink())
                 .CreateLogger();
 
             // Log startup message with version as soon as possible

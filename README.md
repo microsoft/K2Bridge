@@ -38,6 +38,38 @@ TODO: how would they give feedback?
 K2Bridge deploys to Kubernetes. Instructions are available [here](./docs/installation.md).
 TODO: replace with a quick install guide when images are public.
 
+## Connecting data
+
+The application settings contains the credentials for a service principal and a
+reference to an ADX cluster and a default database within the cluster (`adxDefaultDatabaseName`).
+
+The application surfaces the following data from ADX as indexes into Kibana:
+
+* **Tables** located in any database on the ADX cluster, regardless of the `adxDefaultDatabaseName` setting, provided:
+  * The service principal has Viewer permissions on the table.
+* **Functions** located in the `adxDefaultDatabaseName` database only, provided:
+  * The service principal has Viewer permissions on the function.
+  * The function does not take any parameters.
+
+ADX functions without parameters are similar in nature to views in relational databases.
+Through functions, you can perform [cross-database and cross-cluster queries](https://docs.microsoft.com/en-us/azure/kusto/query/cross-cluster-or-database-queries) as well as 
+queries into
+[Azure Monitor (Application Insights and Log Analytics)](https://docs.microsoft.com/en-us/azure/data-explorer/query-monitor-data), provided the service principal has adequate permissions
+on the external resources.
+For example:
+
+```
+.create function ListContainers() {
+    cluster('https://ade.loganalytics.io/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.OperationalInsights/workspaces/k8s-workspace-0000')
+    .database('k8s-workspace-0000')
+    .ContainerInventory | limit 100
+}
+```
+
+Note that you cannot connect K2Bridge directly to Azure Monitor, you need an ADX instance
+serving as broker. Be very mindful of the performance impact of such distributed queries,
+which can easily result into Kibana timeouts.
+
 ## Developing
 
 Information on how to run Kibana and K2Bridge locally for development and testing can be found [here](./docs/development.md).

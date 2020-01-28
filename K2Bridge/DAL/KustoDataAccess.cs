@@ -5,6 +5,7 @@
 namespace K2Bridge.DAL
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
@@ -43,23 +44,21 @@ namespace K2Bridge.DAL
             var response = new FieldCapabilityResponse();
             try
             {
-                Logger.LogDebug("Index name: {@indexName}", indexName);
+                Logger.LogDebug("Getting schema for table '{@indexName}'", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
                 string kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=='{tableName}' {KustoQLOperators.And} DatabaseName=='{databaseName}' {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
                 using IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand);
-                while (kustoResults.Read())
+                MapFieldCaps(kustoResults, response);
+                if (response.Fields.Count > 0)
                 {
-                    var record = kustoResults;
-                    var fieldCapabilityElement = FieldCapabilityElement.Create(record);
-                    if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
-                    {
-                        Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
-                    }
-
-                    response.AddField(fieldCapabilityElement);
-
-                    Logger.LogDebug("Found field: {@fieldCapabilityElement}", fieldCapabilityElement);
+                    return response;
                 }
+
+                Logger.LogDebug("Getting schema for function '{@indexName}'", indexName);
+                string functionQuery = $"{tableName} | {KustoQLOperators.GetSchema} | project ColumnName, ColumnType=DataType";
+                var functionQueryData = new QueryData(functionQuery, tableName, new Dictionary<string, string>());
+                var functionResults = Kusto.ExecuteQuery(functionQueryData);
+                MapFieldCaps(functionResults.reader, response);
             }
             catch (Exception ex)
             {
@@ -72,26 +71,27 @@ namespace K2Bridge.DAL
 
         /// <summary>
         /// Executes a query to Kusto for Index List.
+        ///
+        /// Searches for all tables and all functions that match the index name pattern.
         /// </summary>
-        /// <param name="indexName">Index name.</param>
-        /// <returns>A list of Indexes.</returns>
+        /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
+        /// <returns>A list of Indexes matching the given name pattern.</returns>
         public IndexListResponseElement GetIndexList(string indexName)
         {
             var response = new IndexListResponseElement();
             try
             {
-                Logger.LogDebug("Index name: {@indexName}", indexName);
+                Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
-                string kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
-                using IDataReader kustoResults = Kusto.ExecuteControlCommand(kustoCommand);
-                while (kustoResults.Read())
-                {
-                    var record = kustoResults;
-                    var termBucket = TermBucket.Create(record);
-                    response.Aggregations.IndexCollection.AddBucket(termBucket);
+                string readTablesCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
+                using IDataReader kustoTables = Kusto.ExecuteControlCommand(readTablesCommand);
+                MapIndexList(kustoTables, response);
 
-                    Logger.LogDebug("Found index/table: {@termBucket}", termBucket);
-                }
+                Logger.LogDebug("Listing functions matching '{@indexName}'", indexName);
+                var defaultDb = Kusto.ConnectionDetails.DefaultDatabaseName;
+                string readFunctionsCommand = $".show {KustoQLOperators.Functions} | {KustoQLOperators.Where} Parameters == '()' | {KustoQLOperators.Distinct} Name | {KustoQLOperators.Search} Name: '{tableName}' | {KustoQLOperators.Project} strcat(\"{defaultDb}\", \"{KustoDatabaseTableNames.Separator}\", Name)";
+                using IDataReader kustoFunctions = Kusto.ExecuteControlCommand(readFunctionsCommand);
+                MapIndexList(kustoFunctions, response);
             }
             catch (Exception ex)
             {
@@ -100,6 +100,34 @@ namespace K2Bridge.DAL
 
             // TODO: should we return an empty response in case of an error? or just throw?
             return response;
+        }
+
+        private void MapFieldCaps(IDataReader kustoResults, FieldCapabilityResponse response)
+        {
+            while (kustoResults.Read())
+            {
+                var fieldCapabilityElement = FieldCapabilityElement.Create(kustoResults);
+                if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
+                {
+                    // TODO add metric
+                    Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
+                }
+
+                response.AddField(fieldCapabilityElement);
+
+                Logger.LogDebug("Found field: {@fieldCapabilityElement}", fieldCapabilityElement);
+            }
+        }
+
+        private void MapIndexList(IDataReader kustoResults, IndexListResponseElement response)
+        {
+            while (kustoResults.Read())
+            {
+                var termBucket = TermBucket.Create(kustoResults);
+                response.Aggregations.IndexCollection.AddBucket(termBucket);
+
+                Logger.LogDebug("Found table/function: {@termBucket}", termBucket);
+            }
         }
     }
 }

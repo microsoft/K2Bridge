@@ -100,7 +100,7 @@ az acr build -r $REGISTRY_NAME -t $CONTAINER_NAME .
 1. Configure index-patterns
 In a new installation of Kibana, you will need to configure the indexe-patterns to access your data.
 Navigate to Management -> Index Patterns and create new indexes.
-Note that the name of the index must be an **exact match** to the table name without any asterisk. You can copy the relevant line from the list.
+Note that the name of the index must be an **exact match** to the table name or function name, without any asterisk. You can copy the relevant line from the list.
 
 Notes:
 To run on other kubernetes providers, change in `values.yaml` the elasticsearch storageClassName to fit the one suggested by the provider.
