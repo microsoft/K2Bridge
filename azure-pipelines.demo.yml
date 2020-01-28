@@ -9,7 +9,7 @@ variables:
 - name: SEMANTIC_VERSION
   value: "$(MAJOR_MINOR_VERSION).$(Build.BuildId)"
 - name: KUSTO_DB
-  value: "build$(Build.BuildId)"
+  value: "demo"
 
 pool:
   vmImage: ubuntu-latest
