@@ -76,6 +76,9 @@ namespace K2Bridge
                 c.SwaggerDoc("v1", new OpenApiInfo() { Title = "K2Bridge API", Version = "v1" });
             });
 
+            // Add a health/liveness service
+            services.AddHealthChecks();
+
             // required on ASP.NET Core 3 https://docs.microsoft.com/en-us/aspnet/core/migration/22-to-30?view=aspnetcore-2.2&tabs=visual-studio#jsonnet-support
             services.AddMvcCore().AddNewtonsoftJson();
         }
@@ -119,6 +122,9 @@ namespace K2Bridge
                 endpoints.MapControllerRoute("fieldcaps", "FieldCapability/Process/{indexName?}", defaults: new { controller = "FieldCapability", action = "Process" });
                 endpoints.MapControllerRoute("indexlist", "IndexList/Process/{indexName?}", defaults: new { controller = "IndexList", action = "Process" });
                 endpoints.MapFallbackToController("Passthrough", "Metadata");
+
+                // Enable middleware to serve from health endpoint
+                endpoints.MapHealthChecks("/health");
             });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
