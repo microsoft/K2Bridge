@@ -11,6 +11,7 @@ namespace K2BridgeUnitTests
     using System.Threading.Tasks;
     using K2Bridge;
     using K2Bridge.Controllers;
+    using K2Bridge.HttpMessages;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -24,14 +25,14 @@ namespace K2BridgeUnitTests
         private const string ValidQueryPath = "/_template/kibana_index_template::kibana?include_type_name=true";
 
         private static readonly object[] IntegrationTestCases = {
-            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "POST", typeof(ObjectResult), HttpStatusCode.OK).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidPost_ReturnsOk"),
-            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "HEAD", typeof(ObjectResult), HttpStatusCode.OK).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidHead_ReturnsOk"),
-            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "PUT", typeof(ObjectResult), HttpStatusCode.OK).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidPut_ReturnsOk"),
-            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "PATCH", typeof(ObjectResult), HttpStatusCode.OK).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidPatch_ReturnsOk"),
-            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "OPTIONS", typeof(ObjectResult), HttpStatusCode.OK).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidOptions_ReturnsOk"),
-            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "GET", typeof(ObjectResult), HttpStatusCode.OK).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidGet_ReturnsOk"),
-            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "DELETE", typeof(ObjectResult), HttpStatusCode.OK).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidDelete_ReturnsOk"),
-            new TestCaseData(null, "POST", typeof(ObjectResult), HttpStatusCode.InternalServerError).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsInvalid_ReturnsBadRequest"),
+            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "POST", typeof(HttpResponseMessageResult)).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidPost_ReturnsOk"),
+            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "HEAD", typeof(HttpResponseMessageResult)).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidHead_ReturnsOk"),
+            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "PUT", typeof(HttpResponseMessageResult)).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidPut_ReturnsOk"),
+            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "PATCH", typeof(HttpResponseMessageResult)).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidPatch_ReturnsOk"),
+            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "OPTIONS", typeof(HttpResponseMessageResult)).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidOptions_ReturnsOk"),
+            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "GET", typeof(HttpResponseMessageResult)).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidGet_ReturnsOk"),
+            new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true", "DELETE", typeof(HttpResponseMessageResult)).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsValidDelete_ReturnsOk"),
+            new TestCaseData(null, "POST", typeof(BadRequestObjectResult)).Returns(string.Empty).SetName("PassThroughController_WhenQueryIsInvalid_ReturnsBadRequest"),
         };
 
         private static readonly object[] ReplaceStringTestCases = {
@@ -50,8 +51,7 @@ namespace K2BridgeUnitTests
             controllerFixture.Client.Dispose();
 
             // Assert
-            Assert.IsInstanceOf<ObjectResult>(result);
-            Assert.AreEqual((int)HttpStatusCode.OK, ((ObjectResult)result).StatusCode);
+            Assert.IsInstanceOf<HttpResponseMessageResult>(result);
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace K2BridgeUnitTests
         }
 
         [TestCaseSource("IntegrationTestCases")]
-        public async Task<string> PassThroughController_Integration_Tests(string input, string method, Type resultType, int expectedStatusCode)
+        public async Task<string> PassThroughController_Integration_Tests(string input, string method, Type resultType)
         {
             Ensure.IsNotNull(resultType, nameof(resultType));
 
@@ -84,7 +84,6 @@ namespace K2BridgeUnitTests
 
             // Assert
             Assert.IsInstanceOf(resultType, result, $"result {result.ToString()} is not of expected type {resultType.Name}");
-            Assert.AreEqual(expectedStatusCode, ((ObjectResult)result).StatusCode);
             return string.Empty;
         }
 
@@ -108,7 +107,7 @@ namespace K2BridgeUnitTests
             controllerFixture.Client.Dispose();
 
             // Assert
-            Assert.IsInstanceOf(typeof(ObjectResult), result, $"result {result.ToString()} is not of expected type {nameof(ObjectResult)}");
+            Assert.IsInstanceOf(typeof(HttpResponseMessageResult), result, $"result {result.ToString()} is not of expected type HttpResponseMessageResult");
         }
 
         [Test]
@@ -136,8 +135,7 @@ namespace K2BridgeUnitTests
             controllerFixture.Client.Dispose();
 
             // Assert
-            Assert.IsInstanceOf(typeof(ObjectResult), result, $"result {result.ToString()} is not of expected type {nameof(ObjectResult)}");
-            Assert.AreEqual((int)HttpStatusCode.OK, ((ObjectResult)result).StatusCode);
+            Assert.IsInstanceOf(typeof(HttpResponseMessageResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
         }
 
         [Test]
@@ -150,7 +148,7 @@ namespace K2BridgeUnitTests
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
                     ItExpr.IsAny<CancellationToken>())
-                .Throws(new System.Web.Http.HttpResponseException(HttpStatusCode.InternalServerError))
+                .Throws(new System.Web.Http.HttpResponseException(HttpStatusCode.BadRequest))
                 .Verifiable();
 
             // Act
@@ -159,7 +157,7 @@ namespace K2BridgeUnitTests
             controllerFixture.Client.Dispose();
 
             // Assert
-            Assert.IsInstanceOf(typeof(ObjectResult), result, $"result {result.ToString()} is not of expected type {nameof(ObjectResult)}");
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
         }
 
         private MetadataControllerFixture GetControllerFixture(string path, string method, bool setupHandler = true)

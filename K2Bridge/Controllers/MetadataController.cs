@@ -5,9 +5,9 @@
 namespace K2Bridge.Controllers
 {
     using System;
-    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using K2Bridge.HttpMessages;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
@@ -55,9 +55,7 @@ namespace K2Bridge.Controllers
             }
             catch (Exception exception)
             {
-                return StatusCode(
-                    (int)HttpStatusCode.InternalServerError,
-                    exception);
+                return BadRequest(exception);
             }
         }
 
@@ -85,21 +83,11 @@ namespace K2Bridge.Controllers
         internal async Task<IActionResult> PassthroughInternal()
         {
             HttpContext.Request.Path = ControllerExtractMethods.ReplaceBackTemplateString(HttpContext.Request.Path.Value);
-            var remoteResponse =
-                await ForwardMessageToMetadataClient(
-                    clientFactory,
-                    new HttpRequestMessageFeature(HttpContext).HttpRequestMessage);
-
+            var remoteResponse = await ForwardMessageToMetadataClient(
+            clientFactory,
+            new HttpRequestMessageFeature(HttpContext).HttpRequestMessage);
             HttpContext.Response.RegisterForDispose(remoteResponse);
-            if (remoteResponse.IsSuccessStatusCode)
-            {
-                string resultStr = await remoteResponse.Content.ReadAsStringAsync();
-                return StatusCode((int)remoteResponse.StatusCode, resultStr);
-            }
-
-            return StatusCode(
-                (int)remoteResponse.StatusCode,
-                remoteResponse.ReasonPhrase);
+            return new HttpResponseMessageResult(remoteResponse);
         }
     }
 }
