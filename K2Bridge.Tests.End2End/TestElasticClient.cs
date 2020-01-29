@@ -244,10 +244,6 @@ namespace K2Bridge.Tests.End2End
             MaskValue(result, $"{searchBase}_shards.skipped");
             MaskValue(result, $"{searchBase}_shards.failed");
             MaskValue(result, $"{searchBase}hits.hits[*]._id");
-
-            // TODO: remove backendQuery if not enabled
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1461
-            DeleteValue(result, $"{searchBase}_backendQuery");
         }
 
         /// <summary>

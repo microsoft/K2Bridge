@@ -38,15 +38,19 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             Assert.AreEqual(result[0].Index, "index");
             Assert.AreEqual(result[1].Index, "index");
 
-            var expectedHitSource1 = new JObject();
-            expectedHitSource1.Add("column1", "r1c1");
-            expectedHitSource1.Add("column2", "r1c2");
+            var expectedHitSource1 = new JObject
+            {
+                { "column1", "r1c1" },
+                { "column2", "r1c2" },
+            };
 
             Assert.AreEqual(result[0].Source, expectedHitSource1);
 
-            var expectedHitSource2 = new JObject();
-            expectedHitSource2.Add("column1", "r2c1");
-            expectedHitSource2.Add("column2", "r2c2");
+            var expectedHitSource2 = new JObject
+            {
+                { "column1", "r2c1" },
+                { "column2", "r2c2" },
+            };
 
             Assert.AreEqual(result[1].Source, expectedHitSource2);
         }
@@ -70,8 +74,10 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
         [Test]
         public void ReadHits_EmptyHitsInKustoResponse_ReturnsEmptyHits()
         {
-            using var hitsEmptyTable = new DataTable();
-            hitsEmptyTable.TableName = "hits";
+            using var hitsEmptyTable = new DataTable
+            {
+                TableName = "hits",
+            };
 
             var query = new QueryData("query", "index", null);
 
@@ -139,6 +145,42 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
 
             var elasticResult = result.Responses.ToList()[0];
             Assert.AreEqual(2, elasticResult.Aggregations.Collection.Buckets.Count());
+        }
+
+        [Test]
+        public void ParseElasticResponse_BackendQueryFalse_ReturnsNull()
+        {
+            using var aggsTable = GetAggsTable();
+            aggsTable.TableName = "aggs";
+
+            var timeTaken = new TimeSpan(17);
+            var query = new QueryData("query", "index", null);
+
+            var reader = aggsTable.CreateDataReader();
+            var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
+
+            var result = new KustoResponseParser(stubLogger, false).ParseElasticResponse(reader, query, timeTaken);
+
+            Assert.IsNull(result.Responses.First().BackendQuery);
+        }
+
+        [Test]
+        public void ParseElasticResponse_BackendQueryTrue_ReturnsTheQuery()
+        {
+            using var aggsTable = GetAggsTable();
+            aggsTable.TableName = "aggs";
+
+            var timeTaken = new TimeSpan(17);
+            var queryText = "query";
+            var query = new QueryData(queryText, "index", null);
+
+            var reader = aggsTable.CreateDataReader();
+            var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
+
+            var result = new KustoResponseParser(stubLogger, true).ParseElasticResponse(reader, query, timeTaken);
+            var check = result.Responses.First().BackendQuery;
+
+            Assert.AreEqual(queryText, result.Responses.First().BackendQuery);
         }
 
         private static DataTable GetTestTable()
