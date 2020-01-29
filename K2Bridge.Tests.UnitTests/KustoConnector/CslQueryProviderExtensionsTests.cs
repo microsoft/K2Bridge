@@ -15,15 +15,15 @@ namespace Tests.KustoConnector
     [TestFixture]
     public class CslQueryProviderExtensionsTests
     {
+        private readonly IDataReader data = Substitute.For<IDataReader>();
+        private readonly ICslQueryProvider client = Substitute.For<ICslQueryProvider>();
+        private readonly IHistogram metric = Substitute.For<IHistogram>();
+
         [TestCase]
         public void ExecuteMonitoredQuery_Common_Success()
         {
-            var data = Substitute.For<IDataReader>();
-            var provider = Substitute.For<ICslQueryProvider>();
-            var metric = Substitute.For<IHistogram>();
-
-            provider.ExecuteQuery(Arg.Any<string>()).Returns(data);
-            var (timeTaken, reader) = provider.ExecuteMonitoredQuery("wibble", metric);
+            client.ExecuteQuery(Arg.Any<string>()).Returns(data);
+            var (timeTaken, reader) = client.ExecuteMonitoredQuery("wibble", metric);
 
             Assert.AreNotEqual(0, timeTaken);
             Assert.AreSame(data, reader);
@@ -32,10 +32,7 @@ namespace Tests.KustoConnector
         [TestCase]
         public void ExecuteMonitoredQuery_NullProvider_Failure()
         {
-            var data = Substitute.For<IDataReader>();
-            var metric = Substitute.For<IHistogram>();
-
-            _ = Assert.Throws(
+            Assert.Throws(
                 Is.TypeOf<ArgumentNullException>()
                  .And.Message.EqualTo("Value cannot be null. (Parameter 'Argument client cannot be null')"),
                 () => CslQueryProviderExtensions.ExecuteMonitoredQuery(null, "some query", metric));
@@ -44,27 +41,19 @@ namespace Tests.KustoConnector
         [TestCase]
         public void ExecuteMonitoredQuery_EmptyQuery_Failure()
         {
-            var data = Substitute.For<IDataReader>();
-            var metric = Substitute.For<IHistogram>();
-            var client = Substitute.For<ICslQueryProvider>();
-
-            _ = Assert.Throws(
+            Assert.Throws(
                 Is.TypeOf<ArgumentException>()
                  .And.Message.EqualTo("query (Parameter 'query cannot be empty')"),
-                () => CslQueryProviderExtensions.ExecuteMonitoredQuery(client, string.Empty, metric));
+                () => client.ExecuteMonitoredQuery(string.Empty, metric));
         }
 
         [TestCase]
         public void ExecuteMonitoredQuery_NullQuery_Failure()
         {
-            var data = Substitute.For<IDataReader>();
-            var metric = Substitute.For<IHistogram>();
-            var client = Substitute.For<ICslQueryProvider>();
-
-            _ = Assert.Throws(
+            Assert.Throws(
                 Is.TypeOf<ArgumentNullException>()
                  .And.Message.EqualTo("query cannot be null (Parameter 'query')"),
-                () => CslQueryProviderExtensions.ExecuteMonitoredQuery(client, null, metric));
+                () => client.ExecuteMonitoredQuery(null, metric));
         }
     }
 }

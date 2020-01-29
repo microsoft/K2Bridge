@@ -149,23 +149,7 @@ namespace K2Bridge.Tests.End2End
                     var v = (JValue)token;
                     v.Value = Convert.ToSingle(v.Value, CultureInfo.InvariantCulture);
                 }
-
-                // TODO: K2 returns boolean as int
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1463
-                if (token.Type == JTokenType.Boolean)
-                {
-                    var v = token as JValue;
-                    v.Value = Convert.ToInt16(v.Value, CultureInfo.InvariantCulture);
-                }
             }
-
-            // TODO: distinct timestamp formats for aggregation keys
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1464
-            NormalizeTimestamps(result, "responses[*].aggregations.*.buckets[*].key_as_string");
-
-            // TODO: distinct timestamp formats for timestamp attributes
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1487
-            DeleteValue(result, "responses[*].hits.hits[*]._source.timestamp");
 
             return result;
         }
