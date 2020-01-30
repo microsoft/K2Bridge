@@ -30,7 +30,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(queryStringClause, nameof(queryStringClause));
 
             queryStringClause.KustoQL = IsSimplePhrase(queryStringClause.Phrase)
-                ? $"* == \"{queryStringClause.Phrase}\""
+                ? $"* has \"{queryStringClause.Phrase}\""
                 : CreateKqlFromLucenePhrase(queryStringClause);
         }
 

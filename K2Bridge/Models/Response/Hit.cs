@@ -74,10 +74,15 @@ namespace K2Bridge.Models.Response
 
                 // Elastic only highlights string values, but we try to highlight everything we can here.
                 // To mimic elastic: check for type of value here and skip if != string.
-                if ((query.HighlightText.ContainsKey(name) && query.HighlightText[name].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase)) ||
-                    (query.HighlightText.ContainsKey("*") && query.HighlightText["*"].Equals(value.ToString(), StringComparison.OrdinalIgnoreCase)))
+                // HighlightText.ContainsKey(name) condition will be true when searching with the available filters
+                // HighlightText.ContainsKey("*") condition will be true when searching with the search box
+                if (query.HighlightText.ContainsKey(name) && value.ToString().Equals(query.HighlightText[name], StringComparison.OrdinalIgnoreCase))
                 {
-                    hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + value.ToString() + query.HighlightPostTag });
+                    hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + query.HighlightText[name] + query.HighlightPostTag });
+                }
+                else if (query.HighlightText.ContainsKey("*") && value.ToString().Contains(query.HighlightText["*"], StringComparison.OrdinalIgnoreCase))
+                {
+                    hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + query.HighlightText["*"] + query.HighlightPostTag });
                 }
             }
 

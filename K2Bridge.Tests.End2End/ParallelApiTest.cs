@@ -56,6 +56,23 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
+        [Description("/_msearch Kibana query with text substring")]
+        public void MSearch_TextContains_Equivalent()
+        {
+            ParallelQuery(
+                $"{FLIGHTSDIR}/MSearch_Text_Contains.json");
+        }
+
+        [Test]
+        [Description("/_msearch Kibana query with text multiple words substring")]
+        [Ignore("Requires fixing for multiple search strings")]
+        public void MSearch_TextContainsMultiple_Equivalent()
+        {
+            ParallelQuery(
+                $"{FLIGHTSDIR}/MSearch_Text_Contains_Multiple.json");
+        }
+
+        [Test]
         [Description("/_msearch Kibana aggregation query with text (includes prefix) filter")]
         public void MSearch_TextFilter_Prefix_Equivalent()
         {

@@ -316,11 +316,11 @@ stages:
           --set persistence.enabled=false \
           --set minimumMasterNodes=1 \
           --set antiAffinity="soft" \
-          --set esJavaOpts="-Xmx128m -Xms128m" \
+          --set esJavaOpts="-Xmx512m -Xms512m" \
           --set resources.requests.cpu="100m" \
-          --set resources.requests.memory="512M" \
+          --set resources.requests.memory="1024M" \
           --set limits.cpu="1000m" \
-          --set limits.memory="512M"
+          --set limits.memory="2048M"
 
       displayName: Deploy Elasticsearch
 

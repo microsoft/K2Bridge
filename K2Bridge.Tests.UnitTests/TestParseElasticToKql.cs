@@ -314,7 +314,7 @@ namespace Tests
             Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
         }
 
-        [TestCase(QueryString, ExpectedResult = "where (* == \"TEST_RESULT\")")]
+        [TestCase(QueryString, ExpectedResult = "where (* has \"TEST_RESULT\")")]
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -323,8 +323,9 @@ namespace Tests
             return query.KustoQL;
         }
 
-        [TestCase(CombinedQuery, ExpectedResult = "where (* == \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
-        [TestCase(NotQueryStringClause, ExpectedResult = "where (* == \"TEST_RESULT\") and\n not (TEST_FIELD == \"TEST_RESULT_2\")")]
+        // TODO: fix this test when task: https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1579 completes
+        [TestCase(CombinedQuery, ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
+        [TestCase(NotQueryStringClause, ExpectedResult = "where (* has \"TEST_RESULT\") and\n not (TEST_FIELD == \"TEST_RESULT_2\")")]
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);

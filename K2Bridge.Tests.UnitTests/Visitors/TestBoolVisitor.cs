@@ -13,7 +13,7 @@ namespace K2BridgeUnitTests.Visitors
     [TestFixture]
     public class TestBoolVisitor
     {
-        [TestCase(ExpectedResult = "(* == \"ItemA\")")]
+        [TestCase(ExpectedResult = "(* has \"ItemA\")")]
         public string TestOneBoolQueryInMustVisit()
         {
             var boolQuery = new BoolQuery
@@ -24,7 +24,7 @@ namespace K2BridgeUnitTests.Visitors
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "not (* == \"ItemB\")")]
+        [TestCase(ExpectedResult = "not (* has \"ItemB\")")]
         public string TestOneBoolQueryInMustNotVisit()
         {
             var boolQuery = new BoolQuery
@@ -35,7 +35,7 @@ namespace K2BridgeUnitTests.Visitors
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "(* == \"ItemC\")")]
+        [TestCase(ExpectedResult = "(* has \"ItemC\")")]
         public string TestOneBoolQueryInShouldVisit()
         {
             var boolQuery = new BoolQuery
@@ -46,7 +46,7 @@ namespace K2BridgeUnitTests.Visitors
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "not (* == \"ItemD\")")]
+        [TestCase(ExpectedResult = "not (* has \"ItemD\")")]
         public string TestOneBoolQueryInShouldNotVisit()
         {
             var boolQuery = new BoolQuery
@@ -57,10 +57,10 @@ namespace K2BridgeUnitTests.Visitors
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "(* == \"ItemA1\") and " +
-            "(* == \"ItemA2\") and " +
-            "(* == \"ItemA3\") and " +
-            "(* == \"ItemA4\")")]
+        [TestCase(ExpectedResult = "(* has \"ItemA1\") and " +
+            "(* has \"ItemA2\") and " +
+            "(* has \"ItemA3\") and " +
+            "(* has \"ItemA4\")")]
         public string TestMultipleBoolQueryInMustVisit()
         {
             var lst = new LinkedList<string>();
@@ -77,10 +77,10 @@ namespace K2BridgeUnitTests.Visitors
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "(* == \"ItemA\") and\n " +
-            "not (* == \"ItemB\") and\n " +
-            "(* == \"ItemC\") and\n " +
-            "not (* == \"ItemD\")")]
+        [TestCase(ExpectedResult = "(* has \"ItemA\") and\n " +
+            "not (* has \"ItemB\") and\n " +
+            "(* has \"ItemC\") and\n " +
+            "not (* has \"ItemD\")")]
         public string TestSimpleBoolQueryVisit()
         {
             var boolQuery = new BoolQuery

@@ -11,7 +11,7 @@ namespace K2BridgeUnitTests.Visitors
     [TestFixture]
     public class TestQueryVisitor
     {
-        [TestCase(ExpectedResult = "* == \"myPharse\"")]
+        [TestCase(ExpectedResult = "* has \"myPharse\"")]
         public string TestBasicQueryVisitor()
         {
             var queryClause = CreateQueryStringClause("myPharse", true);
