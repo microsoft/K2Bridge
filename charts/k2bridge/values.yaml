@@ -15,7 +15,7 @@ image:
 settings:
   bridgeListenerAddress: "http://k2bridge:80/"
   metadataElasticAddress: "http://k2bridgees-master:9200"
-  outputBackendQuery: false
+  outputBackendQuery: true
   adxClusterUrl: "https://myadxinstance.region.kusto.windows.net"
   adxDefaultDatabaseName: "myadxdatabase"
   aadClientId: "00000000-0000-0000-0000-000000000000"
