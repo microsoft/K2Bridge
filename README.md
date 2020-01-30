@@ -21,17 +21,12 @@ The bridge accept each request and redirects business (data) requests to ADX and
 
 ### Some differences you should know about
 
-1. Partial support for Azure Data Explorer's `dynamic column` - those columns represent objects with unknown schema. Those columns are visible in the item view as "flat" properties, however, their 1-click search icons (the +/-) are disabled. Additionally, those columns won't appear in the add filter option.
+1. The [searching](./docs/searching.md) documentation provides insights to the similarities and differences between elasticsearch and azure data explorer as kibana data sources.
 
-    TODO: update if/when we add support for dynamic columns. https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1253
-
-    Options for better interaction with dynamic columns:
-        * Use Lucene expressions in the search box with a fully qualified property path. For example: propertyA.propertyB:myValue
-        * If possible, consider promoting some/all properties in a dynamic column to regular-discreet columns in Azure Data Explorer. By doing so, you'll also get a potential performance boost when search.
-
-1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features.
+2. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features.
 TODO: how would they give feedback?
-1. We have used and tested the OSS version of Kibana. Using other versions might work but you would probably need to disable various modules.
+
+3. We have used and tested the OSS version of Kibana. Using other versions might work but you would probably need to disable various modules such as xpack.
 
 ## Installing
 
