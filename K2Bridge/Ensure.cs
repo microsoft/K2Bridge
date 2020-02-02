@@ -6,6 +6,8 @@ namespace K2Bridge
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// A class to verify a condition on a parameter.
@@ -29,14 +31,15 @@ namespace K2Bridge
         }
 
         /// <summary>
-        /// Throws an <see cref="ArgumentNullException"/> if the argument is null.
+        /// Throws an <see cref="ArgumentNullException"/> if the argument is null or empty.
         /// </summary>
+        /// <typeparam name="T">Type of values in argument.</typeparam>
         /// <param name="arg">The argument that will be validated.</param>
         /// <param name="argName">The name which will be presented as the argument's name in the exception message.</param>
         /// <param name="predefinedMessage">A message with which the exception will be created.</param>
-        public static void IsNotNullOrEmpty(ICollection arg, string argName, string predefinedMessage = null)
+        public static void IsNotNullOrEmpty<T>(IEnumerable<T> arg, string argName, string predefinedMessage = null)
         {
-            if (arg == null || arg.Count == 0)
+            if (arg == null || !arg.Any())
             {
                 ConstructMessageAndThrowArgumentOrNullArgument(arg, argName, predefinedMessage);
             }

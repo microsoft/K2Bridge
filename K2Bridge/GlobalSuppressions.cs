@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -221,3 +221,4 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1305:Specify IFormatProvider", Justification = "TEMP", Scope = "member", Target = "~M:K2Bridge.KustoConnector.KustoResponseParser.ReadHits(Kusto.Data.Data.KustoResponseDataSet,K2Bridge.Models.QueryData)~System.Collections.Generic.IEnumerable{K2Bridge.Models.Response.Hit}")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Validated but not catched by analysis", Scope = "member", Target = "~M:K2Bridge.Models.Response.Hit.Create(System.Data.DataRow,K2Bridge.Models.QueryData)~K2Bridge.Models.Response.Hit")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1629:Documentation text should end with a period", Justification = "Example output json with no dot at the end", Scope = "type", Target = "~T:K2Bridge.PrometheusSerilogSink")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "// This general exception catch is to enforce that this method will not fail the critical path", Scope = "member", Target = "~M:K2Bridge.KustoConnector.KustoResponseParser.ReadDataResponse(System.Data.IDataReader)~Kusto.Data.Data.KustoResponseDataSet")]

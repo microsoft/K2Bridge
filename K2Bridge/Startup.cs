@@ -42,6 +42,10 @@ namespace K2Bridge
             // Prometheus Histogram to collect query performance data
             var adxQueryDurationMetric = Metrics.CreateHistogram("adx_query_duration_seconds", "Histogram of kusto query call processing durations.");
 
+            var adxNetQueryDurationMetric = Metrics.CreateHistogram("adx_net_query_time", "ADX net query execution time.", new HistogramConfiguration
+            {
+                Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
+            });
             services.AddControllers();
             services.AddScoped<IConnectionDetails, KustoConnectionDetails>(
                 s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
@@ -59,7 +63,8 @@ namespace K2Bridge
             services.AddTransient<IResponseParser, KustoResponseParser>(
                 ctx => new KustoResponseParser(
                     ctx.GetRequiredService<Microsoft.Extensions.Logging.ILogger<KustoResponseParser>>(),
-                    bool.Parse((Configuration as IConfigurationRoot)["outputBackendQuery"])));
+                    bool.Parse((Configuration as IConfigurationRoot)["outputBackendQuery"]),
+                    adxNetQueryDurationMetric));
 
             // use this http client factory to issue requests to the metadata elastic instance
             services.AddHttpClient(MetadataController.ElasticMetadataClientName, (svcProvider, elasticClient) =>

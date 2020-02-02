@@ -7,10 +7,14 @@ namespace K2Bridge.KustoConnector
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using Kusto.Data;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json.Linq;
+    using Prometheus;
 
     /// <summary>
     /// Provides parsing methods for kusto response objects.
@@ -20,6 +24,8 @@ namespace K2Bridge.KustoConnector
         private const string AggregationTableName = "aggs";
         private const string HitsTableName = "hits";
         private static readonly Random Random = new Random();
+        private static IHistogram kustoNetQueryTime;
+
         private readonly bool outputBackendQuery;
 
         /// <summary>
@@ -27,9 +33,11 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="logger">ILogger object for logging.</param>
         /// <param name="outputBackendQuery">Outputs the backend query during parse.</param>
-        public KustoResponseParser(ILogger<KustoResponseParser> logger, bool outputBackendQuery)
+        /// <param name="adxNetQueryDurationMetric">Prometheus metric to record net query time.</param>
+        public KustoResponseParser(ILogger<KustoResponseParser> logger, bool outputBackendQuery, IHistogram adxNetQueryDurationMetric)
         {
             Logger = logger;
+            kustoNetQueryTime = adxNetQueryDurationMetric;
             this.outputBackendQuery = outputBackendQuery;
         }
 
@@ -61,9 +69,19 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="reader">Kusto IDataReader response.</param>
         /// <returns>KustoResponseDataSet - parsed response.</returns>
-        public static KustoResponseDataSet ReadDataResponse(IDataReader reader)
+        public KustoResponseDataSet ReadDataResponse(IDataReader reader)
         {
-            return KustoDataReaderParser.ParseV1(reader);
+            var response = KustoDataReaderParser.ParseV1(reader);
+            try
+            {
+                ReportNetQueryExecutionTime(response);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed logging query net execution time metric.");
+            }
+
+            return response;
         }
 
         /// <summary>
@@ -91,6 +109,34 @@ namespace K2Bridge.KustoConnector
                     throw;
                 }
             }
+        }
+
+        /// <summary>
+        /// Report net query execution time from Kusto response.
+        /// </summary>
+        /// <param name="kustoResponseDataSet">Kusto Response.</param>
+        private static void ReportNetQueryExecutionTime(KustoResponseDataSet kustoResponseDataSet)
+        {
+            var queryStatusTable = kustoResponseDataSet[WellKnownDataSet.QueryCompletionInformation];
+
+            Ensure.IsNotNullOrEmpty(queryStatusTable, nameof(queryStatusTable));
+
+            var queryStatusRows = queryStatusTable.First().TableData.Rows;
+
+            if (queryStatusRows.Count <= 1)
+            {
+                throw new ArgumentException("QueryStatus table missing rows.", nameof(kustoResponseDataSet));
+            }
+
+            var statusDescription = queryStatusRows[1]["StatusDescription"];
+            Ensure.IsNotNull(statusDescription, nameof(statusDescription));
+
+            var parsedQueryStatus = JObject.Parse(statusDescription.ToString());
+            var netQueryExecutionTime = parsedQueryStatus["ExecutionTime"];
+
+            Ensure.IsNotNull(netQueryExecutionTime, nameof(netQueryExecutionTime));
+
+            kustoNetQueryTime.Observe((float)netQueryExecutionTime);
         }
 
         /// <summary>

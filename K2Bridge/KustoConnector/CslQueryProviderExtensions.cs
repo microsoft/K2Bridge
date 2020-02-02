@@ -6,6 +6,7 @@ namespace K2Bridge.KustoConnector
 {
     using System;
     using System.Data;
+    using System.Diagnostics;
     using Kusto.Data.Common;
     using Prometheus;
 
@@ -27,14 +28,19 @@ namespace K2Bridge.KustoConnector
             IHistogram queryMetric)
         {
             Ensure.IsNotNull(client, nameof(client));
+            Ensure.IsNotNull(queryMetric, nameof(client));
             Ensure.IsNotNullOrEmpty(query, nameof(query));
 
             // Timer to be used to report the duration of a query to.
-            using var timer = queryMetric.NewTimer();
-
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var reader = client.ExecuteQuery(query);
+            stopwatch.Stop();
+            var duration = stopwatch.Elapsed;
 
-            return (timer.ObserveDuration(), reader);
+            queryMetric.Observe(duration.TotalSeconds);
+
+            return (duration, reader);
         }
     }
 }
