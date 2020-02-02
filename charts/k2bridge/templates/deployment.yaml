@@ -69,8 +69,10 @@ spec:
                   key: aadClientSecret
             - name: aadTenantId
               value: "{{ .Values.settings.aadTenantId }}"
-            - name: useAspNetCore
-              value: "false"
+            - name: instrumentationKey
+              value: "{{ .Values.settings.instrumentationKey }}"
+            - name: collectTelemetry
+              value: "{{ .Values.settings.collectTelemetry }}"
           volumeMounts:
             - name: appsettings-volume
               mountPath: /app/settings

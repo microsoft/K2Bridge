@@ -30,7 +30,7 @@ data:
   appsettings.json: |
     {
       "Serilog": {
-        "Using": [ "Serilog.Sinks.Console" ],
+        "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.ApplicationInsights" ],
         "MinimumLevel": {
           "Default": "Debug",
           "Override": {
@@ -45,6 +45,13 @@ data:
             "Name": "Console",
             "Args": {
               "formatter": "Serilog.Formatting.Compact.CompactJsonFormatter, Serilog.Formatting.Compact"
+            }
+          },
+          {
+            "Name": "ApplicationInsights",
+            "Args": {
+              "restrictedToMinimumLevel": "Debug",
+              "telemetryConverter": "Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TraceTelemetryConverter, Serilog.Sinks.ApplicationInsights"
             }
           }
         ],

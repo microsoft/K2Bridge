@@ -28,6 +28,8 @@ variables:
   value: "$(MAJOR_MINOR_VERSION).$(Build.BuildId)"
 - name: KUSTO_DB
   value: "build$(Build.BuildId)"
+- name: COLLECT_TELEMETRY
+  value: false
 
 pool:
   vmImage: ubuntu-latest

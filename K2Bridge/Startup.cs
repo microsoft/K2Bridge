@@ -6,12 +6,16 @@ namespace K2Bridge
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
+    using System.Security.Cryptography;
+    using System.Text;
     using K2Bridge.Controllers;
     using K2Bridge.DAL;
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.RewriteRules;
     using K2Bridge.Visitors;
+    using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Rewrite;
@@ -41,6 +45,8 @@ namespace K2Bridge
         {
             // Prometheus Histogram to collect query performance data
             var adxQueryDurationMetric = Metrics.CreateHistogram("adx_query_duration_seconds", "Histogram of kusto query call processing durations.");
+
+            ConfigureTelemetryServices(services);
 
             var adxNetQueryDurationMetric = Metrics.CreateHistogram("adx_net_query_time", "ADX net query execution time.", new HistogramConfiguration
             {
@@ -141,6 +147,57 @@ namespace K2Bridge
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "K2Bridge API v0.1-alpha");
             });
+        }
+
+        /// <summary>
+        /// Compute the SHA256 value of a given string.
+        /// </summary>
+        /// <param name="input">The input string to be hashed.</param>
+        /// <returns>A SHA256 hash of the input string.</returns>
+        private static string ComputeSHA256(string input)
+        {
+            var sb = new StringBuilder();
+            using (var sha256 = SHA256.Create())
+            {
+                var result =
+                    sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+
+                foreach (var item in result)
+                {
+                    sb.Append(item.ToString("x2", CultureInfo.InvariantCulture));
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Configures the ApplicationInsights telemetry.
+        /// </summary>
+        private void ConfigureTelemetryServices(IServiceCollection services)
+        {
+            // Only if explicitly declared we are collecting telemetry
+            var hasCollectBool =
+                bool.TryParse(
+                    (Configuration as IConfigurationRoot)["collectTelemetry"],
+                    out bool isCollect);
+
+            if (!hasCollectBool || !isCollect)
+            {
+                return;
+            }
+
+            var adxUrl = (Configuration as IConfigurationRoot)["adxClusterUrl"];
+
+            // verify we got a valid instrumentation key, if we didn't, we just skip AppInsights
+            // we do not log this, as at this point we still don't have a logger
+            var hasGuid = Guid.TryParse((Configuration as IConfigurationRoot)["instrumentationKey"], out Guid instrumentationKey);
+            if (hasGuid)
+            {
+                services.AddApplicationInsightsTelemetry(instrumentationKey.ToString());
+                var telemetryIdentifier = ComputeSHA256(adxUrl);
+                services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer(telemetryIdentifier));
+            }
         }
     }
 }

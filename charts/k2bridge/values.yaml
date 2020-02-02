@@ -21,6 +21,8 @@ settings:
   aadClientId: "00000000-0000-0000-0000-000000000000"
   aadClientSecret: "secret/pa$$w0rd"
   aadTenantId: "00000000-0000-0000-0000-000000000000"
+  instrumentationKey: "491ac1c9-68f7-4da2-b0d4-4779950fe899"
+  collectTelemetry: false
 
 service:
   type: ClusterIP
