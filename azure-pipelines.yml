@@ -125,6 +125,7 @@ stages:
         testRunner: VSTest
         testResultsFiles: 'TestResult.xml'
         failTaskOnFailedTests: true
+        testRunTitle: 'Unit Tests'
 
     # Publish the code coverage result (summary and web site)
     # The summary allows to view the coverage percentage in the summary tab
@@ -400,6 +401,7 @@ stages:
         testRunner: VSTest
         testResultsFiles: 'TestResult.xml'
         failTaskOnFailedTests: true
+        testRunTitle: 'E2E Tests'
 
   - job: Cleanup
     dependsOn:

@@ -348,5 +348,6 @@ ASALocalRun/
 # CI-related files
 Dockerfile
 azure-pipelines.yml
+azure-pipelines.*.yml
 test_results.xml
 infrastructure/

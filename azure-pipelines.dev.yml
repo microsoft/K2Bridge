@@ -14,6 +14,9 @@ pr:
   paths:
     exclude:
     - '*.md'
+    - 'docs/*'
+    - '*.png'
+    - 'README.md'
 
 name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 
