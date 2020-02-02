@@ -44,14 +44,19 @@ namespace K2Bridge
         public void ConfigureServices(IServiceCollection services)
         {
             // Prometheus Histogram to collect query performance data
-            var adxQueryDurationMetric = Metrics.CreateHistogram("adx_query_duration_seconds", "Histogram of kusto query call processing durations.");
+            var adxQueryDurationMetric = Metrics.CreateHistogram("adx_query_duration_seconds", "Histogram of kusto query call processing durations.", new HistogramConfiguration
+            {
+                Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
+            });
 
             ConfigureTelemetryServices(services);
 
+            // Prometheus Histogram to collect net query performance data
             var adxNetQueryDurationMetric = Metrics.CreateHistogram("adx_net_query_time", "ADX net query execution time.", new HistogramConfiguration
             {
                 Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
             });
+
             services.AddControllers();
             services.AddScoped<IConnectionDetails, KustoConnectionDetails>(
                 s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
