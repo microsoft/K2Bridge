@@ -41,7 +41,7 @@ namespace K2Bridge.Models.Response
             return new DateHistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
-                Key = Convert.ToInt64(dateBucket.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds),
+                Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
             };
         }

@@ -73,11 +73,18 @@ namespace K2Bridge
                     }
                 }
 
+                var sortFields = new List<string>();
+                foreach (var clause in elasticSearchDsl.Sort)
+                {
+                    sortFields.Add(clause.FieldName);
+                }
+
                 // Use the visitor and build the KustoQL string from the esDSL object
                 elasticSearchDsl.Accept(visitor);
                 var queryData = new QueryData(
                     elasticSearchDsl.KustoQL,
                     elasticSearchDsl.IndexName,
+                    sortFields,
                     elasticSearchDsl.HighlightText);
 
                 if (elasticSearchDsl.Highlight != null)

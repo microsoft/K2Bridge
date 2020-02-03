@@ -83,7 +83,7 @@ namespace K2BridgeUnitTests
         {
             // Arrange
             (string header, string query) = ControllerExtractMethods.SplitQueryBody(ValidQueryContent);
-            var queryData = new QueryData(query, header, new Dictionary<string, string>());
+            var queryData = new QueryData(query, header);
             var ts = new TimeSpan(1);
             var reader = Substitute.For<IDataReader>();
             var mockTranslator = new Mock<ITranslator>();

@@ -27,7 +27,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
         {
             using var hitsTable = GetTestTable();
 
-            var query = new QueryData("query", "index", null);
+            var query = new QueryData("query", "index");
 
             var stubKustoResponse = new Mock<KustoResponseDataSet>();
             var kustoTableData = new KustoResponseDataTable(hitsTable, WellKnownDataSet.PrimaryResult);
@@ -64,7 +64,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             using var anyTable = GetTestTable();
             anyTable.TableName = "not_hits";
 
-            var query = new QueryData("query", "index", null);
+            var query = new QueryData("query", "index");
 
             var stubKustoResponse = new Mock<KustoResponseDataSet>();
             var kustoTableData = new KustoResponseDataTable(anyTable, WellKnownDataSet.PrimaryResult);
@@ -82,7 +82,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
                 TableName = "hits",
             };
 
-            var query = new QueryData("query", "index", null);
+            var query = new QueryData("query", "index");
 
             var stubKustoResponse = new Mock<KustoResponseDataSet>();
             var kustoTableData = new KustoResponseDataTable(hitsEmptyTable, WellKnownDataSet.PrimaryResult);
@@ -100,7 +100,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             using var anyTable = GetTestTable();
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index", null);
+            var query = new QueryData("query", "index");
             var reader = anyTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
@@ -119,7 +119,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             hitsTable.TableName = "hits";
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index", null);
+            var query = new QueryData("query", "index");
 
             var reader = hitsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
@@ -138,7 +138,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index", null);
+            var query = new QueryData("query", "index");
 
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;

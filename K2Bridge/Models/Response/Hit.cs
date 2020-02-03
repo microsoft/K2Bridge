@@ -25,6 +25,11 @@ namespace K2Bridge.Models.Response
             { typeof(DateTime), (value) => value != null ? ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") : null },
         };
 
+        private Hit()
+        {
+            Sort = new List<object>();
+        }
+
         [JsonProperty("_index")]
         public string Index { get; set; }
 
@@ -47,7 +52,7 @@ namespace K2Bridge.Models.Response
         public Fields Fields { get; set; }
 
         [JsonProperty("sort", NullValueHandling = NullValueHandling.Ignore)]
-        public long[] Sort { get; set; }
+        public IList<object> Sort { get; }
 
         [JsonProperty("highlight", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> Highlight { get; set; }
@@ -86,6 +91,16 @@ namespace K2Bridge.Models.Response
                 }
             }
 
+            // Do not return empty highlights dict (mimic Elasticsearch behavior)
+            if (hit.Highlight.Count == 0)
+            {
+                hit.Highlight = null;
+            }
+
+            hit.CreateSort(row, query);
+
+            hit.Fields = new Fields();
+
             return hit;
         }
 
@@ -108,6 +123,35 @@ namespace K2Bridge.Models.Response
             }
 
             return value;
+        }
+
+        private void CreateSort(DataRow row, QueryData query)
+        {
+            if (query.SortFields == null)
+            {
+                return;
+            }
+
+            foreach (var sortField in query.SortFields)
+            {
+                object value;
+                try
+                {
+                    value = row[sortField];
+                }
+                catch (ArgumentException)
+                {
+                    // Sorting by a column not in the hit list. Retrieving value is not supported.
+                    continue;
+                }
+
+                if (value is DateTime)
+                {
+                    value = TimeUtils.ToEpochMilliseconds((DateTime)value);
+                }
+
+                Sort.Add(value);
+            }
         }
     }
 }

@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Models
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -16,14 +17,16 @@ namespace K2Bridge.Models
         /// </summary>
         /// <param name="queryCommandText">The query to execute.</param>
         /// <param name="indexName">The index to be searched.</param>
+        /// <param name="sortFields">Field names specified in query sort clause</param>
         /// <param name="highlightText">What terms need to be highlighted in the results.</param>
-        public QueryData(string queryCommandText, string indexName, Dictionary<string, string> highlightText)
+        public QueryData(string queryCommandText, string indexName, IList<string> sortFields = null, Dictionary<string, string> highlightText = null)
         {
             Ensure.IsNotNullOrEmpty(queryCommandText, nameof(queryCommandText), "Query string cannot be empty or null");
             Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), "Index name string cannot be empty or null");
 
             QueryCommandText = queryCommandText;
             IndexName = indexName;
+            SortFields = sortFields;
             HighlightText = highlightText;
             HighlightPreTag = string.Empty;
             HighlightPostTag = string.Empty;
@@ -38,6 +41,11 @@ namespace K2Bridge.Models
         /// Gets the index name to be searched.
         /// </summary>
         public string IndexName { get; private set; }
+
+        /// <summary>
+        /// Gets the field names to sort by.
+        /// </summary>
+        public IList<string> SortFields { get; private set; }
 
         /// <summary>
         /// Gets the Highlight request info.

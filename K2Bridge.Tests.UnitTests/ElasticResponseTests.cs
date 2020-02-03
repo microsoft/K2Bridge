@@ -21,7 +21,7 @@ namespace Tests
 
         private static readonly Random RandomId = new Random(42);
 
-        private QueryData query = new QueryData("_kql", "_index", null);
+        private QueryData query = new QueryData("_kql", "_index");
 
         [TestCase(ExpectedResult =
             "{\"responses\":[{\"aggregations\":{\"2\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"status\":200}]}")]
@@ -33,7 +33,7 @@ namespace Tests
             return serializedResponse;
         }
 
-        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{},\"highlight\":{}}")]
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{},\"fields\":{},\"sort\":[]}")]
         public string ResponseWithEmptyHitHasExpectedElasticProperties()
         {
             var results =
@@ -46,7 +46,7 @@ namespace Tests
             return JsonConvert.SerializeObject(SetRandomProperties(response).First());
         }
 
-        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"highlight\":{}}")]
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[]}")]
         public string ResponseWithSingleHitHasHasAllFieldsInSource()
         {
             var results =
@@ -62,8 +62,8 @@ namespace Tests
         }
 
         [TestCase(ExpectedResult = new[] {
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"highlight\":{}}",
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue4\",\"somefield2\":\"somevalue5\",\"somefield3\":\"somevalue6\"},\"highlight\":{}}", })]
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[]}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue4\",\"somefield2\":\"somevalue5\",\"somefield3\":\"somevalue6\"},\"fields\":{},\"sort\":[]}", })]
         public string[] ResponseWithMultipleHitHasHasAllFieldsInSource()
         {
             var results =
@@ -150,11 +150,11 @@ namespace Tests
         }
 
         [TestCase(ExpectedResult = new[] {
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2020-01-10T16:27:51.3640182\"},\"highlight\":{}}",
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T13:45:23.133\"},\"highlight\":{}}",
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T05:04:23.1\"},\"highlight\":{}}",
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T05:04:23\"},\"highlight\":{}}",
-            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T00:00:00\"},\"highlight\":{}}", })]
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2020-01-10T16:27:51.3640182\"},\"fields\":{},\"sort\":[]}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T13:45:23.133\"},\"fields\":{},\"sort\":[]}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T05:04:23.1\"},\"fields\":{},\"sort\":[]}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T05:04:23\"},\"fields\":{},\"sort\":[]}",
+            "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"2017-01-02T00:00:00\"},\"fields\":{},\"sort\":[]}", })]
         public string[] TestDateTimezone()
         {
             var results =

@@ -57,7 +57,7 @@ namespace K2Bridge.DAL
 
                 Logger.LogDebug("Getting schema for function '{@indexName}'", indexName);
                 string functionQuery = $"{tableName} | {KustoQLOperators.GetSchema} | project ColumnName, ColumnType=DataType";
-                var functionQueryData = new QueryData(functionQuery, tableName, new Dictionary<string, string>());
+                var functionQueryData = new QueryData(functionQuery, tableName, null, null);
                 var functionResults = await Kusto.ExecuteQueryAsync(functionQueryData);
                 MapFieldCaps(functionResults.reader, response);
             }
