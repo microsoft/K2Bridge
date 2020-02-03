@@ -143,17 +143,6 @@ namespace K2Bridge.Tests.End2End
             // backend query isn't something we want to compare
             DeleteValue(result, "responses[*]._backendQuery");
 
-            foreach (JToken token in result.SelectTokens("$..*"))
-            {
-                // TODO: Kusto does not preserve all 32 bit range, so we compare only first 16 bits of decimal values
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1466
-                if (token.Type == JTokenType.Float)
-                {
-                    var v = (JValue)token;
-                    v.Value = Convert.ToSingle(v.Value, CultureInfo.InvariantCulture);
-                }
-            }
-
             return result;
         }
 
