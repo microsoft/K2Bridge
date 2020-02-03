@@ -6,6 +6,7 @@ namespace K2Bridge.KustoConnector
 {
     using System;
     using System.Data;
+    using System.Threading.Tasks;
     using K2Bridge.Models;
     using Kusto.Data;
     using Kusto.Data.Common;
@@ -64,10 +65,10 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="command">The command to execute.</param>
         /// <returns>A data reader with a result.</returns>
-        public IDataReader ExecuteControlCommand(string command)
+        public async Task<IDataReader> ExecuteControlCommandAsync(string command)
         {
             Logger.LogDebug("Calling adminClient.ExecuteControlCommand with the command: {@command}", command);
-            var result = adminClient.ExecuteControlCommand(command);
+            var result = await adminClient.ExecuteControlCommandAsync(string.Empty, command, null);
             return result;
         }
 
@@ -76,12 +77,12 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="queryData">A Query data.</param>
         /// <returns>A data reader with response and time taken.</returns>
-        public (TimeSpan timeTaken, IDataReader reader) ExecuteQuery(QueryData queryData)
+        public async Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData queryData)
         {
             Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
 
             // Use the kusto client to execute the query
-            var (timeTaken, dataReader) = queryClient.ExecuteMonitoredQuery(queryData.QueryCommandText, queryMetric);
+            var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, queryMetric);
             var fieldCount = dataReader.FieldCount;
             Logger.LogDebug("FieldCount: {@fieldCount}. timeTaken: {@timeTaken}", fieldCount, timeTaken);
             return (timeTaken, dataReader);

@@ -30,7 +30,7 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("Search (IndexList) returns functions")]
+        [Description("SearchAsync (IndexList) returns functions")]
         public async Task Function_Search()
         {
             var indexList = await K2Client().Search();

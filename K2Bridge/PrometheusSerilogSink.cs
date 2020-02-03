@@ -16,7 +16,7 @@ namespace K2Bridge
     /// Exposes a Prometheus counter called "exceptions" which counts all logged
     /// exceptions, and a labeled "exceptions_by_type" counter that counts exceptions
     /// grouped by type and context, e.g.:
-    /// exceptions_by_type{ExceptionType="JsonReaderException",SourceContext="K2Bridge.ElasticQueryTranslator",ActionName="K2Bridge.Controllers.QueryController.Search (K2Bridge)"}
+    /// exceptions_by_type{ExceptionType="JsonReaderException",SourceContext="K2Bridge.ElasticQueryTranslator",ActionName="K2Bridge.Controllers.QueryController.SearchAsync (K2Bridge)"}
     /// </summary>
     public class PrometheusSerilogSink : ILogEventSink
     {

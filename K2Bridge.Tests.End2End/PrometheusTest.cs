@@ -30,8 +30,8 @@ namespace K2Bridge.Tests.End2End
             var responseData = await response.Content.ReadAsStringAsync();
 
             Assert.True(
-                responseData.Contains(@"exceptions_by_type{ExceptionType=""JsonReaderException"",SourceContext=""K2Bridge.Controllers.QueryController"",ActionName=""K2Bridge.Controllers.QueryController.Search (K2Bridge)""}", Ordinal) &&
-                responseData.Contains(@"exceptions_by_type{ExceptionType=""JsonReaderException"",SourceContext=""K2Bridge.ElasticQueryTranslator"",ActionName=""K2Bridge.Controllers.QueryController.Search (K2Bridge)""}", Ordinal));
+                responseData.Contains(@"exceptions_by_type{ExceptionType=""JsonReaderException"",SourceContext=""K2Bridge.Controllers.QueryController"",ActionName=""K2Bridge.Controllers.QueryController.SearchAsync (K2Bridge)""}", Ordinal) &&
+                responseData.Contains(@"exceptions_by_type{ExceptionType=""JsonReaderException"",SourceContext=""K2Bridge.ElasticQueryTranslator"",ActionName=""K2Bridge.Controllers.QueryController.SearchAsync (K2Bridge)""}", Ordinal));
 
             Assert.True(
                 responseData.Contains(

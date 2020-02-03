@@ -255,7 +255,7 @@ namespace Tests
         /// <summary>
         /// Create a list of Hits by iterating over mock results.
         /// </summary>
-        /// <param name="results">Search results as a list of rows (mapping column name to value).</param>
+        /// <param name="results">SearchAsync results as a list of rows (mapping column name to value).</param>
         /// <param name="query">Query information used to enrich hits.</param>
         /// <returns>A collection of Hits, one per item in the provided results data.</returns>
         private IEnumerable<Hit> BuildHits(List<Dictionary<string, object>> results, QueryData query)
@@ -275,7 +275,7 @@ namespace Tests
         /// <summary>
         /// Converts a list of rows to a DataTable structure.
         /// </summary>
-        /// <param name="results">Search results as a list of rows (mapping column name to value).</param>
+        /// <param name="results">SearchAsync results as a list of rows (mapping column name to value).</param>
         /// <returns>A DataTable from the data in results.</returns>
         private DataTable ToDataTable(List<Dictionary<string, object>> results)
         {

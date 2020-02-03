@@ -6,6 +6,7 @@ namespace Tests.KustoConnector
 {
     using System;
     using System.Data;
+    using System.Threading.Tasks;
     using K2Bridge.KustoConnector;
     using Kusto.Data.Common;
     using NSubstitute;
@@ -20,10 +21,10 @@ namespace Tests.KustoConnector
         private readonly IHistogram metric = Substitute.For<IHistogram>();
 
         [TestCase]
-        public void ExecuteMonitoredQuery_Common_Success()
+        public async Task ExecuteMonitoredQuery_Common_Success()
         {
-            client.ExecuteQuery(Arg.Any<string>()).Returns(data);
-            var (timeTaken, reader) = client.ExecuteMonitoredQuery("wibble", metric);
+            client.ExecuteQueryAsync(string.Empty, Arg.Any<string>(), null).Returns(Task.FromResult(data));
+            var (timeTaken, reader) = await client.ExecuteMonitoredQueryAsync("wibble", metric);
 
             Assert.AreNotEqual(0, timeTaken);
             Assert.AreSame(data, reader);
@@ -32,28 +33,28 @@ namespace Tests.KustoConnector
         [TestCase]
         public void ExecuteMonitoredQuery_NullProvider_Failure()
         {
-            Assert.Throws(
+            Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentNullException>()
                  .And.Message.EqualTo("Value cannot be null. (Parameter 'Argument client cannot be null')"),
-                () => CslQueryProviderExtensions.ExecuteMonitoredQuery(null, "some query", metric));
+                async () => await CslQueryProviderExtensions.ExecuteMonitoredQueryAsync(null, "some query", metric));
         }
 
         [TestCase]
         public void ExecuteMonitoredQuery_EmptyQuery_Failure()
         {
-            Assert.Throws(
+            Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentException>()
                  .And.Message.EqualTo("query (Parameter 'query cannot be empty')"),
-                () => client.ExecuteMonitoredQuery(string.Empty, metric));
+                async () => await client.ExecuteMonitoredQueryAsync(string.Empty, metric));
         }
 
         [TestCase]
         public void ExecuteMonitoredQuery_NullQuery_Failure()
         {
-            Assert.Throws(
+            Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentNullException>()
                  .And.Message.EqualTo("query cannot be null (Parameter 'query')"),
-                () => client.ExecuteMonitoredQuery(null, metric));
+                async () => await client.ExecuteMonitoredQueryAsync(null, metric));
         }
     }
 }

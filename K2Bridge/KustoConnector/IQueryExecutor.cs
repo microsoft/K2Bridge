@@ -6,6 +6,7 @@ namespace K2Bridge.KustoConnector
 {
     using System;
     using System.Data;
+    using System.Threading.Tasks;
     using K2Bridge.Models;
 
     public interface IQueryExecutor
@@ -16,8 +17,8 @@ namespace K2Bridge.KustoConnector
             set;
         }
 
-        (TimeSpan timeTaken, IDataReader reader) ExecuteQuery(QueryData query);
+        Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData query);
 
-        IDataReader ExecuteControlCommand(string query);
+        Task<IDataReader> ExecuteControlCommandAsync(string query);
     }
 }

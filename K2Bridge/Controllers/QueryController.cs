@@ -56,7 +56,7 @@ namespace K2Bridge.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(ElasticResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(HttpResponseMessageResult), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Search(
+        public async Task<IActionResult> SearchAsync(
             [FromQuery(Name = "rest_total_hits_as_int")] bool totalHits,
             [FromQuery(Name = "ignore_throttled")] bool ignoreThrottled)
 
@@ -66,7 +66,7 @@ namespace K2Bridge.Controllers
         {
             try
             {
-                return SearchInternal(totalHits, ignoreThrottled, await ExtractBodyAsync());
+                return await SearchInternalAsync(totalHits, ignoreThrottled, await ExtractBodyAsync());
             }
             catch (Exception exception)
             {
@@ -83,7 +83,7 @@ namespace K2Bridge.Controllers
         /// <param name="ignoreThrottled">Ignore Throttles.</param>
         /// <param name="rawQueryData">Body Payload.</param>
         /// <returns>An ElasticResponse object.</returns>
-        internal IActionResult SearchInternal(bool totalHits, bool ignoreThrottled, string rawQueryData)
+        internal async Task<IActionResult> SearchInternalAsync(bool totalHits, bool ignoreThrottled, string rawQueryData)
         {
             // Extract Query
             if (rawQueryData == null)
@@ -104,7 +104,7 @@ namespace K2Bridge.Controllers
             logger.LogDebug($"Translated query:\n{translatedQuery.QueryCommandText}");
 
             // Execute Query
-            var (timeTaken, dataReader) = queryExecutor.ExecuteQuery(translatedQuery);
+            var (timeTaken, dataReader) = await queryExecutor.ExecuteQueryAsync(translatedQuery);
 
             // Parse Response
             var elasticResponse = responseParser.ParseElasticResponse(dataReader, translatedQuery, timeTaken);

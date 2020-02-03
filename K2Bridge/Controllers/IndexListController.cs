@@ -41,7 +41,7 @@ namespace K2Bridge.Controllers
         public async Task<IActionResult> Process(string indexName)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            var response = Kusto.GetIndexList(indexName);
+            var response = await Kusto.GetIndexListAsync(indexName);
 
             return Ok(response);
         }

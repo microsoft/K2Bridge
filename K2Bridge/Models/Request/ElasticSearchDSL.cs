@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Request
     using Newtonsoft.Json;
 
     /// <summary>
-    /// ElasticSearchDSL (Elastic Search Domain Specific Language) represents
+    /// ElasticSearchDSL (Elasticsearch Domain Specific Language) represents
     /// the different properties of the elasticsearch query as deserialized from
     /// the json object sent from Kibana. This object will be sent for transformation.
     /// </summary>

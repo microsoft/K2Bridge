@@ -39,13 +39,13 @@ namespace K2BridgeUnitTests
         };
 
         [Test]
-        public void SearchInternal_ReturnsAnActionResult_OKfromKusto()
+        public async Task SearchInternal_ReturnsAnActionResult_OKfromKustoAsync()
         {
             // Arrange
             var uat = GetController();
 
             // Act
-            var result = uat.SearchInternal(true, true, ValidQueryContent);
+            var result = await uat.SearchInternalAsync(true, true, ValidQueryContent);
 
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -90,7 +90,7 @@ namespace K2BridgeUnitTests
             mockTranslator.Setup(translator => translator.Translate(
                 header, query)).Returns(queryData);
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-            mockQueryExecutor.Setup(exec => exec.ExecuteQuery(queryData)).Returns((ts, reader));
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(queryData)).Returns(Task.FromResult((ts, reader)));
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             mockResponseParser.Setup(exec =>
@@ -101,13 +101,13 @@ namespace K2BridgeUnitTests
             var uat = new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object);
 
             // Act
-            uat.SearchInternal(true, true, ValidQueryContent);
+            uat.SearchInternalAsync(true, true, ValidQueryContent);
 
             // Assert
             mockTranslator.Verify(
                 translator => translator.Translate(header, query), Times.Once());
             mockQueryExecutor.Verify(
-                 executor => executor.ExecuteQuery(queryData), Times.Once());
+                 executor => executor.ExecuteQueryAsync(queryData), Times.Once());
             mockResponseParser.Verify(
                 parsr => parsr.ParseElasticResponse(reader, queryData, ts), Times.Once());
         }
@@ -119,7 +119,7 @@ namespace K2BridgeUnitTests
             var uat = GetController();
 
             // Assert
-            Assert.Throws<ArgumentException>(() => uat.SearchInternal(true, true, input));
+            Assert.ThrowsAsync<ArgumentException>(async () => await uat.SearchInternalAsync(true, true, input));
         }
 
         [TestCaseSource("IntegrationTestCases")]
@@ -147,7 +147,7 @@ namespace K2BridgeUnitTests
                 mockResponseParser.Object) { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.Search(true, true);
+            var result = await controller.SearchAsync(true, true);
 
             // Assert
             Assert.IsInstanceOf(resultType, result, $"result {result.ToString()} is not of expected type {resultType.Name}");
@@ -177,7 +177,7 @@ namespace K2BridgeUnitTests
                 mockResponseParser.Object) { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.Search(true, true);
+            var result = await controller.SearchAsync(true, true);
 
             // Assert
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
@@ -206,7 +206,7 @@ namespace K2BridgeUnitTests
                 mockResponseParser.Object) { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.Search(true, true);
+            var result = await controller.SearchAsync(true, true);
 
             // Assert
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
@@ -220,7 +220,7 @@ namespace K2BridgeUnitTests
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-            mockQueryExecutor.Setup(executor => executor.ExecuteQuery(It.IsAny<QueryData>())).Throws(new Exception("test"));
+            mockQueryExecutor.Setup(executor => executor.ExecuteQueryAsync(It.IsAny<QueryData>())).Throws(new Exception("test"));
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
 
@@ -235,7 +235,7 @@ namespace K2BridgeUnitTests
                 mockResponseParser.Object) { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.Search(true, true);
+            var result = await controller.SearchAsync(true, true);
 
             // Assert
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
@@ -247,7 +247,7 @@ namespace K2BridgeUnitTests
             mockTranslator.Setup(translator => translator.Translate(
                 It.IsNotNull<string>(), It.IsNotNull<string>())).Returns(new QueryData());
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-            mockQueryExecutor.Setup(exec => exec.ExecuteQuery(It.IsAny<QueryData>())).Returns((new TimeSpan(), Substitute.For<IDataReader>()));
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>())).Returns(Task.FromResult((new TimeSpan(), Substitute.For<IDataReader>())));
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             mockResponseParser.Setup(exec =>

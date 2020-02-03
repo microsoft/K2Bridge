@@ -112,7 +112,7 @@ namespace K2Bridge.Tests.End2End
         /// </summary>
         /// <param name="indexName">Index name to query.</param>
         /// <param name="jsonQueryFile">File name containing query.</param>
-        /// <returns>Search operation result.</returns>
+        /// <returns>SearchAsync operation result.</returns>
         public async Task<JToken> MSearch(string indexName, string jsonQueryFile)
         {
             JObject query = JObject.Parse(File.ReadAllText(jsonQueryFile));

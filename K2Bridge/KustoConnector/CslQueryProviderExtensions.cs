@@ -7,6 +7,7 @@ namespace K2Bridge.KustoConnector
     using System;
     using System.Data;
     using System.Diagnostics;
+    using System.Threading.Tasks;
     using Kusto.Data.Common;
     using Prometheus;
 
@@ -22,7 +23,7 @@ namespace K2Bridge.KustoConnector
         /// <param name="query">ADX query string.</param>
         /// <param name="queryMetric">Prometheus query duration metric.</param>
         /// <returns>Tuple of timeTaken and the reader result.</returns>
-        public static (TimeSpan timeTaken, IDataReader reader) ExecuteMonitoredQuery(
+        public static async Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteMonitoredQueryAsync(
             this ICslQueryProvider client,
             string query,
             IHistogram queryMetric)
@@ -34,7 +35,7 @@ namespace K2Bridge.KustoConnector
             // Timer to be used to report the duration of a query to.
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var reader = client.ExecuteQuery(query);
+            var reader = await client.ExecuteQueryAsync(string.Empty, query, null);
             stopwatch.Stop();
             var duration = stopwatch.Elapsed;
 

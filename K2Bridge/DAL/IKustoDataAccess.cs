@@ -4,6 +4,7 @@
 
 namespace K2Bridge.DAL
 {
+    using System.Threading.Tasks;
     using K2Bridge.Models.Response.Metadata;
 
     /// <summary>
@@ -16,13 +17,13 @@ namespace K2Bridge.DAL
         /// </summary>
         /// <param name="indexName">Index name.</param>
         /// <returns>An object with the field caps.</returns>
-        FieldCapabilityResponse GetFieldCaps(string indexName);
+        Task<FieldCapabilityResponse> GetFieldCapsAsync(string indexName);
 
         /// <summary>
         /// Executes a query to Kusto for Index List.
         /// </summary>
         /// <param name="indexName">Index name.</param>
         /// <returns>A list of Indexes.</returns>
-        IndexListResponseElement GetIndexList(string indexName);
+        Task<IndexListResponseElement> GetIndexListAsync(string indexName);
     }
 }
