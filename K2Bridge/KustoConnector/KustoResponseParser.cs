@@ -100,7 +100,6 @@ namespace K2Bridge.KustoConnector
                 {
                     // Read results and transform to Elastic form
                     var response = ReadResponse(queryData, reader, timeTaken);
-                    Logger.LogDebug("Response: {@response}", response);
                     return response;
                 }
                 catch (Exception ex)
