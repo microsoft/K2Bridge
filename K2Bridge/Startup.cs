@@ -22,6 +22,7 @@ namespace K2Bridge
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Microsoft.OpenApi.Models;
     using Prometheus;
     using Serilog;
@@ -58,22 +59,31 @@ namespace K2Bridge
             });
 
             services.AddControllers();
-            services.AddScoped<IConnectionDetails, KustoConnectionDetails>(
-                s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
-            services.AddSingleton(
-                s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
-            services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
-            services.AddTransient<IQueryExecutor, KustoQueryExecutor>(s =>
-            new KustoQueryExecutor(s.GetRequiredService<IConnectionDetails>(), s.GetRequiredService<Microsoft.Extensions.Logging.ILogger<KustoQueryExecutor>>(), adxQueryDurationMetric));
-            services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(
-                s => new ElasticSearchDSLVisitor(KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot).DefaultDatabaseName));
             services.AddSingleton(Log.Logger);
 
+            services.AddSingleton<IConnectionDetails, KustoConnectionDetails>(
+                s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+
+            services.AddSingleton(
+                s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+
+            services.AddSingleton<IQueryExecutor, KustoQueryExecutor>(
+                s => new KustoQueryExecutor(
+                    s.GetRequiredService<IConnectionDetails>(),
+                    s.GetRequiredService<ILogger<KustoQueryExecutor>>(),
+                    adxQueryDurationMetric));
+
+            services.AddTransient<ITranslator, ElasticQueryTranslator>();
+
+            services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(
+                s => new ElasticSearchDSLVisitor(s.GetRequiredService<IConnectionDetails>().DefaultDatabaseName));
+
             services.AddTransient<IKustoDataAccess, KustoDataAccess>();
+
             services.AddTransient<IResponseParser, KustoResponseParser>(
                 ctx => new KustoResponseParser(
-                    ctx.GetRequiredService<Microsoft.Extensions.Logging.ILogger<KustoResponseParser>>(),
+                    ctx.GetRequiredService<ILogger<KustoResponseParser>>(),
                     bool.Parse((Configuration as IConfigurationRoot)["outputBackendQuery"]),
                     adxNetQueryDurationMetric));
 

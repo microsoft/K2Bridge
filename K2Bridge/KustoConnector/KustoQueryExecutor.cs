@@ -49,6 +49,7 @@ namespace K2Bridge.KustoConnector
             // Sending both name and version this way for better visibility in Kusto audit logs.
             conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion}";
 
+            logger.LogTrace("Creating new kusto clients");
             queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
             ConnectionDetails = connectionDetails;
