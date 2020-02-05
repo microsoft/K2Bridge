@@ -22,7 +22,7 @@ namespace K2Bridge.Models.Response
 
             // Elasticsearch returns timestamp fields in UTC in ISO-8601 but without Timezone.
             // Use a String type to control serialization to mimic this behavior.
-            { typeof(DateTime), (value) => value != null ? ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") : null },
+            { typeof(DateTime), (value) => (value is DBNull) || (value == null) ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") },
         };
 
         private Hit()
@@ -91,7 +91,7 @@ namespace K2Bridge.Models.Response
                 }
             }
 
-            // Do not return empty highlights dict (mimic Elasticsearch behavior)
+            // Do not return empty highlights dict (mimic Elasticsearch behavior).
             if (hit.Highlight.Count == 0)
             {
                 hit.Highlight = null;
