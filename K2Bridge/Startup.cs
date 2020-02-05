@@ -44,19 +44,21 @@ namespace K2Bridge
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Prometheus Histogram to collect query performance data
-            var adxQueryDurationMetric = Metrics.CreateHistogram("adx_query_duration_seconds", "Histogram of kusto query call processing durations.", new HistogramConfiguration
+            // Prometheus Histograms to collect query performance data
+            var adxQueryDurationMetric = Metrics.CreateHistogram("adx_query_total_seconds", "ADX query total execution time in seconds.", new HistogramConfiguration
+            {
+                Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
+            });
+            var adxNetQueryDurationMetric = Metrics.CreateHistogram("adx_query_net_seconds", "ADX query net execution time in seconds.", new HistogramConfiguration
+            {
+                Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
+            });
+            var adxQueryBytesMetric = Metrics.CreateHistogram("adx_query_result_bytes", "ADX query result payload size in bytes.", new HistogramConfiguration
             {
                 Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
             });
 
             ConfigureTelemetryServices(services);
-
-            // Prometheus Histogram to collect net query performance data
-            var adxNetQueryDurationMetric = Metrics.CreateHistogram("adx_net_query_time", "ADX net query execution time.", new HistogramConfiguration
-            {
-                Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
-            });
 
             services.AddControllers();
 
@@ -85,7 +87,8 @@ namespace K2Bridge
                 ctx => new KustoResponseParser(
                     ctx.GetRequiredService<ILogger<KustoResponseParser>>(),
                     bool.Parse((Configuration as IConfigurationRoot)["outputBackendQuery"]),
-                    adxNetQueryDurationMetric));
+                    adxNetQueryDurationMetric,
+                    adxQueryBytesMetric));
 
             // use this http client factory to issue requests to the metadata elastic instance
             services.AddHttpClient(MetadataController.ElasticMetadataClientName, (svcProvider, elasticClient) =>

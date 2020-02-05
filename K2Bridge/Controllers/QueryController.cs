@@ -5,6 +5,7 @@
 namespace K2Bridge.Controllers
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
     using K2Bridge.HttpMessages;
@@ -85,6 +86,9 @@ namespace K2Bridge.Controllers
         /// <returns>An ElasticResponse object.</returns>
         internal async Task<IActionResult> SearchInternalAsync(bool totalHits, bool ignoreThrottled, string rawQueryData)
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             // Extract Query
             if (rawQueryData == null)
             {
@@ -107,7 +111,9 @@ namespace K2Bridge.Controllers
             var (timeTaken, dataReader) = await queryExecutor.ExecuteQueryAsync(translatedQuery);
 
             // Parse Response
-            var elasticResponse = responseParser.ParseElasticResponse(dataReader, translatedQuery, timeTaken);
+            var elasticResponse = responseParser.Parse(dataReader, translatedQuery, timeTaken);
+            sw.Stop();
+            logger.LogDebug($"[metric] search request duration: {sw.Elapsed}");
             return Ok(elasticResponse);
         }
 

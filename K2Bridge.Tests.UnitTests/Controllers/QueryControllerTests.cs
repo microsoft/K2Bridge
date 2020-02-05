@@ -94,7 +94,7 @@ namespace K2BridgeUnitTests
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             mockResponseParser.Setup(exec =>
-                exec.ParseElasticResponse(
+                exec.Parse(
                     reader,
                     queryData,
                     ts));
@@ -109,7 +109,7 @@ namespace K2BridgeUnitTests
             mockQueryExecutor.Verify(
                  executor => executor.ExecuteQueryAsync(queryData), Times.Once());
             mockResponseParser.Verify(
-                parsr => parsr.ParseElasticResponse(reader, queryData, ts), Times.Once());
+                parsr => parsr.Parse(reader, queryData, ts), Times.Once());
         }
 
         [TestCaseSource("InValidQueryContent")]
@@ -190,7 +190,7 @@ namespace K2BridgeUnitTests
             var mockTranslator = new Mock<ITranslator>();
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
-            mockResponseParser.Setup(parser => parser.ParseElasticResponse(It.IsAny<IDataReader>(), It.IsAny<QueryData>(), It.IsAny<TimeSpan>())).Throws(new Exception("test"));
+            mockResponseParser.Setup(parser => parser.Parse(It.IsAny<IDataReader>(), It.IsAny<QueryData>(), It.IsAny<TimeSpan>())).Throws(new Exception("test"));
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var httpContext = new DefaultHttpContext();
             httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
@@ -251,7 +251,7 @@ namespace K2BridgeUnitTests
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             mockResponseParser.Setup(exec =>
-                exec.ParseElasticResponse(
+                exec.Parse(
                     It.IsAny<IDataReader>(),
                     It.IsAny<QueryData>(),
                     It.IsAny<TimeSpan>()))

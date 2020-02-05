@@ -104,7 +104,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             var reader = anyTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
-            var result = new KustoResponseParser(stubLogger, false, stubMetric).ParseElasticResponse(reader, query, timeTaken);
+            var result = new KustoResponseParser(stubLogger, false, stubMetric, stubMetric).Parse(reader, query, timeTaken);
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
@@ -124,7 +124,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             var reader = hitsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
-            var result = new KustoResponseParser(stubLogger, false, stubMetric).ParseElasticResponse(reader, query, timeTaken);
+            var result = new KustoResponseParser(stubLogger, false, stubMetric, stubMetric).Parse(reader, query, timeTaken);
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
@@ -143,7 +143,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
-            var result = new KustoResponseParser(stubLogger, false, stubMetric).ParseElasticResponse(reader, query, timeTaken);
+            var result = new KustoResponseParser(stubLogger, false, stubMetric, stubMetric).Parse(reader, query, timeTaken);
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
@@ -162,7 +162,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
-            var result = new KustoResponseParser(stubLogger, false, stubMetric).ParseElasticResponse(reader, query, timeTaken);
+            var result = new KustoResponseParser(stubLogger, false, stubMetric, stubMetric).Parse(reader, query, timeTaken);
 
             Assert.IsNull(result.Responses.First().BackendQuery);
         }
@@ -180,7 +180,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
-            var result = new KustoResponseParser(stubLogger, true, stubMetric).ParseElasticResponse(reader, query, timeTaken);
+            var result = new KustoResponseParser(stubLogger, true, stubMetric, stubMetric).Parse(reader, query, timeTaken);
             var check = result.Responses.First().BackendQuery;
 
             Assert.AreEqual(queryText, result.Responses.First().BackendQuery);

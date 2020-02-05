@@ -43,17 +43,30 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("Expose Kusto Net query execution time")]
-        public async Task When_QueryParsed_Then_ExposeNetTime()
+        public async Task When_QueryParsed_Then_ExposeQueryMetrics()
         {
             await K2Client().MSearch(INDEX, $"{FLIGHTSDIR}/MSearch_Sort_String.json");
 
             using var request = new HttpRequestMessage(HttpMethod.Get, "/metrics");
             var response = await K2Client().Client().SendAsync(request);
             var responseData = await response.Content.ReadAsStringAsync();
+
             Assert.True(
                 responseData.Contains(
-                "# HELP adx_net_query_time ADX net query execution time.\n"
-                + "# TYPE adx_net_query_time histogram\n",
+                "# HELP adx_query_total_seconds ADX query total execution time in seconds.\n"
+                + "# TYPE adx_query_total_seconds histogram\n",
+                Ordinal), responseData);
+
+            Assert.True(
+                responseData.Contains(
+                "# HELP adx_query_net_seconds ADX query net execution time in seconds.\n"
+                + "# TYPE adx_query_net_seconds histogram\n",
+                Ordinal), responseData);
+
+            Assert.True(
+                responseData.Contains(
+                "# HELP adx_query_result_bytes ADX query result payload size in bytes.\n"
+                + "# TYPE adx_query_result_bytes histogram\n",
                 Ordinal), responseData);
         }
     }

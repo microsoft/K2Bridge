@@ -14,6 +14,13 @@ namespace K2Bridge.KustoConnector
     /// </summary>
     public interface IResponseParser
     {
-        ElasticResponse ParseElasticResponse(IDataReader reader, QueryData queryData, TimeSpan timeTaken);
+        /// <summary>
+        /// Parse kusto IDataReader response into ElasticResponse.
+        /// </summary>
+        /// <param name="reader">Kusto IDataReader response.</param>
+        /// <param name="queryData">QueryData containing query information.</param>
+        /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
+        /// <returns>"ElasticResponse".</returns>
+        ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken);
     }
 }

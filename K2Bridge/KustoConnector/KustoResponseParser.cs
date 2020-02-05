@@ -24,7 +24,8 @@ namespace K2Bridge.KustoConnector
         private const string AggregationTableName = "aggs";
         private const string HitsTableName = "hits";
         private static readonly Random Random = new Random();
-        private static IHistogram kustoNetQueryTime;
+        private readonly IHistogram queryNetTimeMetric;
+        private readonly IHistogram queryBytesMetric;
 
         private readonly bool outputBackendQuery;
 
@@ -33,12 +34,14 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="logger">ILogger object for logging.</param>
         /// <param name="outputBackendQuery">Outputs the backend query during parse.</param>
-        /// <param name="adxNetQueryDurationMetric">Prometheus metric to record net query time.</param>
-        public KustoResponseParser(ILogger<KustoResponseParser> logger, bool outputBackendQuery, IHistogram adxNetQueryDurationMetric)
+        /// <param name="queryNetTimeMetric">Prometheus metric to record net query time.</param>
+        /// <param name="queryBytesMetric">Prometheus metric to record the total payload size in bytes.</param>
+        public KustoResponseParser(ILogger<KustoResponseParser> logger, bool outputBackendQuery, IHistogram queryNetTimeMetric, IHistogram queryBytesMetric)
         {
             Logger = logger;
-            kustoNetQueryTime = adxNetQueryDurationMetric;
+            this.queryNetTimeMetric = queryNetTimeMetric;
             this.outputBackendQuery = outputBackendQuery;
+            this.queryBytesMetric = queryBytesMetric;
         }
 
         private ILogger Logger { get; set; }
@@ -74,39 +77,29 @@ namespace K2Bridge.KustoConnector
             var response = KustoDataReaderParser.ParseV1(reader);
             try
             {
-                ReportNetQueryExecutionTime(response);
+                ReportQueryExecutionMetrics(response);
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed logging query net execution time metric.");
+                Logger.LogError(ex, "Failed to log query execution metrics.");
             }
 
             return response;
         }
 
-        /// <summary>
-        /// Parse kusto IDataReader response into ElasticResponse.
-        /// </summary>
-        /// <param name="reader">Kusto IDataReader response.</param>
-        /// <param name="queryData">QueryData containing query information.</param>
-        /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
-        /// <returns>"ElasticResponse".</returns>
-        public ElasticResponse ParseElasticResponse(IDataReader reader, QueryData queryData, TimeSpan timeTaken)
+        /// <inheritdoc/>
+        public ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken)
         {
-            // TODO: remove the using statement as the Dispose and Close should be responsibility of the caller.
-            using (reader)
+            try
             {
-                try
-                {
-                    // Read results and transform to Elastic form
-                    var response = ReadResponse(queryData, reader, timeTaken);
-                    return response;
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "Error reading kusto response.");
-                    throw;
-                }
+                // Read results and transform to Elastic form
+                var response = ReadResponse(queryData, reader, timeTaken);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error reading kusto response.");
+                throw;
             }
         }
 
@@ -114,7 +107,7 @@ namespace K2Bridge.KustoConnector
         /// Report net query execution time from Kusto response.
         /// </summary>
         /// <param name="kustoResponseDataSet">Kusto Response.</param>
-        private static void ReportNetQueryExecutionTime(KustoResponseDataSet kustoResponseDataSet)
+        private void ReportQueryExecutionMetrics(KustoResponseDataSet kustoResponseDataSet)
         {
             var queryStatusTable = kustoResponseDataSet[WellKnownDataSet.QueryCompletionInformation];
 
@@ -134,8 +127,20 @@ namespace K2Bridge.KustoConnector
             var netQueryExecutionTime = parsedQueryStatus["ExecutionTime"];
 
             Ensure.IsNotNull(netQueryExecutionTime, nameof(netQueryExecutionTime));
+            var netQueryExecutionTimeValue = (float)netQueryExecutionTime;
+            queryNetTimeMetric.Observe(netQueryExecutionTimeValue);
+            Logger.LogDebug("[metric] backend query net (engine) duration: {netQueryExecutionTime}", TimeSpan.FromSeconds(netQueryExecutionTimeValue));
 
-            kustoNetQueryTime.Observe((float)netQueryExecutionTime);
+            var tableSizeSum = parsedQueryStatus.SelectTokens("dataset_statistics..table_size").Sum(x => x.ToObject<long>());
+            if (tableSizeSum > 0)
+            {
+                queryBytesMetric.Observe(tableSizeSum);
+                Logger.LogDebug("[metric] backend query bytes: {tableSizeSum}", tableSizeSum);
+            }
+            else
+            {
+                Logger.LogWarning("Backend query bytes is zero.");
+            }
         }
 
         /// <summary>
@@ -146,20 +151,20 @@ namespace K2Bridge.KustoConnector
         /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
         /// <returns>ElasticResponse object.</returns>
         private ElasticResponse ReadResponse(
-            QueryData query,
-            IDataReader reader,
-            TimeSpan timeTaken)
+                QueryData query,
+                IDataReader reader,
+                TimeSpan timeTaken)
         {
             var response = new ElasticResponse();
 
             response.AddTook(timeTaken);
 
-            Logger.LogDebug("Reading response using reader.");
+            Logger.LogTrace("Reading response using reader.");
             var parsedKustoResponse = ReadDataResponse(reader);
 
             if (parsedKustoResponse[AggregationTableName] != null)
             {
-                Logger.LogDebug("Parsing aggregations");
+                Logger.LogTrace("Parsing aggregations");
 
                 // read aggregations
                 foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)

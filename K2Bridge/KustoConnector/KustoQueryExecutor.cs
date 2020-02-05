@@ -23,18 +23,18 @@ namespace K2Bridge.KustoConnector
         private static readonly string AssemblyVersion = typeof(KustoQueryExecutor).Assembly.GetName().Version.ToString();
         private readonly ICslQueryProvider queryClient;
         private readonly ICslAdminProvider adminClient;
-        private readonly IHistogram queryMetric;
+        private readonly IHistogram queryTotalTimeMetric;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoQueryExecutor"/> class.
         /// </summary>
         /// <param name="connectionDetails">Kusto Connection Details.</param>
         /// <param name="logger">A logger.</param>
-        /// <param name="adxQueryDurationMetric">A metric to log the total query time to.</param>
+        /// <param name="queryTotalTimeMetric">A metric to log the total query time to.</param>
         public KustoQueryExecutor(
             IConnectionDetails connectionDetails,
             ILogger<KustoQueryExecutor> logger,
-            IHistogram adxQueryDurationMetric)
+            IHistogram queryTotalTimeMetric)
         {
             Logger = logger;
 
@@ -53,7 +53,7 @@ namespace K2Bridge.KustoConnector
             queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
             ConnectionDetails = connectionDetails;
-            queryMetric = adxQueryDurationMetric;
+            this.queryTotalTimeMetric = queryTotalTimeMetric;
         }
 
         /// <inheritdoc/>
@@ -83,9 +83,10 @@ namespace K2Bridge.KustoConnector
             Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
 
             // Use the kusto client to execute the query
-            var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, queryMetric);
+            var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, queryTotalTimeMetric);
             var fieldCount = dataReader.FieldCount;
-            Logger.LogDebug("FieldCount: {@fieldCount}. timeTaken: {@timeTaken}", fieldCount, timeTaken);
+            Logger.LogDebug("FieldCount: {@fieldCount}", fieldCount);
+            Logger.LogDebug("[metric] backend query total (sdk) duration: {timeTaken}", timeTaken);
             return (timeTaken, dataReader);
         }
     }
