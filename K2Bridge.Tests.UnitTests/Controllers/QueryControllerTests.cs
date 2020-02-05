@@ -79,7 +79,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void SearchInternal_OnValidInput_TranslatesAndExecutesQuery()
+        public async Task SearchInternal_OnValidInput_TranslatesAndExecutesQuery()
         {
             // Arrange
             (string header, string query) = ControllerExtractMethods.SplitQueryBody(ValidQueryContent);
@@ -101,7 +101,7 @@ namespace K2BridgeUnitTests
             var uat = new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object);
 
             // Act
-            uat.SearchInternalAsync(true, true, ValidQueryContent);
+            await uat.SearchInternalAsync(true, true, ValidQueryContent);
 
             // Assert
             mockTranslator.Verify(
