@@ -12,6 +12,12 @@ namespace K2BridgeUnitTests.Visitors
     [TestFixture]
     public class TestQueryVisitor
     {
+        private static readonly object[] MultiWordTestCases = {
+            new TestCaseData("somePhrase otherPhrase").Returns("(* has \"somePhrase\") or (* has \"otherPhrase\")").SetName("QueryStringVisit_TwoWordPhrases_ReturnsExpectedValues"),
+            new TestCaseData("somePhrase otherPhrase someOtherPhrase").Returns("(* has \"somePhrase\") or (* has \"otherPhrase\") or (* has \"someOtherPhrase\")").SetName("QueryStringVisit_ThreeWordPhrases_ReturnsExpectedValues"),
+            new TestCaseData("   somePhrase  ").Returns("* has \"somePhrase\"").SetName("QueryStringVisit_EmptySpacePhrases_ReturnsExpectedValues"),
+        };
+
         [TestCase(ExpectedResult = "* has \"myPharse\"")]
         public string TestBasicQueryVisitor()
         {

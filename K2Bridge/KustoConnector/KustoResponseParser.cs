@@ -23,7 +23,6 @@ namespace K2Bridge.KustoConnector
     {
         private const string AggregationTableName = "aggs";
         private const string HitsTableName = "hits";
-        private static readonly Random Random = new Random();
         private readonly IHistogram queryNetTimeMetric;
         private readonly IHistogram queryBytesMetric;
 
@@ -58,13 +57,10 @@ namespace K2Bridge.KustoConnector
 
             if (kustoResponseDataSet[HitsTableName] != null)
             {
-                foreach (DataRow row in kustoResponseDataSet[HitsTableName].TableData.Rows)
-                {
-                    var hit = Hit.Create(row, query);
-                    hit.Id = Random.Next().ToString();
-                    yield return hit;
-                }
+                return HitsMapper.MapDataTableToHits(kustoResponseDataSet[HitsTableName].TableData.Rows, query);
             }
+
+            return Enumerable.Empty<Hit>();
         }
 
         /// <summary>

@@ -68,6 +68,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
 
             var stubKustoResponse = new Mock<KustoResponseDataSet>();
             var kustoTableData = new KustoResponseDataTable(anyTable, WellKnownDataSet.PrimaryResult);
+            stubKustoResponse.SetupGet(ds => ds["no_hits"]).Returns(kustoTableData);
 
             var result = KustoResponseParser.ReadHits(stubKustoResponse.Object, query).ToList();
 

@@ -8,6 +8,7 @@ namespace Tests
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using Newtonsoft.Json;
@@ -19,9 +20,91 @@ namespace Tests
     {
         private const string HitTestId = "999";
 
-        private static readonly Random RandomId = new Random(42);
+        private QueryData query = new QueryData("_kql", "_index", null);
 
-        private QueryData query = new QueryData("_kql", "_index");
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"hlsomevalue1/hl\"]}}")]
+        [Ignore("Bug #1621")]
+        public string ResponseParse_SingleWordHighlightOnQueryString_HighlightIsCorrect()
+        {
+            return MakeHighlightHit(
+                new Dictionary<string, object> {
+                        { "somefield1", "somevalue1" },
+                        { "somefield2", "somevalue2" },
+                        { "somefield3", "somevalue3" },
+                    },
+                "*",
+                "somevalue1");
+        }
+
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue1\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"hlsomevalue1/hl\"],\"somefield2\":[\"hlsomevalue1/hl\"]}}")]
+        [Ignore("Bug #1621")]
+        public string ResponseParse_SingleWordTwoFieldsHighlightOnQueryString_HighlightIsCorrect()
+        {
+            return MakeHighlightHit(
+                new Dictionary<string, object> {
+                        { "somefield1", "somevalue1" },
+                        { "somefield2", "somevalue1" },
+                        { "somefield3", "somevalue3" },
+                    },
+                "*",
+                "somevalue1");
+        }
+
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"pre somevalue1 post\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"pre hlsomevalue1/hl post\"]}}")]
+        [Ignore("Bug #1621")]
+        public string ResponseParse_SingleWordHighlightSubstringOnQueryString_HighlightIsCorrect()
+        {
+            return MakeHighlightHit(
+                new Dictionary<string, object> {
+                        { "somefield1", "pre somevalue1 post" },
+                        { "somefield2", "somevalue2" },
+                        { "somefield3", "somevalue3" },
+                    },
+                "*",
+                "somevalue1");
+        }
+
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"hlsomevalue1/hl\"],\"somefield2\":[\"hlsomevalue2/hl\"]}}")]
+        [Ignore("Bug #1621")]
+        public string ResponseParse_MultiWordHighlightOnQueryString_HighlightIsCorrect()
+        {
+            return MakeHighlightHit(
+                new Dictionary<string, object> {
+                        { "somefield1", "somevalue1" },
+                        { "somefield2", "somevalue2" },
+                        { "somefield3", "somevalue3" },
+                    },
+                "*",
+                "somevalue1 somevalue2");
+        }
+
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"pre somevalue1 post\",\"somefield2\":\"pre somevalue2 post\",\"somefield3\":\"pre somevalue1 post pre somevalue2 post\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"pre hlsomevalue1/hl post\"],\"somefield2\":[\"pre hlsomevalue2/hl post\"],\"somefield3\":[\"pre hlsomevalue1/hl post pre hlsomevalue2/hl post\"]}}")]
+        [Ignore("Bug #1621")]
+        public string ResponseParse_MultiWordHighlightSubstringOnQueryString_HighlightIsCorrect()
+        {
+            return MakeHighlightHit(
+                new Dictionary<string, object> {
+                        { "somefield1", "pre somevalue1 post" },
+                        { "somefield2", "pre somevalue2 post" },
+                        { "somefield3", "pre somevalue1 post pre somevalue2 post" },
+                    },
+                "*",
+                "somevalue1 somevalue2");
+        }
+
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"pre SOmevalue1 post\",\"somefield2\":\"pre SOmevalue2 post\",\"somefield3\":\"pre SOmevalue1 post pre SOmevalue2 post\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"pre hlSOmevalue1/hl post\"],\"somefield2\":[\"pre hlSOmevalue2/hl post\"],\"somefield3\":[\"pre hlSOmevalue1/hl post pre hlSOmevalue2/hl post\"]}}")]
+        [Ignore("Bug #1621")]
+        public string ResponseParse_MultiWordMaintainCapialLettersAndHighlight_HighlightIsCorrect()
+        {
+            return MakeHighlightHit(
+                new Dictionary<string, object> {
+                        { "somefield1", "pre SOmevalue1 post" },
+                        { "somefield2", "pre SOmevalue2 post" },
+                        { "somefield3", "pre SOmevalue1 post pre SOmevalue2 post" },
+                    },
+                "*",
+                "somevalue1 somevalue2");
+        }
 
         [TestCase(ExpectedResult =
             "{\"responses\":[{\"aggregations\":{\"2\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"status\":200}]}")]
@@ -246,11 +329,31 @@ namespace Tests
             return false;
         }
 
-        private IEnumerable<Hit> SetRandomProperties(IEnumerable<Hit> hits) => hits.Select(i =>
+        private static IEnumerable<Hit> SetRandomProperties(IEnumerable<Hit> hits) => hits.Select(i =>
         {
             i.Id = HitTestId;
             return i;
         });
+
+        private string MakeHighlightHit(Dictionary<string, object> fields, string highlightKey, string highlightText)
+        {
+            var results =
+                new List<Dictionary<string, object>>() {
+                    fields,
+                };
+
+            var highlightQuery = new QueryData("_kql", "_index", null, new Dictionary<string, string>()
+            {
+                { highlightKey, highlightText },
+            })
+            {
+                HighlightPreTag = "hl",
+                HighlightPostTag = "/hl",
+            };
+
+            var response = BuildHits(results, highlightQuery);
+            return JsonConvert.SerializeObject(SetRandomProperties(response).First());
+        }
 
         /// <summary>
         /// Create a list of Hits by iterating over mock results.
@@ -260,16 +363,8 @@ namespace Tests
         /// <returns>A collection of Hits, one per item in the provided results data.</returns>
         private IEnumerable<Hit> BuildHits(List<Dictionary<string, object>> results, QueryData query)
         {
-            var table = ToDataTable(results);
-
-            foreach (DataRow row in table.Rows)
-            {
-                var hit = Hit.Create(row, query);
-                hit.Id = RandomId.Next().ToString();
-                yield return hit;
-            }
-
-            table.Dispose();
+            using var table = ToDataTable(results);
+            return HitsMapper.MapDataTableToHits(table.Rows, query);
         }
 
         /// <summary>

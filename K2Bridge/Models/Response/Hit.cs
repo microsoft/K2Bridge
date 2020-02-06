@@ -4,10 +4,7 @@
 
 namespace K2Bridge.Models.Response
 {
-    using System;
     using System.Collections.Generic;
-    using System.Data;
-    using K2Bridge.Models;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -15,20 +12,6 @@ namespace K2Bridge.Models.Response
     {
         private const string TYPE = "_doc";
         private const int VERSION = 1;
-
-        private static readonly Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>
-        {
-            { typeof(sbyte), (value) => (sbyte)value != 0 },
-
-            // Elasticsearch returns timestamp fields in UTC in ISO-8601 but without Timezone.
-            // Use a String type to control serialization to mimic this behavior.
-            { typeof(DateTime), (value) => (value is DBNull) || (value == null) ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") },
-        };
-
-        private Hit()
-        {
-            Sort = new List<object>();
-        }
 
         [JsonProperty("_index")]
         public string Index { get; set; }
@@ -51,107 +34,28 @@ namespace K2Bridge.Models.Response
         [JsonProperty("fields", NullValueHandling = NullValueHandling.Ignore)]
         public Fields Fields { get; set; }
 
-        [JsonProperty("sort", NullValueHandling = NullValueHandling.Ignore)]
-        public IList<object> Sort { get; }
+        [JsonProperty("sort")]
+        public IList<object> Sort { get; } = new List<object>();
 
         [JsonProperty("highlight", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> Highlight { get; set; }
 
-        public static Hit Create(DataRow row, QueryData query)
-        {
-            Ensure.IsNotNull(row, nameof(row));
-
-            var hit = new Hit() { Index = query.IndexName };
-            hit.Highlight = new Dictionary<string, object>();
-
-            var columns = row.Table.Columns;
-
-            for (int index = 0; index < row.ItemArray.Length; index++)
-            {
-                var name = columns[index].ColumnName;
-                var value = GetValue(columns[index], row[name]);
-                hit.AddSource(name, value);
-
-                if (query.HighlightText == null || value == null)
-                {
-                    continue;
-                }
-
-                // Elastic only highlights string values, but we try to highlight everything we can here.
-                // To mimic elastic: check for type of value here and skip if != string.
-                // HighlightText.ContainsKey(name) condition will be true when searching with the available filters
-                // HighlightText.ContainsKey("*") condition will be true when searching with the search box
-                if (query.HighlightText.ContainsKey(name) && value.ToString().Equals(query.HighlightText[name], StringComparison.OrdinalIgnoreCase))
-                {
-                    hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + query.HighlightText[name] + query.HighlightPostTag });
-                }
-                else if (query.HighlightText.ContainsKey("*") && value.ToString().Contains(query.HighlightText["*"], StringComparison.OrdinalIgnoreCase))
-                {
-                    hit.Highlight.Add(name, new List<string> { query.HighlightPreTag + query.HighlightText["*"] + query.HighlightPostTag });
-                }
-            }
-
-            // Do not return empty highlights dict (mimic Elasticsearch behavior).
-            if (hit.Highlight.Count == 0)
-            {
-                hit.Highlight = null;
-            }
-
-            hit.CreateSort(row, query);
-
-            hit.Fields = new Fields();
-
-            return hit;
-        }
+        public static Hit Create(string id, string indexName)
+        => new Hit() { Id = id, Index = indexName };
 
         public void AddSource(string keyName, object value)
         {
             Source.Add(keyName, value == null ? null : JToken.FromObject(value));
         }
 
-        private static object GetValue(DataColumn column, object value)
+        public void AddColumnHighlight(string columnName, object value)
         {
-            if (value == null)
+            if (Highlight == null)
             {
-                return null;
+                Highlight = new Dictionary<string, object>();
             }
 
-            var type = column.DataType;
-            if (Converters.ContainsKey(type))
-            {
-                return Converters[type](value);
-            }
-
-            return value;
-        }
-
-        private void CreateSort(DataRow row, QueryData query)
-        {
-            if (query.SortFields == null)
-            {
-                return;
-            }
-
-            foreach (var sortField in query.SortFields)
-            {
-                object value;
-                try
-                {
-                    value = row[sortField];
-                }
-                catch (ArgumentException)
-                {
-                    // Sorting by a column not in the hit list. Retrieving value is not supported.
-                    continue;
-                }
-
-                if (value is DateTime)
-                {
-                    value = TimeUtils.ToEpochMilliseconds((DateTime)value);
-                }
-
-                Sort.Add(value);
-            }
+            Highlight.Add(columnName, value);
         }
     }
 }
