@@ -11,6 +11,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
     using K2Bridge.Visitors;
     using K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestLuceneRangeVisitor
@@ -57,7 +58,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
             var es = rangeQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit((RangeClause)es);
 
             return ((RangeClause)es).KustoQL;

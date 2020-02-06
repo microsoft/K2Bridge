@@ -9,6 +9,7 @@ namespace K2BridgeUnitTests.Visitors
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestBoolVisitor
@@ -77,9 +78,9 @@ namespace K2BridgeUnitTests.Visitors
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "(* has \"ItemA\") and\n " +
-            "not (* has \"ItemB\") and\n " +
-            "(* has \"ItemC\") and\n " +
+        [TestCase(ExpectedResult = "(* has \"ItemA\") and " +
+            "not (* has \"ItemB\") or " +
+            "(* has \"ItemC\") or " +
             "not (* has \"ItemD\")")]
         public string TestSimpleBoolQueryVisit()
         {
@@ -120,7 +121,7 @@ namespace K2BridgeUnitTests.Visitors
 
         private string VisitQuery(BoolQuery query)
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(query);
             return query.KustoQL;
         }

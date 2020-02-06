@@ -7,6 +7,7 @@ namespace K2BridgeUnitTests.Visitors
     using K2Bridge.Models.Request;
     using K2Bridge.Visitors;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestSortClauseVisitor
@@ -16,7 +17,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var sortClause = new SortClause() { FieldName = "_wibble" };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(sortClause);
 
             return sortClause.KustoQL;
@@ -27,7 +28,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var sortClause = new SortClause() { FieldName = "wibble", Order = "asc" };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(sortClause);
 
             return sortClause.KustoQL;

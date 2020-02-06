@@ -12,29 +12,9 @@ namespace K2Bridge.Models.Request.Queries
     [JsonConverter(typeof(MatchPhraseClauseConverter))]
     internal class MatchPhraseClause : KustoQLBase, IVisitable, ILeafClause
     {
-        public enum Subtype
-        {
-            /// <summary>
-            /// A pharse to be searched exactly (equality).
-            /// </summary>
-            Simple = 0,
-
-            /// <summary>
-            /// A phrase to be searched as a prefix of a bigger term.
-            /// </summary>
-            Prefix,
-
-            /// <summary>
-            /// A phrase containing wildcards ('?' or '*').
-            /// </summary>
-            Wildcard,
-        }
-
         public string FieldName { get; set; }
 
         public string Phrase { get; set; }
-
-        public Subtype ClauseSubType { get; set; }
 
         public void Accept(IVisitor visitor)
         {

@@ -21,12 +21,13 @@ namespace K2Bridge.Visitors.LuceneNet
 
             var terms = ((PhraseQuery)phraseQueryWrapper.LuceneQuery).GetTerms();
             var phrase = TermsToString(terms);
-            var matchPhraseClause = new MatchPhraseClause
+            var clause = new QueryStringClause
             {
-                FieldName = terms[0].Field,
+                ParsedFieldName = terms[0].Field,
                 Phrase = phrase,
+                ParsedType = QueryStringClause.Subtype.Phrase,
             };
-            phraseQueryWrapper.ESQuery = matchPhraseClause;
+            phraseQueryWrapper.ESQuery = clause;
         }
 
         private string TermsToString(Term[] terms)

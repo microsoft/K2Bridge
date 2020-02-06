@@ -64,6 +64,22 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
+        [Description("/_msearch Kibana query with quotation text substring")]
+        public void MSearch_Quotation_Equivalent()
+        {
+            ParallelQuery(
+                $"{FLIGHTSDIR}/MSearch_Quotation.json");
+        }
+
+        [Test]
+        [Description("/_msearch Kibana query with numeric field")]
+        public void MSearch_Numeric_Equivalent()
+        {
+            ParallelQuery(
+                $"{FLIGHTSDIR}/MSearch_Numeric.json");
+        }
+
+        [Test]
         [Description("/_msearch Kibana query with text multiple words substring")]
         [Ignore("Requires fixing for multiple search strings")]
         public void MSearch_TextContainsMultiple_Equivalent()

@@ -11,6 +11,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
     using K2Bridge.Visitors;
     using K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestLuceneBoolVisitor
@@ -58,7 +59,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
             var es = boolQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit((BoolQuery)es);
 
             return ((BoolQuery)es).KustoQL;

@@ -22,6 +22,7 @@ namespace K2Bridge.Visitors
         public const string Or = "or";
         public const string Not = "not";
         public const string Contains = "contains";
+        public const string Has = "has";
         public const string Where = "where";
         public const string OrderBy = "order by";
         public const string Let = "let";

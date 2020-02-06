@@ -76,7 +76,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidExistsClause()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
                 () => visitor.Visit(new ExistsClause()),
@@ -90,7 +90,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidMatchPhraseClause()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
                 () => visitor.Visit(new MatchPhraseClause()),
@@ -104,7 +104,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidAvgAggMetric()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
                 () => visitor.Visit(new AvgAggregation()),
@@ -118,7 +118,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidAggMetric()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             // This is a valid scenario
             visitor.Visit(new Aggregation());
@@ -131,7 +131,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidCardinalityAggMetric()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
                 () => visitor.Visit(new CardinalityAggregation()),
@@ -145,7 +145,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidRangeClause()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
                 () => visitor.Visit(new RangeClause()),
@@ -159,7 +159,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidSortClause()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
                 () => visitor.Visit(new SortClause()),
@@ -173,7 +173,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidDateHistogramAgg()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
                 () => visitor.Visit(new DateHistogramAggregation()),
@@ -187,7 +187,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidBoolQuery()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             // This is a valid scenario
             visitor.Visit(new BoolQuery());
@@ -200,7 +200,7 @@ namespace Tests
         [TestCase]
         public void TestInvalidQuery()
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
                 () => visitor.Visit(new Query()),

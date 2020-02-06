@@ -18,12 +18,13 @@ namespace K2Bridge.Visitors.LuceneNet
             VerifyValid(termQueryWrapper);
 
             var term = ((TermQuery)termQueryWrapper.LuceneQuery).Term;
-            var matchPhraseClause = new MatchPhraseClause
+            var clause = new QueryStringClause
             {
-                FieldName = term.Field,
+                ParsedFieldName = term.Field,
                 Phrase = term.Text,
+                ParsedType = QueryStringClause.Subtype.Term,
             };
-            termQueryWrapper.ESQuery = matchPhraseClause;
+            termQueryWrapper.ESQuery = clause;
         }
     }
 }

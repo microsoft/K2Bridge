@@ -12,6 +12,34 @@ namespace K2Bridge.Models.Request.Queries
     [JsonConverter(typeof(QueryStringClauseConverter))]
     internal class QueryStringClause : KustoQLBase, ILeafClause, IVisitable
     {
+        public enum Subtype
+        {
+            /// <summary>
+            /// A pharse to be searched exactly (equality).
+            /// </summary>
+            Term = 0,
+
+            Phrase,
+
+            /// <summary>
+            /// A phrase to be searched as a prefix of a bigger term.
+            /// </summary>
+            Prefix,
+
+            /// <summary>
+            /// A phrase containing wildcards ('?' or '*').
+            /// </summary>
+            Wildcard,
+        }
+
+        // Lucene type properties
+        // These will be initially null when the object
+        // is created from a json payload
+        public Subtype? ParsedType { get; set; }
+
+        public string ParsedFieldName { get; set; }
+
+        // original properties of QueryStringClause
         public string Phrase { get; set; }
 
         public bool Wildcard { get; set; }

@@ -7,6 +7,7 @@ namespace K2BridgeUnitTests.Visitors
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestQueryVisitor
@@ -19,18 +20,8 @@ namespace K2BridgeUnitTests.Visitors
             return VisitQuery(queryClause);
         }
 
-        /*
-        [TestCase(ExpectedResult = "TBD")]
-        public string TestWildCardVisitor()
-        {
-            var queryClause = CreateQueryStringClause("myPharse", false);
-
-            return VisitQuery(queryClause);
-        }
-        */
-
         [TestCase(ExpectedResult =
-            "(* == \"myPharse\") and (* == \"herPhrase\")")]
+            "(* has \"myPharse\") and (* has \"herPhrase\")")]
         public string TestMultipleAndPharsesQueryVisitor()
         {
             var queryClause = CreateQueryStringClause("myPharse AND herPhrase", true);
@@ -39,7 +30,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult =
-            "(* == \"myPharse\") or (* == \"herPhrase\")")]
+            "(* has \"myPharse\") or (* has \"herPhrase\")")]
         public string TestMultipleOrPharsesQueryVisitor()
         {
             var queryClause = CreateQueryStringClause("myPharse OR herPhrase", true);
@@ -48,7 +39,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult =
-            "not (* == \"myPharse\") and not (* == \"herPhrase\")")]
+            "not (* has \"myPharse\") and not (* has \"herPhrase\")")]
         public string TestMultipleNotPharsesQueryVisitor()
         {
             var queryClause = CreateQueryStringClause("NOT myPharse AND NOT herPhrase", true);
@@ -56,9 +47,27 @@ namespace K2BridgeUnitTests.Visitors
             return VisitQuery(queryClause);
         }
 
+        [TestCase(ExpectedResult =
+            "(* has \"Dogs\") and (* contains \"My cats\")")]
+        public string TestQuotationQueryVisitor()
+        {
+            var queryClause = CreateQueryStringClause("Dogs AND \"My cats\"", true);
+
+            return VisitQuery(queryClause);
+        }
+
+        [TestCase(ExpectedResult =
+            "(* has \"Tokyo\") and (* contains \"Haneda International\") or ((* has \"A\") and (* contains \"b c\"))")]
+        public string TestMoreQuotationQueryVisitor()
+        {
+            var queryClause = CreateQueryStringClause("Tokyo AND \"Haneda International\" OR (A AND \"b c\")", true);
+
+            return VisitQuery(queryClause);
+        }
+
         private static string VisitQuery(QueryStringClause queryStringClause)
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(queryStringClause);
             return queryStringClause.KustoQL;
         }

@@ -8,6 +8,7 @@ namespace K2BridgeUnitTests.Visitors
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestMatchPhraseVisitor
@@ -47,7 +48,7 @@ namespace K2BridgeUnitTests.Visitors
 
         private string VisitQuery(MatchPhraseClause clause)
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(clause);
             return clause.KustoQL;
         }

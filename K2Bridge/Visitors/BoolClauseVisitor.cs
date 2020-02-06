@@ -29,11 +29,14 @@ namespace K2Bridge.Visitors
 
             if (queryList?.Count > 0)
             {
+                // In case we already have something in KustoQL, we need to first
+                // add a separator
                 if (!string.IsNullOrEmpty(boolQuery.KustoQL))
                 {
-                    boolQuery.KustoQL += $" {KustoQLOperators.And}\n "; // query is now complex - cannot use where operator
+                    boolQuery.KustoQL += $"{joinString}";
                 }
 
+                // Now, join the given list separated with the given word
                 boolQuery.KustoQL += $"{string.Join(joinString, queryList)}";
             }
         }

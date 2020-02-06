@@ -76,7 +76,7 @@ namespace Tests
 
         private static string RangeClauseToKQL(K2Bridge.Models.Request.Queries.RangeClause rangeClause)
         {
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(rangeClause);
             return rangeClause.KustoQL;
         }

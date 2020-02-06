@@ -281,7 +281,7 @@ namespace Tests
         public string TestMatchPhraseQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -292,7 +292,7 @@ namespace Tests
         public string TestExistsClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -318,18 +318,17 @@ namespace Tests
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
 
-        // TODO: fix this test when task: https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1579 completes
         [TestCase(CombinedQuery, ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
-        [TestCase(NotQueryStringClause, ExpectedResult = "where (* has \"TEST_RESULT\") and\n not (TEST_FIELD == \"TEST_RESULT_2\")")]
+        [TestCase(NotQueryStringClause, ExpectedResult = "where (* has \"TEST_RESULT\") and not (TEST_FIELD == \"TEST_RESULT_2\")")]
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -340,7 +339,7 @@ namespace Tests
         public string TestWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -351,7 +350,7 @@ namespace Tests
         public string TestComplexWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -362,7 +361,7 @@ namespace Tests
         public string TestPrefixQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -370,7 +369,7 @@ namespace Tests
         private string TestRangeClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }

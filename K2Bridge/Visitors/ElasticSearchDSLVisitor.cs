@@ -4,8 +4,11 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
+    using System.Threading.Tasks;
+    using K2Bridge.DAL;
     using K2Bridge.Models;
     using K2Bridge.Models.Request;
 
@@ -16,8 +19,13 @@ namespace K2Bridge.Visitors
     {
         private readonly string defaultDatabaseName;
 
-        public ElasticSearchDSLVisitor(string defaultDatabaseName = "")
+        private ILazySchemaRetriever lazySchemaRetriever;
+
+        private ILazySchemaRetrieverFactory lazySchemaRetrieverFactory;
+
+        public ElasticSearchDSLVisitor(ILazySchemaRetrieverFactory lazySchemaRetrieverFactory, string defaultDatabaseName = "")
         {
+            this.lazySchemaRetrieverFactory = lazySchemaRetrieverFactory;
             this.defaultDatabaseName = defaultDatabaseName;
         }
 
@@ -29,16 +37,19 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(elasticSearchDSL, nameof(elasticSearchDSL));
 
-            var queryStringBuilder = new StringBuilder();
-
-            queryStringBuilder.Append($"{KustoQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');
+            // Preparing the lazy schema with the index name to be used later
+            this.lazySchemaRetriever = lazySchemaRetrieverFactory.Make(elasticSearchDSL.IndexName);
 
             // base query
             elasticSearchDSL.Query.Accept(this);
 
+            var queryStringBuilder = new StringBuilder();
+            queryStringBuilder.Append($"{KustoQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');
+
+            var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(elasticSearchDSL.IndexName, defaultDatabaseName);
+
             // when an index-pattern doesn't have a default time filter the query element can be empty
             var translatedQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KustoQL) ? $"| {elasticSearchDSL.Query.KustoQL}" : string.Empty;
-            var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(elasticSearchDSL.IndexName, defaultDatabaseName);
             queryStringBuilder.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
 
             // aggregations

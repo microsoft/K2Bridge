@@ -8,6 +8,7 @@ namespace K2BridgeUnitTests.Visitors
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Visitors;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestAggregationVisitor
@@ -17,7 +18,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var aggregateClause = new Aggregation();
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;
@@ -31,7 +32,7 @@ namespace K2BridgeUnitTests.Visitors
                 PrimaryAggregation = new AvgAggregation() { FieldName = "fieldA" },
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;
@@ -49,7 +50,7 @@ namespace K2BridgeUnitTests.Visitors
                 },
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;
@@ -63,7 +64,7 @@ namespace K2BridgeUnitTests.Visitors
                 PrimaryAggregation = new CardinalityAggregation() { FieldName = "fieldA" },
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;
@@ -81,7 +82,7 @@ namespace K2BridgeUnitTests.Visitors
                 },
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;

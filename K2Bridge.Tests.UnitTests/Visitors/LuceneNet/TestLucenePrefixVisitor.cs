@@ -11,6 +11,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
     using K2Bridge.Visitors;
     using K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestLucenePrefixVisitor
@@ -53,10 +54,10 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
             var es = prefixQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor();
-            visitor.Visit((MatchPhraseClause)es);
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit((QueryStringClause)es);
 
-            return ((MatchPhraseClause)es).KustoQL;
+            return ((QueryStringClause)es).KustoQL;
         }
     }
 }

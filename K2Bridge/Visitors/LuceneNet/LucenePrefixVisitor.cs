@@ -18,11 +18,11 @@ namespace K2Bridge.Visitors.LuceneNet
             VerifyValid(prefixQueryWrapper);
 
             var prefix = ((PrefixQuery)prefixQueryWrapper.LuceneQuery).Prefix;
-            var prefixClause = new MatchPhraseClause
+            var prefixClause = new QueryStringClause
             {
-                FieldName = prefix.Field,
+                ParsedFieldName = prefix.Field,
                 Phrase = prefix.Text,
-                ClauseSubType = MatchPhraseClause.Subtype.Prefix,
+                ParsedType = QueryStringClause.Subtype.Prefix,
             };
             prefixQueryWrapper.ESQuery = prefixClause;
         }

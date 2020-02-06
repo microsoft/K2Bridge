@@ -21,27 +21,7 @@ namespace K2Bridge.Visitors
             // Must have a field name
             EnsureClause.StringIsNotNullOrEmpty(matchPhraseClause.FieldName, nameof(matchPhraseClause.FieldName));
 
-            // Depends on the exact request there are 3 possible options for match phrase:
-            // wildcard, prefix and simple equality
-            switch (matchPhraseClause.ClauseSubType)
-            {
-                case MatchPhraseClause.Subtype.Wildcard:
-                    // Now, each occurrence is replaced with [.\S] or [.\S]*
-                    // This group is looking for any char except space, this is in order
-                    // to be consistent with the way ES works
-                    var phrase = SingleCharPattern.Replace(matchPhraseClause.Phrase, @"[.\\S]");
-                    phrase = MultiCharPattern.Replace(phrase, @"[.\\S]*");
-
-                    matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
-                    break;
-                case MatchPhraseClause.Subtype.Prefix:
-                    matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.HasPrefixCS} \"{matchPhraseClause.Phrase}\"";
-                    break;
-                default:
-                    // Simple subtype
-                    matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase}\"";
-                    break;
-            }
+            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase}\"";
         }
     }
 }

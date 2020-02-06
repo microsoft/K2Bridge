@@ -19,11 +19,11 @@ namespace K2Bridge.Visitors.LuceneNet
             VerifyValid(wildcardQueryWrapper);
 
             var term = ((WildcardQuery)wildcardQueryWrapper.LuceneQuery).Term;
-            var wildcardClause = new MatchPhraseClause
+            var wildcardClause = new QueryStringClause
             {
-                FieldName = term.Field,
+                ParsedFieldName = term.Field,
                 Phrase = term.Text,
-                ClauseSubType = MatchPhraseClause.Subtype.Wildcard,
+                ParsedType = QueryStringClause.Subtype.Wildcard,
             };
             wildcardQueryWrapper.ESQuery = wildcardClause;
         }

@@ -7,6 +7,7 @@ namespace K2BridgeUnitTests.Visitors
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Visitors;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestDateHistogramAggregationVisitor
@@ -20,7 +21,7 @@ namespace K2BridgeUnitTests.Visitors
                 FieldName = "wobble",
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(histogramAggregation);
 
             return histogramAggregation.KustoQL;
@@ -39,7 +40,7 @@ namespace K2BridgeUnitTests.Visitors
                 Interval = interval,
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(histogramAggregation);
 
             return histogramAggregation.KustoQL;

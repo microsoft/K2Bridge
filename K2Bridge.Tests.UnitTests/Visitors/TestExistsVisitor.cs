@@ -7,6 +7,7 @@ namespace K2BridgeUnitTests.Visitors
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
     using NUnit.Framework;
+    using Tests;
 
     [TestFixture]
     public class TestExistsVisitor
@@ -19,7 +20,7 @@ namespace K2BridgeUnitTests.Visitors
                 FieldName = "MyField",
             };
 
-            var visitor = new ElasticSearchDSLVisitor();
+            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(existsClause);
             return existsClause.KustoQL;
         }
