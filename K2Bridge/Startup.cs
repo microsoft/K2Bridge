@@ -55,7 +55,7 @@ namespace K2Bridge
             });
             var adxQueryBytesMetric = Metrics.CreateHistogram("adx_query_result_bytes", "ADX query result payload size in bytes.", new HistogramConfiguration
             {
-                Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
+                Buckets = Histogram.LinearBuckets(start: 1, width: 250000, count: 40),
             });
 
             ConfigureTelemetryServices(services);

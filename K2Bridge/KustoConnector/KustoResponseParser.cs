@@ -94,6 +94,10 @@ namespace K2Bridge.KustoConnector
             {
                 // Read results and transform to Elastic form
                 var response = ReadResponse(queryData, reader, timeTaken);
+
+                // Log total number of hits to have an idea of how many rows were returned by the search expression and aggregated.
+                Logger.LogDebug("Total number of hits: {totalHits}", response?.Responses?.First()?.Hits.Total);
+
                 return response;
             }
             catch (Exception ex)
@@ -141,6 +145,8 @@ namespace K2Bridge.KustoConnector
             {
                 Logger.LogWarning("Backend query bytes is zero.");
             }
+
+            Logger.LogDebug("Backend query resource usage: {resourceUsage}", parsedQueryStatus.SelectToken("resource_usage").ToString());
         }
 
         /// <summary>

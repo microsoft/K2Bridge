@@ -67,6 +67,17 @@ namespace K2Bridge.Controllers
         {
             try
             {
+                // It's not common for Kibana to ask the response to be compressed.
+                // Since by default we ignore this, adding a log to see if it does happen.
+                if (logger.IsEnabled(LogLevel.Warning))
+                {
+                    var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out var encodingData);
+                    if (hasEncodingHeader ?? false)
+                    {
+                        logger.LogWarning("Unsupported encoding was requested: {encodingData}", encodingData);
+                    }
+                }
+
                 return await SearchInternalAsync(totalHits, ignoreThrottled, await ExtractBodyAsync());
             }
             catch (Exception exception)
