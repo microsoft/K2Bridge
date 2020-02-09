@@ -7,6 +7,8 @@ namespace K2BridgeUnitTests
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.SqlTypes;
+    using System.Globalization;
     using System.IO;
     using FluentAssertions;
     using FluentAssertions.Json;
@@ -23,6 +25,7 @@ namespace K2BridgeUnitTests
     public class HitsMapperTests
     {
         private JToken expected;
+        private QueryData defaultQuery;
 
         [SetUp]
         public void SetUp()
@@ -48,6 +51,8 @@ namespace K2BridgeUnitTests
             {
                 expected = JToken.ReadFrom(jr);
             }
+
+            defaultQuery = new QueryData("query", "index", null);
         }
 
         [Test]
@@ -209,6 +214,78 @@ namespace K2BridgeUnitTests
             MapHitAndAssert(table, query);
         }
 
+        [Test]
+        public void Create_SourceWithSByte_ConvertsToBoolean()
+        {
+            using var hitsTable = HitTypeTestTable(Type.GetType("System.SByte"), 1);
+            MapHitTypeAndAssert(hitsTable, defaultQuery, new JValue(true));
+        }
+
+        [Test]
+        public void Create_SourceWithSqlDecimal_ConvertsToDouble()
+        {
+            var value = new SqlDecimal(1.6);
+            using var hitsTable = HitTypeTestTable(value.GetType(), value);
+
+            MapHitTypeAndAssert(hitsTable, defaultQuery, new JValue(1.6));
+        }
+
+        [Test]
+        public void Create_SourceWithNullSqlDecimal_ConvertsToNaNDouble()
+        {
+            var value = new SqlDecimal(0);
+            using var hitsTable = HitTypeTestTable(value.GetType(), SqlDecimal.Null);
+            MapHitTypeAndAssert(hitsTable, defaultQuery, new JValue(double.NaN));
+        }
+
+        [Test]
+        public void Create_SourceWithNullGuid_ConvertsToNull()
+        {
+            using var hitsTable = HitTypeTestTable(Type.GetType("System.Guid"), DBNull.Value);
+            MapHitTypeAndAssert(hitsTable, defaultQuery, JValue.CreateNull());
+        }
+
+        [Test]
+        public void Create_SourceWithGuid_ConvertsToString()
+        {
+            var value = new Guid("74be27de-1e4e-49d9-b579-fe0b331d3642");
+            using var hitsTable = HitTypeTestTable(Type.GetType("System.Guid"), value);
+            MapHitTypeAndAssert(hitsTable, defaultQuery, new JValue("74be27de-1e4e-49d9-b579-fe0b331d3642"));
+        }
+
+        [Test]
+        public void Create_SourceWithNullTimespan_ConvertsToNull()
+        {
+            using var hitsTable = HitTypeTestTable(Type.GetType("System.TimeSpan"), DBNull.Value);
+            MapHitTypeAndAssert(hitsTable, defaultQuery, JValue.CreateNull());
+        }
+
+        [Test]
+        public void Create_SourceWithTimespan_ConvertsToISO8601String()
+        {
+            var value = new TimeSpan(20000087879);
+            using var hitsTable = HitTypeTestTable(Type.GetType("System.TimeSpan"), value);
+
+            MapHitTypeAndAssert(hitsTable, defaultQuery, new JValue("PT33M20.0087879S"));
+        }
+
+        [Test]
+        public void Create_SourceWithNullDateTime_ConvertsToNull()
+        {
+            using DataTable hitsTable = HitTypeTestTable(Type.GetType("System.DateTime"), DBNull.Value);
+            MapHitTypeAndAssert(hitsTable, defaultQuery, JValue.CreateNull());
+        }
+
+        [Test]
+        public void Create_SourceWithDateTime_ConvertsToDateTimeString()
+        {
+            var value = DateTime.Now.ToUniversalTime();
+            using var hitsTable = HitTypeTestTable(Type.GetType("System.DateTime"), value);
+            var expectedString = value.ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF", DateTimeFormatInfo.InvariantInfo);
+
+            MapHitTypeAndAssert(hitsTable, defaultQuery, new JValue(expectedString));
+        }
+
         private static DataTable SampleData()
         {
             var table = new DataTable();
@@ -227,6 +304,26 @@ namespace K2BridgeUnitTests
             return table;
         }
 
+        private static DataTable HitTypeTestTable(Type dataType, object value)
+        {
+            DataTable resTable = new DataTable();
+
+            var column1 = new DataColumn
+            {
+                ColumnName = "column1",
+                DataType = dataType,
+                AllowDBNull = true,
+            };
+            resTable.Columns.Add(column1);
+
+            var row1 = resTable.NewRow();
+            row1["column1"] = value;
+
+            resTable.Rows.Add(row1);
+
+            return resTable;
+        }
+
         private void MapHitAndAssert(DataTable table, QueryData query)
         {
             var logger = new Mock<ILogger>();
@@ -243,6 +340,24 @@ namespace K2BridgeUnitTests
             var hitJson = JToken.FromObject(hitl);
 
             hitJson.Should().BeEquivalentTo(expected);
+        }
+
+        private void MapHitTypeAndAssert(DataTable table, QueryData query, object expected)
+        {
+            var logger = new Mock<ILogger>();
+            using var highlighter = new LuceneHighlighter(query, logger.Object);
+            var hits = HitsMapper.MapRowsToHits(table.Rows, query, highlighter);
+            var hitl = new List<Hit>(hits);
+            Assert.AreEqual(1, hitl.Count);
+
+            foreach (var hit in hitl)
+            {
+                hit.Id = null;
+            }
+
+            var hitJson = JToken.FromObject(hitl).First;
+
+            Assert.AreEqual(hitJson["_source"]["column1"], expected);
         }
     }
 }

@@ -77,6 +77,11 @@ namespace K2Bridge.Tests.End2End
         protected const string INDEX = "kibana_sample_data_flights";
 
         /// <summary>
+        /// Name of the Kusto index for types check.
+        /// </summary>
+        protected const string TYPESINDEX = "types_index";
+
+        /// <summary>
         /// Name of the Kusto ingestion mapping to create.
         /// </summary>
         protected const string MAPPING = "test_mapping";
@@ -196,7 +201,9 @@ namespace K2Bridge.Tests.End2End
                 (t) => Progress.WriteLine($"Ingestion into Elasticsearch completed"), Current);
             var k2Task = PopulateKusto.Populate(kusto, kustoDatabase, INDEX, MAPPING, structure, "flights.json.gz").ContinueWith(
                 (t) => Progress.WriteLine($"Ingestion into Kusto completed"), Current);
-            Task.WaitAll(esTask, k2Task);
+            var typesIndexTask = PopulateKusto.PopulateTypesIndex(kusto, kustoDatabase, TYPESINDEX).ContinueWith(
+                (t) => Progress.WriteLine($"Kusto Types index creation completed"), Current);
+            Task.WaitAll(esTask, k2Task, typesIndexTask);
         }
 
         private static async Task<TestElasticClient> CreateElasticsearchClient(string prefix)

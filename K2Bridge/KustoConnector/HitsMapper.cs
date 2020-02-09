@@ -7,7 +7,9 @@ namespace K2Bridge.KustoConnector
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.SqlTypes;
     using System.Linq;
+    using System.Xml;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
 
@@ -22,10 +24,13 @@ namespace K2Bridge.KustoConnector
         private static readonly Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>
         {
             { typeof(sbyte), (value) => (sbyte)value != 0 },
+            { typeof(SqlDecimal), (value) => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble() },
+            { typeof(Guid), (value) => (value is DBNull) || (value == null) ? null : ((Guid)value).ToString() },
+            { typeof(TimeSpan), (value) => (value is DBNull) || (value == null) ? null : XmlConvert.ToString((TimeSpan)value) },
 
             // Elasticsearch returns timestamp fields in UTC in ISO-8601 but without Timezone.
             // Use a String type to control serialization to mimic this behavior.
-            { typeof(DateTime), (value) => value != null ? ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") : null },
+            { typeof(DateTime), (value) => value is DBNull ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") },
         };
 
         private static readonly Random Random = new Random();

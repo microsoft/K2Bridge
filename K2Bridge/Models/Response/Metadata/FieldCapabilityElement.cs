@@ -48,6 +48,10 @@ namespace K2Bridge.Models.Response.Metadata
                 "System.Object" => "object",
                 "System.String" => "keyword", // Elastic support text and keyword string types. Text is interpreted as something that can't be aggregated, hence we need to choose keyword.
                 "System.DateTime" => "date",
+                "System.Data.SqlTypes.SqlDecimal" => "double",
+                "System.Guid" => "string",
+                "System.TimeSpan" => "string",
+                "System.Boolean" => "boolean",
                 _ => throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type"),
             };
         }

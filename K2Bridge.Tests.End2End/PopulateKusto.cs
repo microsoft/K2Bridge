@@ -6,6 +6,7 @@ namespace K2Bridge.Tests.End2End
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
     using System.IO;
     using System.Threading.Tasks;
     using Kusto.Data;
@@ -27,6 +28,20 @@ namespace K2Bridge.Tests.End2End
                 { "float", "double" },
                 { "integer", "int" },
                 { "geo_point", "dynamic" },
+            };
+
+        // Map Kusto columns to types
+        private static readonly Dictionary<string, string> KustoColumnType = new Dictionary<string, string> {
+                { "Boolean", "bool" },
+                { "DateTime", "datetime" },
+                { "Guid", "guid" },
+                { "Int32", "int" },
+                { "Int64", "long" },
+                { "Double", "real" },
+                { "String", "string" },
+                { "TimeSpan", "timespan" },
+                { "SqlDecimal", "decimal" },
+                { "Dynamic", "dynamic" },
             };
 
         /// <summary>
@@ -86,6 +101,35 @@ namespace K2Bridge.Tests.End2End
             // Populate Kusto
             using Stream fs = File.OpenRead(dataFile);
             return await KustoIngest(kusto, db, table, mapping, fs);
+        }
+
+        /// <summary>
+        ///  Populate the Kusto backend with test data.
+        /// </summary>
+        /// <param name="kusto">Kusto connection string builder.</param>
+        /// <param name="db">Kusto database.</param>
+        /// <param name="table">Kusto table within database.</param>
+        /// <returns>Bulk Insert operation result.</returns>
+        public static async Task<IDataReader> PopulateTypesIndex(KustoConnectionStringBuilder kusto, string db, string table)
+        {
+            // Build list of columns and mappings to provision Kusto
+            var kustoColumns = new List<string>();
+
+            foreach (var entry in KustoColumnType)
+            {
+                kustoColumns.Add($"{entry.Key}:{entry.Value}");
+            }
+
+            using var kustoAdminClient = KustoClientFactory.CreateCslAdminProvider(kusto);
+
+            // Send drop table ifexists command to Kusto
+            var command = CslCommandGenerator.GenerateTableDropCommand(table, true);
+            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+
+            // Send create table command to Kusto
+            command = $".create table {table} ({string.Join(", ", kustoColumns)})";
+            Console.WriteLine(command);
+            return await kustoAdminClient.ExecuteControlCommandAsync(db, command);
         }
 
         /// <summary>

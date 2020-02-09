@@ -43,6 +43,7 @@
     <Folder Include="DAL\" />
     <Folder Include="Data\" />
     <Folder Include="Visitors\LuceneNet\" />
+    <Folder Include="Models\Response\Metadata\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\K2Bridge\K2Bridge.csproj" />
