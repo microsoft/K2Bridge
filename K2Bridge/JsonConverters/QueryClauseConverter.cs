@@ -58,6 +58,7 @@ namespace K2Bridge.JsonConverters
                 MustNot = TokenToIQueryClauseList(token["must_not"], serializer),
                 Should = TokenToIQueryClauseList(token["should"], serializer),
                 ShouldNot = TokenToIQueryClauseList(token["should_not"], serializer),
+                Filter = TokenToIQueryClauseList(token["filter"], serializer),
             };
         }
     }

@@ -19,14 +19,17 @@ The solution currently targets the "Discover" tab in Kibana to enable users to q
 The K2Bridge is the endpoint exposed to clients and the one Kibana connects to. Internally, a small elasticsearch is being used to service metadata related requests (like: which index-patterns we have, etc.). Note that no business data is actually saved in this internal instance and it can be considered as an implementation detail (could be removed in the future).
 The bridge accept each request and redirects business (data) requests to ADX and metadata requests to the metadata store.
 
-### Some differences you should know about
+### Some differences to be aware of
 
-1. The [searching](./docs/searching.md) documentation provides insights to the similarities and differences between elasticsearch and azure data explorer as kibana data sources.
+1. The [searching](./docs/searching.md) documentation provides insights to the similarities and differences between Elasticsearch and ADX as Kibana data sources.
 
-2. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features.
+1. Each document in Elasticsearch has a unique id usually noted in the "_id" field. This isn't inherently available for data stored in ADX and because Kibana expects it, 
+K2Bridge generates a *random* number for this value. Please note that this is *not a reproducable* value and you shouldn't search for documents/items that have specific values.
+
+1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features.
 TODO: how would they give feedback?
 
-3. We have used and tested the OSS version of Kibana. Using other versions might work but you would probably need to disable various modules such as xpack.
+1. We have used and tested the OSS version of Kibana. Using other versions might work but you would probably need to disable various modules such as xpack.
 
 ## Installing
 

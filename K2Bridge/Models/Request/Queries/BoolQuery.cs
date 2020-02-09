@@ -21,6 +21,12 @@ namespace K2Bridge.Models.Request.Queries
 
         public IEnumerable<IQuery> ShouldNot { get; set; }
 
+        /// <summary>
+        /// Gets or sets the expressions for filtering documents.
+        /// This applies before other search expressions in the query class (like Must).
+        /// </summary>
+        public IEnumerable<IQuery> Filter { get; set; }
+
         public void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

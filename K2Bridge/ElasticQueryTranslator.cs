@@ -6,6 +6,7 @@ namespace K2Bridge
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using K2Bridge.Models;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
@@ -59,6 +60,13 @@ namespace K2Bridge
                 Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
                 Ensure.IsNotNull(elasticSearchDsl.Query.Bool, nameof(elasticSearchDsl.Query.Bool));
                 Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Must, nameof(elasticSearchDsl.Query.Bool.Must));
+
+                if (elasticSearchDsl.Query.Bool.Filter.Any())
+                {
+                    // KQL in an experimental search syntax in Kibana that is turned on in version 7 but also available in version 6.
+                    // One can set it with option "search:queryLanguage" to "Lucene". More info: https://www.elastic.co/guide/en/kibana/current/advanced-options.html.
+                    Logger.LogWarning("Query includes a filter element idicating Kibana is working in KQL syntax which is not supported yet. You should search with Lucene syntax instead.");
+                }
 
                 foreach (var element in elasticSearchDsl.Query.Bool.Must)
                 {

@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Dockerfile = Dockerfile
 		LICENSE = LICENSE
 		README.md = README.md
+		docs\searching.md = docs\searching.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "K2Bridge.Tests.UnitTests", "K2Bridge.Tests.UnitTests\K2Bridge.Tests.UnitTests.csproj", "{B219CDAD-7641-4ECB-8B96-EB47E25DE5AC}"
