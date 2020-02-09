@@ -15,6 +15,7 @@ pr:
     exclude:
     - '*.md'
     - 'docs/*'
+    - 'performance/*'
     - '*.png'
     - 'README.md'
 

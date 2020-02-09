@@ -81,6 +81,9 @@ More on the formats can be found at the [Prometheus documentations](https://prom
 Kibana Kusto Bridge would reply based on the content type header, so pointing your browser to:
 `http://bridge-host/metrics/` will return a text representation of the metrics with their documentation.
 
+## Performance 
+You can find more about the performance test and capabilites in the [Performance page](/Performance/Performance.md).
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).

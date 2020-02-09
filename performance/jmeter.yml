@@ -1,0 +1,28 @@
+﻿apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: jmeter
+  name: jmeter
+spec:
+  containers:
+  - image: justb4/jmeter
+    name: jmeter
+    resources:
+      requests:
+        memory: "3Gi"
+        cpu: "400m"
+      limits:
+        memory: "8Gi"
+        cpu: "1"
+    args: ["-n -t /mnt/azure/Baseline.jmx -LDEBUG -Jtarget_url=k2bridge -p /mnt/azure/jmeter.properties"]
+    volumeMounts:
+    - name: azure
+      mountPath: /mnt/azure
+  restartPolicy: Never
+  volumes:
+  - name: azure
+    azureFile:
+      secretName: azure-secret
+      shareName: jmeter
+      readOnly: true
