@@ -23,7 +23,7 @@ The bridge accept each request and redirects business (data) requests to ADX and
 
 1. The [searching](./docs/searching.md) documentation provides insights to the similarities and differences between Elasticsearch and ADX as Kibana data sources.
 
-1. Each document in Elasticsearch has a unique id usually noted in the "_id" field. This isn't inherently available for data stored in ADX and because Kibana expects it, 
+1. Each document in Elasticsearch has a unique id usually noted in the "_id" field. This isn't inherently available for data stored in ADX and because Kibana expects it,
 K2Bridge generates a *random* number for this value. Please note that this is *not a reproducable* value and you shouldn't search for documents/items that have specific values.
 
 1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features.
@@ -50,7 +50,7 @@ The application surfaces the following data from ADX as indexes into Kibana:
   * The function does not take any parameters.
 
 ADX functions without parameters are similar in nature to views in relational databases.
-Through functions, you can perform [cross-database and cross-cluster queries](https://docs.microsoft.com/en-us/azure/kusto/query/cross-cluster-or-database-queries) as well as 
+Through functions, you can perform [cross-database and cross-cluster queries](https://docs.microsoft.com/en-us/azure/kusto/query/cross-cluster-or-database-queries) as well as
 queries into
 [Azure Monitor (Application Insights and Log Analytics)](https://docs.microsoft.com/en-us/azure/data-explorer/query-monitor-data), provided the service principal has adequate permissions
 on the external resources.
@@ -78,10 +78,18 @@ Supported exposition formats are the 0.0.4 text and protocol buffer formats.
 
 More on the formats can be found at the [Prometheus documentations](https://prometheus.io/docs/instrumenting/exposition_formats/)
 
-Kibana Kusto Bridge would reply based on the content type header, so pointing your browser to:
+K2Bridge would reply based on the content type header, so pointing your browser to:
 `http://bridge-host/metrics/` will return a text representation of the metrics with their documentation.
 
+## Data Collection
+
+The software may collect information about you and your use of the software and send it to Microsoft. Microsoft may use this information to provide services and improve our products and services. You may turn off the telemetry as described in the repository. There are also some features in the software that may enable you and Microsoft to collect data from users of your applications. If you use these features, you must comply with applicable law, including providing appropriate notices to users of your applications together with a copy of Microsoft's privacy statement. Our privacy statement is located at https://go.microsoft.com/fwlink/?LinkID=824704. You can learn more about data collection and use in the help documentation and our privacy statement. Your use of the software operates as your consent to these practices.
+
+Data collection may be disabled by installing the K2 helm chart by setting the collectTelemetry field to false.
+e.g: '--set settings.collectTelemetry=false'
+
 ## Performance 
+
 You can find more about the performance test and capabilites in the [Performance page](/Performance/Performance.md).
 
 ## Contributing
