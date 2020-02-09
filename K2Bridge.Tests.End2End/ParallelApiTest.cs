@@ -4,9 +4,7 @@
 
 namespace K2Bridge.Tests.End2End
 {
-    using FluentAssertions;
     using FluentAssertions.Json;
-    using Kusto.Data;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
 

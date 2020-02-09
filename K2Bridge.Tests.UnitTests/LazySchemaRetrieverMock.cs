@@ -6,6 +6,7 @@ namespace Tests
 {
     using System.Threading.Tasks;
     using K2Bridge.DAL;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response.Metadata;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -24,7 +25,7 @@ namespace Tests
             var responseTask = Task.FromResult(response);
 
             var mockDAL = new Mock<IKustoDataAccess>();
-            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
+            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(responseTask);
 
             var mockLogger = new Mock<ILogger<LazySchemaRetriever>>();
             return new LazySchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
@@ -42,7 +43,7 @@ namespace Tests
             var responseTask = Task.FromResult(response);
 
             var mockDAL = new Mock<IKustoDataAccess>();
-            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
+            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(responseTask);
 
             var mockLogger = new Mock<ILogger<LazySchemaRetriever>>();
             return new LazySchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);

@@ -5,7 +5,6 @@
 namespace K2Bridge.DAL
 {
     using System;
-    using System.Collections.Generic;
     using System.Data;
     using System.Threading.Tasks;
     using K2Bridge.KustoConnector;
@@ -39,8 +38,9 @@ namespace K2Bridge.DAL
         /// Executes a query to Kusto for Fields Caps.
         /// </summary>
         /// <param name="indexName">Index name.</param>
+        /// <param name="requestContext">An object that represents properties that will be sent to Kusto.</param>
         /// <returns>An object with the field caps.</returns>
-        public async Task<FieldCapabilityResponse> GetFieldCapsAsync(string indexName)
+        public async Task<FieldCapabilityResponse> GetFieldCapsAsync(string indexName, RequestContext requestContext)
         {
             var response = new FieldCapabilityResponse();
             try
@@ -48,7 +48,7 @@ namespace K2Bridge.DAL
                 Logger.LogDebug("Getting schema for table '{@indexName}'", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
                 string kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=='{tableName}' {KustoQLOperators.And} DatabaseName=='{databaseName}' {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
-                using IDataReader kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand);
+                using IDataReader kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, requestContext);
                 MapFieldCaps(kustoResults, response);
                 if (response.Fields.Count > 0)
                 {
@@ -58,7 +58,7 @@ namespace K2Bridge.DAL
                 Logger.LogDebug("Getting schema for function '{@indexName}'", indexName);
                 string functionQuery = $"{tableName} | {KustoQLOperators.GetSchema} | project ColumnName, ColumnType=DataType";
                 var functionQueryData = new QueryData(functionQuery, tableName, null, null);
-                var functionResults = await Kusto.ExecuteQueryAsync(functionQueryData);
+                var functionResults = await Kusto.ExecuteQueryAsync(functionQueryData, requestContext);
                 MapFieldCaps(functionResults.reader, response);
             }
             catch (Exception ex)
@@ -72,12 +72,12 @@ namespace K2Bridge.DAL
 
         /// <summary>
         /// Executes a query to Kusto for Index List.
-        ///
         /// Searches for all tables and all functions that match the index name pattern.
         /// </summary>
         /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
+        /// <param name="requestContext">An object that represents properties that will be sent to Kusto.</param>
         /// <returns>A list of Indexes matching the given name pattern.</returns>
-        public async Task<IndexListResponseElement> GetIndexListAsync(string indexName)
+        public async Task<IndexListResponseElement> GetIndexListAsync(string indexName, RequestContext requestContext)
         {
             var response = new IndexListResponseElement();
             try
@@ -85,13 +85,13 @@ namespace K2Bridge.DAL
                 Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
                 string readTablesCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
-                using IDataReader kustoTables = await Kusto.ExecuteControlCommandAsync(readTablesCommand);
+                using IDataReader kustoTables = await Kusto.ExecuteControlCommandAsync(readTablesCommand, requestContext);
                 MapIndexList(kustoTables, response);
 
                 Logger.LogDebug("Listing functions matching '{@indexName}'", indexName);
                 var defaultDb = Kusto.ConnectionDetails.DefaultDatabaseName;
                 string readFunctionsCommand = $".show {KustoQLOperators.Functions} | {KustoQLOperators.Where} Parameters == '()' | {KustoQLOperators.Distinct} Name | {KustoQLOperators.Search} Name: '{tableName}' | {KustoQLOperators.Project} strcat(\"{defaultDb}\", \"{KustoDatabaseTableNames.Separator}\", Name)";
-                using IDataReader kustoFunctions = await Kusto.ExecuteControlCommandAsync(readFunctionsCommand);
+                using IDataReader kustoFunctions = await Kusto.ExecuteControlCommandAsync(readFunctionsCommand, requestContext);
                 MapIndexList(kustoFunctions, response);
             }
             catch (Exception ex)

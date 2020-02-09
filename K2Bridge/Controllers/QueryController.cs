@@ -10,6 +10,7 @@ namespace K2Bridge.Controllers
     using System.Threading.Tasks;
     using K2Bridge.HttpMessages;
     using K2Bridge.KustoConnector;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -100,26 +101,25 @@ namespace K2Bridge.Controllers
             var sw = new Stopwatch();
             sw.Start();
 
-            // Extract Query
-            if (rawQueryData == null)
-            {
-                logger.LogError("Invalid request body. rawQueryData is null.");
-                throw new ArgumentException("Invalid request payload", nameof(rawQueryData));
-            }
+            Ensure.IsNotNull(rawQueryData, nameof(rawQueryData), "Invalid request body. rawQueryData is null.", logger);
 
+            // Extract Query
             (string header, string query) = ControllerExtractMethods.SplitQueryBody(rawQueryData);
-            if (string.IsNullOrEmpty(header) || string.IsNullOrEmpty(query))
-            {
-                logger.LogError("Invalid request body. header or query are empty.");
-                throw new ArgumentException("Invalid arguments query or header are empty");
-            }
+
+            Ensure.IsNotNullOrEmpty(header, nameof(header), "Invalid request body. header is null or empty.", logger);
+            Ensure.IsNotNullOrEmpty(query, nameof(query), "Invalid request body. query is null or empty.", logger);
 
             // Translate Query
             var translatedQuery = translator.Translate(header, query);
             logger.LogDebug($"Translated query:\n{translatedQuery.QueryCommandText}");
 
+            var requestContext = new RequestContext()
+            {
+                CorrelationId = HttpContext.Request.Headers.GetCorrelationIdHeaderOrGenerateNew(),
+            };
+
             // Execute Query
-            var (timeTaken, dataReader) = await queryExecutor.ExecuteQueryAsync(translatedQuery);
+            var (timeTaken, dataReader) = await queryExecutor.ExecuteQueryAsync(translatedQuery, requestContext);
 
             // Parse Response
             var elasticResponse = responseParser.Parse(dataReader, translatedQuery, timeTaken);

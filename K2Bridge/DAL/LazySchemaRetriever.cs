@@ -8,6 +8,7 @@ namespace K2Bridge.DAL
     using System.Collections;
     using System.Linq;
     using System.Threading.Tasks;
+    using K2Bridge.Models;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -50,8 +51,13 @@ namespace K2Bridge.DAL
         /// <returns>The schema in a dictionary data structure.</returns>
         private async Task<IDictionary> MakeDictionary()
         {
+            var requestContext = new RequestContext
+            {
+                CorrelationId = Guid.Empty,
+            };
+
             Logger.LogDebug("Retrieving table schema for {IndexName} from the datasource", IndexName);
-            var response = await kustoDataAccess.GetFieldCapsAsync(IndexName);
+            var response = await kustoDataAccess.GetFieldCapsAsync(IndexName, requestContext);
 
             if (response == null)
             {

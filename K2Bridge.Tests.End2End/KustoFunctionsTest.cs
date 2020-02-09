@@ -5,7 +5,6 @@
 namespace K2Bridge.Tests.End2End
 {
     using System.Threading.Tasks;
-    using FluentAssertions;
     using FluentAssertions.Json;
     using Kusto.Data.Common;
     using Kusto.Data.Net.Client;

@@ -17,8 +17,8 @@ namespace K2Bridge.KustoConnector
             set;
         }
 
-        Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData query);
+        Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext);
 
-        Task<IDataReader> ExecuteControlCommandAsync(string query);
+        Task<IDataReader> ExecuteControlCommandAsync(string query, RequestContext requestContext);
     }
 }

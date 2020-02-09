@@ -17,7 +17,7 @@ namespace K2Bridge.Models
         /// </summary>
         /// <param name="queryCommandText">The query to execute.</param>
         /// <param name="indexName">The index to be searched.</param>
-        /// <param name="sortFields">Field names specified in query sort clause</param>
+        /// <param name="sortFields">Field names specified in query sort clause.</param>
         /// <param name="highlightText">What terms need to be highlighted in the results.</param>
         public QueryData(string queryCommandText, string indexName, IList<string> sortFields = null, Dictionary<string, string> highlightText = null)
         {

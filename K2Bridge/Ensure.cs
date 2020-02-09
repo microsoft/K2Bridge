@@ -5,9 +5,9 @@
 namespace K2Bridge
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// A class to verify a condition on a parameter.
@@ -22,11 +22,12 @@ namespace K2Bridge
         /// <param name="arg">The argument that will be validated.</param>
         /// <param name="argName">The name which will be presented as the argument's name in the exception message.</param>
         /// <param name="predefinedMessage">A message with which the exception will be created.</param>
-        public static void IsNotNull<T>(T arg, string argName, string predefinedMessage = null)
+        /// <param name="logger">Optional logger to log Error.</param>
+        public static void IsNotNull<T>(T arg, string argName, string predefinedMessage = null, ILogger logger = null)
         {
             if (arg == null)
             {
-                throw new ArgumentNullException(predefinedMessage ?? $"Argument {argName} cannot be null");
+                ConstructMessageAndThrowArgumentOrNullArgument(arg, argName, predefinedMessage, logger);
             }
         }
 
@@ -37,11 +38,12 @@ namespace K2Bridge
         /// <param name="arg">The argument that will be validated.</param>
         /// <param name="argName">The name which will be presented as the argument's name in the exception message.</param>
         /// <param name="predefinedMessage">A message with which the exception will be created.</param>
-        public static void IsNotNullOrEmpty<T>(IEnumerable<T> arg, string argName, string predefinedMessage = null)
+        /// <param name="logger">Optional logger to log Error.</param>
+        public static void IsNotNullOrEmpty<T>(IEnumerable<T> arg, string argName, string predefinedMessage = null, ILogger logger = null)
         {
             if (arg == null || !arg.Any())
             {
-                ConstructMessageAndThrowArgumentOrNullArgument(arg, argName, predefinedMessage);
+                ConstructMessageAndThrowArgumentOrNullArgument(arg, argName, predefinedMessage, logger);
             }
         }
 
@@ -51,11 +53,12 @@ namespace K2Bridge
         /// <param name="arg">The argument that will be validated.</param>
         /// <param name="argName">The name which will be presented as the argument's name in the exception message.</param>
         /// <param name="predefinedMessage">A message with which the exception will be created.</param>
-        public static void IsNotNullOrEmpty(string arg, string argName, string predefinedMessage = null)
+        /// <param name="logger">Optional logger to log Error.</param>
+        public static void IsNotNullOrEmpty(string arg, string argName, string predefinedMessage = null, ILogger logger = null)
         {
             if (string.IsNullOrEmpty(arg))
             {
-                ConstructMessageAndThrowArgumentOrNullArgument(arg, argName, predefinedMessage);
+                ConstructMessageAndThrowArgumentOrNullArgument(arg, argName, predefinedMessage, logger);
             }
         }
 
@@ -66,12 +69,14 @@ namespace K2Bridge
         /// <param name="arg">The argument that will be validated.</param>
         /// <param name="argName">The name which will be presented as the argument's name in the exception message.</param>
         /// <param name="predefinedMessage">A message with which the exception will be created.</param>
-        private static void ConstructMessageAndThrowArgumentOrNullArgument<T>(T arg, string argName, string predefinedMessage = null)
+        /// <param name="logger">Optional logger to log Error.</param>
+        private static void ConstructMessageAndThrowArgumentOrNullArgument<T>(T arg, string argName, string predefinedMessage = null, ILogger logger = null)
         {
             var message = predefinedMessage ?? $"{argName} cannot be {(arg == null ? "null" : "empty")}";
+            logger?.LogError(message);
             throw (arg == null)
                 ? new ArgumentNullException(argName, message)
-                : new ArgumentException(argName, message);
+                : new ArgumentException(message, argName);
         }
     }
 }
