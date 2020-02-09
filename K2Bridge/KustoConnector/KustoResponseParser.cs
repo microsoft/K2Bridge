@@ -51,13 +51,14 @@ namespace K2Bridge.KustoConnector
         /// <param name="kustoResponseDataSet">KustoResponseDataSet - Kusto parsed response.</param>
         /// <param name="query">QueryData containing query information.</param>
         /// <returns>IEnumerable.<Hit> - collection of hits.</returns>
-        public static IEnumerable<Hit> ReadHits(KustoResponseDataSet kustoResponseDataSet, QueryData query)
+        public IEnumerable<Hit> ReadHits(KustoResponseDataSet kustoResponseDataSet, QueryData query)
         {
             Ensure.IsNotNull(kustoResponseDataSet, nameof(kustoResponseDataSet));
 
             if (kustoResponseDataSet[HitsTableName] != null)
             {
-                return HitsMapper.MapDataTableToHits(kustoResponseDataSet[HitsTableName].TableData.Rows, query);
+                using var highlighter = new LuceneHighlighter(query, Logger);
+                return HitsMapper.MapRowsToHits(kustoResponseDataSet[HitsTableName].TableData.Rows, query, highlighter);
             }
 
             return Enumerable.Empty<Hit>();

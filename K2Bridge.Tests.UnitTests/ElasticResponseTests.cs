@@ -11,6 +11,8 @@ namespace Tests
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
@@ -23,7 +25,6 @@ namespace Tests
         private QueryData query = new QueryData("_kql", "_index", null);
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"hlsomevalue1/hl\"]}}")]
-        [Ignore("Bug #1621")]
         public string ResponseParse_SingleWordHighlightOnQueryString_HighlightIsCorrect()
         {
             return MakeHighlightHit(
@@ -37,7 +38,6 @@ namespace Tests
         }
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue1\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"hlsomevalue1/hl\"],\"somefield2\":[\"hlsomevalue1/hl\"]}}")]
-        [Ignore("Bug #1621")]
         public string ResponseParse_SingleWordTwoFieldsHighlightOnQueryString_HighlightIsCorrect()
         {
             return MakeHighlightHit(
@@ -51,7 +51,6 @@ namespace Tests
         }
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"pre somevalue1 post\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"pre hlsomevalue1/hl post\"]}}")]
-        [Ignore("Bug #1621")]
         public string ResponseParse_SingleWordHighlightSubstringOnQueryString_HighlightIsCorrect()
         {
             return MakeHighlightHit(
@@ -65,7 +64,6 @@ namespace Tests
         }
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"hlsomevalue1/hl\"],\"somefield2\":[\"hlsomevalue2/hl\"]}}")]
-        [Ignore("Bug #1621")]
         public string ResponseParse_MultiWordHighlightOnQueryString_HighlightIsCorrect()
         {
             return MakeHighlightHit(
@@ -79,7 +77,6 @@ namespace Tests
         }
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"pre somevalue1 post\",\"somefield2\":\"pre somevalue2 post\",\"somefield3\":\"pre somevalue1 post pre somevalue2 post\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"pre hlsomevalue1/hl post\"],\"somefield2\":[\"pre hlsomevalue2/hl post\"],\"somefield3\":[\"pre hlsomevalue1/hl post pre hlsomevalue2/hl post\"]}}")]
-        [Ignore("Bug #1621")]
         public string ResponseParse_MultiWordHighlightSubstringOnQueryString_HighlightIsCorrect()
         {
             return MakeHighlightHit(
@@ -93,7 +90,6 @@ namespace Tests
         }
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"pre SOmevalue1 post\",\"somefield2\":\"pre SOmevalue2 post\",\"somefield3\":\"pre SOmevalue1 post pre SOmevalue2 post\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"pre hlSOmevalue1/hl post\"],\"somefield2\":[\"pre hlSOmevalue2/hl post\"],\"somefield3\":[\"pre hlSOmevalue1/hl post pre hlSOmevalue2/hl post\"]}}")]
-        [Ignore("Bug #1621")]
         public string ResponseParse_MultiWordMaintainCapialLettersAndHighlight_HighlightIsCorrect()
         {
             return MakeHighlightHit(
@@ -364,7 +360,9 @@ namespace Tests
         private IEnumerable<Hit> BuildHits(List<Dictionary<string, object>> results, QueryData query)
         {
             using var table = ToDataTable(results);
-            return HitsMapper.MapDataTableToHits(table.Rows, query);
+            var logger = new Mock<ILogger>();
+            using var highlighter = new LuceneHighlighter(query, logger.Object);
+            return HitsMapper.MapRowsToHits(table.Rows, query, highlighter);
         }
 
         /// <summary>

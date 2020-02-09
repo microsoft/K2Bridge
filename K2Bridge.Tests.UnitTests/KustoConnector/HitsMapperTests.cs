@@ -13,6 +13,8 @@ namespace K2BridgeUnitTests
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
@@ -62,10 +64,7 @@ namespace K2BridgeUnitTests
             MapHitAndAssert(table, query);
         }
 
-        // TODO correct bug and enable test
-        // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1614
         [Test]
-        [Ignore("Bug #1614")]
         public void HitCreateWithHighlights()
         {
             // Arrange
@@ -81,12 +80,21 @@ namespace K2BridgeUnitTests
 
             // Assert
             var highlight = JToken.FromObject(new string[] { "FooboxesBar" });
-            expected["highlight"] = new JObject();
-            expected["highlight"]["label1"] = highlight;
-            expected["highlight"]["label2"] = highlight;
+            expected[0]["highlight"] = new JObject();
+            expected[0]["highlight"]["label1"] = highlight;
+            expected[0]["highlight"]["label2"] = highlight;
+            expected[0]["highlight"]["label3"] = JToken.FromObject(new string[] { "FooboxesBar of FooboxesBar" });
 
             // Act
             MapHitAndAssert(table, query);
+        }
+
+        /// TODO: fix bug that lucene parse throws excpetion when getting text of type *term.
+        [TestCase("return of the pink panther pink", "title:*return*", "@return$ of the pink panther pink")]
+        [Ignore("Bug #1658")]
+        public void HitCreateWithHighlightsLuceneSpecialCases(string text, string highlightString, string expectedString)
+        {
+            HitCreateWithHighlightsAdvancedCases(text, highlightString, expectedString);
         }
 
         [Test]
@@ -95,25 +103,15 @@ namespace K2BridgeUnitTests
         [TestCase("Jean(s)", "Jean", "@Jean$(s)")]
         [TestCase("Pat: my friend", "Pat", "@Pat$: my friend")]
         [TestCase("Jeff?", "Jeff", "@Jeff$?")]
-
-        // TODO fix highlight capitalization
-        // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1579
-        // [TestCase("Go Joe. Find it", "joe", "Go @Joe$. Find it")]
-
-        // TODO fix highlight word boundaries
-        // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1579
-        // [TestCase("Jeff", "Jef", null)]
-        // [TestCase("Jeff0", "Jeff", null)]
-        // [TestCase("Jeff", "JEfF", "@Jeff$")]
-        // [TestCase("Jeff", "label1:JEfF", "@Jeff$")]
-
-        // TODO implement Lucene expression higlighting
-        // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1477
-        // [TestCase("Stella Maria Joe and friends", "Joe AND Stella", "@Stella$ Maria @Joe$ and friends")]
-        // [TestCase("jakarta Apache apache lucene apache jakarta", "\"jakarta apache\" NOT \"Apache Lucene\"", "@jakarta$ @Apache$ apache lucene apache jakarta")]
-        // [TestCase("jakarta Apache", "jakarta^4", "@jakarta$ Apache")]
-        // [TestCase("Jakarta website", "(jakarta OR apache) AND website", "@Jakarta$ @website$")]
-        // [TestCase("return of the pink panther pink", "title:(+return +\"pink panther\")", "@return$ of the @pink$ @panther$ pink")]
+        [TestCase("Jeff", "Jef", null)]
+        [TestCase("Jeff0", "Jeff", null)]
+        [TestCase("Jeff", "JEfF", "@Jeff$")]
+        [TestCase("Jeff", "label1:JEfF", "@Jeff$")]
+        [TestCase("Stella Maria Joe and friends", "Joe AND Stella", "@Stella$ Maria @Joe$ and friends")]
+        [TestCase("jakarta Apache apache lucene apache jakarta", "\"jakarta apache\" NOT \"Apache Lucene\"", "@jakarta$ @Apache$ apache lucene apache jakarta")]
+        [TestCase("jakarta Apache", "jakarta^4", "@jakarta$ Apache")]
+        [TestCase("Jakarta website", "(jakarta OR apache) AND website", "@Jakarta$ @website$")]
+        [TestCase("return of the pink panther pink", "title:(+return +\"pink panther\")", "@return$ of the @pink$ @panther$ pink")]
 
         // TODO Elasticsearch treats ":", "'", "." specially, this is not implemented
         // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1477
@@ -122,7 +120,6 @@ namespace K2BridgeUnitTests
         // [TestCase("Joe.did.it", "Joe.did.it", "@Joe.did.it$")]
         // [TestCase("1.3 123", "1.3", "@1.3$ 123")]
         // [TestCase("Pat:my friend", "Pat", null)]
-        [Ignore("Bug #1614")]
         public void HitCreateWithHighlightsAdvancedCases(string text, string highlightString, string expectedString)
         {
             // Arrange
@@ -151,7 +148,6 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        [Ignore("Bug #1614")]
         public void HitCreateWithSortAndHighlights()
         {
             // Arrange
@@ -173,6 +169,7 @@ namespace K2BridgeUnitTests
             expected[0]["highlight"] = new JObject();
             expected[0]["highlight"]["label1"] = highlight;
             expected[0]["highlight"]["label2"] = highlight;
+            expected[0]["highlight"]["label3"] = JToken.FromObject(new string[] { "FooboxesBar of FooboxesBar" });
 
             // Act
             MapHitAndAssert(table, query);
@@ -190,10 +187,23 @@ namespace K2BridgeUnitTests
                 "myKQL",
                 "myIndex",
                 sortFields: new List<string> { field },
-                highlightText: new Dictionary<string, string> { });
+                highlightText: new Dictionary<string, string> {
+                      { "*", "boxes" },
+                });
 
             // Assert
+            var highlight = JToken.FromObject(new string[] { "FooboxesBar" });
+            expected[0]["highlight"] = new JObject();
+            expected[0]["highlight"]["label1"] = highlight;
+            expected[0]["highlight"]["label2"] = highlight;
+            expected[0]["highlight"]["label3"] = JToken.FromObject(
+                new string[]
+                {
+                    "FooboxesBar of FooboxesBar",
+                });
             expected[0]["sort"] = JToken.FromObject(new object[] { expectedValue });
+            query.HighlightPreTag = "Foo";
+            query.HighlightPostTag = "Bar";
 
             // Act
             MapHitAndAssert(table, query);
@@ -219,7 +229,9 @@ namespace K2BridgeUnitTests
 
         private void MapHitAndAssert(DataTable table, QueryData query)
         {
-            var hits = HitsMapper.MapDataTableToHits(table.Rows, query);
+            var logger = new Mock<ILogger>();
+            using var highlighter = new LuceneHighlighter(query, logger.Object);
+            var hits = HitsMapper.MapRowsToHits(table.Rows, query, highlighter);
             var hitl = new List<Hit>(hits);
             Assert.AreEqual(1, hitl.Count);
 

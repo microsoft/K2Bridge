@@ -7,6 +7,7 @@ namespace K2Bridge.KustoConnector
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Linq;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
 
@@ -32,71 +33,47 @@ namespace K2Bridge.KustoConnector
         /// <summary>
         /// Parses a kusto datatable to hits.
         /// </summary>
-        /// <param name="kustoResponseDataTable">Kusto data row.</param>
+        /// <param name="kustoResponseDataTable">Kusto data rows.</param>
         /// <param name="query">QueryData containing query information.</param>
+        /// <param name="highlighter">Lucene highlighter.</param>
         /// <returns>Hits IEnumerable.</returns>
-        internal static IEnumerable<Hit> MapDataTableToHits(DataRowCollection kustoResponseDataTable, QueryData query)
+        internal static IEnumerable<Hit> MapRowsToHits(DataRowCollection kustoResponseDataTable, QueryData query, LuceneHighlighter highlighter)
         {
-            // Skipping highlight if the query's HighlightText dictionary is empty or if pre/post tags are empty.
-            var isHighlight = query.HighlightText != null && query.HighlightPreTag != null && query.HighlightPostTag != null;
-            foreach (DataRow row in kustoResponseDataTable)
-            {
-                yield return ReadHit(row, query, isHighlight);
-            }
+            return MapAndAnalyzeRows(kustoResponseDataTable, query, highlighter);
         }
+
+        private static IEnumerable<Hit> MapAndAnalyzeRows(DataRowCollection kustoResponseDataTable, QueryData query, LuceneHighlighter highlighter)
+            => kustoResponseDataTable.OfType<DataRow>().Select(row => ReadHit(row, query, highlighter));
 
         /// <summary>
         /// Get a Hit model from a kusto row.
         /// </summary>
         /// <param name="row">Kusto data row.</param>
         /// <param name="query">QueryData containing query information.</param>
-        /// <param name="highlight">highlight the hit.</param>
+        /// <param name="highlighter">Lucene Highligher.</param>
         /// <returns>Hit model.</returns>
-        private static Hit ReadHit(DataRow row, QueryData query, bool highlight)
+        private static Hit ReadHit(DataRow row, QueryData query, LuceneHighlighter highlighter)
         {
             Ensure.IsNotNull(row, nameof(row));
 
             var hit = Hit.Create(Random.Next().ToString(), query.IndexName);
             var columns = row.Table.Columns;
 
-            for (int index = 0; index < row.ItemArray.Length; index++)
+            for (int columnIndex = 0; columnIndex < row.ItemArray.Length; columnIndex++)
             {
-                var name = columns[index].ColumnName;
-                var value = GetTypedValueFromColumn(columns[index], row[name]);
-                hit.AddSource(name, value);
-
-                if (highlight && value != null)
+                var columnName = columns[columnIndex].ColumnName;
+                var columnValue = GetTypedValueFromColumn(columns[columnIndex], row[columnName]);
+                hit.AddSource(columnName, columnValue);
+                var highlightValue = highlighter.GetHighlightedValue(columnName, columnValue);
+                if (!string.IsNullOrEmpty(highlightValue))
                 {
-                    // Elastic only highlights string values, but we try to highlight everything we can here.
-                    // To mimic elastic: check for type of value here and skip if != string.
-                    HighlightHit(hit, query, name, value.ToString());
+                    hit.AddColumnHighlight(columnName, new List<string> { highlightValue });
                 }
             }
 
             CreateSort(hit, row, query);
             hit.Fields = new Fields();
             return hit;
-        }
-
-        /// <summary>
-        /// Add highlight metadata to hit.
-        /// </summary>
-        /// <param name="hit">Hit object.</param>
-        /// <param name="query">QueryData containing query information.</param>
-        /// <param name="name">Name of field to add hit.</param>
-        /// <param name="stringValue">value of the field as string.</param>
-        private static void HighlightHit(Hit hit, QueryData query, string name, string stringValue)
-        {
-            // HighlightText.ContainsKey(name) condition will be true when searching with the available filters
-            // HighlightText.ContainsKey("*") condition will be true when searching with the search box
-            if (query.HighlightText.ContainsKey(name) && stringValue.Equals(query.HighlightText[name], StringComparison.OrdinalIgnoreCase))
-            {
-                hit.AddColumnHighlight(name, new List<string> { query.HighlightPreTag + query.HighlightText[name] + query.HighlightPostTag });
-            }
-            else if (query.HighlightText.ContainsKey("*"))
-            {
-                hit.AddColumnHighlight(name, new List<string> { query.HighlightPreTag + query.HighlightText["*"] + query.HighlightPostTag });
-            }
         }
 
         private static void CreateSort(Hit hit, DataRow row, QueryData query)

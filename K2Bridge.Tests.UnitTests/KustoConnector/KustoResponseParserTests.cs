@@ -31,10 +31,10 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
 
             var stubKustoResponse = new Mock<KustoResponseDataSet>();
             var kustoTableData = new KustoResponseDataTable(hitsTable, WellKnownDataSet.PrimaryResult);
-
+            var logger = new Mock<ILogger<KustoResponseParser>>();
             stubKustoResponse.Setup(res => res["hits"]).Returns(kustoTableData);
-
-            var result = KustoResponseParser.ReadHits(stubKustoResponse.Object, query).ToList();
+            var kustoResponseParser = new KustoResponseParser(logger.Object, false, null, null);
+            var result = kustoResponseParser.ReadHits(stubKustoResponse.Object, query).ToList();
 
             Assert.AreEqual(2, result.Count);
 
@@ -67,10 +67,12 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
             var query = new QueryData("query", "index");
 
             var stubKustoResponse = new Mock<KustoResponseDataSet>();
+            var logger = new Mock<ILogger<KustoResponseParser>>();
             var kustoTableData = new KustoResponseDataTable(anyTable, WellKnownDataSet.PrimaryResult);
             stubKustoResponse.SetupGet(ds => ds["no_hits"]).Returns(kustoTableData);
+            var kustoResponseParser = new KustoResponseParser(logger.Object, false, null, null);
 
-            var result = KustoResponseParser.ReadHits(stubKustoResponse.Object, query).ToList();
+            var result = kustoResponseParser.ReadHits(stubKustoResponse.Object, query).ToList();
 
             Assert.AreEqual(0, result.Count);
         }
@@ -85,12 +87,14 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
 
             var query = new QueryData("query", "index");
 
+            var logger = new Mock<ILogger<KustoResponseParser>>();
             var stubKustoResponse = new Mock<KustoResponseDataSet>();
             var kustoTableData = new KustoResponseDataTable(hitsEmptyTable, WellKnownDataSet.PrimaryResult);
 
             stubKustoResponse.Setup(res => res["hits"]).Returns(kustoTableData);
+            var kustoResponseParser = new KustoResponseParser(logger.Object, false, null, null);
 
-            var result = KustoResponseParser.ReadHits(stubKustoResponse.Object, query).ToList();
+            var result = kustoResponseParser.ReadHits(stubKustoResponse.Object, query).ToList();
 
             Assert.AreEqual(0, result.Count);
         }
