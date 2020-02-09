@@ -41,7 +41,6 @@
     <Folder Include="Visitors\" />
     <Folder Include="Controllers\" />
     <Folder Include="DAL\" />
-    <Folder Include="Data\" />
     <Folder Include="Visitors\LuceneNet\" />
     <Folder Include="Models\Response\Metadata\" />
   </ItemGroup>
@@ -49,6 +48,9 @@
     <ProjectReference Include="..\K2Bridge\K2Bridge.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Data\query_no_sort.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Data\simple_k2_query.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
