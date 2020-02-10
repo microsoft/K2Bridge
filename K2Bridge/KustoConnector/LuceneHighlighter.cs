@@ -51,6 +51,7 @@ namespace K2Bridge.KustoConnector
             // Skipping highlight if the query's HighlightText dictionary is empty or if pre/post tags are empty.
             isHighlight = query.HighlightText != null && !string.IsNullOrEmpty(query.HighlightPreTag) && !string.IsNullOrEmpty(query.HighlightPostTag);
             highlighters = new Lazy<IDictionary<string, Highlighter>>(() => MakeHighlighters(analyzer.Value, query));
+            logger.LogInformation($"Lucene highlighter is enabled: {isHighlight}");
         }
 
         /// <summary>
@@ -65,7 +66,6 @@ namespace K2Bridge.KustoConnector
             {
                 if (!isHighlight || value == null)
                 {
-                    logger.LogTrace($"Not applying highlight for column {columnName}. value is {value}");
                     return string.Empty;
                 }
 
@@ -90,7 +90,7 @@ namespace K2Bridge.KustoConnector
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Failure getting highlighted value for {columnName}: {value}");
+                logger.LogError(e, $"Failure getting highlighted value for {columnName}.");
                 return null;
             }
         }

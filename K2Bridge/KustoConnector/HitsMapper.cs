@@ -90,14 +90,9 @@ namespace K2Bridge.KustoConnector
 
             foreach (var sortField in query.SortFields)
             {
-                object value;
-                try
+                var value = row.Table.Columns.Contains(sortField) ? row[sortField] : null;
+                if (value == null)
                 {
-                    value = row[sortField];
-                }
-                catch (ArgumentException)
-                {
-                    // Sorting by a column not in the hit list. Retrieving value is not supported.
                     continue;
                 }
 
