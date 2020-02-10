@@ -58,6 +58,7 @@
     <Folder Include="RewriteRules\" />
     <Folder Include="HttpMessages\" />
     <Folder Include="DAL\" />
+    <Folder Include="Telemetry\" />
   </ItemGroup>
 
   <ItemGroup>

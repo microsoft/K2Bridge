@@ -28,13 +28,13 @@ namespace K2Bridge.Telemetry
         /// <summary>
         /// Prometheus counter for all logged exceptions.
         /// </summary>
-        private static readonly Counter ExceptionsCounter = Metrics
+        private static readonly Counter ExceptionsCounter = Prometheus.Metrics
             .CreateCounter("exceptions", "Exceptions logged");
 
         /// <summary>
         /// Prometheus counter for all exceptions grouped by type, context and action.
         /// </summary>
-        private static readonly Counter ExceptionsByTypeCounter = Metrics
+        private static readonly Counter ExceptionsByTypeCounter = Prometheus.Metrics
             .CreateCounter("exceptions_by_type", "Exceptions, by type", new CounterConfiguration
             {
                 LabelNames = new[] { "ExceptionType", "SourceContext", "ActionName" },

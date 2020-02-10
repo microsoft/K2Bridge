@@ -8,12 +8,12 @@ namespace K2Bridge.KustoConnector
     using System.Data;
     using System.Threading.Tasks;
     using K2Bridge.Models;
+    using K2Bridge.Telemetry;
     using Kusto.Data;
     using Kusto.Data.Common;
     using Kusto.Data.Net.Client;
 
     using Microsoft.Extensions.Logging;
-    using Prometheus;
 
     /// <summary>
     /// Handles the connection to the kusto cluster and executes queries.
@@ -26,7 +26,7 @@ namespace K2Bridge.KustoConnector
         private static readonly string AssemblyVersion = typeof(KustoQueryExecutor).Assembly.GetName().Version.ToString();
         private readonly ICslQueryProvider queryClient;
         private readonly ICslAdminProvider adminClient;
-        private readonly IHistogram queryTotalTimeMetric;
+        private readonly Metrics metricsHistograms;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoQueryExecutor"/> class.
@@ -37,7 +37,7 @@ namespace K2Bridge.KustoConnector
         public KustoQueryExecutor(
             IConnectionDetails connectionDetails,
             ILogger<KustoQueryExecutor> logger,
-            IHistogram queryTotalTimeMetric)
+            Metrics metricsHistograms)
         {
             Logger = logger;
 
@@ -56,7 +56,7 @@ namespace K2Bridge.KustoConnector
             queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
             adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
             ConnectionDetails = connectionDetails;
-            this.queryTotalTimeMetric = queryTotalTimeMetric;
+            this.metricsHistograms = metricsHistograms;
         }
 
         /// <inheritdoc/>
@@ -91,8 +91,10 @@ namespace K2Bridge.KustoConnector
             // TODO: When a single K2 flow will generate multiple requests to Kusto - find a way to differentiate them using different ClientRequestIds
             var clientRequestProperties = ClientRequestPropertiesExtensions.ConstructClientRequestPropertiesFromRequestContext(KustoApplicationNameForTracing, QueryActivityName, requestContext);
 
+            // Use the kusto client to execute the query
+            var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, clientRequestProperties, metricsHistograms);
             Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
-            var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, clientRequestProperties, queryTotalTimeMetric);
+
             var fieldCount = dataReader.FieldCount;
             Logger.LogDebug("FieldCount: {@fieldCount}", fieldCount);
             Logger.LogDebug("[metric] backend query total (sdk) duration: {timeTaken}", timeTaken);

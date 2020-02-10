@@ -10,11 +10,11 @@ namespace K2Bridge.KustoConnector
     using System.Linq;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using K2Bridge.Telemetry;
     using Kusto.Data;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
-    using Prometheus;
 
     /// <summary>
     /// Provides parsing methods for kusto response objects.
@@ -23,8 +23,7 @@ namespace K2Bridge.KustoConnector
     {
         private const string AggregationTableName = "aggs";
         private const string HitsTableName = "hits";
-        private readonly IHistogram queryNetTimeMetric;
-        private readonly IHistogram queryBytesMetric;
+        private readonly Metrics metricsHistograms;
 
         private readonly bool outputBackendQuery;
 
@@ -35,12 +34,11 @@ namespace K2Bridge.KustoConnector
         /// <param name="outputBackendQuery">Outputs the backend query during parse.</param>
         /// <param name="queryNetTimeMetric">Prometheus metric to record net query time.</param>
         /// <param name="queryBytesMetric">Prometheus metric to record the total payload size in bytes.</param>
-        public KustoResponseParser(ILogger<KustoResponseParser> logger, bool outputBackendQuery, IHistogram queryNetTimeMetric, IHistogram queryBytesMetric)
+        public KustoResponseParser(ILogger<KustoResponseParser> logger, bool outputBackendQuery, Metrics metricsHistograms)
         {
             Logger = logger;
-            this.queryNetTimeMetric = queryNetTimeMetric;
+            this.metricsHistograms = metricsHistograms;
             this.outputBackendQuery = outputBackendQuery;
-            this.queryBytesMetric = queryBytesMetric;
         }
 
         private ILogger Logger { get; set; }
@@ -129,13 +127,13 @@ namespace K2Bridge.KustoConnector
 
             Ensure.IsNotNull(netQueryExecutionTime, nameof(netQueryExecutionTime));
             var netQueryExecutionTimeValue = (float)netQueryExecutionTime;
-            queryNetTimeMetric.Observe(netQueryExecutionTimeValue);
+            metricsHistograms.AdxNetQueryDurationMetric.Observe(netQueryExecutionTimeValue);
             Logger.LogDebug("[metric] backend query net (engine) duration: {netQueryExecutionTime}", TimeSpan.FromSeconds(netQueryExecutionTimeValue));
 
             var tableSizeSum = parsedQueryStatus.SelectTokens("dataset_statistics..table_size").Sum(x => x.ToObject<long>());
             if (tableSizeSum > 0)
             {
-                queryBytesMetric.Observe(tableSizeSum);
+                metricsHistograms.AdxQueryBytesMetric.Observe(tableSizeSum);
                 Logger.LogDebug("[metric] backend query bytes: {tableSizeSum}", tableSizeSum);
             }
             else

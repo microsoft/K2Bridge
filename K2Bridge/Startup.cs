@@ -45,20 +45,6 @@ namespace K2Bridge
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Prometheus Histograms to collect query performance data
-            var adxQueryDurationMetric = Metrics.CreateHistogram("adx_query_total_seconds", "ADX query total execution time in seconds.", new HistogramConfiguration
-            {
-                Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
-            });
-            var adxNetQueryDurationMetric = Metrics.CreateHistogram("adx_query_net_seconds", "ADX query net execution time in seconds.", new HistogramConfiguration
-            {
-                Buckets = Histogram.LinearBuckets(start: 1, width: 1, count: 60),
-            });
-            var adxQueryBytesMetric = Metrics.CreateHistogram("adx_query_result_bytes", "ADX query result payload size in bytes.", new HistogramConfiguration
-            {
-                Buckets = Histogram.LinearBuckets(start: 1, width: 250000, count: 40),
-            });
-
             ConfigureTelemetryServices(services);
 
             services.AddControllers();
@@ -71,11 +57,13 @@ namespace K2Bridge
             services.AddSingleton(
                 s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
 
+            services.AddSingleton(Telemetry.Metrics.Create());
+
             services.AddSingleton<IQueryExecutor, KustoQueryExecutor>(
                 s => new KustoQueryExecutor(
                     s.GetRequiredService<IConnectionDetails>(),
                     s.GetRequiredService<ILogger<KustoQueryExecutor>>(),
-                    adxQueryDurationMetric));
+                    s.GetService<Telemetry.Metrics>()));
 
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
@@ -95,8 +83,7 @@ namespace K2Bridge
                 ctx => new KustoResponseParser(
                     ctx.GetRequiredService<ILogger<KustoResponseParser>>(),
                     bool.Parse((Configuration as IConfigurationRoot)["outputBackendQuery"]),
-                    adxNetQueryDurationMetric,
-                    adxQueryBytesMetric));
+                    ctx.GetService<Telemetry.Metrics>()));
 
             // use this http client factory to issue requests to the metadata elastic instance
             services.AddHttpClient(MetadataController.ElasticMetadataClientName, (svcProvider, elasticClient) =>

@@ -8,8 +8,8 @@ namespace K2Bridge.KustoConnector
     using System.Data;
     using System.Diagnostics;
     using System.Threading.Tasks;
+    using K2Bridge.Telemetry;
     using Kusto.Data.Common;
-    using Prometheus;
 
     /// <summary>
     /// Extension methods for Kusto query operation.
@@ -22,17 +22,17 @@ namespace K2Bridge.KustoConnector
         /// <param name="client">Query provider.</param>
         /// <param name="query">ADX query string.</param>
         /// <param name="clientRequestProperties">An object that represents properties that will be sent to Kusto.</param>
-        /// <param name="queryMetric">Prometheus query duration metric.</param>
+        /// <param name="metrics">Prometheus query duration metric.</param>
         /// <returns>Tuple of timeTaken and the reader result.</returns>
         public static async Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteMonitoredQueryAsync(
             this ICslQueryProvider client,
             string query,
             ClientRequestProperties clientRequestProperties,
-            IHistogram queryMetric)
+            Metrics metrics)
         {
             Ensure.IsNotNull(client, nameof(client));
+            Ensure.IsNotNull(metrics, nameof(metrics));
             Ensure.IsNotNullOrEmpty(query, nameof(query));
-            Ensure.IsNotNull(queryMetric, nameof(queryMetric));
 
             // Timer to be used to report the duration of a query to.
             var stopwatch = new Stopwatch();
@@ -41,7 +41,11 @@ namespace K2Bridge.KustoConnector
             stopwatch.Stop();
             var duration = stopwatch.Elapsed;
 
-            queryMetric?.Observe(duration.TotalSeconds);
+            if (metrics != null)
+            {
+                metrics.AdxQueryDurationMetric.Observe(duration.TotalSeconds);
+            }
+
             return (duration, reader);
         }
     }

@@ -51,22 +51,24 @@ namespace K2Bridge.Tests.End2End
             var response = await K2Client().Client().SendAsync(request);
             var responseData = await response.Content.ReadAsStringAsync();
 
+            var metrics = Telemetry.Metrics.Create();
+
             Assert.True(
                 responseData.Contains(
-                "# HELP adx_query_total_seconds ADX query total execution time in seconds.\n"
-                + "# TYPE adx_query_total_seconds histogram\n",
+                $"# HELP {metrics.AdxQueryDurationMetric.Name} {metrics.AdxQueryDurationMetric.Help}\n"
+                + $"# TYPE {metrics.AdxQueryDurationMetric.Name} histogram\n",
                 Ordinal), responseData);
 
             Assert.True(
                 responseData.Contains(
-                "# HELP adx_query_net_seconds ADX query net execution time in seconds.\n"
-                + "# TYPE adx_query_net_seconds histogram\n",
+                $"# HELP {metrics.AdxNetQueryDurationMetric.Name} {metrics.AdxNetQueryDurationMetric.Help}\n"
+                + $"# TYPE {metrics.AdxNetQueryDurationMetric.Name} histogram\n",
                 Ordinal), responseData);
 
             Assert.True(
                 responseData.Contains(
-                "# HELP adx_query_result_bytes ADX query result payload size in bytes.\n"
-                + "# TYPE adx_query_result_bytes histogram\n",
+                $"# HELP {metrics.AdxQueryBytesMetric.Name} {metrics.AdxQueryBytesMetric.Help}\n"
+                + $"# TYPE {metrics.AdxQueryBytesMetric.Name} histogram\n",
                 Ordinal), responseData);
         }
     }

@@ -8,22 +8,24 @@ namespace Tests.KustoConnector
     using System.Data;
     using System.Threading.Tasks;
     using K2Bridge.KustoConnector;
+    using K2Bridge.Telemetry;
     using Kusto.Data.Common;
     using NSubstitute;
     using NUnit.Framework;
-    using Prometheus;
 
     [TestFixture]
     public class CslQueryProviderExtensionsTests
     {
         private readonly IDataReader data = Substitute.For<IDataReader>();
         private readonly ICslQueryProvider client = Substitute.For<ICslQueryProvider>();
-        private readonly IHistogram metric = Substitute.For<IHistogram>();
+        private readonly Metrics metric = Substitute.For<Metrics>();
         private readonly ClientRequestProperties clientRequestProperties = default;
 
         [TestCase]
         public async Task ExecuteMonitoredQuery_Common_Success()
         {
+            Metrics metric = Substitute.For<Metrics>();
+            metric.AdxQueryDurationMetric = new Histogram(Substitute.For<Prometheus.IHistogram>(), "name", "help");
             client.ExecuteQueryAsync(string.Empty, Arg.Any<string>(), Arg.Any<ClientRequestProperties>()).Returns(Task.FromResult(data));
             var (timeTaken, reader) = await client.ExecuteMonitoredQueryAsync("wibble", clientRequestProperties, metric);
 
