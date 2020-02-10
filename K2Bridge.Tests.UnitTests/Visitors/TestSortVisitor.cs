@@ -4,7 +4,6 @@
 
 namespace K2BridgeUnitTests.Visitors
 {
-    using K2Bridge;
     using K2Bridge.Models.Request;
     using K2Bridge.Visitors;
     using NUnit.Framework;

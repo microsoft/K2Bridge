@@ -85,18 +85,20 @@ namespace K2BridgeUnitTests
 
             // Assert
             var highlight = JToken.FromObject(new string[] { "FooboxesBar" });
-            expected[0]["highlight"] = new JObject();
-            expected[0]["highlight"]["label1"] = highlight;
-            expected[0]["highlight"]["label2"] = highlight;
-            expected[0]["highlight"]["label3"] = JToken.FromObject(new string[] { "FooboxesBar of FooboxesBar" });
+            expected[0]["highlight"] = new JObject
+            {
+                ["label1"] = highlight,
+                ["label2"] = highlight,
+                ["label3"] = JToken.FromObject(new string[] { "FooboxesBar of FooboxesBar" }),
+            };
 
             // Act
             MapHitAndAssert(table, query);
         }
 
-        /// TODO: fix bug that lucene parse throws excpetion when getting text of type *term.
+        // TODO: fix bug that lucene parse throws excpetion when getting text of type *term.
         [TestCase("return of the pink panther pink", "title:*return*", "@return$ of the pink panther pink")]
-        [Ignore("Bug #1658")]
+        [Ignore("https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1658")]
         public void HitCreateWithHighlightsLuceneSpecialCases(string text, string highlightString, string expectedString)
         {
             HitCreateWithHighlightsAdvancedCases(text, highlightString, expectedString);
@@ -144,8 +146,10 @@ namespace K2BridgeUnitTests
             if (expectedString != null)
             {
                 var highlight = JToken.FromObject(new string[] { expectedString });
-                expected[0]["highlight"] = new JObject();
-                expected[0]["highlight"]["label1"] = highlight;
+                expected[0]["highlight"] = new JObject
+                {
+                    ["label1"] = highlight,
+                };
             }
 
             // Act
@@ -171,10 +175,12 @@ namespace K2BridgeUnitTests
             expected[0]["sort"] = JToken.FromObject(new object[] { "boxes" });
 
             var highlight = JToken.FromObject(new string[] { "FooboxesBar" });
-            expected[0]["highlight"] = new JObject();
-            expected[0]["highlight"]["label1"] = highlight;
-            expected[0]["highlight"]["label2"] = highlight;
-            expected[0]["highlight"]["label3"] = JToken.FromObject(new string[] { "FooboxesBar of FooboxesBar" });
+            expected[0]["highlight"] = new JObject
+            {
+                ["label1"] = highlight,
+                ["label2"] = highlight,
+                ["label3"] = JToken.FromObject(new string[] { "FooboxesBar of FooboxesBar" }),
+            };
 
             // Act
             MapHitAndAssert(table, query);
@@ -198,14 +204,16 @@ namespace K2BridgeUnitTests
 
             // Assert
             var highlight = JToken.FromObject(new string[] { "FooboxesBar" });
-            expected[0]["highlight"] = new JObject();
-            expected[0]["highlight"]["label1"] = highlight;
-            expected[0]["highlight"]["label2"] = highlight;
-            expected[0]["highlight"]["label3"] = JToken.FromObject(
+            expected[0]["highlight"] = new JObject
+            {
+                ["label1"] = highlight,
+                ["label2"] = highlight,
+                ["label3"] = JToken.FromObject(
                 new string[]
                 {
                     "FooboxesBar of FooboxesBar",
-                });
+                }),
+            };
             expected[0]["sort"] = JToken.FromObject(new object[] { expectedValue });
             query.HighlightPreTag = "Foo";
             query.HighlightPostTag = "Bar";

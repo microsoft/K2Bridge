@@ -291,7 +291,7 @@ namespace K2Bridge.Tests.UnitTests.DAL
                         { "1", "somevalue1" },
                     },
                 });
-            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString)), It.IsAny<RequestContext>()))
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, StringComparison.OrdinalIgnoreCase)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.GetIndexListAsync(indexName, null);

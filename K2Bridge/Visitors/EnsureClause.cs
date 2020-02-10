@@ -4,8 +4,6 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
-
     /// <summary>
     /// A class to verify a condition on a clause.
     /// If the condition is not met - an <see cref="IllegalClauseException"/> is thrown.

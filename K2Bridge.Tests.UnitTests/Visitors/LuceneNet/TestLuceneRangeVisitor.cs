@@ -5,7 +5,6 @@
 namespace K2BridgeUnitTests.Visitors.LuceneNet
 {
     using System;
-    using K2Bridge;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Models.Request.Queries.LuceneNet;
     using K2Bridge.Visitors;

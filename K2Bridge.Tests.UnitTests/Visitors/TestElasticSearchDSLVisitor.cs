@@ -19,9 +19,13 @@ namespace K2BridgeUnitTests.Visitors
         public string TypeIsNumeric_GeneratedQueryWithEqual()
         {
             var queryClause = CreateQueryStringClause("dayOfWeek:1", false);
-            var dsl = new ElasticSearchDSL();
-            dsl.Query = new Query();
-            dsl.Query.Bool = new BoolQuery();
+            var dsl = new ElasticSearchDSL
+            {
+                Query = new Query
+                {
+                    Bool = new BoolQuery(),
+                },
+            };
             dsl.Query.Bool.Must = new List<IQuery> { queryClause };
             dsl.IndexName = "myindex";
 
@@ -37,11 +41,17 @@ namespace K2BridgeUnitTests.Visitors
         public string TypeIsString_GeneratedQueryWithHas()
         {
             var queryClause = CreateQueryStringClause("dayOfWeek:1", false);
-            var dsl = new ElasticSearchDSL();
-            dsl.Query = new Query();
-            dsl.Query.Bool = new BoolQuery();
-            dsl.Query.Bool.Must = new List<IQuery> { queryClause };
-            dsl.IndexName = "myindex";
+            var dsl = new ElasticSearchDSL
+            {
+                Query = new Query
+                {
+                    Bool = new BoolQuery
+                    {
+                        Must = new List<IQuery> { queryClause },
+                    },
+                },
+                IndexName = "myindex",
+            };
 
             var visitor =
                 new ElasticSearchDSLVisitor(

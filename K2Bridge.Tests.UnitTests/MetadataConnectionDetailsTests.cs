@@ -19,7 +19,7 @@ namespace K2Bridge.Tests.UnitTests
             var configurationRoot = new Mock<IConfigurationRoot>();
             var contosoesAddress = "http://contoso-es:1234/";
             configurationRoot.SetupGet(
-                x => x[It.Is<string>(s => s.Equals("metadataElasticAddress", StringComparison.InvariantCulture))]).Returns(contosoesAddress);
+                x => x[It.Is<string>(s => s.Equals("metadataElasticAddress", StringComparison.OrdinalIgnoreCase))]).Returns(contosoesAddress);
 
             var metadataConnectionDetails = MetadataConnectionDetails.MakeFromConfiguration(configurationRoot.Object);
             Assert.NotNull(metadataConnectionDetails);

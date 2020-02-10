@@ -79,7 +79,6 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana query with text multiple words substring")]
-        [Ignore("Requires fixing for multiple search strings")]
         public void MSearch_TextContainsMultiple_Equivalent()
         {
             ParallelQuery(

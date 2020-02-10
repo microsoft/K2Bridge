@@ -173,7 +173,7 @@ namespace Tests
                     },
             };
             var response = BuildHits(results, query);
-            return response.First().Source.GetValue("somefield1").Type;
+            return response.First().Source.GetValue("somefield1", StringComparison.OrdinalIgnoreCase).Type;
         }
 
         [TestCase(ExpectedResult = JTokenType.Boolean)]
@@ -186,7 +186,7 @@ namespace Tests
                     },
             };
             var response = BuildHits(results, query);
-            return response.First().Source.GetValue("somefield1").Type;
+            return response.First().Source.GetValue("somefield1", StringComparison.OrdinalIgnoreCase).Type;
         }
 
         [TestCase(ExpectedResult = JTokenType.Boolean)]
@@ -199,7 +199,7 @@ namespace Tests
                     },
             };
             var response = BuildHits(results, query);
-            return response.First().Source.GetValue("somefield1").Type;
+            return response.First().Source.GetValue("somefield1", StringComparison.OrdinalIgnoreCase).Type;
         }
 
         [TestCase(ExpectedResult = JTokenType.Integer)]
@@ -212,7 +212,7 @@ namespace Tests
                     },
             };
             var response = BuildHits(results, query);
-            return response.First().Source.GetValue("somefield1").Type;
+            return response.First().Source.GetValue("somefield1", StringComparison.OrdinalIgnoreCase).Type;
         }
 
         [TestCase(ExpectedResult = JTokenType.String)]
@@ -225,7 +225,7 @@ namespace Tests
                     },
             };
             var response = BuildHits(results, query);
-            return response.First().Source.GetValue("somefield1").Type;
+            return response.First().Source.GetValue("somefield1", StringComparison.OrdinalIgnoreCase).Type;
         }
 
         [TestCase(ExpectedResult = new[] {
@@ -269,7 +269,7 @@ namespace Tests
                     },
             };
             var response = BuildHits(results, query);
-            return response.First().Source.GetValue("somefield1").Type;
+            return response.First().Source.GetValue("somefield1", StringComparison.OrdinalIgnoreCase).Type;
         }
 
         [TestCase(ExpectedResult = JTokenType.Null)]
@@ -282,7 +282,7 @@ namespace Tests
                     },
             };
             var response = BuildHits(results, query);
-            return response.First().Source.GetValue("somefield1").Type;
+            return response.First().Source.GetValue("somefield1", StringComparison.OrdinalIgnoreCase).Type;
         }
 
         [TestCase(ExpectedResult = false)]

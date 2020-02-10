@@ -4,7 +4,6 @@
 
 namespace Tests
 {
-    using K2Bridge;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
     using Newtonsoft.Json;

@@ -23,8 +23,8 @@ namespace K2Bridge.RewriteRules
         /// <param name="context">The context object which holds the request path.</param>
         public void ApplyRule(RewriteContext context)
         {
-            if (context.HttpContext.Request.Path.Value.Contains("_search", System.StringComparison.InvariantCultureIgnoreCase)
-                && !context.HttpContext.Request.Path.Value.Contains(".kibana", System.StringComparison.InvariantCultureIgnoreCase))
+            if (context.HttpContext.Request.Path.Value.Contains("_search", System.StringComparison.OrdinalIgnoreCase)
+                && !context.HttpContext.Request.Path.Value.Contains(".kibana", System.StringComparison.OrdinalIgnoreCase))
             {
                 var segments = context.HttpContext.Request.Path.ToString().Split('/');
                 context.HttpContext.Request.Path = "/IndexList/Process/" + segments[1];

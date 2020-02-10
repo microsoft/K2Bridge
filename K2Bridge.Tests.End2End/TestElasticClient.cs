@@ -211,7 +211,7 @@ namespace K2Bridge.Tests.End2End
             var removes = new List<string>();
             foreach (var field in fields)
             {
-                if (field.Key.StartsWith("_", StringComparison.Ordinal))
+                if (field.Key.StartsWith("_", StringComparison.OrdinalIgnoreCase))
                 {
                     removes.Add(field.Key);
                 }

@@ -157,7 +157,7 @@ namespace K2Bridge.Visitors
                 return true;
             }
 
-            return !SpecialStrings.Any(s => phrase.Contains(s, StringComparison.CurrentCulture));
+            return !SpecialStrings.Any(s => phrase.Contains(s, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

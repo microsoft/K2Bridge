@@ -41,12 +41,12 @@ namespace K2Bridge.Models
         {
             Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), "Input cannot be null");
 
-            if (indexName.Equals(Wildcard, StringComparison.CurrentCultureIgnoreCase))
+            if (indexName.Equals(Wildcard, StringComparison.OrdinalIgnoreCase))
             {
                 return (Wildcard, Wildcard);
             }
 
-            var splitIndex = indexName.IndexOf(Separator, StringComparison.CurrentCulture);
+            var splitIndex = indexName.IndexOf(Separator, StringComparison.OrdinalIgnoreCase);
             if (splitIndex < 0)
             {
                 return (defaultDatabaseName, indexName);

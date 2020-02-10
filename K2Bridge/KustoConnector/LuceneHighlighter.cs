@@ -26,23 +26,21 @@ namespace K2Bridge.KustoConnector
         private const string Default = "default";
         private readonly bool isHighlight = false;
 
-        /// <summary>
-        /// Lucene analyzer.
-        /// </summary>
+        // Lucene analyzer.
         private readonly Lazy<Analyzer> analyzer = new Lazy<Analyzer>(() => new WordAnalyzer());
 
-        /// <summary>
-        /// Highlighters computed for this query.
-        /// </summary>
+        // Highlighters computed for this query.
         private readonly Lazy<IDictionary<string, Highlighter>> highlighters;
 
-        /// <summary>
-        /// Query which highlighters are based on.
-        /// </summary>
         private readonly QueryData query;
         private readonly ILogger logger;
         private bool disposedValue = false;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LuceneHighlighter"/> class.
+        /// </summary>
+        /// <param name="query"><see cref="QueryData"/> which highlighters are based on.</param>
+        /// <param name="logger">A logger.</param>
         public LuceneHighlighter(QueryData query, ILogger logger)
         {
             this.query = query;
@@ -51,7 +49,7 @@ namespace K2Bridge.KustoConnector
             // Skipping highlight if the query's HighlightText dictionary is empty or if pre/post tags are empty.
             isHighlight = query.HighlightText != null && !string.IsNullOrEmpty(query.HighlightPreTag) && !string.IsNullOrEmpty(query.HighlightPostTag);
             highlighters = new Lazy<IDictionary<string, Highlighter>>(() => MakeHighlighters(analyzer.Value, query));
-            logger.LogInformation($"Lucene highlighter is enabled: {isHighlight}");
+            logger.LogInformation("Lucene highlighter is enabled: {isHighlight}", isHighlight);
         }
 
         /// <summary>
@@ -95,9 +93,7 @@ namespace K2Bridge.KustoConnector
             }
         }
 
-        /// <summary>
-        /// Implement dispose pattern.
-        /// </summarTy>
+        /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
@@ -106,7 +102,8 @@ namespace K2Bridge.KustoConnector
 
         /// <summary>
         /// Implement dispose pattern.
-        /// </summarTy>
+        /// </summary>
+        /// <param name="disposing">A indication to cleanup objects in this class.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

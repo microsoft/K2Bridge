@@ -5,7 +5,6 @@
 namespace Tests
 {
     using System;
-    using K2Bridge;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Models.Request.Queries;
