@@ -31,6 +31,8 @@ variables:
   value: "build$(Build.BuildId)"
 - name: COLLECT_TELEMETRY
   value: false
+- name: TELEMETRY_KEY
+  value: "00000000-0000-0000-0000-000000000000"
 
 pool:
   vmImage: ubuntu-latest

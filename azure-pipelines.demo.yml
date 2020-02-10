@@ -12,6 +12,8 @@ variables:
   value: "demo"
 - name: COLLECT_TELEMETRY
   value: true
+- name: TELEMETRY_KEY
+  value: "5d939046-15b2-448c-84be-2ecced5e9b1d"
 
 pool:
   vmImage: ubuntu-latest
