@@ -96,9 +96,7 @@ namespace K2BridgeUnitTests
             MapHitAndAssert(table, query);
         }
 
-        // TODO: fix bug that lucene parse throws excpetion when getting text of type *term.
         [TestCase("return of the pink panther pink", "title:*return*", "@return$ of the pink panther pink")]
-        [Ignore("https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1658")]
         public void HitCreateWithHighlightsLuceneSpecialCases(string text, string highlightString, string expectedString)
         {
             HitCreateWithHighlightsAdvancedCases(text, highlightString, expectedString);

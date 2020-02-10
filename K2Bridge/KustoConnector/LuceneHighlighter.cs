@@ -23,7 +23,7 @@ namespace K2Bridge.KustoConnector
     /// </summary>
     internal class LuceneHighlighter : IDisposable
     {
-        private const string Default = "default";
+        private const string Default = "*";
         private readonly bool isHighlight = false;
 
         // Lucene analyzer.
@@ -128,7 +128,11 @@ namespace K2Bridge.KustoConnector
         /// <returns>a dictionary of searched tokens and their highlighters.</returns>
         private IDictionary<string, Highlighter> MakeHighlighters(Analyzer analyzer, QueryData query)
         {
-            var parser = new QueryParser(LuceneVersion.LUCENE_30, Default, analyzer);
+            var parser = new QueryParser(LuceneVersion.LUCENE_30, Default, analyzer)
+            {
+                AllowLeadingWildcard = true,
+                LowercaseExpandedTerms = false,
+            };
             return query.HighlightText
                 .Select(kv => (key: kv.Key, highlighter: MakeValueHighlighter(parser, kv.Value, query.HighlightPreTag, query.HighlightPostTag)))
                 .Where(kv => kv.highlighter != null)
@@ -155,10 +159,10 @@ namespace K2Bridge.KustoConnector
                 var scorer = new QueryScorer(luceneQuery);
                 var formatter = new SimpleHTMLFormatter(highlightPreTag, highlightPostTag);
                 return new Highlighter(formatter, scorer)
-                    {
-                        TextFragmenter = new SimpleSpanFragmenter(scorer, int.MaxValue),
-                        MaxDocCharsToAnalyze = int.MaxValue,
-                    };
+                {
+                    TextFragmenter = new SimpleSpanFragmenter(scorer, int.MaxValue),
+                    MaxDocCharsToAnalyze = int.MaxValue,
+                };
             }
             catch (Exception e)
             {
