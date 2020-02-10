@@ -14,6 +14,7 @@ namespace K2Bridge
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.RewriteRules;
+    using K2Bridge.Telemetry;
     using K2Bridge.Visitors;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Builder;

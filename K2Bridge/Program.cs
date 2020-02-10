@@ -10,6 +10,7 @@ namespace K2Bridge
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using K2Bridge.Telemetry;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
