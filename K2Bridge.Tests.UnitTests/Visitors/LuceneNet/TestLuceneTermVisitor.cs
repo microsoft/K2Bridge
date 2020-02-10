@@ -53,7 +53,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
             var es = termQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit((QueryStringClause)es);
 
             return ((QueryStringClause)es).KustoQL;

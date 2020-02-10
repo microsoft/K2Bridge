@@ -18,7 +18,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var aggregateClause = new Aggregation();
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;
@@ -32,7 +32,7 @@ namespace K2BridgeUnitTests.Visitors
                 PrimaryAggregation = new AvgAggregation() { FieldName = "fieldA" },
             };
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;
@@ -50,7 +50,7 @@ namespace K2BridgeUnitTests.Visitors
                 },
             };
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;
@@ -64,7 +64,7 @@ namespace K2BridgeUnitTests.Visitors
                 PrimaryAggregation = new CardinalityAggregation() { FieldName = "fieldA" },
             };
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;
@@ -82,7 +82,7 @@ namespace K2BridgeUnitTests.Visitors
                 },
             };
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
 
             return aggregateClause.KustoQL;

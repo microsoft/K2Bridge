@@ -6,35 +6,32 @@ namespace K2Bridge.DAL
 {
     using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// This class is used to create the <see cref="LazySchemaRetriever"/>
-    /// using a factory design pattern.
-    /// </summary>
-    public class LazySchemaRetrieverFactory : ILazySchemaRetrieverFactory
+    /// <inheritdoc/>
+    public class SchemaRetrieverFactory : ISchemaRetrieverFactory
     {
         private readonly IKustoDataAccess kustoDataAccess;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LazySchemaRetrieverFactory"/> class.
+        /// Initializes a new instance of the <see cref="SchemaRetrieverFactory"/> class.
         /// </summary>
         /// <param name="logger">The logger to be used.</param>
         /// <param name="kustoDataAccess">The DAL that will be used to fetch the schema.</param>
-        public LazySchemaRetrieverFactory(ILogger<LazySchemaRetriever> logger, IKustoDataAccess kustoDataAccess)
+        public SchemaRetrieverFactory(ILogger<SchemaRetriever> logger, IKustoDataAccess kustoDataAccess)
         {
             Logger = logger;
             this.kustoDataAccess = kustoDataAccess;
         }
 
-        private ILogger<LazySchemaRetriever> Logger { get; set; }
+        private ILogger<SchemaRetriever> Logger { get; set; }
 
         /// <summary>
-        /// Makes the actual <see cref="ILazySchemaRetriever"/>.
+        /// Makes the actual <see cref="ISchemaRetriever"/>.
         /// </summary>
         /// <param name="indexName">The index name to be used.</param>
-        /// <returns>The created <see cref="ILazySchemaRetriever"/>.</returns>
-        public ILazySchemaRetriever Make(string indexName)
+        /// <returns>The created <see cref="ISchemaRetriever"/>.</returns>
+        public ISchemaRetriever Make(string indexName)
         {
-            return new LazySchemaRetriever(
+            return new SchemaRetriever(
                 Logger,
                 kustoDataAccess,
                 indexName);

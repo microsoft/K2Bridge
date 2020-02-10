@@ -71,7 +71,7 @@ namespace K2BridgeUnitTests.Visitors
 
         private static string VisitRangeClause(RangeClause clause)
         {
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(clause);
             return clause.KustoQL;
         }

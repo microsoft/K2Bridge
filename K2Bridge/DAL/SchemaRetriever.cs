@@ -11,24 +11,20 @@ namespace K2Bridge.DAL
     using K2Bridge.Models;
     using Microsoft.Extensions.Logging;
 
-    /// <summary>
-    /// This class is used to fetch the actual schema of a given
-    /// table. It is used in the visitors path, while building the
-    /// generated query in order to give an accurate translation.
-    /// </summary>
-    public class LazySchemaRetriever : ILazySchemaRetriever
+    /// <inheritdoc/>
+    public class SchemaRetriever : ISchemaRetriever
     {
         private readonly IKustoDataAccess kustoDataAccess;
 
         private readonly Lazy<Task<IDictionary>> schema;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LazySchemaRetriever"/> class.
+        /// Initializes a new instance of the <see cref="SchemaRetriever"/> class.
         /// </summary>
         /// <param name="logger">The logger.</param>
         /// <param name="kustoDataAccess">The Kusto DAL that will be used to actually fetch the schema.</param>
         /// <param name="indexName">The index (table name) that its schema we need.</param>
-        public LazySchemaRetriever(ILogger<LazySchemaRetriever> logger, IKustoDataAccess kustoDataAccess, string indexName)
+        public SchemaRetriever(ILogger<SchemaRetriever> logger, IKustoDataAccess kustoDataAccess, string indexName)
         {
             Logger = logger;
             IndexName = indexName;

@@ -31,7 +31,7 @@ namespace K2BridgeUnitTests.Visitors
 
             var visitor =
                 new ElasticSearchDSLVisitor(
-                    LazySchemaRetrieverMock.CreateMockNumericSchemaRetriever());
+                    SchemaRetrieverMock.CreateMockNumericSchemaRetriever());
             visitor.Visit(dsl);
             return dsl.KustoQL;
         }
@@ -55,7 +55,7 @@ namespace K2BridgeUnitTests.Visitors
 
             var visitor =
                 new ElasticSearchDSLVisitor(
-                    LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+                    SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(dsl);
             return dsl.KustoQL;
         }

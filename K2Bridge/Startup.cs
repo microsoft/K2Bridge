@@ -69,14 +69,14 @@ namespace K2Bridge
 
             services.AddTransient<IKustoDataAccess, KustoDataAccess>();
 
-            services.AddTransient<ILazySchemaRetrieverFactory, LazySchemaRetrieverFactory>(
-                s => new LazySchemaRetrieverFactory(
-                    s.GetRequiredService<ILogger<LazySchemaRetriever>>(),
+            services.AddTransient<ISchemaRetrieverFactory, SchemaRetrieverFactory>(
+                s => new SchemaRetrieverFactory(
+                    s.GetRequiredService<ILogger<SchemaRetriever>>(),
                     s.GetRequiredService<IKustoDataAccess>()));
 
             services.AddTransient<IVisitor, ElasticSearchDSLVisitor>(
                 s => new ElasticSearchDSLVisitor(
-                    s.GetRequiredService<ILazySchemaRetrieverFactory>(),
+                    s.GetRequiredService<ISchemaRetrieverFactory>(),
                     s.GetRequiredService<IConnectionDetails>().DefaultDatabaseName));
 
             services.AddTransient<IResponseParser, KustoResponseParser>(

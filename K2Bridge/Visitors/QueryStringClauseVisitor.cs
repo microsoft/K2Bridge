@@ -82,12 +82,12 @@ namespace K2Bridge.Visitors
         private async Task<bool> GetIsFieldNumeric(string fieldName)
         {
             // for tests
-            if (lazySchemaRetriever == null)
+            if (schemaRetriever == null)
             {
                 return false;
             }
 
-            var dic = await lazySchemaRetriever.RetrieveTableSchema();
+            var dic = await schemaRetriever.RetrieveTableSchema();
 
             // if we failed to get this field type, treat as non numeric (string)
             if (dic.Contains(fieldName) == false)

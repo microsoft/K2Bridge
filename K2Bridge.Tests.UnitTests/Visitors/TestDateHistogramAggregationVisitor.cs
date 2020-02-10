@@ -21,7 +21,7 @@ namespace K2BridgeUnitTests.Visitors
                 FieldName = "wobble",
             };
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(histogramAggregation);
 
             return histogramAggregation.KustoQL;
@@ -40,7 +40,7 @@ namespace K2BridgeUnitTests.Visitors
                 Interval = interval,
             };
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(histogramAggregation);
 
             return histogramAggregation.KustoQL;

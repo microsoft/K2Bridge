@@ -5,9 +5,11 @@
 namespace K2Bridge.DAL
 {
     /// <summary>
+    /// This class is used to create the <see cref="ISchemaRetriever"/>
+    /// using a factory design pattern.
     /// </summary>
-    public interface ILazySchemaRetrieverFactory
+    public interface ISchemaRetrieverFactory
     {
-        ILazySchemaRetriever Make(string indexName);
+        ISchemaRetriever Make(string indexName);
     }
 }

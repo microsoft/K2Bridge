@@ -11,9 +11,9 @@ namespace Tests
     using Microsoft.Extensions.Logging;
     using Moq;
 
-    public static class LazySchemaRetrieverMock
+    public static class SchemaRetrieverMock
     {
-        public static ILazySchemaRetrieverFactory CreateMockSchemaRetriever()
+        public static ISchemaRetrieverFactory CreateMockSchemaRetriever()
         {
             var response = new FieldCapabilityResponse();
             response.AddField(
@@ -27,11 +27,11 @@ namespace Tests
             var mockDAL = new Mock<IKustoDataAccess>();
             mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(responseTask);
 
-            var mockLogger = new Mock<ILogger<LazySchemaRetriever>>();
-            return new LazySchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
+            var mockLogger = new Mock<ILogger<SchemaRetriever>>();
+            return new SchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
         }
 
-        public static ILazySchemaRetrieverFactory CreateMockNumericSchemaRetriever()
+        public static ISchemaRetrieverFactory CreateMockNumericSchemaRetriever()
         {
             var response = new FieldCapabilityResponse();
             response.AddField(
@@ -45,8 +45,8 @@ namespace Tests
             var mockDAL = new Mock<IKustoDataAccess>();
             mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(responseTask);
 
-            var mockLogger = new Mock<ILogger<LazySchemaRetriever>>();
-            return new LazySchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
+            var mockLogger = new Mock<ILogger<SchemaRetriever>>();
+            return new SchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
         }
     }
 }

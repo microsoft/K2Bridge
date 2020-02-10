@@ -8,8 +8,11 @@ namespace K2Bridge.DAL
     using System.Threading.Tasks;
 
     /// <summary>
+    /// This is used to fetch the actual schema of a given
+    /// table. It is used in the visitors path, while building the
+    /// generated query in order to give an accurate translation.
     /// </summary>
-    public interface ILazySchemaRetriever
+    public interface ISchemaRetriever
     {
         string IndexName { get; }
 

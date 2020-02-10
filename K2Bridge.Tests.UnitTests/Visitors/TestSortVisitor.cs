@@ -59,7 +59,7 @@ namespace K2BridgeUnitTests.Visitors
 
         private string VisitSortQuery(SortClause clause)
         {
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(clause);
             return clause.KustoQL;
         }

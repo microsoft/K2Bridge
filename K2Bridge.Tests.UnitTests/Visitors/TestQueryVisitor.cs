@@ -73,7 +73,7 @@ namespace K2BridgeUnitTests.Visitors
 
         private static string VisitQuery(QueryStringClause queryStringClause)
         {
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(queryStringClause);
             return queryStringClause.KustoQL;
         }

@@ -19,13 +19,13 @@ namespace K2Bridge.Visitors
     {
         private readonly string defaultDatabaseName;
 
-        private ILazySchemaRetriever lazySchemaRetriever;
+        private ISchemaRetriever schemaRetriever;
 
-        private ILazySchemaRetrieverFactory lazySchemaRetrieverFactory;
+        private ISchemaRetrieverFactory schemaRetrieverFactory;
 
-        public ElasticSearchDSLVisitor(ILazySchemaRetrieverFactory lazySchemaRetrieverFactory, string defaultDatabaseName = "")
+        public ElasticSearchDSLVisitor(ISchemaRetrieverFactory schemaRetrieverFactory, string defaultDatabaseName = "")
         {
-            this.lazySchemaRetrieverFactory = lazySchemaRetrieverFactory;
+            this.schemaRetrieverFactory = schemaRetrieverFactory;
             this.defaultDatabaseName = defaultDatabaseName;
         }
 
@@ -37,8 +37,8 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(elasticSearchDSL, nameof(elasticSearchDSL));
 
-            // Preparing the lazy schema with the index name to be used later
-            this.lazySchemaRetriever = lazySchemaRetrieverFactory.Make(elasticSearchDSL.IndexName);
+            // Preparing the schema with the index name to be used later
+            schemaRetriever = schemaRetrieverFactory.Make(elasticSearchDSL.IndexName);
 
             // base query
             elasticSearchDSL.Query.Accept(this);

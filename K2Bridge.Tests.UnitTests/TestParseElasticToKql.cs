@@ -280,7 +280,7 @@ namespace Tests
         public string TestMatchPhraseQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -291,7 +291,7 @@ namespace Tests
         public string TestExistsClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -317,7 +317,7 @@ namespace Tests
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -327,7 +327,7 @@ namespace Tests
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -338,7 +338,7 @@ namespace Tests
         public string TestWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -349,7 +349,7 @@ namespace Tests
         public string TestComplexWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -360,7 +360,7 @@ namespace Tests
         public string TestPrefixQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -368,7 +368,7 @@ namespace Tests
         private string TestRangeClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             query.Accept(visitor);
             return query.KustoQL;
         }

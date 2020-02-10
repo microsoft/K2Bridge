@@ -17,7 +17,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var sortClause = new SortClause() { FieldName = "_wibble" };
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(sortClause);
 
             return sortClause.KustoQL;
@@ -28,7 +28,7 @@ namespace K2BridgeUnitTests.Visitors
         {
             var sortClause = new SortClause() { FieldName = "wibble", Order = "asc" };
 
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(sortClause);
 
             return sortClause.KustoQL;

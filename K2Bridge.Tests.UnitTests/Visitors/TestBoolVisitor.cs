@@ -121,7 +121,7 @@ namespace K2BridgeUnitTests.Visitors
 
         private string VisitQuery(BoolQuery query)
         {
-            var visitor = new ElasticSearchDSLVisitor(LazySchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(query);
             return query.KustoQL;
         }
