@@ -22,6 +22,8 @@ namespace K2Bridge.Models.Response
 
         public static TermBucket Create(System.Data.IDataRecord record)
         {
+            Ensure.IsNotNull(record, nameof(record));
+
             var key = record[(int)DataReaderMapping.Key];
 
             return new TermBucket

@@ -44,13 +44,8 @@ namespace K2Bridge.HttpMessages
         /// <exception cref="InvalidOperationException">An exception thrown when the request is invalid.</exception>
         public async Task ExecuteResultAsync(ActionContext context)
         {
-            var response = context.HttpContext.Response;
-
-            if (responseMessage == null)
-            {
-                var message = "Response message can not be null";
-                throw new InvalidOperationException(message);
-            }
+            var response = context?.HttpContext?.Response;
+            Ensure.IsNotNull(response, nameof(response), "Response message can not be null");
 
             using (responseMessage)
             {

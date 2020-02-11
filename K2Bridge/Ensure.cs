@@ -23,7 +23,7 @@ namespace K2Bridge
         /// <param name="argName">The name which will be presented as the argument's name in the exception message.</param>
         /// <param name="predefinedMessage">A message with which the exception will be created.</param>
         /// <param name="logger">Optional logger to log Error.</param>
-        public static void IsNotNull<T>(T arg, string argName, string predefinedMessage = null, ILogger logger = null)
+        public static void IsNotNull<T>([ValidatedNotNull] T arg, string argName, string predefinedMessage = null, ILogger logger = null)
         {
             if (arg == null)
             {
@@ -39,7 +39,7 @@ namespace K2Bridge
         /// <param name="argName">The name which will be presented as the argument's name in the exception message.</param>
         /// <param name="predefinedMessage">A message with which the exception will be created.</param>
         /// <param name="logger">Optional logger to log Error.</param>
-        public static void IsNotNullOrEmpty<T>(IEnumerable<T> arg, string argName, string predefinedMessage = null, ILogger logger = null)
+        public static void IsNotNullOrEmpty<T>([ValidatedNotNull] IEnumerable<T> arg, string argName, string predefinedMessage = null, ILogger logger = null)
         {
             if (arg == null || !arg.Any())
             {
@@ -77,6 +77,14 @@ namespace K2Bridge
             throw (arg == null)
                 ? new ArgumentNullException(argName, message)
                 : new ArgumentException(message, argName);
+        }
+
+        /// <summary>
+        /// A class to note that a parameter goes through null validation.
+        /// </summary>
+        [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
+        internal sealed class ValidatedNotNullAttribute : Attribute
+        {
         }
     }
 }
