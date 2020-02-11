@@ -4,9 +4,11 @@
 
 namespace K2Bridge.Visitors
 {
-    using System.Collections.Generic;
     using K2Bridge.Models.Request.Aggregations;
 
+    /// <content>
+    /// A visitor for the root <see cref="Aggregation"/> element.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(Aggregation aggregation)

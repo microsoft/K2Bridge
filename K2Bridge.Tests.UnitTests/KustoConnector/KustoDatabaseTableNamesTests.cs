@@ -57,7 +57,7 @@ namespace Tests.KustoConnector
         [TestCaseSource("noColonCases")]
         public void HanldesNoColonInInputIndexName(string indexName)
         {
-            var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, string.Empty);
+            var (databaseName, _) = KustoDatabaseTableNames.FromElasticIndexName(indexName, string.Empty);
             Assert.AreEqual(string.Empty, databaseName, $"database name should be empty for input {indexName}");
         }
 

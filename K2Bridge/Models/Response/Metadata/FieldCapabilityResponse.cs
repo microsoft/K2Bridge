@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Models.Response.Metadata
 {
-    using System;
     using System.Collections.Generic;
     using Newtonsoft.Json;
 

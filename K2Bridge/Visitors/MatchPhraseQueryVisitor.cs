@@ -7,6 +7,9 @@ namespace K2Bridge.Visitors
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Request.Queries;
 
+    /// <content>
+    /// A visitor for the <see cref="MatchPhraseClause"/> element.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         // The following regexes look for the '?' or '*' chars which are

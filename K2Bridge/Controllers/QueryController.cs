@@ -92,8 +92,8 @@ namespace K2Bridge.Controllers
         /// Internal implementation of the search API logic.
         /// Mainly used to improve testability (as certain parameters needs to be extracted from the body).
         /// </summary>
-        /// <param name="totalHits">Total Hits.</param>
-        /// <param name="ignoreThrottled">Ignore Throttles.</param>
+        /// <param name="totalHits">totalHits parameter coming from Kibana (currently not used).</param>
+        /// <param name="ignoreThrottled">ignoreThrottled parameter coming from Kibana (currently not used).</param>
         /// <param name="rawQueryData">Body Payload.</param>
         /// <returns>An ElasticResponse object.</returns>
         internal async Task<IActionResult> SearchInternalAsync(bool totalHits, bool ignoreThrottled, string rawQueryData)

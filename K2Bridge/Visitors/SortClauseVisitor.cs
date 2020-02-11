@@ -6,6 +6,9 @@ namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request;
 
+    /// <content>
+    /// A visitor for the <see cref="SortClause"/> element.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(SortClause sortClause)

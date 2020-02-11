@@ -6,6 +6,10 @@ namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request.Queries;
 
+    /// <content>
+    /// A visitor for the <see cref="Query"/> element. This includes all
+    /// the "search" parts of an incoming request.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(Query query)

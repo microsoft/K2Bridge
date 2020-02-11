@@ -34,7 +34,7 @@ namespace K2Bridge
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
-        /// <param name="configuration"></param>
+        /// <param name="configuration">The configuration for the app.</param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;

@@ -38,7 +38,7 @@ namespace K2Bridge.Models.Response
         public IList<object> Sort { get; } = new List<object>();
 
         [JsonProperty("highlight", NullValueHandling = NullValueHandling.Ignore)]
-        public Dictionary<string, object> Highlight { get; set; }
+        public Dictionary<string, object> Highlight { get; private set; }
 
         public static Hit Create(string id, string indexName)
         => new Hit() { Id = id, Index = indexName };

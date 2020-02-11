@@ -14,6 +14,10 @@ namespace K2Bridge.Visitors
     using Lucene.Net.Analysis;
     using Lucene.Net.QueryParsers;
 
+    /// <content>
+    /// A visitor for the <see cref="QueryStringClause"/> element.
+    /// This includes the main logic able to translate expressions from Kibana's searchbox.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         /// <summary>

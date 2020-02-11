@@ -6,6 +6,9 @@ namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request.Queries;
 
+    /// <content>
+    /// A visitor for the <see cref="RangeClause"/> element.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(RangeClause rangeClause)

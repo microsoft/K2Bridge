@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Visitors.LuceneNet
 {
-    using System;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Models.Request.Queries.LuceneNet;
     using Lucene.Net.Search;

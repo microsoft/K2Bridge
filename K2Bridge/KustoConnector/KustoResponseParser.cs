@@ -32,8 +32,7 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="logger">ILogger object for logging.</param>
         /// <param name="outputBackendQuery">Outputs the backend query during parse.</param>
-        /// <param name="queryNetTimeMetric">Prometheus metric to record net query time.</param>
-        /// <param name="queryBytesMetric">Prometheus metric to record the total payload size in bytes.</param>
+        /// <param name="metricsHistograms">The instance of the class to record metrics.</param>
         public KustoResponseParser(ILogger<KustoResponseParser> logger, bool outputBackendQuery, Metrics metricsHistograms)
         {
             Logger = logger;

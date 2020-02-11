@@ -4,25 +4,28 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using System.Collections.Generic;
     using System.Text;
-    using System.Threading.Tasks;
     using K2Bridge.DAL;
     using K2Bridge.Models;
     using K2Bridge.Models.Request;
 
     /// <summary>
-    /// Main visitor entry point.
+    /// Main visitor entry point used to convert an ElasticSearch DSL to Kusto queries.
     /// </summary>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         private readonly string defaultDatabaseName;
+        private readonly ISchemaRetrieverFactory schemaRetrieverFactory;
 
         private ISchemaRetriever schemaRetriever;
 
-        private ISchemaRetrieverFactory schemaRetrieverFactory;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ElasticSearchDSLVisitor"/> class.
+        /// </summary>
+        /// <param name="schemaRetrieverFactory">A factory to create a <see cref="ISchemaRetriever"/> used
+        /// to fetch table/function schema.</param>
+        /// <param name="defaultDatabaseName">The database used to fetch functions.</param>
         public ElasticSearchDSLVisitor(ISchemaRetrieverFactory schemaRetrieverFactory, string defaultDatabaseName = "")
         {
             this.schemaRetrieverFactory = schemaRetrieverFactory;

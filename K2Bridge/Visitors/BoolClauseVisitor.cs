@@ -8,6 +8,9 @@ namespace K2Bridge.Visitors
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
 
+    /// <content>
+    /// A visitor for the <see cref="BoolQuery"/> element.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(BoolQuery boolQuery)

@@ -33,7 +33,7 @@ namespace K2Bridge.KustoConnector
         /// </summary>
         /// <param name="connectionDetails">Kusto Connection Details.</param>
         /// <param name="logger">A logger.</param>
-        /// <param name="queryTotalTimeMetric">A metric to log the total query time to.</param>
+        /// <param name="metricsHistograms">The instance of the class to record metrics.</param>
         public KustoQueryExecutor(
             IConnectionDetails connectionDetails,
             ILogger<KustoQueryExecutor> logger,

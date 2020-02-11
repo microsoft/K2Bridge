@@ -6,6 +6,10 @@ namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request.Aggregations;
 
+    /// <content>
+    /// A visitor for the different <see cref="MetricAggregation"/> types.
+    /// TODO: This probably needs to be several files.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         private const string ExceptionMessage = "Average FieldName must have a valid value";

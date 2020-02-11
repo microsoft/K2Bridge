@@ -6,6 +6,9 @@ namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request.Aggregations;
 
+    /// <content>
+    /// A visitor for the <see cref="DateHistogramAggregation"/> element.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(DateHistogramAggregation dateHistogramAggregation)

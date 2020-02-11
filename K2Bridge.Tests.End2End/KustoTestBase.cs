@@ -137,6 +137,7 @@ namespace K2Bridge.Tests.End2End
         /// <summary>
         ///  Name of the Kusto database to populate with test data.
         /// </summary>
+        /// <returns>A <see cref="Task"/> representing the setup phase.</returns>
         [SetUp]
         public async Task SetUp()
         {

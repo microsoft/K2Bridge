@@ -41,7 +41,7 @@ namespace K2Bridge.HttpMessages
         /// <param name="context">The context in which the result is executed. The context information includes
         /// information about the action that was executed and request information.</param>
         /// <returns>A task that represents the asynchronous execute operation.</returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <exception cref="InvalidOperationException">An exception thrown when the request is invalid.</exception>
         public async Task ExecuteResultAsync(ActionContext context)
         {
             var response = context.HttpContext.Response;

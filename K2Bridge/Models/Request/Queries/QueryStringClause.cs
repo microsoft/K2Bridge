@@ -15,10 +15,13 @@ namespace K2Bridge.Models.Request.Queries
         public enum Subtype
         {
             /// <summary>
-            /// A pharse to be searched exactly (equality).
+            /// A pharse which is a word (no tokens inside).
             /// </summary>
             Term = 0,
 
+            /// <summary>
+            /// A pharse which can be multiple terms (a sentance with spaces).
+            /// </summary>
             Phrase,
 
             /// <summary>
@@ -32,9 +35,11 @@ namespace K2Bridge.Models.Request.Queries
             Wildcard,
         }
 
-        // Lucene type properties
-        // These will be initially null when the object
-        // is created from a json payload
+        /// <summary>
+        /// Gets or sets Lucene type properties.
+        /// These will be initially null when the object is created from a json payload,
+        /// and will be populated by the visitor.
+        /// </summary>
         public Subtype? ParsedType { get; set; }
 
         public string ParsedFieldName { get; set; }

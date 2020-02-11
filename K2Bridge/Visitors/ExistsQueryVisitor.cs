@@ -6,6 +6,9 @@ namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request.Queries;
 
+    /// <content>
+    /// A visitor for the <see cref="ExistsClause"/> element.
+    /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         public void Visit(ExistsClause existsClause)

@@ -26,6 +26,8 @@ namespace K2Bridge.Models.Response.Metadata
 
         public static FieldCapabilityElement Create(System.Data.IDataRecord record)
         {
+            Ensure.IsNotNull(record, nameof(record));
+
             var columnName = record[(int)DataReaderMapping.ColumnName];
             var columnType = record[(int)DataReaderMapping.ColumnType];
 
