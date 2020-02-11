@@ -131,7 +131,6 @@ namespace K2Bridge.KustoConnector
             var parser = new QueryParser(LuceneVersion.LUCENE_30, Default, analyzer)
             {
                 AllowLeadingWildcard = true,
-                LowercaseExpandedTerms = false,
             };
             return query.HighlightText
                 .Select(kv => (key: kv.Key, highlighter: MakeValueHighlighter(parser, kv.Value, query.HighlightPreTag, query.HighlightPostTag)))

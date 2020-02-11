@@ -113,7 +113,7 @@ namespace K2Bridge.Tests.End2End
         /// <param name="indexName">Index name to query.</param>
         /// <param name="jsonQueryFile">File name containing query.</param>
         /// <returns>SearchAsync operation result.</returns>
-        public async Task<JToken> MSearch(string indexName, string jsonQueryFile)
+        public async Task<JToken> MSearch(string indexName, string jsonQueryFile, bool validateHighlight = true)
         {
             JObject query = JObject.Parse(File.ReadAllText(jsonQueryFile));
 
@@ -127,18 +127,12 @@ namespace K2Bridge.Tests.End2End
             MaskSearchCommon(result, "responses[*].");
 
             // TODO: returned by ES but not by K2
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
+            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1618
             DeleteValue(result, "responses[*].hits.hits[*].fields");
-
-            // TODO: returned by ES but not by K2
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
-            DeleteValue(result, "responses[*].hits.hits[*].sort");
-
-            // TODO: returned by K2 but not by ES
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1468
-            // TODO: Fix substringhighlighting
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1481
-            DeleteValue(result, "responses[*].hits.hits[*].highlight");
+            if (!validateHighlight)
+            {
+                DeleteValue(result, "responses[*].hits.hits[*].highlight");
+            }
 
             // backend query isn't something we want to compare
             DeleteValue(result, "responses[*]._backendQuery");
