@@ -2,18 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests
+namespace UnitTests.K2Bridge.Controllers
 {
     using System;
     using System.Data;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
-    using K2Bridge;
-    using K2Bridge.Controllers;
-    using K2Bridge.KustoConnector;
-    using K2Bridge.Models;
-    using K2Bridge.Models.Response;
+    using global::K2Bridge;
+    using global::K2Bridge.Controllers;
+    using global::K2Bridge.KustoConnector;
+    using global::K2Bridge.Models;
+    using global::K2Bridge.Models.Response;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -37,7 +37,7 @@ namespace K2BridgeUnitTests
         };
 
         [Test]
-        public async Task SearchInternal_ReturnsAnActionResult_OKfromKustoAsync()
+        public async Task SearchInternalAsync_WithOKfromKustoAsync_ReturnsOkActionResult()
         {
             // Arrange
             var uat = GetController();
@@ -51,7 +51,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void QueryController_WhenNoArgs_ThrowsOnInit()
+        public void QueryControllerConstructor_WithNoArgs_ThrowsOnInit()
         {
             // Arrange
             var mockTranslator = new Mock<ITranslator>();
@@ -81,7 +81,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public async Task SearchInternal_OnValidInput_TranslatesAndExecutesQuery()
+        public async Task SearchInternalAsync_WithValidInput_TranslatesAndExecutesQuery()
         {
             // Arrange
             (string header, string query) = ControllerExtractMethods.SplitQueryBody(ValidQueryContent);
@@ -121,8 +121,8 @@ namespace K2BridgeUnitTests
                 parsr => parsr.Parse(reader.Object, queryData, ts), Times.Once());
         }
 
-        [TestCaseSource("InValidQueryContent")]
-        public void SearchInternal_OnInvaliddRequestData_FailsArgumentException(string input)
+        [TestCaseSource(nameof(InValidQueryContent))]
+        public void SearchInternalAsync_WithInvaliddRequestData_ThrowsArgumentException(string input)
         {
             // Arrange
             var uat = GetController();
@@ -131,8 +131,8 @@ namespace K2BridgeUnitTests
             Assert.ThrowsAsync<ArgumentNullException>(async () => await uat.SearchInternalAsync(true, true, input));
         }
 
-        [TestCaseSource("IntegrationTestCases")]
-        public async Task SearchInternal_PostRequest_ReturnsExpectedResult(string content, Type resultType)
+        [TestCaseSource(nameof(IntegrationTestCases))]
+        public async Task SearchInternalAsync_WithValidRequest_ReturnsExpectedResult(string content, Type resultType)
         {
             Ensure.IsNotNull(resultType, nameof(resultType));
 
@@ -166,7 +166,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public async Task Search_PostRequestErrorInTranslator_ReturnsError()
+        public async Task SearchAsync_WithErrorInTranslator_ReturnsError()
         {
             // Arrange
             var mockTranslator = new Mock<ITranslator>();
@@ -198,7 +198,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public async Task Search_PostRequestErrorInParser_ReturnsError()
+        public async Task SearchAsync_WithErrorInParser_ReturnsError()
         {
             // Arrange
             var mockTranslator = new Mock<ITranslator>();
@@ -229,7 +229,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public async Task Search_PostRequestErrorInExecutor_ReturnsError()
+        public async Task SearchAsync_WithErrorInExecutor_ReturnsError()
         {
             // Arrange
             var mockTranslator = new Mock<ITranslator>();
@@ -263,9 +263,9 @@ namespace K2BridgeUnitTests
         {
             var mockTranslator = new Mock<ITranslator>();
             mockTranslator.Setup(translator => translator.Translate(
-                It.IsNotNull<string>(), It.IsNotNull<string>())).Returns(new QueryData());
+                It.IsNotNull<string>(), It.IsNotNull<string>())).Returns(default(QueryData));
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>())).Returns(Task.FromResult((new TimeSpan(), new Mock<IDataReader>().Object)));
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>())).Returns(Task.FromResult((default(TimeSpan), new Mock<IDataReader>().Object)));
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             mockResponseParser.Setup(exec =>

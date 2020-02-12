@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.Controllers
+namespace UnitTests.K2Bridge.Controllers
 {
     using System.Threading.Tasks;
-    using K2Bridge.Controllers;
-    using K2Bridge.DAL;
-    using K2Bridge.Models;
-    using K2Bridge.Models.Response.Metadata;
+    using global::K2Bridge.Controllers;
+    using global::K2Bridge.DAL;
+    using global::K2Bridge.Models;
+    using global::K2Bridge.Models.Response.Metadata;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ namespace K2Bridge.Tests.UnitTests.Controllers
     public class IndexListControllerTests
     {
         [Test]
-        public async Task WhenCorrectInputReturnOkResult()
+        public async Task IndexListController_WithValidInput_ReturnsOk()
         {
             // Arrange
             var ctr = GetController();

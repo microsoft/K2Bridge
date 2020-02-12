@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.RewriteRules
+namespace UnitTests.K2Bridge.RewriteRules
 {
-    using K2Bridge.RewriteRules;
+    using global::K2Bridge.RewriteRules;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Rewrite;
     using Moq;
@@ -46,25 +46,25 @@ namespace K2BridgeUnitTests.RewriteRules
             new TestCaseData("/nottemplatetemplate/myindex/").Returns("/nottemplatetemplate/myindex/").SetName("TemplateRewriteRules_NoIllegalCharAndNotTemplate_NotChanged"),
         };
 
-        [TestCaseSource("RewriteMissingTrailsPath")]
+        [TestCaseSource(nameof(RewriteMissingTrailsPath))]
         public string TrailingSlashRulesTest(string request)
         {
             return TestIRule(new RewriteTrailingSlashesRule(), request);
         }
 
-        [TestCaseSource("RewriteFieldCapsPath")]
+        [TestCaseSource(nameof(RewriteFieldCapsPath))]
         public string RewriteFieldCapsTest(string request)
         {
             return TestIRule(new RewriteFieldCapabilitiesRule(), request);
         }
 
-        [TestCaseSource("RewriteIndexListPath")]
+        [TestCaseSource(nameof(RewriteIndexListPath))]
         public string RewriteIndexListsTest(string request)
         {
             return TestIRule(new RewriteIndexListRule(), request);
         }
 
-        [TestCaseSource("RewriteRequestForTemplatePath")]
+        [TestCaseSource(nameof(RewriteRequestForTemplatePath))]
         public string RewriteRequestForTemplateTest(string request)
         {
             return TestIRule(new RewriteRequestsForTemplateRule(), request);

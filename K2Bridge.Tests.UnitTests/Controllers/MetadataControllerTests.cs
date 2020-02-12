@@ -2,16 +2,16 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests
+namespace UnitTests.K2Bridge.Controllers
 {
     using System;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using K2Bridge;
-    using K2Bridge.Controllers;
-    using K2Bridge.HttpMessages;
+    using global::K2Bridge;
+    using global::K2Bridge.Controllers;
+    using global::K2Bridge.HttpMessages;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -55,7 +55,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void Constructor_WhenNoArgs_ThrowsOnInit()
+        public void MetadataControllerConstructor_WhenNoArgs_ThrowsOnInit()
         {
             var mockClientFactory = new Mock<IHttpClientFactory>();
             var mockLogger = new Mock<ILogger<MetadataController>>();
@@ -69,7 +69,7 @@ namespace K2BridgeUnitTests
             });
         }
 
-        [TestCaseSource("IntegrationTestCases")]
+        [TestCaseSource(nameof(IntegrationTestCases))]
         public async Task<string> PassThroughController_Integration_Tests(string input, string method, Type resultType)
         {
             Ensure.IsNotNull(resultType, nameof(resultType));
@@ -87,7 +87,7 @@ namespace K2BridgeUnitTests
             return string.Empty;
         }
 
-        [TestCaseSource("ReplaceStringTestCases")]
+        [TestCaseSource(nameof(ReplaceStringTestCases))]
         public async Task PassThroughInternal_WhenInputContainsIllegalTokens_ReplaceBack(string input, string expectedHttpClient)
         {
             // Arrange
