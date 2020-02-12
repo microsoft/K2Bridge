@@ -10,27 +10,27 @@ namespace UnitTests.K2Bridge.KustoConnector
     using global::K2Bridge.KustoConnector;
     using global::K2Bridge.Telemetry;
     using Kusto.Data.Common;
-    using NSubstitute;
+    using Moq;
     using NUnit.Framework;
 
     [TestFixture]
     public class CslQueryProviderExtensionsTests
     {
-        private readonly IDataReader data = Substitute.For<IDataReader>();
-        private readonly ICslQueryProvider client = Substitute.For<ICslQueryProvider>();
-        private readonly Metrics metric = Substitute.For<Metrics>();
+        private readonly IDataReader stubReader = new Mock<IDataReader>().Object;
+        private readonly Mock<ICslQueryProvider> stubClient = new Mock<ICslQueryProvider>();
+        private readonly Mock<Metrics> stubMetrics = new Mock<Metrics>();
         private readonly ClientRequestProperties clientRequestProperties = default;
 
         [TestCase]
         public async Task ExecuteMonitoredQueryAsync_WithValidInput_ReturnsReaderAndTime()
         {
-            Metrics metric = Substitute.For<Metrics>();
-            metric.AdxQueryDurationMetric = new Histogram(Substitute.For<Prometheus.IHistogram>(), "name", "help");
-            client.ExecuteQueryAsync(string.Empty, Arg.Any<string>(), Arg.Any<ClientRequestProperties>()).Returns(Task.FromResult(data));
-            var (timeTaken, reader) = await client.ExecuteMonitoredQueryAsync("wibble", clientRequestProperties, metric);
+            var metrics = Metrics.Create();
+            stubClient.Setup(client => client.ExecuteQueryAsync(string.Empty, It.IsAny<string>(), It.IsAny<ClientRequestProperties>()))
+                .Returns(Task.FromResult(stubReader));
+            var (timeTaken, reader) = await stubClient.Object.ExecuteMonitoredQueryAsync("wibble", clientRequestProperties, metrics);
 
             Assert.AreNotEqual(0, timeTaken);
-            Assert.AreSame(data, reader);
+            Assert.AreSame(reader, reader);
         }
 
         [TestCase]
@@ -39,7 +39,7 @@ namespace UnitTests.K2Bridge.KustoConnector
             Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentNullException>()
                  .And.Message.EqualTo("client cannot be null (Parameter 'client')"),
-                async () => await CslQueryProviderExtensions.ExecuteMonitoredQueryAsync(null, "some query", clientRequestProperties, metric));
+                async () => await CslQueryProviderExtensions.ExecuteMonitoredQueryAsync(null, "some query", clientRequestProperties, stubMetrics.Object));
         }
 
         [TestCase]
@@ -48,7 +48,7 @@ namespace UnitTests.K2Bridge.KustoConnector
             Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentException>()
                  .And.Message.EqualTo("query cannot be empty (Parameter 'query')"),
-                async () => await client.ExecuteMonitoredQueryAsync(string.Empty, clientRequestProperties, metric));
+                async () => await stubClient.Object.ExecuteMonitoredQueryAsync(string.Empty, clientRequestProperties, stubMetrics.Object));
         }
 
         [TestCase]
@@ -57,7 +57,7 @@ namespace UnitTests.K2Bridge.KustoConnector
             Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentNullException>()
                  .And.Message.EqualTo("query cannot be null (Parameter 'query')"),
-                async () => await client.ExecuteMonitoredQueryAsync(null, clientRequestProperties, metric));
+                async () => await stubClient.Object.ExecuteMonitoredQueryAsync(null, clientRequestProperties, stubMetrics.Object));
         }
     }
 }

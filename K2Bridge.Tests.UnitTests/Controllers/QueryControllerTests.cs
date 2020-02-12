@@ -19,7 +19,6 @@ namespace K2BridgeUnitTests
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using Substitute = NSubstitute.Substitute;
 
     [TestFixture]
     public class QueryControllerTests
@@ -88,17 +87,17 @@ namespace K2BridgeUnitTests
             (string header, string query) = ControllerExtractMethods.SplitQueryBody(ValidQueryContent);
             var queryData = new QueryData(query, header);
             var ts = new TimeSpan(1);
-            var reader = Substitute.For<IDataReader>();
+            var reader = new Mock<IDataReader>();
             var mockTranslator = new Mock<ITranslator>();
             mockTranslator.Setup(translator => translator.Translate(
                 header, query)).Returns(queryData);
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>())).Returns(Task.FromResult((ts, reader)));
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>())).Returns(Task.FromResult((ts, reader.Object)));
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             mockResponseParser.Setup(exec =>
                 exec.Parse(
-                    reader,
+                    reader.Object,
                     queryData,
                     ts));
 
@@ -119,7 +118,7 @@ namespace K2BridgeUnitTests
             mockQueryExecutor.Verify(
                  executor => executor.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>()), Times.Once());
             mockResponseParser.Verify(
-                parsr => parsr.Parse(reader, queryData, ts), Times.Once());
+                parsr => parsr.Parse(reader.Object, queryData, ts), Times.Once());
         }
 
         [TestCaseSource("InValidQueryContent")]
@@ -266,7 +265,7 @@ namespace K2BridgeUnitTests
             mockTranslator.Setup(translator => translator.Translate(
                 It.IsNotNull<string>(), It.IsNotNull<string>())).Returns(new QueryData());
             var mockQueryExecutor = new Mock<IQueryExecutor>();
-            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>())).Returns(Task.FromResult((new TimeSpan(), Substitute.For<IDataReader>())));
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>())).Returns(Task.FromResult((new TimeSpan(), new Mock<IDataReader>().Object)));
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             mockResponseParser.Setup(exec =>
