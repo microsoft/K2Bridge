@@ -13,6 +13,7 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        /// <inheritdoc/>
         public void Visit(BoolQuery boolQuery)
         {
             Ensure.IsNotNull(boolQuery, nameof(boolQuery));

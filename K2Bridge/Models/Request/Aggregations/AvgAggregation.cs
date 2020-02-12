@@ -11,6 +11,7 @@ namespace K2Bridge.Models.Request.Aggregations
     [JsonConverter(typeof(AggregationFieldConverter))]
     internal class AvgAggregation : MetricAggregation
     {
+        /// <inheritdoc/>
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

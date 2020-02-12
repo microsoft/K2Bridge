@@ -19,6 +19,10 @@ namespace K2Bridge.Visitors
 
         void Visit(Query query);
 
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="elasticSearchDSL">An Elasticsearch DSL query.</param>
         void Visit(ElasticSearchDSL elasticSearchDSL);
 
         void Visit(RangeClause rangeClause);
@@ -37,6 +41,10 @@ namespace K2Bridge.Visitors
 
         void Visit(CardinalityAggregation cardinalityAggregation);
 
+        /// <summary>
+        /// Accepts a query string clause, parses the phrase to a lucene query, and builds a Kusto query based on the lucene query.
+        /// </summary>
+        /// <param name="queryStringClause">The query string clause.</param>
         void Visit(QueryStringClause queryStringClause);
     }
 }

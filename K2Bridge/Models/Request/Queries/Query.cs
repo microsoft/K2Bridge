@@ -13,6 +13,7 @@ namespace K2Bridge.Models.Request.Queries
         [JsonProperty("bool")]
         public BoolQuery Bool { get; set; }
 
+        /// <inheritdoc/>
         public void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

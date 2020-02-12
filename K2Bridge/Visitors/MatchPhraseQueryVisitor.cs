@@ -17,6 +17,7 @@ namespace K2Bridge.Visitors
         private static readonly Regex SingleCharPattern = new Regex(@"(?<!\\)\?");
         private static readonly Regex MultiCharPattern = new Regex(@"(?<!\\)\*");
 
+        /// <inheritdoc/>
         public void Visit(MatchPhraseClause matchPhraseClause)
         {
             Ensure.IsNotNull(matchPhraseClause, nameof(matchPhraseClause));

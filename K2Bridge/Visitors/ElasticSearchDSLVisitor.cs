@@ -32,10 +32,7 @@ namespace K2Bridge.Visitors
             this.defaultDatabaseName = defaultDatabaseName;
         }
 
-        /// <summary>
-        /// Accept a given visitable object and build the valid Kusto query.
-        /// </summary>
-        /// <param name="elasticSearchDSL">An Elasticsearch DSL query.</param>
+        /// <inheritdoc/>
         public void Visit(ElasticSearchDSL elasticSearchDSL)
         {
             Ensure.IsNotNull(elasticSearchDSL, nameof(elasticSearchDSL));

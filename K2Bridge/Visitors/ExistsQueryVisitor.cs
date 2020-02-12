@@ -11,6 +11,7 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        /// <inheritdoc/>
         public void Visit(ExistsClause existsClause)
         {
             Ensure.IsNotNull(existsClause, nameof(existsClause));

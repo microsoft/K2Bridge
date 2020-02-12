@@ -27,6 +27,7 @@ namespace K2Bridge.Models.Request.Queries
         /// </summary>
         public IEnumerable<IQuery> Filter { get; set; }
 
+        /// <inheritdoc/>
         public void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

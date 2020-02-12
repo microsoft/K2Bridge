@@ -17,6 +17,7 @@ namespace K2Bridge.Models.Request.Aggregations
 
         public Dictionary<string, Aggregation> SubAggregations { get; set; }
 
+        /// <inheritdoc/>
         public void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

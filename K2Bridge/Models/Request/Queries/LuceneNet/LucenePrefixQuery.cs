@@ -11,6 +11,7 @@ namespace K2Bridge.Models.Request.Queries.LuceneNet
     /// </summary>
     internal class LucenePrefixQuery : LuceneQueryBase, ILuceneVisitable
     {
+        /// <inheritdoc/>
         public void Accept(ILuceneVisitor visitor)
         {
             visitor.Visit(this);

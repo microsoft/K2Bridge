@@ -26,10 +26,7 @@ namespace K2Bridge.Visitors
         private static readonly List<string> SpecialStrings =
             new List<string> { " ", "AND", "OR", "NOT", "\"", ":", "(", ")", "[", "]", "{", "}", "*", "&&", "+", "-", "|", "?", "\\", "^", "~" };
 
-        /// <summary>
-        /// Accept a query string clause, parse the phrase to a lucene query, and build a Kusto query based on the lucene query.
-        /// </summary>
-        /// <param name="queryStringClause">The query string clause.</param>
+        /// <inheritdoc/>
         public void Visit(QueryStringClause queryStringClause)
         {
             Ensure.IsNotNull(queryStringClause, nameof(queryStringClause));

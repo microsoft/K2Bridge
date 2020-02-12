@@ -14,6 +14,7 @@ namespace K2Bridge.Visitors
     {
         private const string ExceptionMessage = "Average FieldName must have a valid value";
 
+        /// <inheritdoc/>
         public void Visit(AvgAggregation avgAggregation)
         {
             Ensure.IsNotNull(avgAggregation, nameof(avgAggregation));
@@ -22,6 +23,7 @@ namespace K2Bridge.Visitors
             avgAggregation.KustoQL = $"{KustoQLOperators.Avg}({avgAggregation.FieldName})";
         }
 
+        /// <inheritdoc/>
         public void Visit(CardinalityAggregation cardinalityAggregation)
         {
             Ensure.IsNotNull(cardinalityAggregation, nameof(cardinalityAggregation));

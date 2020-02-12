@@ -10,11 +10,12 @@ namespace K2Bridge.Visitors.LuceneNet
     using Lucene.Net.Index;
     using Lucene.Net.Search;
 
-    /// <summary>
+    /// <content>
     /// Defines a visit method for lucene phrase query.
-    /// </summary>
+    /// </content>
     internal partial class LuceneVisitor : ILuceneVisitor
     {
+        /// <inheritdoc/>
         public void Visit(LucenePhraseQuery phraseQueryWrapper)
         {
             VerifyValid(phraseQueryWrapper);

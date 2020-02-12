@@ -17,6 +17,7 @@ namespace K2Bridge.Models.Request.Aggregations
         [JsonProperty("interval")]
         public string Interval { get; set; }
 
+        /// <inheritdoc/>
         public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);

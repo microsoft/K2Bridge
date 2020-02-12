@@ -8,11 +8,12 @@ namespace K2Bridge.Visitors.LuceneNet
     using K2Bridge.Models.Request.Queries.LuceneNet;
     using Lucene.Net.Search;
 
-    /// <summary>
+    /// <content>
     /// Defines a visit method for lucene prefix query.
-    /// </summary>
+    /// </content>
     internal partial class LuceneVisitor : ILuceneVisitor
     {
+        /// <inheritdoc/>
         public void Visit(LucenePrefixQuery prefixQueryWrapper)
         {
             VerifyValid(prefixQueryWrapper);

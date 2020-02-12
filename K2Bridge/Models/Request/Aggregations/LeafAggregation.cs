@@ -12,6 +12,7 @@ namespace K2Bridge.Models.Request.Aggregations
     [JsonConverter(typeof(LeafAggregationConverter))]
     internal abstract class LeafAggregation : KustoQLBase, IVisitable
     {
+        /// <inheritdoc/>
         public abstract void Accept(IVisitor visitor);
     }
 }

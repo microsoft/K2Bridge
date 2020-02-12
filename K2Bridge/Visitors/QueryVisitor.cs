@@ -12,6 +12,7 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        /// <inheritdoc/>
         public void Visit(Query query)
         {
             Ensure.IsNotNull(query, nameof(query));
