@@ -19,6 +19,7 @@ namespace K2Bridge
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Rewrite;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,8 @@ namespace K2Bridge
     [ExcludeFromCodeCoverage]
     public class Startup
     {
+        private const string HealthCheckRoute = "/health";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
@@ -148,7 +151,7 @@ namespace K2Bridge
                 endpoints.MapFallbackToController("Passthrough", "Metadata");
 
                 // Enable middleware to serve from health endpoint
-                endpoints.MapHealthChecks("/health");
+                endpoints.MapHealthChecks(HealthCheckRoute);
             });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
@@ -209,7 +212,10 @@ namespace K2Bridge
             {
                 services.AddApplicationInsightsTelemetry(instrumentationKey.ToString());
                 var telemetryIdentifier = ComputeSHA256(adxUrl);
-                services.AddSingleton<ITelemetryInitializer>(new TelemetryInitializer(telemetryIdentifier));
+
+                services.AddHttpContextAccessor();
+                services.AddSingleton<ITelemetryInitializer>(s =>
+                    new TelemetryInitializer(s.GetRequiredService<IHttpContextAccessor>(), telemetryIdentifier, HealthCheckRoute));
             }
         }
     }
