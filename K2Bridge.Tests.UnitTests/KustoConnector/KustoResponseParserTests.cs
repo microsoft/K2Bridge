@@ -2,13 +2,14 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.KustoConnector
+namespace UnitTests.K2Bridge.KustoConnector
 {
     using System;
     using System.Data;
     using System.Linq;
-    using K2Bridge.KustoConnector;
-    using K2Bridge.Models;
+    using global::K2Bridge.KustoConnector;
+    using global::K2Bridge.Models;
+    using global::K2Bridge.Telemetry;
     using Kusto.Data;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
@@ -19,10 +20,10 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
     [TestFixture]
     public class KustoResponseParserTests
     {
-        private readonly Telemetry.Metrics stubMetric = new Mock<Telemetry.Metrics>().Object;
+        private readonly Metrics stubMetric = new Mock<Metrics>().Object;
 
         [Test]
-        public void ReadHits_KustoResponse_ReturnsAllHitsParsed()
+        public void ReadHits_WithValidKustoResponse_ReturnsAllHitsParsed()
         {
             using var hitsTable = GetTestTable();
 
@@ -58,7 +59,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
         }
 
         [Test]
-        public void ReadHits_NoHitsInKustoResponse_ReturnsEmptyHits()
+        public void ReadHits_WithNoHitsInKustoResponse_ReturnsEmptyHits()
         {
             using var anyTable = GetTestTable();
             anyTable.TableName = "not_hits";
@@ -77,7 +78,7 @@ namespace K2Bridge.Tests.UnitTests.KustoConnector
         }
 
         [Test]
-        public void ReadHits_EmptyHitsInKustoResponse_ReturnsEmptyHits()
+        public void ReadHits_WithEmptyHitsInKustoResponse_ReturnsEmptyHits()
         {
             using var hitsEmptyTable = new DataTable
             {

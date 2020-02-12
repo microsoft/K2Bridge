@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Tests.KustoConnector
+namespace UnitTests.K2Bridge.KustoConnector
 {
     using System;
     using System.Data;
     using System.Threading.Tasks;
-    using K2Bridge.KustoConnector;
-    using K2Bridge.Telemetry;
+    using global::K2Bridge.KustoConnector;
+    using global::K2Bridge.Telemetry;
     using Kusto.Data.Common;
     using NSubstitute;
     using NUnit.Framework;
@@ -22,7 +22,7 @@ namespace Tests.KustoConnector
         private readonly ClientRequestProperties clientRequestProperties = default;
 
         [TestCase]
-        public async Task ExecuteMonitoredQuery_Common_Success()
+        public async Task ExecuteMonitoredQueryAsync_WithValidInput_ReturnsReaderAndTime()
         {
             Metrics metric = Substitute.For<Metrics>();
             metric.AdxQueryDurationMetric = new Histogram(Substitute.For<Prometheus.IHistogram>(), "name", "help");
@@ -34,7 +34,7 @@ namespace Tests.KustoConnector
         }
 
         [TestCase]
-        public void ExecuteMonitoredQuery_NullProvider_Failure()
+        public void ExecuteMonitoredQueryAsync_WithNullClient_ThrowsException()
         {
             Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentNullException>()
@@ -43,7 +43,7 @@ namespace Tests.KustoConnector
         }
 
         [TestCase]
-        public void ExecuteMonitoredQuery_EmptyQuery_Failure()
+        public void ExecuteMonitoredQueryAsync_WithEmptyQuery_ThrowsException()
         {
             Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentException>()
@@ -52,7 +52,7 @@ namespace Tests.KustoConnector
         }
 
         [TestCase]
-        public void ExecuteMonitoredQuery_NullQuery_Failure()
+        public void ExecuteMonitoredQuery_WithNullQuery_ThrowsException()
         {
             Assert.ThrowsAsync(
                 Is.TypeOf<ArgumentNullException>()

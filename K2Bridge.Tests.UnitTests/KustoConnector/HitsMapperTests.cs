@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests
+namespace UnitTests.K2Bridge.KustoConnector
 {
     using System;
     using System.Collections.Generic;
@@ -12,9 +12,9 @@ namespace K2BridgeUnitTests
     using System.IO;
     using FluentAssertions;
     using FluentAssertions.Json;
-    using K2Bridge.KustoConnector;
-    using K2Bridge.Models;
-    using K2Bridge.Models.Response;
+    using global::K2Bridge.KustoConnector;
+    using global::K2Bridge.Models;
+    using global::K2Bridge.Models.Response;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Newtonsoft.Json;
@@ -56,7 +56,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void HitCreate()
+        public void MapRowsToHits_WithEmptyQueryAndSample_ReturnsNullHitsArray()
         {
             // Arrange
             using var table = SampleData();
@@ -66,11 +66,14 @@ namespace K2BridgeUnitTests
                 highlightText: new Dictionary<string, string> { });
 
             // Act
-            MapHitAndAssert(table, query);
+            var hits = ReadHits(table, query);
+
+            // Assert
+            AssertHits(hits);
         }
 
         [Test]
-        public void HitCreateWithHighlights()
+        public void MapRowsToHits_WithHighlight_ReturnsHitsWithHighlight()
         {
             // Arrange
             using var table = SampleData();
@@ -93,30 +96,33 @@ namespace K2BridgeUnitTests
             };
 
             // Act
-            MapHitAndAssert(table, query);
+            var hits = ReadHits(table, query);
+
+            // Assert
+            AssertHits(hits);
         }
 
         [TestCase("return of the pink panther pink", "title:*return*", "@return$ of the pink panther pink")]
-        public void HitCreateWithHighlightsLuceneSpecialCases(string text, string highlightString, string expectedString)
+        public void MapRowsToHits_WithLuceneSpecialCharsHighlight_ReturnsHitsWithHighlight(string text, string highlightString, string expectedString)
         {
             HitCreateWithHighlightsAdvancedCases(text, highlightString, expectedString);
         }
 
         [Test]
-        [TestCase("Robert 'Bob' Kennedy", "Bob", "Robert '@Bob$' Kennedy")]
-        [TestCase("Jean-Jacques", "Jean", "@Jean$-Jacques")]
-        [TestCase("Jean(s)", "Jean", "@Jean$(s)")]
-        [TestCase("Pat: my friend", "Pat", "@Pat$: my friend")]
-        [TestCase("Jeff?", "Jeff", "@Jeff$?")]
-        [TestCase("Jeff", "Jef", null)]
-        [TestCase("Jeff0", "Jeff", null)]
-        [TestCase("Jeff", "JEfF", "@Jeff$")]
-        [TestCase("Jeff", "label1:JEfF", "@Jeff$")]
-        [TestCase("Stella Maria Joe and friends", "Joe AND Stella", "@Stella$ Maria @Joe$ and friends")]
-        [TestCase("jakarta Apache apache lucene apache jakarta", "\"jakarta apache\" NOT \"Apache Lucene\"", "@jakarta$ @Apache$ apache lucene apache jakarta")]
-        [TestCase("jakarta Apache", "jakarta^4", "@jakarta$ Apache")]
-        [TestCase("Jakarta website", "(jakarta OR apache) AND website", "@Jakarta$ @website$")]
-        [TestCase("return of the pink panther pink", "title:(+return +\"pink panther\")", "@return$ of the @pink$ @panther$ pink")]
+        [TestCase("Robert 'Bob' Kennedy", "Bob", "Robert '@Bob$' Kennedy", TestName = "MapRowsToHits_HighlightSingleTerm_ReturnsValidHighlight")]
+        [TestCase("Jean-Jacques", "Jean", "@Jean$-Jacques", TestName = "MapRowsToHits_HighlightWithHyphen_ReturnsValidHighlight")]
+        [TestCase("Jean(s)", "Jean", "@Jean$(s)", TestName = "MapRowsToHits_HighlightWithParentheses_ReturnsValidHighlight")]
+        [TestCase("Pat: my friend", "Pat", "@Pat$: my friend", TestName = "MapRowsToHits_HighlightWithColon_ReturnsValidHighlight")]
+        [TestCase("Jeff?", "Jeff", "@Jeff$?", TestName = "MapRowsToHits_HighlightWithQuestionMark_ReturnsValidHighlight")]
+        [TestCase("Jeff", "Jef", null, TestName = "MapRowsToHits_HighlightWithSubstring_DoesNotHighlight")]
+        [TestCase("Jeff0", "Jeff", null, TestName = "MapRowsToHits_HighlightWithSubstringSpecialChar_DoesNotHighlight")]
+        [TestCase("Jeff", "JEfF", "@Jeff$", TestName = "MapRowsToHits_HighlightCaseInsensitive_ReturnsValidHighlight")]
+        [TestCase("Jeff", "label1:JEfF", "@Jeff$", TestName = "MapRowsToHits_HighlightWithFieldName_ReturnsValidHighlight")]
+        [TestCase("Stella Maria Joe and friends", "Joe AND Stella", "@Stella$ Maria @Joe$ and friends", TestName = "MapRowsToHits_HighlightWithLuceneAnd_ReturnsValidHighlight")]
+        [TestCase("jakarta Apache apache lucene apache jakarta", "\"jakarta apache\" NOT \"Apache Lucene\"", "@jakarta$ @Apache$ apache lucene apache jakarta", TestName = "MapRowsToHits_HighlightWithLuceneNot_ReturnsValidHighlight")]
+        [TestCase("jakarta Apache", "jakarta^4", "@jakarta$ Apache", TestName = "MapRowsToHits_HighlightWithCtrl_ReturnsValidHighlight")]
+        [TestCase("Jakarta website", "(jakarta OR apache) AND website", "@Jakarta$ @website$", TestName = "MapRowsToHits_HighlightWithLuceneAndOr_ReturnsValidHighlight")]
+        [TestCase("return of the pink panther pink", "title:(+return +\"pink panther\")", "@return$ of the @pink$ @panther$ pink", TestName = "MapRowsToHits_HighlightWithLuceneAndFieldName_ReturnsValidHighlight")]
 
         // TODO Elasticsearch treats ":", "'", "." specially, this is not implemented
         // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1477
@@ -151,44 +157,17 @@ namespace K2BridgeUnitTests
             }
 
             // Act
-            MapHitAndAssert(table, query);
-        }
-
-        [Test]
-        public void HitCreateWithSortAndHighlights()
-        {
-            // Arrange
-            using var table = SampleData();
-            var query = new QueryData(
-                "myKQL",
-                "myIndex",
-                sortFields: new List<string> { "label1" },
-                highlightText: new Dictionary<string, string> {
-                      { "*", "boxes" },
-                });
-            query.HighlightPreTag = "Foo";
-            query.HighlightPostTag = "Bar";
+            var hits = ReadHits(table, query);
 
             // Assert
-            expected[0]["sort"] = JToken.FromObject(new object[] { "boxes" });
-
-            var highlight = JToken.FromObject(new string[] { "FooboxesBar" });
-            expected[0]["highlight"] = new JObject
-            {
-                ["label1"] = highlight,
-                ["label2"] = highlight,
-                ["label3"] = JToken.FromObject(new string[] { "FooboxesBar of FooboxesBar" }),
-            };
-
-            // Act
-            MapHitAndAssert(table, query);
+            AssertHits(hits);
         }
 
         [Test]
         [TestCase("label1", "boxes")]
         [TestCase("instant", 1483362245060)]
         [TestCase("value", 234)]
-        public void HitCreateWithSort(string field, object expectedValue)
+        public void MapRowsToHits_WithSort_ReturnsHitsWithSort(string field, object expectedValue)
         {
             // Arrange
             using var table = SampleData();
@@ -217,18 +196,21 @@ namespace K2BridgeUnitTests
             query.HighlightPostTag = "Bar";
 
             // Act
-            MapHitAndAssert(table, query);
+            var hits = ReadHits(table, query);
+
+            // Assert
+            AssertHits(hits);
         }
 
         [Test]
-        public void Create_SourceWithSByte_ConvertsToBoolean()
+        public void MapRowsToHits_WithSByte_ReturnsHitsWithBoolean()
         {
             using var hitsTable = HitTypeTestTable(Type.GetType("System.SByte"), 1);
             MapHitTypeAndAssert(hitsTable, defaultQuery, new JValue(true));
         }
 
         [Test]
-        public void Create_SourceWithSqlDecimal_ConvertsToDouble()
+        public void MapRowsToHits_WithSqlDecimal_ReturnsHitsWithDouble()
         {
             var value = new SqlDecimal(1.6);
             using var hitsTable = HitTypeTestTable(value.GetType(), value);
@@ -237,7 +219,7 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void Create_SourceWithNullSqlDecimal_ConvertsToNaNDouble()
+        public void MapRowsToHits_WithNullSqlDecimal_ReturnsHitsWithNanDouble()
         {
             var value = new SqlDecimal(0);
             using var hitsTable = HitTypeTestTable(value.GetType(), SqlDecimal.Null);
@@ -245,14 +227,14 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void Create_SourceWithNullGuid_ConvertsToNull()
+        public void MapRowsToHits_WithNullGuid_ReturnsHitsWithNull()
         {
             using var hitsTable = HitTypeTestTable(Type.GetType("System.Guid"), DBNull.Value);
             MapHitTypeAndAssert(hitsTable, defaultQuery, JValue.CreateNull());
         }
 
         [Test]
-        public void Create_SourceWithGuid_ConvertsToString()
+        public void MapRowsToHits_WithGuid_ReturnsHitsWithString()
         {
             var value = new Guid("74be27de-1e4e-49d9-b579-fe0b331d3642");
             using var hitsTable = HitTypeTestTable(Type.GetType("System.Guid"), value);
@@ -260,14 +242,14 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void Create_SourceWithNullTimespan_ConvertsToNull()
+        public void MapRowsToHits_WithNullTimespan_ReturnsHitsWithNull()
         {
             using var hitsTable = HitTypeTestTable(Type.GetType("System.TimeSpan"), DBNull.Value);
             MapHitTypeAndAssert(hitsTable, defaultQuery, JValue.CreateNull());
         }
 
         [Test]
-        public void Create_SourceWithTimespan_ConvertsToISO8601String()
+        public void MapRowsToHits_WithTimespan_ReturnsHitsWithISO8601String()
         {
             var value = new TimeSpan(20000087879);
             using var hitsTable = HitTypeTestTable(Type.GetType("System.TimeSpan"), value);
@@ -276,14 +258,14 @@ namespace K2BridgeUnitTests
         }
 
         [Test]
-        public void Create_SourceWithNullDateTime_ConvertsToNull()
+        public void MapRowsToHits_WithNullDateTime_ReturnsHitsWithNull()
         {
             using DataTable hitsTable = HitTypeTestTable(Type.GetType("System.DateTime"), DBNull.Value);
             MapHitTypeAndAssert(hitsTable, defaultQuery, JValue.CreateNull());
         }
 
         [Test]
-        public void Create_SourceWithDateTime_ConvertsToDateTimeString()
+        public void MapRowsToHits_WithDateTime_ReturnsHitsWithDateTimeString()
         {
             var value = DateTime.Now.ToUniversalTime();
             using var hitsTable = HitTypeTestTable(Type.GetType("System.DateTime"), value);
@@ -330,11 +312,15 @@ namespace K2BridgeUnitTests
             return resTable;
         }
 
-        private void MapHitAndAssert(DataTable table, QueryData query)
+        private IEnumerable<Hit> ReadHits(DataTable table, QueryData query)
         {
             var logger = new Mock<ILogger>();
             using var highlighter = new LuceneHighlighter(query, logger.Object);
-            var hits = HitsMapper.MapRowsToHits(table.Rows, query, highlighter);
+            return HitsMapper.MapRowsToHits(table.Rows, query, highlighter);
+        }
+
+        private void AssertHits(IEnumerable<Hit> hits)
+        {
             var hitl = new List<Hit>(hits);
             Assert.AreEqual(1, hitl.Count);
 

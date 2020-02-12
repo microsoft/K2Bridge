@@ -2,51 +2,52 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Tests.KustoConnector
+namespace UnitTests.K2Bridge.KustoConnector
 {
-    using K2Bridge.Models;
+    using System;
+    using global::K2Bridge.Models;
     using NUnit.Framework;
 
     [TestFixture]
     public class KustoDatabaseTableNamesTests
     {
-        private static object[] badInputCases = {
-            new string[] { string.Empty },
-            new string[] { null },
+        private static readonly object[] BadInputTestCases = {
+            new TestCaseData(string.Empty) { TestName = "FromElasticIndexName_WithEmptyString_ThrowsException" },
+            new TestCaseData(null) { TestName = "FromElasticIndexName_WithNullString_ThrowsException" },
         };
 
-        private static object[] noColonCases = {
-            new string[] { "table.name" },
-            new string[] { "tableName" },
+        private static readonly object[] NoColonTestCases = {
+            new TestCaseData("table.name") { TestName = "FromElasticIndexName_WithoutDatabaseNameWithDot_ReturnsValidResult" },
+            new TestCaseData("tableName") { TestName = "FromElasticIndexName_WithoutDatabaseName_ReturnsValidResult" },
         };
 
-        private static object[] colonEmptyStringCases = {
-            new TestCaseData(":").Returns((string.Empty, string.Empty)),
-            new TestCaseData("database:").Returns(("database", string.Empty)),
-            new TestCaseData(":table").Returns((string.Empty, "table")),
+        private static readonly object[] ColonEmptyStringTestCases = {
+            new TestCaseData(":") { TestName = "FromElasticIndexName_WithEmptyDatabaseAndTableNames_ReturnsEmptyNames" }.Returns((string.Empty, string.Empty)),
+            new TestCaseData("database:") { TestName = "FromElasticIndexName_WithEmptyDatabase_ReturnsEmptyDatabase" }.Returns(("database", string.Empty)),
+            new TestCaseData(":table") { TestName = "FromElasticIndexName_WithEmptyTableName_ReturnsEmptyTableName" }.Returns((string.Empty, "table")),
         };
 
-        private static object[] correctStringCases = {
-            new TestCaseData("database:tablename").Returns(("database", "tablename")),
-            new TestCaseData("database:table:name").Returns(("database", "table:name")), // multiple colons output as database name
+        private static readonly object[] CorrectStringTestCases = {
+            new TestCaseData("database:tablename") { TestName = "FromElasticIndexName_WithDatabaseAndTableNames_ReturnsNames" }.Returns(("database", "tablename")),
+            new TestCaseData("database:table:name") { TestName = "FromElasticIndexName_WithMultipleColons_ReturnsFirstTwo" }.Returns(("database", "table:name")), // multiple colons output as database name
         };
 
-        private static object[] defaultDatabaseTests = {
-            new TestCaseData("tablename", "database").Returns(("database", "tablename")),
-            new TestCaseData("database:tablename", "notdatabase").Returns(("database", "tablename")),
-            new TestCaseData("database:tablename", string.Empty).Returns(("database", "tablename")),
-            new TestCaseData(":tablename", string.Empty).Returns((string.Empty, "tablename")),
-            new TestCaseData(":tablename", "notdatabase").Returns((string.Empty, "tablename")),
+        private static readonly object[] DefaultDatabaseTestCases = {
+            new TestCaseData("tablename", "database") { TestName = "FromElasticIndexName_WithNoColon_ReturnsDefaultDatabase" }.Returns(("database", "tablename")),
+            new TestCaseData("database:tablename", "notdatabase") { TestName = "FromElasticIndexName_WithColon_ReturnsQueryDatabase" }.Returns(("database", "tablename")),
+            new TestCaseData("database:tablename", string.Empty) { TestName = "FromElasticIndexName_WithColonAndEmptyDefault_ReturnsQueryDatabase" }.Returns(("database", "tablename")),
+            new TestCaseData(":tablename", string.Empty) { TestName = "FromElasticIndexName_WithEmptyDatabaseAndColonAndEmptyDefault_ReturnsEmptyQueryDatabase" }.Returns((string.Empty, "tablename")),
+            new TestCaseData(":tablename", "notdatabase") { TestName = "FromElasticIndexName_WithEmptyDatabaseAndColon_ReturnsEmptyQueryDatabase" }.Returns((string.Empty, "tablename")),
         };
 
-        [TestCaseSource("badInputCases")]
+        [TestCaseSource(nameof(BadInputTestCases))]
         public void ExceptionOnEmptyInputIndexName(string indexName)
         {
             try
             {
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, string.Empty);
             }
-            catch
+            catch (ArgumentException)
             {
                 return;
             }
@@ -54,26 +55,26 @@ namespace Tests.KustoConnector
             Assert.Fail($"can not retrieve kusto database and table names for malformed indexName: {indexName}");
         }
 
-        [TestCaseSource("noColonCases")]
+        [TestCaseSource(nameof(NoColonTestCases))]
         public void HanldesNoColonInInputIndexName(string indexName)
         {
             var (databaseName, _) = KustoDatabaseTableNames.FromElasticIndexName(indexName, string.Empty);
             Assert.AreEqual(string.Empty, databaseName, $"database name should be empty for input {indexName}");
         }
 
-        [TestCaseSource("colonEmptyStringCases")]
+        [TestCaseSource(nameof(ColonEmptyStringTestCases))]
         public (string, string) HanldesColonEmptyStringInInputIndexName(string indexName)
         {
             return KustoDatabaseTableNames.FromElasticIndexName(indexName, string.Empty);
         }
 
-        [TestCaseSource("correctStringCases")]
+        [TestCaseSource(nameof(CorrectStringTestCases))]
         public (string, string) SetsTableNameAndDatabaseNameOnCorrectInputIndexName(string indexName)
         {
             return KustoDatabaseTableNames.FromElasticIndexName(indexName, string.Empty);
         }
 
-        [TestCaseSource("defaultDatabaseTests")]
+        [TestCaseSource(nameof(DefaultDatabaseTestCases))]
         public (string, string) SetsDefaultDatabaseOnCorrectInputIndexName(string indexName, string defaultTableName)
         {
             return KustoDatabaseTableNames.FromElasticIndexName(indexName, defaultTableName);

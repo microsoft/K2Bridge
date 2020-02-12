@@ -2,18 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.DAL
+namespace UnitTests.K2Bridge.DAL
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Threading.Tasks;
     using FluentAssertions.Json;
+    using global::K2Bridge.DAL;
+    using global::K2Bridge.KustoConnector;
+    using global::K2Bridge.Models;
+    using global::K2Bridge.Models.Response;
     using global::Tests;
-    using K2Bridge.DAL;
-    using K2Bridge.KustoConnector;
-    using K2Bridge.Models;
-    using K2Bridge.Models.Response;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Newtonsoft.Json.Linq;
@@ -50,7 +50,7 @@ namespace K2Bridge.Tests.UnitTests.DAL
         }
 
         [Test]
-        public async Task When_GetFieldCaps_With_ValidIndex_Return_FieldCaps()
+        public async Task GetFieldCaps_WithValidIndex_ReturnFieldCaps()
         {
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
                 new Dictionary<string, object> {
@@ -138,7 +138,7 @@ namespace K2Bridge.Tests.UnitTests.DAL
         }
 
         [Test]
-        public async Task When_GetFieldCaps_With_ValidFunction_Return_FieldCaps()
+        public async Task GetFieldCaps_WithValidFunction_ReturnFieldCaps()
         {
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
                 new Dictionary<string, object> {
@@ -185,7 +185,7 @@ namespace K2Bridge.Tests.UnitTests.DAL
         }
 
         [Test]
-        public async Task When_GetIndexList_With_ValidIndex_Return_IndexList()
+        public async Task GetIndexList_WithValidIndex_ReturnIndexList()
         {
             using IDataReader stubIndexReader = new TestDataReader(
                 new List<Dictionary<string, object>>() {
@@ -215,7 +215,7 @@ namespace K2Bridge.Tests.UnitTests.DAL
         }
 
         [Test]
-        public async Task When_GetIndexList_With_ValidFunction_Return_IndexList()
+        public async Task GetIndexList_WithValidFunction_ReturnIndexList()
         {
             using IDataReader stubIndexReader = new TestDataReader(
                 new List<Dictionary<string, object>>() {
@@ -244,7 +244,7 @@ namespace K2Bridge.Tests.UnitTests.DAL
         }
 
         [Test]
-        public async Task When_GetIndexList_With_ValidIndexAndValidFunction_Return_Both()
+        public async Task GetIndexList_ValidIndexAndValidFunction_ReturnBoth()
         {
             using IDataReader stubIndexReader1 = new TestDataReader(
                 new List<Dictionary<string, object>>() {
@@ -278,7 +278,7 @@ namespace K2Bridge.Tests.UnitTests.DAL
         }
 
         [TestCaseSource(nameof(IndexNames))]
-        public async Task DatabaseAndTableNamesAreSetOnKustoQuery(string indexName, string databaseName, string tableName)
+        public async Task GetIndexList_WithValidInput_ReadsQueryExecutorValidDatabase(string indexName, string databaseName, string tableName)
         {
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var mockDetails = new Mock<IConnectionDetails>();
