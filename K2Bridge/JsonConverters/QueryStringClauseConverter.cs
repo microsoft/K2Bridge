@@ -23,11 +23,16 @@ namespace K2Bridge.JsonConverters
         {
             JToken jt = JToken.Load(reader);
 
+            // we are setting the 'analyze_wildcard' and 'default_field' to defaults
+            // as described here:
+            // https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-top-level-params
+            var wildcard = jt.First["analyze_wildcard"];
+            var defaultWildcard = jt.First["default_field"];
             var obj = new QueryStringClause
             {
                 Phrase = (string)jt.First["query"],
-                Wildcard = (bool)jt.First["analyze_wildcard"],
-                Default = (string)jt.First["default_field"],
+                Wildcard = (wildcard != null) ? (bool)wildcard : false,
+                Default = (defaultWildcard != null) ? (string)defaultWildcard : "*",
             };
 
             return obj;
