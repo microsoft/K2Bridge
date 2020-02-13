@@ -2,40 +2,20 @@
 
 ## Requirements
 
-* Helm 3
-* Docker (or Azure CLI if building remotely on Azure Container Registry)
-* An Azure Data Explorer instance
-* An Azure AD service principal authorized to view data in Kusto
+* [Helm 3](https://github.com/helm/helm#install)
+* AKS cluster or any other Kubernetes cluster (version 1.14 or newer - tested and verified up to version 1.16)
+* An Azure Data Explorer (ADX) instance
+    * You will need the ADX cluster URL and a database name
+* An Azure AD service principal authorized to view data in ADX
+    * You will need the ClientID and Secret
+    * Important note: A service principal with 'Viewer' permission is enough. It is highly discouraged to use higher permissions (read, admin, etc...)
+* [Optional] - Docker for image build
 
-## Build the Docker container
-
-Define arguments:
-
-```sh
-CONTAINER_NAME=<CONTAINER_NAME>
-REGISTRY_NAME=<YOUR_AZURE_CONTAINER_REGISTRY_NAME>
-REPOSITORY_NAME=$REGISTRY_NAME.azurecr.io
-
-# if pulling from private ACR
-IMAGE_PULL_SECRET_NAME=<YOUR ACR PULL SECRET NAME>
-```
-
-You can build the container on a local Docker installation:
-
-```sh
-docker build -t $CONTAINER_NAME .
-docker push $REPOSITORY_NAME/$CONTAINER_NAME
-```
-
-Or you can build the container remotely on Azure Container Registry:
-
-```sh
-az acr build -r $REGISTRY_NAME -t $CONTAINER_NAME .
-```
+If you need to build the image, please follow the [build instructions](./build.md).
 
 ## Run on Azure Kubernetes Service (AKS)
 
-1. Ensure your AKS instance can [pull images from ACR](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration).
+1. [If using a private ACR] - Ensure your AKS instance can [pull images from ACR](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration).
 
     * Option A: Azure CLI (an owner role on the ACR is required):
 
@@ -46,23 +26,21 @@ az acr build -r $REGISTRY_NAME -t $CONTAINER_NAME .
     * Option B: Kubernetes Secrets
 
         ```sh
+        # if pulling from private ACR
+        IMAGE_PULL_SECRET_NAME=<YOUR ACR PULL SECRET NAME>
+
         kubectl create secret docker-registry $IMAGE_PULL_SECRET_NAME --docker-server <acrname>.azurecr.io --docker-email <email> --docker-username <client id> --docker-password <client password>
         ```
 
 1. Download the required Helm charts
 
-    * If the k2 chart is fetched from acr:
+    * The chart is located under the [charts](./charts) directory. Clone the repository to get the chart.
 
-        ```sh
-        az acr helm repo add -n "<acr name>"
-        ```
-
-    * And then the Elasticsearch dependency (and k2 chart):
+    * Add the Elasticsearch dependency to Helm:
 
         ```sh
         helm repo add elastic https://helm.elastic.co
         helm repo update
-        helm dependency update charts/k2bridge
         ```
 
 1. Deploy
@@ -70,31 +48,28 @@ az acr build -r $REGISTRY_NAME -t $CONTAINER_NAME .
     * Set a few variables with the correct values for your environment:
 
         ```sh
-        ADX_INSTANCE=[YOUR_ADX_INSTANCE_NAME]
+        ADX_URL=[YOUR_ADX_CLUSTER_URL e.g. https://mycluster.westeurope.kusto.windows.net]
         ADX_DATABASE=[YOUR_ADX_DATABASE_NAME]
         ADX_CLIENT_ID=[SERVICE_PRINCIPAL_CLIENT_ID]
         ADX_CLIENT_SECRET=[SERVICE_PRINCIPAL_CLIENT_SECRET]
         ADX_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
-        REGION=[ADX region]
         ```
 
-    * Option A: using a local chart
-
+        Optional - Enable ApplicationInsights telemetry
         ```sh
-        helm install k2bridge charts/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
+        APPLICATION_INSIGHTS_KEY=[INSTRUMENTATION_KEY]
+        COLLECT_TELEMETRY=true
         ```
 
-    * Option B: using a remote chart
-
         ```sh
-        helm install k2bridge $REGISTRY_NAME/k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="https://$ADX_INSTANCE.$REGION.kusto.windows.net" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"]
+        helm install k2bridge charts/k2bridge -n k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"] [--set settings.instrumentationKey="$APPLICATION_INSIGHTS_KEY" --set settings.collectTelemetry=$COLLECT_TELEMETRY]
         ```
 
     * Deploy Kibana
     The command output will suggest a helm command to run to deploy Kibana, similar to:
 
         ```sh
-        helm install kibana elastic/kibana --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.5 --set elasticsearchHosts=http://k2bridge:8080
+        helm install kibana elastic/kibana -n k2bridge --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.5 --set elasticsearchHosts=http://k2bridge:8080
         ```
 
 1. Configure index-patterns
