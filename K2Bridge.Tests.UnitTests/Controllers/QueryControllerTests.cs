@@ -109,6 +109,9 @@ namespace UnitTests.K2Bridge.Controllers
                 },
             };
 
+            const string correlationIdHeader = "x-correlation-id";
+            uat.Request.Headers[correlationIdHeader] = Guid.NewGuid().ToString();
+
             // Act
             await uat.SearchInternalAsync(true, true, ValidQueryContent);
 
@@ -143,6 +146,9 @@ namespace UnitTests.K2Bridge.Controllers
             var mockQueryExecutor = new Mock<IQueryExecutor>();
 
             var httpContext = new DefaultHttpContext();
+
+            const string correlationIdHeader = "x-correlation-id";
+            httpContext.Request.Headers[correlationIdHeader] = Guid.NewGuid().ToString();
             httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
             // Controller needs a controller context
@@ -207,6 +213,7 @@ namespace UnitTests.K2Bridge.Controllers
             mockResponseParser.Setup(parser => parser.Parse(It.IsAny<IDataReader>(), It.IsAny<QueryData>(), It.IsAny<TimeSpan>())).Throws(new Exception("test"));
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var httpContext = new DefaultHttpContext();
+
             httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
 
             // Controller needs a controller context
@@ -214,6 +221,7 @@ namespace UnitTests.K2Bridge.Controllers
             {
                 HttpContext = httpContext,
             };
+
             var controller = new QueryController(
                 mockQueryExecutor.Object,
                 mockTranslator.Object,
@@ -275,13 +283,18 @@ namespace UnitTests.K2Bridge.Controllers
                     It.IsAny<TimeSpan>()))
                 .Returns(new ElasticResponse());
 
-            return new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object)
+            var ctr = new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object)
             {
                 ControllerContext = new ControllerContext
                 {
                     HttpContext = new DefaultHttpContext(),
                 },
             };
+
+            const string correlationIdHeader = "x-correlation-id";
+            ctr.Request.Headers[correlationIdHeader] = Guid.NewGuid().ToString();
+
+            return ctr;
         }
     }
 }

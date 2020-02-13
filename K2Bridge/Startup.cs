@@ -118,6 +118,8 @@ namespace K2Bridge
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseMiddleware<CorrelationIdHeaderMiddleware>();
+
             // detailed request logging
             app.UseSerilogRequestLogging();
 

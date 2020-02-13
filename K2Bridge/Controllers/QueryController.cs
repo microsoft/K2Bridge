@@ -113,9 +113,11 @@ namespace K2Bridge.Controllers
             var translatedQuery = translator.Translate(header, query);
             logger.LogDebug($"Translated query:\n{translatedQuery.QueryCommandText}");
 
-            var requestContext = new RequestContext()
+            const string correlationIdHeader = "x-correlation-id";
+            var requestContext = new RequestContext
             {
-                CorrelationId = HttpContext.Request.Headers.GetCorrelationIdHeaderOrGenerateNew(),
+                // Header is added in CorrelationIdMiddleware
+                CorrelationId = Guid.Parse(HttpContext.Request.Headers[correlationIdHeader]),
             };
 
             // Execute Query

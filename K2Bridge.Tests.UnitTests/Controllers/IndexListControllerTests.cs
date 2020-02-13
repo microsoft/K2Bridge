@@ -4,6 +4,7 @@
 
 namespace UnitTests.K2Bridge.Controllers
 {
+    using System;
     using System.Threading.Tasks;
     using global::K2Bridge.Controllers;
     using global::K2Bridge.DAL;
@@ -40,13 +41,18 @@ namespace UnitTests.K2Bridge.Controllers
             mockDAL.Setup(kusto => kusto.GetIndexListAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(Task.FromResult(new IndexListResponseElement() { }));
             var mockLogger = new Mock<ILogger<IndexListController>>();
 
-            return new IndexListController(mockDAL.Object, mockLogger.Object)
+            var ctr = new IndexListController(mockDAL.Object, mockLogger.Object)
             {
                 ControllerContext = new ControllerContext()
                 {
                     HttpContext = new DefaultHttpContext(),
                 },
             };
+
+            const string correlationIdHeader = "x-correlation-id";
+            ctr.HttpContext.Request.Headers[correlationIdHeader] = Guid.NewGuid().ToString();
+
+            return ctr;
         }
     }
 }

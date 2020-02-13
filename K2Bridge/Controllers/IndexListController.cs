@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Controllers
 {
+    using System;
     using System.Threading.Tasks;
     using K2Bridge.DAL;
     using K2Bridge.Models;
@@ -42,9 +43,11 @@ namespace K2Bridge.Controllers
         public async Task<IActionResult> Process(string indexName)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            const string correlationIdHeader = "x-correlation-id";
             var requestContext = new RequestContext
             {
-                CorrelationId = HttpContext.Request.Headers.GetCorrelationIdHeaderOrGenerateNew(),
+                // Header is added in CorrelationIdMiddleware
+                CorrelationId = Guid.Parse(HttpContext.Request.Headers[correlationIdHeader]),
             };
 
             var response = await Kusto.GetIndexListAsync(indexName, requestContext);
