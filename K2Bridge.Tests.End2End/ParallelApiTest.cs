@@ -24,7 +24,7 @@ namespace K2Bridge.Tests.End2End
         /// </summary>
         [Test]
         [Description("Cluster general info (at API root URL)")]
-        public void ClusterInfo_Equivalent()
+        public void CompareElasticKusto_WhenClusterInfo_ResponsesAreEquivalent()
         {
             var es = ESClient().ClusterInfo();
             var k2 = K2Client().ClusterInfo();
@@ -33,21 +33,21 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana aggregation query returning zero results")]
-        public void MSearch_ZeroResults_Equivalent()
+        public void CompareElasticKusto_WhenMSearchZeroResults_ResponsesAreEquivalent()
         {
             ParallelQuery($"{FLIGHTSDIR}/MSearch_ZeroResults_Equivalent.json", minResults: 0);
         }
 
         [Test]
         [Description("/_msearch Kibana aggregation query returning two results")]
-        public void MSearch_TwoResults_Equivalent()
+        public void CompareElasticKusto_WhenMSearchTwoResults_ResponsesAreEquivalent()
         {
             ParallelQuery($"{FLIGHTSDIR}/MSearch_TwoResults_Equivalent.json");
         }
 
         [Test]
         [Description("/_msearch Kibana aggregation query with text filter")]
-        public void MSearch_TextFilter_Equivalent()
+        public void CompareElasticKusto_WhenMSearchTextFilter_ResponsesAreEquivalent()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_TextFilter_Equivalent.json");
@@ -55,7 +55,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana query with text substring")]
-        public void MSearch_TextContains_Equivalent()
+        public void CompareElasticKusto_WhenMSearchContains_ResponsesAreEquivalent()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_Text_Contains.json");
@@ -63,7 +63,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana query with quotation text substring")]
-        public void MSearch_Quotation_Equivalent()
+        public void CompareElasticKusto_WhenMSearchQuotations_ResponsesAreEquivalent()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_Quotation.json");
@@ -71,7 +71,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana query with numeric field")]
-        public void MSearch_Numeric_Equivalent_WithoutHighlight()
+        public void CompareElasticKusto_WhenMSearchNumeric_ResponsesAreEquivalentWithoutHighlight()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_Numeric.json", validateHighlight: false);
@@ -82,7 +82,7 @@ namespace K2Bridge.Tests.End2End
         [Test]
         [Description("/_msearch Kibana query with numeric field")]
         [Ignore("Bug#1695")]
-        public void MSearch_Numeric_Equivalent_WithHighlight()
+        public void CompareElasticKusto_WhenMSearchNumeric_ResponsesAreEquivalentWithHighlight()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_Numeric.json");
@@ -90,7 +90,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana query with text multiple words substring")]
-        public void MSearch_TextContainsMultiple_Equivalent()
+        public void CompareElasticKusto_WhenMSearchTextContainsMultiple_ResponsesAreEquivalent()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_Text_Contains_Multiple.json");
@@ -98,7 +98,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana aggregation query with text (includes prefix) filter")]
-        public void MSearch_TextFilter_Prefix_Equivalent()
+        public void CompareElasticKusto_WhenMSearchTextFilterPrefix_ResponsesAreEquivalent()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_TextFilter_Prefix_Equivalent.json");
@@ -106,7 +106,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana aggregation query with text (includes wildcard) filter")]
-        public void MSearch_TextFilter_Wildcard_Equivalent()
+        public void CompareElasticKusto_WhenMSearchTextFilterWildcard_ResponsesAreEquivalent()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_TextFilter_Wildcard_Equivalent.json");
@@ -114,7 +114,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana aggregation query with text (includes specific field) filter")]
-        public void MSearch_TextFilter_FieldSpecific_Equivalent_WithoutHighlight()
+        public void CompareElasticKusto_WhenMSearchTextFilterFieldSpecificEquivilent_ResponsesAreEquivalentWithoutHighlight()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_TextFilter_FieldSpecific_Equivalent.json", validateHighlight: false);
@@ -125,7 +125,7 @@ namespace K2Bridge.Tests.End2End
         [Test]
         [Description("/_msearch Kibana aggregation query with text (includes specific field) filter")]
         [Ignore("Bug#1681")]
-        public void MSearch_TextFilter_FieldSpecific_Equivalent_WithHighlight()
+        public void CompareElasticKusto_WhenMSearchTextFilterFieldSpecificEquivilent_ResponsesAreEquivalentWithHighlight()
         {
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_TextFilter_FieldSpecific_Equivalent.json", validateHighlight: false);
@@ -141,7 +141,7 @@ namespace K2Bridge.Tests.End2End
         // TODO: fix numeric highlights and enable test
         // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1695
         [Ignore("Requires fixing issues 1479 and 1681 and 1695")]
-        public void MSearch_MultipleFilters_Equivalent()
+        public void CompareElasticKusto_WhenMSearchMultipleFilters_ResponsesAreEquivalent()
         {
             ParallelQuery($"{FLIGHTSDIR}/MSearch_MultipleFilters_Equivalent.json");
         }
@@ -151,14 +151,14 @@ namespace K2Bridge.Tests.End2End
         [TestCase("MSearch_Sort_String.json")]
         [TestCase("MSearch_Sort_Double.json")]
         [Description("/_msearch sort attribute with various data types")]
-        public void MSearch_Sort_Equivalent(string queryFileName)
+        public void CompareElasticKusto_WhenMSearchSort_ResponsesAreEquivalent(string queryFileName)
         {
             ParallelQuery($"{FLIGHTSDIR}/{queryFileName}");
         }
 
         [Test]
         [Description("/_search index list Kibana query")]
-        public void Search_Equivalent()
+        public void CompareElasticKusto_WhenSearch_ResponsesAreEquivalent()
         {
             var es = ESClient().Search();
             var k2 = K2Client().Search($"{KustoDatabase()}:{INDEX}");
@@ -167,7 +167,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/{index}/_field_caps field capabilities Kibana query")]
-        public void FieldCaps_Equivalent_WithoutDatabaseName()
+        public void CompareElasticKusto_WhenFieldCapsWithoutDatabaseName_ResponsesAreEquivalent()
         {
             var es = ESClient().FieldCaps(INDEX);
             var k2 = K2Client().FieldCaps(INDEX);
@@ -176,7 +176,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/{index}/_field_caps field capabilities Kibana query")]
-        public void FieldCaps_Equivalent_WithDatabaseName()
+        public void CompareElasticKusto_WhenFieldCapsWithDatabaseName_ResponsesAreEquivalent()
         {
             var es = ESClient().FieldCaps(INDEX);
             var k2 = K2Client().FieldCaps($"{KustoDatabase()}%3A{INDEX}");

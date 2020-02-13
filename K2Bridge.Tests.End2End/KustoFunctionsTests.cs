@@ -11,7 +11,7 @@ namespace K2Bridge.Tests.End2End
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
 
-    public class KustoFunctionsTest : KustoTestBase
+    public class KustoFunctionsTests : KustoTestBase
     {
         private static ICslAdminProvider kustoAdminClient;
 
@@ -34,7 +34,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("SearchAsync (IndexList) returns functions")]
-        public async Task Function_Search()
+        public async Task Search_WithFunction_ReturnsResponseWithFunctions()
         {
             var indexList = await K2Client().Search();
             var match = indexList.SelectToken($"aggregations.indices.buckets[?(@.key == '{functionFullName}')]");
@@ -43,7 +43,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("FieldCaps returns fields for functions")]
-        public async Task Function_FieldCaps()
+        public async Task FieldCaps_WithFunction_ReturnsResponseWithFunctions()
         {
             var fieldCaps = await K2Client().FieldCaps(functionFullName);
             var expected = JObject.Parse(@"{
@@ -76,7 +76,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("FieldCaps returns fields for functions")]
-        public async Task Function_FieldCaps_ReturnsAllTypes()
+        public async Task FieldCaps_WithFunction_ReturnsResponseWithAllTypes()
         {
             var fieldCaps = await K2Client().FieldCaps(typesIndexFullName);
             var expected = JObject.Parse(@"{
@@ -158,7 +158,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("MSearch returns data from functions")]
-        public async Task Function_MSearch()
+        public async Task MSearch_WithFunction_ReturnsExpectedResponse()
         {
             var result = await K2Client().MSearch(functionFullName, $"{FLIGHTSDIR}/MSearch_TwoResults_Equivalent.json");
             var totalHits = result.SelectToken("responses[0].hits.total");

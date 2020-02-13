@@ -15,7 +15,7 @@ namespace K2Bridge.Tests.End2End
     {
         [Test]
         [Description("Expose exception counters")]
-        public async Task When_ExceptionLogged_Then_IncrementExceptionCounter()
+        public async Task PrometheusTelemetry_WhenExceptionLogged_ThenIncrementExceptionCounter()
         {
             using var request1 = new HttpRequestMessage(HttpMethod.Post, "_msearch");
             var payload = new StringBuilder();
@@ -43,7 +43,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("Expose Kusto Net query execution time")]
-        public async Task When_QueryParsed_Then_ExposeQueryMetrics()
+        public async Task PrometheusTelemetry_WhenQueryParsed_ThenExposeQueryMetrics()
         {
             await K2Client().MSearch(INDEX, $"{FLIGHTSDIR}/MSearch_Sort_String.json");
 
