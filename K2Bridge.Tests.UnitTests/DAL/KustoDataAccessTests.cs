@@ -13,7 +13,6 @@ namespace UnitTests.K2Bridge.DAL
     using global::K2Bridge.KustoConnector;
     using global::K2Bridge.Models;
     using global::K2Bridge.Models.Response;
-    using global::Tests;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Newtonsoft.Json.Linq;
@@ -41,10 +40,10 @@ namespace UnitTests.K2Bridge.DAL
             mockDetails = new Mock<IConnectionDetails>();
             mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(string.Empty);
             mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
-            using IDataReader emptyReader = new TestDataReader(new List<Dictionary<string, object>>());
+            using IDataReader emptyReader = new DataReaderMock(new List<Dictionary<string, object>>());
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(emptyReader));
-            using IDataReader emptyReader2 = new TestDataReader(new List<Dictionary<string, object>>());
+            using IDataReader emptyReader2 = new DataReaderMock(new List<Dictionary<string, object>>());
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsNotNull<QueryData>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.FromSeconds(1), emptyReader2)));
         }
@@ -73,7 +72,7 @@ namespace UnitTests.K2Bridge.DAL
                 // column("mytimespan", "System.TimeSpan"),
                 // column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
             };
-            using IDataReader testReader = new TestDataReader(testData);
+            using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(testReader));
 
@@ -150,7 +149,7 @@ namespace UnitTests.K2Bridge.DAL
                 column("myint", "System.Int32"),
                 column("mystring", "System.String"),
             };
-            using var testReader = new TestDataReader(testData);
+            using var testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.FromSeconds(1), (IDataReader)testReader)));
 
@@ -187,7 +186,7 @@ namespace UnitTests.K2Bridge.DAL
         [Test]
         public async Task GetIndexList_WithValidIndex_ReturnIndexList()
         {
-            using IDataReader stubIndexReader = new TestDataReader(
+            using IDataReader stubIndexReader = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
                     new Dictionary<string, object> {
                         { "1", "somevalue1" },
@@ -217,7 +216,7 @@ namespace UnitTests.K2Bridge.DAL
         [Test]
         public async Task GetIndexList_WithValidFunction_ReturnIndexList()
         {
-            using IDataReader stubIndexReader = new TestDataReader(
+            using IDataReader stubIndexReader = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
                     new Dictionary<string, object> {
                         { "1", "somevalue1" },
@@ -246,13 +245,13 @@ namespace UnitTests.K2Bridge.DAL
         [Test]
         public async Task GetIndexList_ValidIndexAndValidFunction_ReturnBoth()
         {
-            using IDataReader stubIndexReader1 = new TestDataReader(
+            using IDataReader stubIndexReader1 = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
                     new Dictionary<string, object> {
                         { "1", "myTable" },
                     },
                 });
-            using IDataReader stubIndexReader2 = new TestDataReader(
+            using IDataReader stubIndexReader2 = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
                     new Dictionary<string, object> {
                         { "1", "myFunction" },
@@ -285,7 +284,7 @@ namespace UnitTests.K2Bridge.DAL
             mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(databaseName);
             mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
             var searchString = $"search TableName: '{tableName}' | search DatabaseName: '{databaseName}' |";
-            using IDataReader stubIndexReader = new TestDataReader(
+            using IDataReader stubIndexReader = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
                     new Dictionary<string, object> {
                         { "1", "somevalue1" },

@@ -21,7 +21,7 @@ namespace UnitTests.K2Bridge.KustoConnector
         private readonly Mock<Metrics> stubMetrics = new Mock<Metrics>();
         private readonly ClientRequestProperties clientRequestProperties = default;
 
-        [TestCase]
+        [Test]
         public async Task ExecuteMonitoredQueryAsync_WithValidInput_ReturnsReaderAndTime()
         {
             var metrics = Metrics.Create();
@@ -33,7 +33,7 @@ namespace UnitTests.K2Bridge.KustoConnector
             Assert.AreSame(reader, reader);
         }
 
-        [TestCase]
+        [Test]
         public void ExecuteMonitoredQueryAsync_WithNullClient_ThrowsException()
         {
             Assert.ThrowsAsync(
@@ -42,7 +42,7 @@ namespace UnitTests.K2Bridge.KustoConnector
                 async () => await CslQueryProviderExtensions.ExecuteMonitoredQueryAsync(null, "some query", clientRequestProperties, stubMetrics.Object));
         }
 
-        [TestCase]
+        [Test]
         public void ExecuteMonitoredQueryAsync_WithEmptyQuery_ThrowsException()
         {
             Assert.ThrowsAsync(
@@ -51,7 +51,7 @@ namespace UnitTests.K2Bridge.KustoConnector
                 async () => await stubClient.Object.ExecuteMonitoredQueryAsync(string.Empty, clientRequestProperties, stubMetrics.Object));
         }
 
-        [TestCase]
+        [Test]
         public void ExecuteMonitoredQuery_WithNullQuery_ThrowsException()
         {
             Assert.ThrowsAsync(

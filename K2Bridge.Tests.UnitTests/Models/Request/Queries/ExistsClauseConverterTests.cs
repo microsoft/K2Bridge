@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests
+namespace UnitTests.K2Bridge.Models.Request.Queries
 {
     using System;
-    using K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Models.Request.Queries;
     using Newtonsoft.Json;
     using NUnit.Framework;
 
@@ -23,7 +23,7 @@ namespace K2BridgeUnitTests
         private readonly string errorMessage = $"{nameof(FieldName)} was not parsed correctly";
 
         [Test]
-        public void DeserializeObject_ReadJsonWithValidInput_ReturnsObjectWithCorrectFieldName()
+        public void DeserializeObject_WithValidInput_ReturnsObjectWithCorrectFieldName()
         {
             // Act
             var parsed = JsonConvert.DeserializeObject<ExistsClause>(validExistsClause);
@@ -34,7 +34,7 @@ namespace K2BridgeUnitTests
         }
 
         [TestCaseSource(nameof(BadInputCases))]
-        public void DeserializeObject_ReadJsonWithInvalidInput_ThrowsInvalidCastException(string input)
+        public void DeserializeObject_WithInvalidInput_ThrowsInvalidCastException(string input)
         {
             Assert.Throws<InvalidCastException>(() => JsonConvert.DeserializeObject<ExistsClause>(input));
         }

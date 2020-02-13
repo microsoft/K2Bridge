@@ -2,21 +2,20 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors
+namespace UnitTests.K2Bridge.Visitors
 {
     using System.Collections.Generic;
-    using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
-    using Tests;
 
     [TestFixture]
-    public class TestElasticSearchDSLVisitor
+    public class ElasticSearchDSLVisitorTests
     {
         [TestCase(ExpectedResult =
             "let fromUnixTimeMilli = (t:long) {datetime(1970 - 01 - 01) + t * 1millisec};\nlet _data = database(\"\").myindex | where (dayOfWeek == 1);\n(_data | limit 0 | as hits)")]
-        public string TypeIsNumeric_GeneratedQueryWithEqual()
+        public string Visit_WithTypeNumeric_GeneratesQueryWithEqual()
         {
             var queryClause = CreateQueryStringClause("dayOfWeek:1", false);
             var dsl = new ElasticSearchDSL
@@ -38,7 +37,7 @@ namespace K2BridgeUnitTests.Visitors
 
         [TestCase(ExpectedResult =
             "let fromUnixTimeMilli = (t:long) {datetime(1970 - 01 - 01) + t * 1millisec};\nlet _data = database(\"\").myindex | where (dayOfWeek has \"1\");\n(_data | limit 0 | as hits)")]
-        public string TypeIsString_GeneratedQueryWithHas()
+        public string Visit_WithTypeStrubg_GeneratesQueryWithhHas()
         {
             var queryClause = CreateQueryStringClause("dayOfWeek:1", false);
             var dsl = new ElasticSearchDSL

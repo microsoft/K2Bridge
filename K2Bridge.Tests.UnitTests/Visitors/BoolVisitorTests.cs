@@ -2,20 +2,19 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors
+namespace UnitTests.K2Bridge.Visitors
 {
     using System.Collections.Generic;
-    using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
-    using Tests;
 
     [TestFixture]
-    public class TestBoolVisitor
+    public class BoolVisitorTests
     {
         [TestCase(ExpectedResult = "(* has \"ItemA\")")]
-        public string TestOneBoolQueryInMustVisit()
+        public string BoolQueryVisit_WithMustLeaf_ReturnsValidResponse()
         {
             var boolQuery = new BoolQuery
             {
@@ -26,7 +25,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult = "not (* has \"ItemB\")")]
-        public string TestOneBoolQueryInMustNotVisit()
+        public string BoolQueryVisit_WithMustNotLeaf_ReturnsValidResponse()
         {
             var boolQuery = new BoolQuery
             {
@@ -37,7 +36,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult = "(* has \"ItemC\")")]
-        public string TestOneBoolQueryInShouldVisit()
+        public string BoolQueryVisit_WithShouldLeaf_ReturnsValidResponse()
         {
             var boolQuery = new BoolQuery
             {
@@ -48,7 +47,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult = "not (* has \"ItemD\")")]
-        public string TestOneBoolQueryInShouldNotVisit()
+        public string BoolQueryVisit_WithShouldNotLeaf_ReturnsValidResponse()
         {
             var boolQuery = new BoolQuery
             {
@@ -62,7 +61,7 @@ namespace K2BridgeUnitTests.Visitors
             "(* has \"ItemA2\") and " +
             "(* has \"ItemA3\") and " +
             "(* has \"ItemA4\")")]
-        public string TestMultipleBoolQueryInMustVisit()
+        public string BoolQueryVisit_WithMultipleMustLeaf_ReturnsValidResponse()
         {
             var lst = new LinkedList<string>();
             lst.AddLast("ItemA1");
@@ -82,7 +81,7 @@ namespace K2BridgeUnitTests.Visitors
             "not (* has \"ItemB\") or " +
             "(* has \"ItemC\") or " +
             "not (* has \"ItemD\")")]
-        public string TestSimpleBoolQueryVisit()
+        public string BoolQueryVisit_WithMultipleTypeLeafs_ReturnsValidResponse()
         {
             var boolQuery = new BoolQuery
             {

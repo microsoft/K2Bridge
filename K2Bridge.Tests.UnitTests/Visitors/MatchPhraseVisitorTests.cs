@@ -2,18 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors
+namespace UnitTests.K2Bridge.Visitors
 {
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
-    using Tests;
 
     [TestFixture]
-    public class TestMatchPhraseVisitor
+    public class MatchPhraseVisitorTests
     {
         [TestCase(ExpectedResult = "MyField == \"MyPhrase\"")]
-        public string TestValidMatchPhraseVisit()
+        public string MatchPhraseVisit_WithValidClause_ReturnsEquals()
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", "MyPhrase");
 
@@ -21,7 +20,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult = "MyField == \"\"")]
-        public string TestMatchPhraseWithoutPhraseVisit()
+        public string MatchPhraseVisit_WithoutClause_ReturnsEqualsEmpty()
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", null);
 
@@ -29,7 +28,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase]
-        public void TestInvalidMatchPhraseVisit()
+        public void MatchPhraseVisit_WithInvalidClause_ReturnsEqualsEmpty()
         {
             var matchPhraseClause = CreateMatchPhraseClause(null, "myPhrase");
 

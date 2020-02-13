@@ -2,17 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors
+namespace UnitTests.K2Bridge.Visitors
 {
-    using K2Bridge.Models.Request;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
-    using Tests;
 
     [TestFixture]
-    public class TestSortVisitor
+    public class SortVisitorTests
     {
-        [TestCase(ExpectedResult = "myFieldName ASC")]
+        [TestCase(
+            ExpectedResult = "myFieldName ASC",
+            TestName = "Visit_WithBasicInput_ReturnsExpectedResult")]
         public string TestBasicSortVisitor()
         {
             var sortClause = new SortClause
@@ -24,7 +25,9 @@ namespace K2BridgeUnitTests.Visitors
             return VisitSortQuery(sortClause);
         }
 
-        [TestCase(ExpectedResult = "")]
+        [TestCase(
+            ExpectedResult = "",
+            TestName = "Visit_WithInnterElasticInput_Ignores")]
         public string TestInnerElasticSortVisitor()
         {
             var sortClause = new SortClause
@@ -35,8 +38,8 @@ namespace K2BridgeUnitTests.Visitors
             return VisitSortQuery(sortClause);
         }
 
-        [TestCase]
-        public void TestMissingFieldSortVisitor()
+        [Test]
+        public void Visit_WithMissingFields_ThrowsException()
         {
             var sortClause = new SortClause
             {
@@ -46,8 +49,8 @@ namespace K2BridgeUnitTests.Visitors
             Assert.Throws(typeof(IllegalClauseException), () => VisitSortQuery(sortClause));
         }
 
-        [TestCase]
-        public void TestMissingOrderSortVisitor()
+        [Test]
+        public void Visit_WithMissingOrder_ThrowsException()
         {
             var sortClause = new SortClause
             {

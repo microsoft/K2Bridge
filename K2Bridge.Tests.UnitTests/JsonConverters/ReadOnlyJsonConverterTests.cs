@@ -11,14 +11,14 @@ namespace UnitTests.K2Bridge.JsonConverters
     [TestFixture]
     public partial class JsonConvertersTests
     {
-        [TestCase]
+        [Test]
         public void ReadOnlyJsonConverter_CanWrite_ReturnsFalse()
         {
             var readOnlyConverter = new QueryStringClauseConverter();
             Assert.IsFalse(readOnlyConverter.CanWrite);
         }
 
-        [TestCase]
+        [Test]
         public void ReadOnlyJsonConverter_NotImplementedMethods_ThrowsAsExpected()
         {
             var readOnlyConverter = new QueryStringClauseConverter();

@@ -2,21 +2,21 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors.LuceneNet
+namespace UnitTests.K2Bridge.Visitors.LuceneNet
 {
     using System;
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Models.Request.Queries.LuceneNet;
-    using K2Bridge.Visitors;
-    using K2Bridge.Visitors.LuceneNet;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Models.Request.Queries.LuceneNet;
+    using global::K2Bridge.Visitors;
+    using global::K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
-    using Tests;
+    using UnitTests.K2Bridge.Visitors;
 
     [TestFixture]
-    public class TestLuceneRangeVisitor
+    public class LuceneRangeVisitorTests
     {
         [TestCase]
-        public void Visit_NullPrefixQuery_Throws()
+        public void Visit_WithNullPrefixQuery_ThrowsException()
         {
             var visitor = new LuceneVisitor();
             Assert.That(
@@ -25,7 +25,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase]
-        public void Visit_InvalidRangeQuery_Throws()
+        public void Visit_WithInvalidRangeQuery_ThrowsException()
         {
             var rangeQuery = new LuceneRangeQuery
             {
@@ -38,7 +38,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase(ExpectedResult = "days >= 2 and days < 6")]
-        public string Visit_ValidRangeQuery_Success()
+        public string Visit_WithValidRangeQuery_ReturnsValidResponse()
         {
             var rangeQuery = new LuceneRangeQuery
             {

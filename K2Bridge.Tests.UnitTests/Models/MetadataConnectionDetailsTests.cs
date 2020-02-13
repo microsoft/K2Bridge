@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests
+namespace UnitTests.K2Bridge.Models
 {
     using System;
-    using K2Bridge.Models;
+    using global::K2Bridge.Models;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using NUnit.Framework;
@@ -14,7 +14,7 @@ namespace K2Bridge.Tests.UnitTests
     public class MetadataConnectionDetailsTests
     {
         [TestCase]
-        public void MakeFromConfig_ValidValues_Succeed()
+        public void MakeFromConfig_WithValidValues_ReturnsValidConnectionDetails()
         {
             var configurationRoot = new Mock<IConfigurationRoot>();
             var contosoesAddress = "http://contoso-es:1234/";
@@ -27,7 +27,7 @@ namespace K2Bridge.Tests.UnitTests
         }
 
         [TestCase]
-        public void MakeFromConfig_MissingAddress_Fails()
+        public void MakeFromConfig_WithMissingAddress_ThrowsArgumentNullException()
         {
             var configurationRoot = new Mock<IConfigurationRoot>();
 

@@ -2,18 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests
+namespace UnitTests.K2Bridge.Models.Response
 {
     using System;
     using System.Data;
-    using K2Bridge.Models.Response;
+    using global::K2Bridge.Models.Response;
     using NUnit.Framework;
 
     [TestFixture]
     public class DateHistogramBucketTests
     {
         [Test]
-        public void DateHistogramBucketCreate()
+        public void Create_WithDateTime_ReturnsISOString()
         {
             // Arrange
             DataTable table = new DataTable();

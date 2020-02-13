@@ -2,21 +2,21 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors.LuceneNet
+namespace UnitTests.K2Bridge.Visitors.LuceneNet
 {
     using System;
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Models.Request.Queries.LuceneNet;
-    using K2Bridge.Visitors;
-    using K2Bridge.Visitors.LuceneNet;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Models.Request.Queries.LuceneNet;
+    using global::K2Bridge.Visitors;
+    using global::K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
-    using Tests;
+    using UnitTests.K2Bridge.Visitors;
 
     [TestFixture]
-    public class TestLuceneBoolVisitor
+    public class LuceneBoolVisitorTests
     {
         [TestCase]
-        public void Visit_NullBoolQuery_Throws()
+        public void Visit_WithNullBoolQuery_ThrowsException()
         {
             var visitor = new LuceneVisitor();
             Assert.That(
@@ -25,7 +25,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase]
-        public void Visit_InvalidBoolQuery_Throws()
+        public void Visit_WithInvalidBoolQuery_ThrowsException()
         {
             var boolQuery = new LuceneBoolQuery
             {
@@ -38,7 +38,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase(ExpectedResult = "not (* matches regex \"Lo[.\\\\S]*d[.\\\\S]n\")")]
-        public string Visit_ValidBoolQuery_Success()
+        public string Visit_WithValidBoolQuery_ReturnsSuccess()
         {
             var luceneNetBoolQuery = new Lucene.Net.Search.BooleanQuery();
             luceneNetBoolQuery.Clauses.Add(

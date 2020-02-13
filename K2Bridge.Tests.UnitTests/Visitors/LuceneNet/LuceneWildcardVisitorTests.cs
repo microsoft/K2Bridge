@@ -2,21 +2,21 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors.LuceneNet
+namespace UnitTests.K2Bridge.Visitors.LuceneNet
 {
     using System;
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Models.Request.Queries.LuceneNet;
-    using K2Bridge.Visitors;
-    using K2Bridge.Visitors.LuceneNet;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Models.Request.Queries.LuceneNet;
+    using global::K2Bridge.Visitors;
+    using global::K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
-    using Tests;
+    using UnitTests.K2Bridge.Visitors;
 
     [TestFixture]
-    public class TestLuceneWildcardVisitor
+    public class LuceneWildcardVisitorTests
     {
         [TestCase]
-        public void TestNullWildcardQuery()
+        public void Visit_WithNullWildcardQuery_ThrowsException()
         {
             var visitor = new LuceneVisitor();
             Assert.That(
@@ -25,7 +25,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase]
-        public void TestInvalidWildcardQuery()
+        public void Visit_WithInvalidWildcardQuery_ThrowsException()
         {
             var wildcardQuery = new LuceneWildcardQuery
             {
@@ -38,7 +38,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase(ExpectedResult = "* matches regex \"Lo[.\\\\S]*d[.\\\\S]n\"")]
-        public string Visit_ValidWildcardQuery_Success()
+        public string Visit_WithValidWildcardQuery_ReturnsValidResponse()
         {
             var wildcardQuery = new LuceneWildcardQuery
             {

@@ -2,18 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors
+namespace UnitTests.K2Bridge.Visitors
 {
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
-    using Tests;
 
     [TestFixture]
-    public class TestExistsVisitor
+    public class ExistsVisitorTests
     {
         [TestCase(ExpectedResult = "isnotnull(MyField)")]
-        public string TestValidExistsVisit()
+        public string ExistsVisit_WithValidInput_ReturnsIsNotNullResponse()
         {
             var existsClause = new ExistsClause
             {

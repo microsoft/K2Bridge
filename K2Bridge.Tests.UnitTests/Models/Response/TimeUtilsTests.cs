@@ -2,18 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests
+namespace UnitTests.K2Bridge.Models.Response
 {
     using System;
-    using System.Data;
-    using K2Bridge.Models.Response;
+    using global::K2Bridge.Models.Response;
     using NUnit.Framework;
 
     [TestFixture]
     public class TimeUtilsTests
     {
         [Test]
-        public void ToEpochMilliseconds()
+        public void ToEpochMilliseconds_WithValidInput_ReturnsEpochTime()
         {
             var millis = TimeUtils.ToEpochMilliseconds(new DateTime(2017, 02, 01, 03, 04, 05, DateTimeKind.Utc));
             Assert.AreEqual(1485918245000, millis);

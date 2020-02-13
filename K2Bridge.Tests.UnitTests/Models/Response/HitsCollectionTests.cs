@@ -2,10 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.Models.Response
+namespace UnitTests.K2Bridge.Models.Response
 {
-    using System;
-    using K2Bridge.Models.Response;
+    using global::K2Bridge.Models.Response;
     using NUnit.Framework;
 
     [TestFixture]

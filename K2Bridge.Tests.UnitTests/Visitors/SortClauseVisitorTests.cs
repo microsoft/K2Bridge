@@ -2,17 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors
+namespace UnitTests.K2Bridge.Visitors
 {
-    using K2Bridge.Models.Request;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
-    using Tests;
 
     [TestFixture]
-    public class TestSortClauseVisitor
+    public class SortClauseVisitorTests
     {
-        [TestCase(ExpectedResult = "")]
+        [TestCase(
+            ExpectedResult = "",
+            TestName = "Visit_WithUnderscoreInput_Ignores")]
         public string IgnoresClausesWithUnderscore()
         {
             var sortClause = new SortClause() { FieldName = "_wibble" };
@@ -23,7 +24,9 @@ namespace K2BridgeUnitTests.Visitors
             return sortClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "wibble asc")]
+        [TestCase(
+            ExpectedResult = "wibble asc",
+            TestName = "Visit_WithValidInput_ReturnsExpectedResult")]
         public string GeneratesClauseQuery()
         {
             var sortClause = new SortClause() { FieldName = "wibble", Order = "asc" };

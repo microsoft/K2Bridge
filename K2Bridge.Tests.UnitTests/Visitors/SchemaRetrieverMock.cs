@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Tests
+namespace UnitTests.K2Bridge.Visitors
 {
     using System.Threading.Tasks;
-    using K2Bridge.DAL;
-    using K2Bridge.Models;
-    using K2Bridge.Models.Response.Metadata;
+    using global::K2Bridge.DAL;
+    using global::K2Bridge.Models;
+    using global::K2Bridge.Models.Response.Metadata;
     using Microsoft.Extensions.Logging;
     using Moq;
 

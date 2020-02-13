@@ -2,19 +2,19 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Tests
+namespace UnitTests.K2Bridge.DAL
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
 
-    public sealed class TestDataReader : IDataReader
+    public sealed class DataReaderMock : IDataReader
     {
         private List<Dictionary<string, object>> items;
         private int index = -1;
 
-        public TestDataReader(List<Dictionary<string, object>> items)
+        public DataReaderMock(List<Dictionary<string, object>> items)
         {
             this.items = items;
         }

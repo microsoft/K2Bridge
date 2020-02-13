@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Tests
+namespace UnitTests.K2Bridge.Visitors
 {
     using System;
-    using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Aggregations;
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request;
+    using global::K2Bridge.Models.Request.Aggregations;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
 
     [TestFixture]
@@ -20,13 +20,13 @@ namespace Tests
         /// Has a default ctor.
         /// </summary>
         [TestCase]
-        public void IllegalClauseExceptionHasDefaultCtor()
+        public void IllegalClauseExceptionDefaultCtor_Invoke_ReturnsIllegalClauseException()
         {
             try
             {
                 throw new IllegalClauseException();
             }
-            catch (Exception exc)
+            catch (IllegalClauseException exc)
             {
                 Assert.AreEqual(
                     exc.Message,
@@ -38,14 +38,14 @@ namespace Tests
         /// Has a custom message ctor.
         /// </summary>
         [TestCase]
-        public void IllegalClauseExceptionHasCustomCtor()
+        public void IllegalClauseExceptionCustomCtor_Invoke_ReturnsIllegalClauseException()
         {
             var customMsg = "custom message";
             try
             {
                 throw new IllegalClauseException(customMsg);
             }
-            catch (Exception exc)
+            catch (IllegalClauseException exc)
             {
                 Assert.AreEqual(exc.Message, customMsg);
             }
@@ -55,7 +55,7 @@ namespace Tests
         /// Has a ctor with inner exception.
         /// </summary>
         [TestCase]
-        public void IllegalClauseExceptionHasCustomWithInnerExcCtor()
+        public void IllegalClauseExceptionInnerExcCtor_Invoke_ReturnsIllegalClauseException()
         {
             var customMsg = "custom message";
             var innerMsg = "inner exc message";
@@ -63,7 +63,7 @@ namespace Tests
             {
                 throw new IllegalClauseException(customMsg, new ArgumentException(innerMsg));
             }
-            catch (Exception exc)
+            catch (IllegalClauseException exc)
             {
                 Assert.AreEqual(exc.Message, customMsg);
                 Assert.AreEqual(exc.InnerException.Message, innerMsg);
@@ -73,7 +73,7 @@ namespace Tests
         // The following tests verify that given an invalid clause, they
         // throw an <see cref="IllegalClauseException"/> or ArgumentException
         [TestCase]
-        public void TestInvalidExistsClause()
+        public void ExistsClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -87,7 +87,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidMatchPhraseClause()
+        public void MatchPhraseClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -101,7 +101,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidAvgAggMetric()
+        public void AvgAggMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -115,7 +115,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidAggMetric()
+        public void AggregationMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -128,7 +128,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidCardinalityAggMetric()
+        public void CardinalityAggMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -142,7 +142,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidRangeClause()
+        public void RangeClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -156,7 +156,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidSortClause()
+        public void SortClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -170,7 +170,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidDateHistogramAgg()
+        public void DateHistogramAggVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -184,7 +184,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidBoolQuery()
+        public void BoolQueryVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
@@ -197,7 +197,7 @@ namespace Tests
         }
 
         [TestCase]
-        public void TestInvalidQuery()
+        public void InvalidQueryVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 

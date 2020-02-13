@@ -2,20 +2,20 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests
+namespace UnitTests.K2Bridge.Visitors
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using K2Bridge;
-    using K2Bridge.Models.Request;
-    using K2Bridge.Visitors;
+    using global::K2Bridge;
+    using global::K2Bridge.Models.Request;
+    using global::K2Bridge.Visitors;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
 
     [TestFixture]
-    public class TestElasticQueryTranslator
+    public class ElasticQueryTranslatorTests
     {
         private const string DATADIR = "../../../Data";
 
@@ -40,7 +40,7 @@ namespace K2Bridge.Tests.UnitTests
         }
 
         [TestCase(ExpectedResult = "some kql from mock visitor")]
-        public string TestValidElasticQueryTranslator()
+        public string Translate_WithValidInput_ReturnsValidResponse()
         {
             var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
 
@@ -51,7 +51,7 @@ namespace K2Bridge.Tests.UnitTests
         }
 
         [TestCase]
-        public void TestInvalidHeader()
+        public void Translate_WithInvalidHeader_ThrowsException()
         {
             var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
 
@@ -67,7 +67,7 @@ namespace K2Bridge.Tests.UnitTests
         }
 
         [TestCase]
-        public void TestInvalidQuery()
+        public void Translate_WithInvalidQuery_ThrowsException()
         {
             var query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_query.json");
 

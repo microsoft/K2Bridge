@@ -2,15 +2,15 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace Tests
+namespace UnitTests.K2Bridge.Visitors
 {
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Visitors;
     using Newtonsoft.Json;
     using NUnit.Framework;
 
     [TestFixture]
-    public class TestParseElasticToKql
+    public class ParseElasticToKqlTests
     {
         private const string QueryExists = @"
             {""bool"":
@@ -273,10 +273,12 @@ namespace Tests
 
         [TestCase(
             QueryMatchPhraseSingle,
-            ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\")")]
+            ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\")",
+            TestName="QueryAccept_WithSingleMatchPhrase_ReturnsExpectedResult")]
         [TestCase(
             QueryMatchPhraseMulti,
-            ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\") and (TEST_FIELD_2 == \"TEST_RESULT_2\")")]
+            ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\") and (TEST_FIELD_2 == \"TEST_RESULT_2\")",
+            TestName="QueryAccept_WithMultiMatchPhrase_ReturnsExpectedResult")]
         public string TestMatchPhraseQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -287,7 +289,8 @@ namespace Tests
 
         [TestCase(
             QueryExists,
-            ExpectedResult = "where (isnotnull(TEST_FIELD))")]
+            ExpectedResult = "where (isnotnull(TEST_FIELD))",
+            TestName="QueryAccept_WithSingleExists_ReturnsExpectedResult")]
         public string TestExistsClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -298,22 +301,29 @@ namespace Tests
 
         [TestCase(
             QueryTimestampRangeSingle,
-            ExpectedResult = "where (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
+            ExpectedResult = "where (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))",
+            TestName="QueryAccept_WithTimestamp_ReturnsExpectedResult")]
         [TestCase(
             QueryBetweenRangeSingle,
-            ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)")]
+            ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)",
+            TestName="QueryAccept_WithBetweenRange_ReturnsExpectedResult")]
         public string TestRangeQueries(string queryString)
         {
             return TestRangeClause(queryString);
         }
 
-        [TestCase(QueryTimestampRangeSingleNoPair)]
+        [TestCase(
+            QueryTimestampRangeSingleNoPair,
+            TestName="QueryAccept_WithBetweenRangeSingleNoPair_ReturnsExpectedResult")]
         public void TestRangeQueriesMissingValues(string queryString)
         {
             Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
         }
 
-        [TestCase(QueryString, ExpectedResult = "where (* has \"TEST_RESULT\")")]
+        [TestCase(
+            QueryString,
+            ExpectedResult = "where (* has \"TEST_RESULT\")",
+            TestName="QueryAccept_WithValidInput_ReturnsExpectedResult")]
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -322,8 +332,14 @@ namespace Tests
             return query.KustoQL;
         }
 
-        [TestCase(CombinedQuery, ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))")]
-        [TestCase(NotQueryStringClause, ExpectedResult = "where (* has \"TEST_RESULT\") and not (TEST_FIELD == \"TEST_RESULT_2\")")]
+        [TestCase(
+            CombinedQuery,
+            ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))",
+            TestName="QueryAccept_WithCombinedQuery_ReturnsExpectedResult")]
+        [TestCase(
+            NotQueryStringClause,
+            ExpectedResult = "where (* has \"TEST_RESULT\") and not (TEST_FIELD == \"TEST_RESULT_2\")",
+            TestName="QueryAccept_WithNotString_ReturnsExpectedResult")]
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -334,7 +350,8 @@ namespace Tests
 
         [TestCase(
             QueryWildcardString,
-            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT\")")]
+            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT\")",
+            TestName="QueryAccept_WithWildCard_ReturnsExpectedResult")]
         public string TestWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -345,7 +362,8 @@ namespace Tests
 
         [TestCase(
             QueryComplexWildcardString,
-            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT[.\\\\S]*\")")]
+            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT[.\\\\S]*\")",
+            TestName="QueryAccept_WithComplexWildCard_ReturnsExpectedResult")]
         public string TestComplexWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -356,7 +374,8 @@ namespace Tests
 
         [TestCase(
             QueryPrefixString,
-            ExpectedResult = "where (* hasprefix_cs \"TEST_RESULT\")")]
+            ExpectedResult = "where (* hasprefix_cs \"TEST_RESULT\")",
+            TestName="QueryAccept_WithPrefix_ReturnsExpectedResult")]
         public string TestPrefixQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);

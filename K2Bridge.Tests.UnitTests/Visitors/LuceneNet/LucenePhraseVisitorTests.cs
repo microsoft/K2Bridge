@@ -2,21 +2,21 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors.LuceneNet
+namespace UnitTests.K2Bridge.Visitors.LuceneNet
 {
     using System;
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Models.Request.Queries.LuceneNet;
-    using K2Bridge.Visitors;
-    using K2Bridge.Visitors.LuceneNet;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Models.Request.Queries.LuceneNet;
+    using global::K2Bridge.Visitors;
+    using global::K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
-    using Tests;
+    using UnitTests.K2Bridge.Visitors;
 
     [TestFixture]
-    public class TestLucenePhraseVisitor
+    public class LucenePhraseVisitorTests
     {
         [TestCase]
-        public void Visit_NullPrefixQuery_Throws()
+        public void Visit_WithNullPrefixQuery_ThrowsException()
         {
             var visitor = new LuceneVisitor();
             Assert.That(
@@ -25,7 +25,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase]
-        public void Visit_InvalidPhraseQuery_Throws()
+        public void Visit_WithInvalidPhraseQuery_ThrowsException()
         {
             var phraseQuery = new LucenePhraseQuery
             {
@@ -38,7 +38,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase(ExpectedResult = "City contains \"TelAviv\"")]
-        public string Visit_ValidTermPhraseQuery_Success()
+        public string Visit_WithValidTermPhraseQuery_ReturnsValidReponse()
         {
             var query = new Lucene.Net.Search.PhraseQuery();
             query.Add(new Lucene.Net.Index.Term("City", "TelAviv"));
@@ -61,7 +61,7 @@ namespace K2BridgeUnitTests.Visitors.LuceneNet
         }
 
         [TestCase(ExpectedResult = "City has \"TelAviv\"")]
-        public string Visit_ValidTermQuery_Success()
+        public string Visit_WithValidTermQuery_ReturnsValidReponse()
         {
             var query = new Lucene.Net.Search.TermQuery(new Lucene.Net.Index.Term("City", "TelAviv"));
 

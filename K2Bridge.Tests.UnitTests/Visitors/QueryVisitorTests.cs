@@ -2,24 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors
+namespace UnitTests.K2Bridge.Visitors
 {
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
-    using Tests;
 
     [TestFixture]
-    public class TestQueryVisitor
+    public class QueryVisitorTests
     {
-        private static readonly object[] MultiWordTestCases = {
-            new TestCaseData("somePhrase otherPhrase").Returns("(* has \"somePhrase\") or (* has \"otherPhrase\")").SetName("QueryStringVisit_TwoWordPhrases_ReturnsExpectedValues"),
-            new TestCaseData("somePhrase otherPhrase someOtherPhrase").Returns("(* has \"somePhrase\") or (* has \"otherPhrase\") or (* has \"someOtherPhrase\")").SetName("QueryStringVisit_ThreeWordPhrases_ReturnsExpectedValues"),
-            new TestCaseData("   somePhrase  ").Returns("* has \"somePhrase\"").SetName("QueryStringVisit_EmptySpacePhrases_ReturnsExpectedValues"),
-        };
-
         [TestCase(ExpectedResult = "* has \"myPharse\"")]
-        public string TestBasicQueryVisitor()
+        public string QueryVisit_WithSimplePhrase_ReturnsHasResponse()
         {
             var queryClause = CreateQueryStringClause("myPharse", true);
 
@@ -28,7 +21,7 @@ namespace K2BridgeUnitTests.Visitors
 
         [TestCase(ExpectedResult =
             "(* has \"myPharse\") and (* has \"herPhrase\")")]
-        public string TestMultipleAndPharsesQueryVisitor()
+        public string QueryVisit_WithMultiplePhrase_ReturnsHasAndResponse()
         {
             var queryClause = CreateQueryStringClause("myPharse AND herPhrase", true);
 
@@ -37,7 +30,7 @@ namespace K2BridgeUnitTests.Visitors
 
         [TestCase(ExpectedResult =
             "(* has \"myPharse\") or (* has \"herPhrase\")")]
-        public string TestMultipleOrPharsesQueryVisitor()
+        public string QueryVisit_WithMultipleOrPhrase_ReturnsHasOrResponse()
         {
             var queryClause = CreateQueryStringClause("myPharse OR herPhrase", true);
 
@@ -46,7 +39,7 @@ namespace K2BridgeUnitTests.Visitors
 
         [TestCase(ExpectedResult =
             "not (* has \"myPharse\") and not (* has \"herPhrase\")")]
-        public string TestMultipleNotPharsesQueryVisitor()
+        public string QueryVisit_WithMultipleNotPhrase_ReturnsHasAndNotResponse()
         {
             var queryClause = CreateQueryStringClause("NOT myPharse AND NOT herPhrase", true);
 
@@ -55,7 +48,7 @@ namespace K2BridgeUnitTests.Visitors
 
         [TestCase(ExpectedResult =
             "(* has \"Dogs\") and (* contains \"My cats\")")]
-        public string TestQuotationQueryVisitor()
+        public string QueryVisit_WithQuotationPhrase_ReturnsContainsResponse()
         {
             var queryClause = CreateQueryStringClause("Dogs AND \"My cats\"", true);
 
@@ -64,7 +57,7 @@ namespace K2BridgeUnitTests.Visitors
 
         [TestCase(ExpectedResult =
             "(* has \"Tokyo\") and (* contains \"Haneda International\") or ((* has \"A\") and (* contains \"b c\"))")]
-        public string TestMoreQuotationQueryVisitor()
+        public string QueryVisit_WithMultipleQuotationPhrase_ReturnsAndContainsResponse()
         {
             var queryClause = CreateQueryStringClause("Tokyo AND \"Haneda International\" OR (A AND \"b c\")", true);
 

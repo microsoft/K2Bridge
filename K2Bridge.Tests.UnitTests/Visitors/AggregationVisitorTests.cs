@@ -2,19 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2BridgeUnitTests.Visitors
+namespace UnitTests.K2Bridge.Visitors
 {
     using System.Collections.Generic;
-    using K2Bridge.Models.Request.Aggregations;
-    using K2Bridge.Visitors;
+    using global::K2Bridge.Models.Request.Aggregations;
+    using global::K2Bridge.Visitors;
     using NUnit.Framework;
-    using Tests;
 
     [TestFixture]
-    public class TestAggregationVisitor
+    public class AggregationVisitorTests
     {
         [TestCase(ExpectedResult = null)]
-        public string TestMetricAggregationHasNoPrimary()
+        public string AggregationVisit_WithEmptyAgg_ReturnsNoPrimary()
         {
             var aggregateClause = new Aggregation();
 
@@ -25,7 +24,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult = "avg(fieldA)")]
-        public string TestMetricAggregationWithPrimary_Avg()
+        public string AggregationVisit_WithAvgAgg_ReturnsAvgPrimary()
         {
             var aggregateClause = new Aggregation()
             {
@@ -39,7 +38,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult = "avg(fieldB), avg(fieldA)")]
-        public string TestMetricAggregationWithSubAggregates_Avg()
+        public string AggregationVisit_WithSubAvgAgg_ReturnsAvgAggregates()
         {
             var aggregateClause = new Aggregation()
             {
@@ -57,7 +56,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult = "dcount(fieldA)")]
-        public string TestMetricAggregation_Cardinality()
+        public string AggregationVisit_WithCardinalityAgg_ReturnsDCount()
         {
             var aggregateClause = new Aggregation()
             {
@@ -71,7 +70,7 @@ namespace K2BridgeUnitTests.Visitors
         }
 
         [TestCase(ExpectedResult = "dcount(fieldB), dcount(fieldA)")]
-        public string TestMetricAggregationWithSubAggregates_DCount()
+        public string AggregationVisit_WithSubCardinalityAggs_ReturnsDCounts()
         {
             var aggregateClause = new Aggregation()
             {
