@@ -39,9 +39,9 @@ In this mode you'll need to attach the debugger to the process.
 
     1. On Windows (using Powershell)
 
-    ```sh
-    $env:VSTEST_HOST_DEBUG=1
-    ```
+        ```sh
+        $env:VSTEST_HOST_DEBUG=1
+        ```
 
 1. Run the tests
 
