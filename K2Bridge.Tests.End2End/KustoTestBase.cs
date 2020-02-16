@@ -88,6 +88,8 @@ namespace K2Bridge.Tests.End2End
 
         protected const string FLIGHTSDIR = "../../../flights";
 
+        protected const string TYPESDIR = "../../../types";
+
         /// <summary>
         ///  Name of the Kusto database to populate with test data.
         /// </summary>

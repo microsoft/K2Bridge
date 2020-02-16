@@ -1,0 +1,36 @@
+﻿{
+  "timestamp": "2020-02-03T11:34:12.7510826Z",
+  "Name": "sds",
+  "Dec": 0.3,
+  "TimeSpan": "00:30:00",
+  "SomeID": "74be27de-1e4e-49d9-b579-fe0b331d3642"
+    
+}
+{
+  "timestamp": "2020-02-03T11:38:20.6525113Z",
+  "Name": "sds",
+  "Dec": 0.3,
+  "TimeSpan": "00:30:00",
+  "SomeID": "74be27de-1e4e-49d9-b579-fe0b331d3642"
+}
+{
+  "timestamp": "2020-02-03T12:24:48.1840906Z",
+  "Name": "sds",
+  "Dec": 0.3,
+  "TimeSpan": "",
+  "SomeID": "74be27de-1e4e-49d9-b579-fe0b331d3642"
+}
+{
+  "timestamp": "2020-02-03T12:46:45.5587711Z",
+  "Name": "sds",
+  "Dec": 0.3,
+  "TimeSpan": "",
+  "SomeID": ""
+}
+{
+  "timestamp": "2020-02-03T12:53:12.6309627Z",
+  "Name": "sds",
+  "Dec": null,
+  "TimeSpan": "",
+  "SomeID": ""
+}

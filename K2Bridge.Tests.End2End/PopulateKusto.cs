@@ -110,14 +110,18 @@ namespace K2Bridge.Tests.End2End
         /// <param name="db">Kusto database.</param>
         /// <param name="table">Kusto table within database.</param>
         /// <returns>Bulk Insert operation result.</returns>
-        public static async Task<IDataReader> PopulateTypesIndex(KustoConnectionStringBuilder kusto, string db, string table)
+        public static async Task<IKustoIngestionResult> PopulateTypesIndex(KustoConnectionStringBuilder kusto, string db, string table)
         {
             // Build list of columns and mappings to provision Kusto
             var kustoColumns = new List<string>();
+            var columnMappings = new List<JsonColumnMapping>();
 
             foreach (var entry in KustoColumnType)
             {
-                kustoColumns.Add($"{entry.Key}:{entry.Value}");
+                var name = entry.Key;
+                kustoColumns.Add($"{name}:{entry.Value}");
+                columnMappings.Add(new JsonColumnMapping()
+                { ColumnName = name, JsonPath = $"$.{name}" });
             }
 
             using var kustoAdminClient = KustoClientFactory.CreateCslAdminProvider(kusto);
@@ -129,7 +133,16 @@ namespace K2Bridge.Tests.End2End
             // Send create table command to Kusto
             command = $".create table {table} ({string.Join(", ", kustoColumns)})";
             Console.WriteLine(command);
-            return await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+
+            // Send create table mapping command to Kusto
+            command = CslCommandGenerator.GenerateTableJsonMappingCreateCommand(
+                                                table, "types_mapping", columnMappings);
+            kustoAdminClient.ExecuteControlCommand(command);
+
+            // Populate Kusto
+            using Stream fs = File.OpenRead("DataTypesIndexData.json");
+            return await KustoIngest(kusto, db, table, "types_mapping", fs);
         }
 
         /// <summary>

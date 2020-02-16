@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="stylecop.json" />
+    <None Remove="KustoClientTests.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,5 +42,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\K2Bridge\K2Bridge.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="types\" />
   </ItemGroup>
 </Project>
