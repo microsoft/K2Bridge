@@ -68,29 +68,32 @@ namespace K2Bridge.Visitors
             }
 
             // hits (projections...)
-            queryStringBuilder.Append("\n(_data ");
-            if (elasticSearchDSL.Size > 0)
+            // The size is deserialized property
+            // therefore we check 'Size >= 0' to protect the query.
+            if (elasticSearchDSL.Size >= 0)
             {
-                // we only need to sort if we're returning hits
-                var orderingList = new List<string>();
+                queryStringBuilder.Append("\n(_data ");
 
-                foreach (var sortClause in elasticSearchDSL.Sort)
+                if (elasticSearchDSL.Size > 0)
                 {
-                    sortClause.Accept(this);
-                    if (!string.IsNullOrEmpty(sortClause.KustoQL))
+                    // we only need to sort if we're returning hits
+                    var orderingList = new List<string>();
+
+                    foreach (var sortClause in elasticSearchDSL.Sort)
                     {
-                        orderingList.Add(sortClause.KustoQL);
+                        sortClause.Accept(this);
+                        if (!string.IsNullOrEmpty(sortClause.KustoQL))
+                        {
+                            orderingList.Add(sortClause.KustoQL);
+                        }
+                    }
+
+                    if (orderingList.Count > 0)
+                    {
+                        queryStringBuilder.Append($"| {KustoQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
                     }
                 }
 
-                if (orderingList.Count > 0)
-                {
-                    queryStringBuilder.Append($"| {KustoQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
-                }
-            }
-
-            if (elasticSearchDSL.Size >= 0)
-            {
                 queryStringBuilder.Append($"| {KustoQLOperators.Limit} {elasticSearchDSL.Size} | as hits)");
             }
 
