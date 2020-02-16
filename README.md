@@ -26,10 +26,9 @@ The bridge accept each request and redirects business (data) requests to ADX and
 1. Each document in Elasticsearch has a unique id usually noted in the "_id" field. This isn't inherently available for data stored in ADX and because Kibana expects it,
 K2Bridge generates a *random* number for this value. Please note that this is *not a reproducable* value and you shouldn't search for documents/items that have specific values.
 
-1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features.
-TODO: how would they give feedback?
+1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features. Feel free to file issues or leave comments in the [GitHub issues](../../issues) page.
 
-1. We have used and tested the OSS version of Kibana. Using other versions might work but you would probably need to disable various modules such as xpack.
+1. We have used and tested the OSS version of Kibana 6.8. Using other versions might work but you would probably need to disable various modules such as xpack.
 
 ## Installing
 
@@ -65,7 +64,7 @@ For example:
 ```
 
 Note that you cannot connect K2Bridge directly to Azure Monitor, you need an ADX instance
-serving as broker. Be very mindful of the performance impact of such distributed queries,
+serving as a proxy cluster (you can find insturctions [here](https://docs.microsoft.com/en-us/azure/data-explorer/query-monitor-data#connect-to-the-proxy)). Be very mindful of the performance impact of such distributed queries,
 which can easily result into Kibana timeouts.
 
 ## Developing
