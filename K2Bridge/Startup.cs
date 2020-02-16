@@ -16,6 +16,7 @@ namespace K2Bridge
     using K2Bridge.RewriteRules;
     using K2Bridge.Telemetry;
     using K2Bridge.Visitors;
+    using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -60,13 +61,11 @@ namespace K2Bridge
             services.AddSingleton(
                 s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
 
-            services.AddSingleton(Telemetry.Metrics.Create());
-
             services.AddSingleton<IQueryExecutor, KustoQueryExecutor>(
                 s => new KustoQueryExecutor(
                     s.GetRequiredService<IConnectionDetails>(),
                     s.GetRequiredService<ILogger<KustoQueryExecutor>>(),
-                    s.GetService<Telemetry.Metrics>()));
+                    s.GetRequiredService<Telemetry.Metrics>()));
 
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
@@ -83,10 +82,10 @@ namespace K2Bridge
                     s.GetRequiredService<IConnectionDetails>().DefaultDatabaseName));
 
             services.AddTransient<IResponseParser, KustoResponseParser>(
-                ctx => new KustoResponseParser(
-                    ctx.GetRequiredService<ILogger<KustoResponseParser>>(),
+                s => new KustoResponseParser(
+                    s.GetRequiredService<ILogger<KustoResponseParser>>(),
                     bool.Parse((Configuration as IConfigurationRoot)["outputBackendQuery"]),
-                    ctx.GetService<Telemetry.Metrics>()));
+                    s.GetRequiredService<Telemetry.Metrics>()));
 
             // use this http client factory to issue requests to the metadata elastic instance
             services.AddHttpClient(MetadataController.ElasticMetadataClientName, (svcProvider, elasticClient) =>
@@ -190,9 +189,22 @@ namespace K2Bridge
         }
 
         /// <summary>
-        /// Configures the ApplicationInsights telemetry.
+        /// Configures all telemetry services - internal (like promothues endpoint) and external (Application Insights).
         /// </summary>
         private void ConfigureTelemetryServices(IServiceCollection services)
+        {
+            // using GetService since TelemetryClient won't exist if AppInsights is turned off.
+            services.AddSingleton(
+                s => Telemetry.Metrics.Create(s.GetService<TelemetryClient>()));
+
+            // complete the config for AppInsights.
+            ConfigureApplicationInsights(services);
+        }
+
+        /// <summary>
+        /// Configures the ApplicationInsights telemetry.
+        /// </summary>
+        private void ConfigureApplicationInsights(IServiceCollection services)
         {
             // Only if explicitly declared we are collecting telemetry
             var hasCollectBool =

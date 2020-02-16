@@ -5,11 +5,15 @@
 namespace UnitTests.K2Bridge.KustoConnector
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Threading.Tasks;
     using global::K2Bridge.KustoConnector;
     using global::K2Bridge.Telemetry;
     using Kusto.Data.Common;
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Channel;
+    using Microsoft.ApplicationInsights.Extensibility;
     using Moq;
     using NUnit.Framework;
 
@@ -24,7 +28,7 @@ namespace UnitTests.K2Bridge.KustoConnector
         [Test]
         public async Task ExecuteMonitoredQueryAsync_WithValidInput_ReturnsReaderAndTime()
         {
-            var metrics = Metrics.Create();
+            var metrics = Metrics.Create(GetMockTelemetryClient());
             stubClient.Setup(client => client.ExecuteQueryAsync(string.Empty, It.IsAny<string>(), It.IsAny<ClientRequestProperties>()))
                 .Returns(Task.FromResult(stubReader));
             var (timeTaken, reader) = await stubClient.Object.ExecuteMonitoredQueryAsync("wibble", clientRequestProperties, metrics);
@@ -58,6 +62,16 @@ namespace UnitTests.K2Bridge.KustoConnector
                 Is.TypeOf<ArgumentNullException>()
                  .And.Message.EqualTo("query cannot be null (Parameter 'query')"),
                 async () => await stubClient.Object.ExecuteMonitoredQueryAsync(null, clientRequestProperties, stubMetrics.Object));
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
+        private TelemetryClient GetMockTelemetryClient()
+        {
+            return new TelemetryClient(
+                new TelemetryConfiguration
+                {
+                    TelemetryChannel = new Mock<ITelemetryChannel>().Object,
+                });
         }
     }
 }
