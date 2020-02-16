@@ -77,7 +77,8 @@ namespace K2Bridge.KustoConnector
             }
 
             CreateSort(hit, row, query);
-            hit.Fields = new Fields();
+            CreateField(hit, row, query);
+
             return hit;
         }
 
@@ -102,6 +103,26 @@ namespace K2Bridge.KustoConnector
                 }
 
                 hit.Sort.Add(value);
+            }
+        }
+
+        private static void CreateField(Hit hit, DataRow row, QueryData query)
+        {
+            if (query.DocValueFields == null)
+            {
+                return;
+            }
+
+            foreach (var docValueField in query.DocValueFields)
+            {
+                var value = row.Table.Columns.Contains(docValueField) ? row[docValueField] : null;
+                if (value == null)
+                {
+                    continue;
+                }
+
+                // datetime fields are written as is, usually in UTC timezone.
+                hit.Fields.Add(docValueField, new List<object> { value });
             }
         }
 

@@ -203,6 +203,38 @@ namespace UnitTests.K2Bridge.KustoConnector
         }
 
         [Test]
+        [TestCase("label1", "boxes")]
+        [TestCase("instant", "2017-01-02T13:04:05.06Z")]
+        [TestCase("value", 234)]
+        public void MapRowsToHits_WithDocFields_ReturnsHitsWithFields(string field, object expectedValue)
+        {
+            // Arrange
+            using var table = SampleData();
+            var query = new QueryData(
+                "myKQL",
+                "myIndex",
+                sortFields: null,
+                docValueFields: new List<string> { field },
+                highlightText: null);
+
+            // for some reason working with date objects doesn't really work so we have
+            // to actually convert it to a datetime.
+            var isDate = DateTime.TryParse(expectedValue.ToString(), out var date);
+
+            var expectedObject = new Dictionary<string, List<object>>
+            {
+                { field, new List<object> { isDate ? date.ToUniversalTime() : expectedValue } },
+            };
+            expected[0]["fields"] = JToken.FromObject(expectedObject);
+
+            // Act
+            var hits = ReadHits(table, query);
+
+            // Assert
+            AssertHits(hits);
+        }
+
+        [Test]
         public void MapRowsToHits_WithSByte_ReturnsHitsWithBoolean()
         {
             using var hitsTable = HitTypeTestTable(Type.GetType("System.SByte"), 1);

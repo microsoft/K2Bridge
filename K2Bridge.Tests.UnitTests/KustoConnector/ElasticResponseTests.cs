@@ -382,7 +382,7 @@ namespace UnitTests.K2Bridge.KustoConnector
                     fields,
                 };
 
-            var highlightQuery = new QueryData("_kql", "_index", null, new Dictionary<string, string>()
+            var highlightQuery = new QueryData("_kql", "_index", null, null, new Dictionary<string, string>()
             {
                 { highlightKey, highlightText },
             })

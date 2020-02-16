@@ -112,6 +112,7 @@ namespace K2Bridge.Tests.End2End
         /// </summary>
         /// <param name="indexName">Index name to query.</param>
         /// <param name="jsonQueryFile">File name containing query.</param>
+        /// <param name="validateHighlight">Controls the validation of the highlight element.</param>
         /// <returns>SearchAsync operation result.</returns>
         public async Task<JToken> MSearch(string indexName, string jsonQueryFile, bool validateHighlight = true)
         {
@@ -126,15 +127,12 @@ namespace K2Bridge.Tests.End2End
             var result = await JsonQuery(request);
             MaskSearchCommon(result, "responses[*].");
 
-            // TODO: returned by ES but not by K2
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1618
-            DeleteValue(result, "responses[*].hits.hits[*].fields");
             if (!validateHighlight)
             {
                 DeleteValue(result, "responses[*].hits.hits[*].highlight");
             }
 
-            // backend query isn't something we want to compare
+            // backend query isn't something we want to compare since it's unique to K2
             DeleteValue(result, "responses[*]._backendQuery");
 
             return result;
@@ -218,7 +216,8 @@ namespace K2Bridge.Tests.End2End
             return result;
         }
 
-        public HttpClient Client() {
+        public HttpClient Client()
+        {
             return client;
         }
 

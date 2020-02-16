@@ -87,12 +87,19 @@ namespace K2Bridge
                     sortFields.Add(clause.FieldName);
                 });
 
+                var docValueFields = new List<string>();
+                elasticSearchDsl.DocValueFields?.ForEach(item =>
+                {
+                    docValueFields.Add(item.Field);
+                });
+
                 // Use the visitor and build the KustoQL string from the esDSL object
                 elasticSearchDsl.Accept(visitor);
                 var queryData = new QueryData(
                     elasticSearchDsl.KustoQL,
                     elasticSearchDsl.IndexName,
                     sortFields,
+                    docValueFields,
                     elasticSearchDsl.HighlightText);
 
                 if (elasticSearchDsl.Highlight != null)
