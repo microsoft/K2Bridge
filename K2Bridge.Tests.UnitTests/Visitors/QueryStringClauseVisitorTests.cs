@@ -82,6 +82,14 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(queryClause);
         }
 
+        [TestCase(ExpectedResult = null)]
+        public string Visit_WithEmptyQuotePhrase_ReturnsAndContainsResponse()
+        {
+            var queryClause = CreateQueryStringClause("\"\"", false);
+
+            return VisitQuery(queryClause);
+        }
+
         private static string VisitQuery(QueryStringClause queryStringClause)
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
