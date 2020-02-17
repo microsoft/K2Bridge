@@ -10,6 +10,7 @@ namespace K2Bridge
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
+    using K2Bridge.Models;
     using K2Bridge.Telemetry;
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
@@ -46,9 +47,11 @@ namespace K2Bridge
         {
             // initialize logger
             // Prometheus sink is configured in addition to any sinks defined in appsettings.json.
+            var enableQueryLogging = Configuration.GetValue("enableQueryLogging", false);
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .WriteTo.Sink(new PrometheusSerilogSink())
+                .Destructure.ByTransforming<SensitiveData>(obj => new { Data = enableQueryLogging ? obj.Data : obj.ReductMessage })
                 .CreateLogger();
 
             // Log startup message with version as soon as possible

@@ -79,3 +79,24 @@ kubectl port-forward service/elasticsearchqa-master 9200 &
 kubectl port-forward service/k2bridge 8080 &
 dotnet test K2Bridge.Tests.End2End
 ```
+
+## Sensitive Information in logs
+It is possible to prevent data with with potential sensitive information, such as PII, to be written to logs.
+To support this first you need to set a settings flag `enableQueryLogging` to `True`. When True, the queries will be written to the logs. When false the query wont be logged.
+
+In order to support this in code, you should pass to the logger an object called `SensitiveData` which is a wrapper for the data.
+Serilog as the logging implementation will print to the logs this object.
+An extension method to create this object is also provided in this project.
+Here is an example for using the extension and conditional logs:
+
+```C#
+using K2Bridge.Telemetry;
+
+// Creating a variable with potential sensitive information.
+var translatedQuery = translator.Translate(header, query);
+
+// Logging the header normally, and the potnetial sensitive data
+// Is being converted to a conditional log object using "ToSensitiveData()"
+// Please note the use of "@" which is used by Serilog to write all properties.
+logger.LogDebug("Header:{@header}, query: {@QueryCommandText}", header, translatedQuery.QueryCommandText.ToSensitiveData());
+```

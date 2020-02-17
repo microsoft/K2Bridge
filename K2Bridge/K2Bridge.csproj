@@ -46,6 +46,8 @@
     <PackageReference Include="prometheus-net" Version="3.4.0" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="3.0.4" />
+    <PackageReference Include="Serilog.Extras.Attributed" Version="2.0.0" />
+    <PackageReference Include="Destructurama.Attributed" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -58,6 +60,7 @@
     <Folder Include="RewriteRules\" />
     <Folder Include="HttpMessages\" />
     <Folder Include="DAL\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
   <ItemGroup>

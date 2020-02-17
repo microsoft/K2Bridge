@@ -175,7 +175,7 @@ namespace K2Bridge.KustoConnector
             }
 
             // read hits
-            Logger.LogDebug("Reading Hits using QueryData: {@query}", query);
+            Logger.LogDebug("Reading Hits using QueryData: {@query}", query.ToSensitiveData());
             var hits = ReadHits(parsedKustoResponse, query);
             response.AddHits(hits);
             if (outputBackendQuery)

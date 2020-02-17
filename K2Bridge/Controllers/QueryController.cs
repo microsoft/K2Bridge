@@ -12,6 +12,7 @@ namespace K2Bridge.Controllers
     using K2Bridge.KustoConnector;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using K2Bridge.Telemetry;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -111,7 +112,7 @@ namespace K2Bridge.Controllers
 
             // Translate Query
             var translatedQuery = translator.Translate(header, query);
-            logger.LogDebug($"Translated query:\n{translatedQuery.QueryCommandText}");
+            logger.LogDebug("Translated query:\n{@QueryCommandText}", translatedQuery.QueryCommandText.ToSensitiveData());
 
             const string correlationIdHeader = "x-correlation-id";
             var requestContext = new RequestContext
