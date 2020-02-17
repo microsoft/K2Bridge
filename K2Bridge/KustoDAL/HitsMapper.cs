@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoConnector
+namespace K2Bridge.KustoDAL
 {
     using System;
     using System.Collections.Generic;
@@ -25,8 +25,8 @@ namespace K2Bridge.KustoConnector
         {
             { typeof(sbyte), (value) => (sbyte)value != 0 },
             { typeof(SqlDecimal), (value) => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble() },
-            { typeof(Guid), (value) => (value is DBNull) || (value == null) ? null : ((Guid)value).ToString() },
-            { typeof(TimeSpan), (value) => (value is DBNull) || (value == null) ? null : XmlConvert.ToString((TimeSpan)value) },
+            { typeof(Guid), (value) => value is DBNull || value == null ? null : ((Guid)value).ToString() },
+            { typeof(TimeSpan), (value) => value is DBNull || value == null ? null : XmlConvert.ToString((TimeSpan)value) },
 
             // Elasticsearch returns timestamp fields in UTC in ISO-8601 but without Timezone.
             // Use a String type to control serialization to mimic this behavior.

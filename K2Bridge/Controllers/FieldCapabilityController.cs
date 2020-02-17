@@ -6,7 +6,7 @@ namespace K2Bridge.Controllers
 {
     using System;
     using System.Threading.Tasks;
-    using K2Bridge.DAL;
+    using K2Bridge.KustoDAL;
     using K2Bridge.Models;
     using K2Bridge.RewriteRules;
     using Microsoft.AspNetCore.Mvc;

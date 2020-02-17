@@ -9,7 +9,7 @@ namespace K2Bridge.Controllers
     using System.IO;
     using System.Threading.Tasks;
     using K2Bridge.HttpMessages;
-    using K2Bridge.KustoConnector;
+    using K2Bridge.KustoDAL;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Telemetry;

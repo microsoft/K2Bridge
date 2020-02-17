@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.DAL
+namespace K2Bridge.KustoDAL
 {
     using System.Collections;
     using System.Threading.Tasks;

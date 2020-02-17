@@ -10,8 +10,7 @@ namespace K2Bridge
     using System.Security.Cryptography;
     using System.Text;
     using K2Bridge.Controllers;
-    using K2Bridge.DAL;
-    using K2Bridge.KustoConnector;
+    using K2Bridge.KustoDAL;
     using K2Bridge.Models;
     using K2Bridge.RewriteRules;
     using K2Bridge.Telemetry;

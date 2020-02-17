@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.DAL
+namespace K2Bridge.KustoDAL
 {
     /// <summary>
     /// This class is used to create the <see cref="ISchemaRetriever"/>
@@ -10,6 +10,11 @@ namespace K2Bridge.DAL
     /// </summary>
     public interface ISchemaRetrieverFactory
     {
+        /// <summary>
+        /// Use this method to create the object.
+        /// </summary>
+        /// <param name="indexName">The index (table) get the schema for.</param>
+        /// <returns>An IShemaRetriever instance.</returns>
         ISchemaRetriever Make(string indexName);
     }
 }

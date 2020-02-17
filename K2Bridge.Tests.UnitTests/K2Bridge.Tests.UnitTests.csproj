@@ -39,10 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="KustoConnector\" />
     <Folder Include="Visitors\" />
     <Folder Include="Controllers\" />
-    <Folder Include="DAL\" />
     <Folder Include="Visitors\LuceneNet\" />
     <Folder Include="Models\Response\Metadata\" />
     <Folder Include="JsonConverters\" />
