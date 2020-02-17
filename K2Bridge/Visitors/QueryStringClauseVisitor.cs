@@ -127,8 +127,14 @@ namespace K2Bridge.Visitors
                     LowercaseExpandedTerms = false,
                 };
 
+            // escaping special charachters from the pharse before parsing.
+            // we would call QueryParser.Escape() method, but it escapes all charachters and
+            // in our case we only have to worry about backslash.
+            // implementation is based on: https://github.com/apache/lucenenet/blob/0eaf76540b8de326d1aa9ca24f4b5d6425a9ae38/src/Lucene.Net.QueryParser/Classic/QueryParserBase.cs
+            var escapedPhrase = queryStringClause.Phrase.Replace(@"\", @"\\\", StringComparison.OrdinalIgnoreCase);
+
             // we parse and get the Lucene.Net query model
-            var query = queryParser.Parse(queryStringClause.Phrase);
+            var query = queryParser.Parse(escapedPhrase);
 
             // We make our own 'visitable' Lucence.Net query model
             var luceneQuery = VisitableLuceneQueryFactory.Make(query);
