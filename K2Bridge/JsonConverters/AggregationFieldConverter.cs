@@ -20,7 +20,7 @@ namespace K2Bridge.JsonConverters
             object existingValue,
             JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
+            var jo = JObject.Load(reader);
 
             dynamic obj = Activator.CreateInstance(objectType);
             obj.FieldName = (string)jo["field"];

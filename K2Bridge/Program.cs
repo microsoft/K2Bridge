@@ -51,7 +51,7 @@ namespace K2Bridge
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
                 .WriteTo.Sink(new PrometheusSerilogSink())
-                .Destructure.ByTransforming<SensitiveData>(obj => new { Data = enableQueryLogging ? obj.Data : obj.ReductMessage })
+                .Destructure.ByTransforming<SensitiveData>(obj => new { Data = enableQueryLogging ? obj.Data : obj.RedactMessage })
                 .CreateLogger();
 
             // Log startup message with version as soon as possible
