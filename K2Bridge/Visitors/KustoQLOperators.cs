@@ -43,7 +43,7 @@ namespace K2Bridge.Visitors
         public const string Project = "project";
         public const string Search = "search";
         public const string Distinct = "distinct";
-        public const string HasPrefixCS = "hasprefix_cs";
+        public const string HasPrefix = "hasprefix";
         public const string MatchRegex = "matches regex";
         public const string GetSchema = "getschema";
         public const string Equal = "==";

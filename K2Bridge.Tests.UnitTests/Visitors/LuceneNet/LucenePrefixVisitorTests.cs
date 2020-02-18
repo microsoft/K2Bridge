@@ -37,7 +37,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
                 Throws.TypeOf<IllegalClauseException>());
         }
 
-        [TestCase(ExpectedResult = "* hasprefix_cs \"Kfar-Sa*\"")]
+        [TestCase(ExpectedResult = "* hasprefix \"Kfar-Sa*\"")]
         public string Visit_WithValidWildcardQuery_ReturnsValidReponse()
         {
             var prefixQuery = new LucenePrefixQuery
