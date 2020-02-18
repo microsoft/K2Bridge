@@ -63,10 +63,10 @@ Be mindful of the performance impact of such distributed queries, which can easi
 
 ## Prometheus Support
 
-K2Bridge supports the Prometheus protocol for metrics reporting (like request time, query time and payload size)
+K2Bridge supports the Prometheus protocol for metrics reporting (like request time, query time and payload size).
 Supported exposition formats are the 0.0.4 text and protocol buffer formats.
 
-More on the formats can be found at the [Prometheus documentations](https://prometheus.io/docs/instrumenting/exposition_formats/)
+More on the formats can be found at the [Prometheus documentations](https://prometheus.io/docs/instrumenting/exposition_formats/).
 
 K2Bridge would reply based on the content type header, so pointing your browser to:
 `http://bridge-host/metrics/` will return a text representation of the metrics with their documentation.
