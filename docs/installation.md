@@ -15,22 +15,7 @@ If you need to build the image, please follow the [build instructions](./build.m
 
 ## Run on Azure Kubernetes Service (AKS)
 
-1. [If using a private ACR] - Ensure your AKS instance can [pull images from ACR](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration).
-
-    * Option A: Azure CLI (an owner role on the ACR is required):
-
-        ```sh
-        az aks update -n myAKSCluster -g myResourceGroup --attach-acr $REGISTRY_NAME
-        ```
-
-    * Option B: Kubernetes Secrets
-
-        ```sh
-        # if pulling from private ACR
-        IMAGE_PULL_SECRET_NAME=<YOUR ACR PULL SECRET NAME>
-
-        kubectl create secret docker-registry $IMAGE_PULL_SECRET_NAME --docker-server <acrname>.azurecr.io --docker-email <email> --docker-username <client id> --docker-password <client password>
-        ```
+1. By default, K2's Helm chart references a publicly available image located on Microsoft's Container Registry (MCR) which does not require any credentials and work out of the box.
 
 1. Download the required Helm charts
 
