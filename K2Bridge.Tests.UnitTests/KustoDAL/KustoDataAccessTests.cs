@@ -38,7 +38,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor = new Mock<IQueryExecutor>();
             mockDetails = new Mock<IConnectionDetails>();
             mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(string.Empty);
-            mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
+            mockQueryExecutor.SetupGet(x => x.DefaultDatabaseName).Returns(mockDetails.Object.DefaultDatabaseName);
             using IDataReader emptyReader = new DataReaderMock(new List<Dictionary<string, object>>());
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(emptyReader));
@@ -281,7 +281,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var mockDetails = new Mock<IConnectionDetails>();
             mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(databaseName);
-            mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
+            mockQueryExecutor.SetupGet(x => x.DefaultDatabaseName).Returns(mockDetails.Object.DefaultDatabaseName);
             var searchString = $"search TableName: '{tableName}' | search DatabaseName: '{databaseName}' |";
             using IDataReader stubIndexReader = new DataReaderMock(
                 new List<Dictionary<string, object>>() {

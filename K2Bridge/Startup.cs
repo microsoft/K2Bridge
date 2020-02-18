@@ -15,6 +15,7 @@ namespace K2Bridge
     using K2Bridge.RewriteRules;
     using K2Bridge.Telemetry;
     using K2Bridge.Visitors;
+    using Kusto.Data.Net.Client;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Extensibility;
     using Microsoft.AspNetCore.Builder;
@@ -61,10 +62,17 @@ namespace K2Bridge
                 s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
 
             services.AddSingleton<IQueryExecutor, KustoQueryExecutor>(
-                s => new KustoQueryExecutor(
-                    s.GetRequiredService<IConnectionDetails>(),
-                    s.GetRequiredService<ILogger<KustoQueryExecutor>>(),
-                    s.GetRequiredService<Telemetry.Metrics>()));
+                s =>
+                {
+                    var conn = KustoQueryExecutor
+                        .CreateKustoConnectionStringBuilder(s.GetRequiredService<IConnectionDetails>());
+
+                    return new KustoQueryExecutor(
+                     KustoClientFactory.CreateCslQueryProvider(conn),
+                     KustoClientFactory.CreateCslAdminProvider(conn),
+                     s.GetRequiredService<ILogger<KustoQueryExecutor>>(),
+                     s.GetRequiredService<Telemetry.Metrics>());
+                });
 
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 

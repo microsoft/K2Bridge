@@ -30,16 +30,33 @@ namespace K2Bridge.KustoDAL
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoQueryExecutor"/> class.
         /// </summary>
-        /// <param name="connectionDetails">Kusto Connection Details.</param>
+        /// <param name="adminClient">Admin client.</param>
+        /// <param name="queryClient">Query client.</param>
         /// <param name="logger">A logger.</param>
         /// <param name="metricsHistograms">The instance of the class to record metrics.</param>
         public KustoQueryExecutor(
-            IConnectionDetails connectionDetails,
+            ICslQueryProvider queryClient,
+            ICslAdminProvider adminClient,
             ILogger<KustoQueryExecutor> logger,
             Metrics metricsHistograms)
         {
             Logger = logger;
+            this.queryClient = queryClient ?? throw new ArgumentNullException(nameof(queryClient));
+            this.adminClient = adminClient ?? throw new ArgumentNullException(nameof(adminClient));
+            this.metricsHistograms = metricsHistograms;
+        }
 
+        public string DefaultDatabaseName { get => queryClient.DefaultDatabaseName; }
+
+        private ILogger Logger { get; set; }
+
+        /// <summary>
+        /// A helper method to create <see cref="KustoConnectionStringBuilder"/>.
+        /// </summary>
+        /// <param name="connectionDetails">Connection deatails.</param>
+        /// <returns>A new instance of <see cref="KustoConnectionStringBuilder"/>.</returns>
+        public static KustoConnectionStringBuilder CreateKustoConnectionStringBuilder(IConnectionDetails connectionDetails)
+        {
             var conn = new KustoConnectionStringBuilder(
                 connectionDetails.ClusterUrl,
                 connectionDetails.DefaultDatabaseName)
@@ -51,17 +68,8 @@ namespace K2Bridge.KustoDAL
             // Sending both name and version this way for better visibility in Kusto audit logs.
             conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion}";
 
-            logger.LogTrace("Creating new kusto clients");
-            queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
-            adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
-            ConnectionDetails = connectionDetails;
-            this.metricsHistograms = metricsHistograms;
+            return conn;
         }
-
-        /// <inheritdoc/>
-        public IConnectionDetails ConnectionDetails { get; set; }
-
-        private ILogger Logger { get; set; }
 
         /// <summary>
         /// Executes a Control command in Kusto.

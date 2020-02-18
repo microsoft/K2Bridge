@@ -45,7 +45,7 @@ namespace K2Bridge.KustoDAL
             try
             {
                 Logger.LogDebug("Getting schema for table '{@indexName}'", indexName);
-                var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
+                var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.DefaultDatabaseName);
                 string kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=='{tableName}' {KustoQLOperators.And} DatabaseName=='{databaseName}' {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
                 using IDataReader kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, requestContext);
                 MapFieldCaps(kustoResults, response);
@@ -82,13 +82,13 @@ namespace K2Bridge.KustoDAL
             try
             {
                 Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
-                var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.ConnectionDetails.DefaultDatabaseName);
+                var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.DefaultDatabaseName);
                 string readTablesCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
                 using IDataReader kustoTables = await Kusto.ExecuteControlCommandAsync(readTablesCommand, requestContext);
                 MapIndexList(kustoTables, response);
 
                 Logger.LogDebug("Listing functions matching '{@indexName}'", indexName);
-                var defaultDb = Kusto.ConnectionDetails.DefaultDatabaseName;
+                var defaultDb = Kusto.DefaultDatabaseName;
                 string readFunctionsCommand = $".show {KustoQLOperators.Functions} | {KustoQLOperators.Where} Parameters == '()' | {KustoQLOperators.Distinct} Name | {KustoQLOperators.Search} Name: '{tableName}' | {KustoQLOperators.Project} strcat(\"{defaultDb}\", \"{KustoDatabaseTableNames.Separator}\", Name)";
                 using IDataReader kustoFunctions = await Kusto.ExecuteControlCommandAsync(readFunctionsCommand, requestContext);
                 MapIndexList(kustoFunctions, response);
