@@ -50,6 +50,8 @@ If you need to build the image, please follow the [build instructions](./build.m
         helm install k2bridge charts/k2bridge -n k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"] [--set settings.instrumentationKey="$APPLICATION_INSIGHTS_KEY" --set settings.collectTelemetry=$COLLECT_TELEMETRY]
         ```
 
+        The complete set of configuration options can be found [here](./configuration.md).
+
     * Deploy Kibana
     The command output will suggest a helm command to run to deploy Kibana, similar to:
 
