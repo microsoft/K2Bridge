@@ -251,6 +251,9 @@ stages:
   - job: Deploy_K2Bridge
     displayName: Deploy K2Bridge
     dependsOn: Terraform
+    variables:
+      ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+        NOT_MASTER_ES_CONFIG: "--set elasticsearch.replicas=2 --set elasticsearch.minimumMasterNodes=2"
     steps:
 
     - template: infrastructure/setup-k8s-clients-template.yml
@@ -274,7 +277,7 @@ stages:
         # Deploy chart
         helm upgrade --install k2bridge $(ACR_NAME)/k2bridge \
           --version "$SEMANTIC_VERSION" \
-          --wait --timeout 45m \
+          --wait --timeout 30m \
           --set image.repository=$(ACR_NAME).azurecr.io/k2bridge \
           --set image.tag=$SEMANTIC_VERSION \
           --set replicaCount=2 \
@@ -284,7 +287,8 @@ stages:
           --set settings.aadClientSecret="$secret" \
           --set settings.aadTenantId="$TENANT_ID" \
           --set settings.collectTelemetry="$COLLECT_TELEMETRY" \
-          --set settings.instrumentationKey="$TELEMETRY_KEY"
+          --set settings.instrumentationKey="$TELEMETRY_KEY" \
+          ${NOT_MASTER_ES_CONFIG:-} #defaults to an empty string
         # List charts after deploying (for job log)
         helm list
       displayName: Install Helm chart

@@ -31,8 +31,12 @@ namespace K2Bridge.Models.Response
         [JsonProperty("_source")]
         public JObject Source { get; } = new JObject();
 
-        [JsonProperty("fields", NullValueHandling = NullValueHandling.Ignore)]
-        public Fields Fields { get; set; }
+        /// <summary>
+        /// Gets the fields asked by the client in the doc_fields element.
+        /// Apparently, the fields are used by the client to convert date to the proper timezone.
+        /// </summary>
+        [JsonProperty("fields")]
+        public Dictionary<string, List<object>> Fields { get; } = new Dictionary<string, List<object>>();
 
         [JsonProperty("sort")]
         public IList<object> Sort { get; } = new List<object>();

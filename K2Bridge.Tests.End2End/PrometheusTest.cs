@@ -8,6 +8,10 @@ namespace K2Bridge.Tests.End2End
     using System.Net.Http.Headers;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.ApplicationInsights;
+    using Microsoft.ApplicationInsights.Channel;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using Moq;
     using NUnit.Framework;
     using static System.StringComparison;
 
@@ -51,7 +55,7 @@ namespace K2Bridge.Tests.End2End
             var response = await K2Client().Client().SendAsync(request);
             var responseData = await response.Content.ReadAsStringAsync();
 
-            var metrics = Telemetry.Metrics.Create();
+            var metrics = Telemetry.Metrics.Create(GetMockTelemetryClient());
 
             Assert.True(
                 responseData.Contains(
@@ -70,6 +74,16 @@ namespace K2Bridge.Tests.End2End
                 $"# HELP {metrics.AdxQueryBytesMetric.Name} {metrics.AdxQueryBytesMetric.Help}\n"
                 + $"# TYPE {metrics.AdxQueryBytesMetric.Name} histogram\n",
                 Ordinal), responseData);
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
+        private TelemetryClient GetMockTelemetryClient()
+        {
+            return new TelemetryClient(
+                new TelemetryConfiguration
+                {
+                    TelemetryChannel = new Mock<ITelemetryChannel>().Object,
+                });
         }
     }
 }

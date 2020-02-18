@@ -17,6 +17,11 @@ namespace K2Bridge
         private const string CorrelationIdHeader = "x-correlation-id";
         private readonly RequestDelegate next;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CorrelationIdHeaderMiddleware"/> class.
+        /// A middleware to handle correlation id.
+        /// </summary>
+        /// <param name="next">The RequestDelegate.</param>
         public CorrelationIdHeaderMiddleware(RequestDelegate next)
         {
             this.next = next;
@@ -25,6 +30,8 @@ namespace K2Bridge
         /// <summary>
         /// Gets CorrelationId header from Request (or sets a new one), and sets it in Response.
         /// </summary>
+        /// <param name="httpContext">The HttpContext of the request.</param>
+        /// <returns>A <see cref="Task"/> representing the work in the middleware.</returns>
         public Task Invoke(HttpContext httpContext)
         {
             var correlationId = GetCorrelationIdHeaderOrGenerateNew(httpContext.Request.Headers);

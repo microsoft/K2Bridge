@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoConnector
+namespace K2Bridge.KustoDAL
 {
     using System;
     using System.Data;
@@ -12,7 +12,6 @@ namespace K2Bridge.KustoConnector
     using Kusto.Data;
     using Kusto.Data.Common;
     using Kusto.Data.Net.Client;
-
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -31,16 +30,33 @@ namespace K2Bridge.KustoConnector
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoQueryExecutor"/> class.
         /// </summary>
-        /// <param name="connectionDetails">Kusto Connection Details.</param>
+        /// <param name="adminClient">Admin client.</param>
+        /// <param name="queryClient">Query client.</param>
         /// <param name="logger">A logger.</param>
         /// <param name="metricsHistograms">The instance of the class to record metrics.</param>
         public KustoQueryExecutor(
-            IConnectionDetails connectionDetails,
+            ICslQueryProvider queryClient,
+            ICslAdminProvider adminClient,
             ILogger<KustoQueryExecutor> logger,
             Metrics metricsHistograms)
         {
             Logger = logger;
+            this.queryClient = queryClient ?? throw new ArgumentNullException(nameof(queryClient));
+            this.adminClient = adminClient ?? throw new ArgumentNullException(nameof(adminClient));
+            this.metricsHistograms = metricsHistograms;
+        }
 
+        public string DefaultDatabaseName { get => queryClient.DefaultDatabaseName; }
+
+        private ILogger Logger { get; set; }
+
+        /// <summary>
+        /// A helper method to create <see cref="KustoConnectionStringBuilder"/>.
+        /// </summary>
+        /// <param name="connectionDetails">Connection deatails.</param>
+        /// <returns>A new instance of <see cref="KustoConnectionStringBuilder"/>.</returns>
+        public static KustoConnectionStringBuilder CreateKustoConnectionStringBuilder(IConnectionDetails connectionDetails)
+        {
             var conn = new KustoConnectionStringBuilder(
                 connectionDetails.ClusterUrl,
                 connectionDetails.DefaultDatabaseName)
@@ -52,17 +68,8 @@ namespace K2Bridge.KustoConnector
             // Sending both name and version this way for better visibility in Kusto audit logs.
             conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion}";
 
-            logger.LogTrace("Creating new kusto clients");
-            queryClient = KustoClientFactory.CreateCslQueryProvider(conn);
-            adminClient = KustoClientFactory.CreateCslAdminProvider(conn);
-            ConnectionDetails = connectionDetails;
-            this.metricsHistograms = metricsHistograms;
+            return conn;
         }
-
-        /// <inheritdoc/>
-        public IConnectionDetails ConnectionDetails { get; set; }
-
-        private ILogger Logger { get; set; }
 
         /// <summary>
         /// Executes a Control command in Kusto.
@@ -75,7 +82,7 @@ namespace K2Bridge.KustoConnector
             // TODO: When a single K2 flow will generate multiple requests to Kusto - find a way to differentiate them using different ClientRequestIds
             var clientRequestProperties = ClientRequestPropertiesExtensions.ConstructClientRequestPropertiesFromRequestContext(KustoApplicationNameForTracing, ControlCommandActivityName, requestContext);
 
-            Logger.LogDebug("Calling adminClient.ExecuteControlCommand with the command: {@command}", command);
+            Logger.LogDebug("Calling adminClient.ExecuteControlCommand with the command: {@command}", command.ToSensitiveData());
             var result = await adminClient.ExecuteControlCommandAsync(string.Empty, command, clientRequestProperties);
             return result;
         }
@@ -93,7 +100,7 @@ namespace K2Bridge.KustoConnector
 
             // Use the kusto client to execute the query
             var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, clientRequestProperties, metricsHistograms);
-            Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData);
+            Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData.ToSensitiveData());
 
             var fieldCount = dataReader.FieldCount;
             Logger.LogDebug("FieldCount: {@fieldCount}", fieldCount);

@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.KustoConnector
+namespace UnitTests.K2Bridge.KustoDAL
 {
     using System;
     using System.Data;
     using System.Linq;
-    using global::K2Bridge.KustoConnector;
+    using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
     using global::K2Bridge.Telemetry;
     using Kusto.Data;

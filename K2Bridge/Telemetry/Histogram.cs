@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Telemetry
 {
+    using Microsoft.ApplicationInsights;
     using Prometheus;
 
     /// <summary>
@@ -12,6 +13,7 @@ namespace K2Bridge.Telemetry
     public class Histogram
     {
         private readonly IHistogram histogram;
+        private readonly Metric appInsightsMetric;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Histogram"/> class.
@@ -26,11 +28,13 @@ namespace K2Bridge.Telemetry
         /// <param name="histogram">A histogram.</param>
         /// <param name="name">A name.</param>
         /// <param name="help">Help text.</param>
-        public Histogram(IHistogram histogram, string name, string help)
+        /// <param name="appInsightsMetric">The ApplicationInsights <see cref="Metric"/> object.</param>
+        public Histogram(IHistogram histogram, string name, string help, Metric appInsightsMetric)
         {
             this.histogram = histogram;
             Name = name;
             Help = help;
+            this.appInsightsMetric = appInsightsMetric;
         }
 
         /// <summary>
@@ -50,6 +54,9 @@ namespace K2Bridge.Telemetry
         public void Observe(double val)
         {
             histogram.Observe(val);
+
+            // AppInsights might not be on and the metric could be null
+            appInsightsMetric?.TrackValue(val);
         }
     }
 }

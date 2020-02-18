@@ -10,6 +10,7 @@ namespace K2Bridge
     using K2Bridge.Models;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Telemetry;
     using K2Bridge.Visitors;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -46,7 +47,7 @@ namespace K2Bridge
 
             try
             {
-                Logger.LogDebug("Translate params: header:{@header}, query:{@query}", header, query);
+                Logger.LogDebug("Translate params: header:{@header}, query:{@query}", header, query.ToSensitiveData());
 
                 // Prepare the esDSL object, except some fields such as the query field which will be built later
                 var elasticSearchDsl = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
@@ -87,12 +88,19 @@ namespace K2Bridge
                     sortFields.Add(clause.FieldName);
                 });
 
+                var docValueFields = new List<string>();
+                elasticSearchDsl.DocValueFields?.ForEach(item =>
+                {
+                    docValueFields.Add(item.Field);
+                });
+
                 // Use the visitor and build the KustoQL string from the esDSL object
                 elasticSearchDsl.Accept(visitor);
                 var queryData = new QueryData(
                     elasticSearchDsl.KustoQL,
                     elasticSearchDsl.IndexName,
                     sortFields,
+                    docValueFields,
                     elasticSearchDsl.HighlightText);
 
                 if (elasticSearchDsl.Highlight != null)

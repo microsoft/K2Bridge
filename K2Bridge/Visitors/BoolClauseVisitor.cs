@@ -66,7 +66,10 @@ namespace K2Bridge.Visitors
                 }
 
                 leafQuery.Accept(this);
-                kqlExpressions.Add($"{(negativeCondition ? $"{KustoQLOperators.Not} " : string.Empty)}({leafQuery.KustoQL})");
+                if (leafQuery.KustoQL != null)
+                {
+                    kqlExpressions.Add($"{(negativeCondition ? $"{KustoQLOperators.Not} " : string.Empty)}({leafQuery.KustoQL})");
+                }
             }
 
             QueryListToString(kqlExpressions, delimiterKeyword, boolQuery);

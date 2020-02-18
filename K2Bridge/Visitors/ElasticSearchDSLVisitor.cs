@@ -6,7 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
     using System.Text;
-    using K2Bridge.DAL;
+    using K2Bridge.KustoDAL;
     using K2Bridge.Models;
     using K2Bridge.Models.Request;
 

@@ -29,6 +29,9 @@ namespace K2Bridge.Models.Request
         [JsonProperty("aggs")]
         public Dictionary<string, Aggregation> Aggregations { get; set; }
 
+        [JsonProperty("docvalue_fields")]
+        public List<DocValueField> DocValueFields { get; set; }
+
         [JsonProperty("highlight")]
         public Highlight Highlight { get; set; }
 

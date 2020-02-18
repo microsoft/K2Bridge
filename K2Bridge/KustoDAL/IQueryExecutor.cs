@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoConnector
+namespace K2Bridge.KustoDAL
 {
     using System;
     using System.Data;
@@ -11,10 +11,9 @@ namespace K2Bridge.KustoConnector
 
     public interface IQueryExecutor
     {
-        IConnectionDetails ConnectionDetails
+        string DefaultDatabaseName
         {
             get;
-            set;
         }
 
         Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext);

@@ -17,8 +17,9 @@ namespace K2Bridge.Models
         /// <param name="queryCommandText">The query to execute.</param>
         /// <param name="indexName">The index to be searched.</param>
         /// <param name="sortFields">Field names specified in query sort clause.</param>
+        /// <param name="docValueFields">Field names specified in query docvalue_fields clause.</param>
         /// <param name="highlightText">What terms need to be highlighted in the results.</param>
-        public QueryData(string queryCommandText, string indexName, IList<string> sortFields = null, Dictionary<string, string> highlightText = null)
+        public QueryData(string queryCommandText, string indexName, IList<string> sortFields = null, IList<string> docValueFields = null, Dictionary<string, string> highlightText = null)
         {
             Ensure.IsNotNullOrEmpty(queryCommandText, nameof(queryCommandText), "Query string cannot be empty or null");
             Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), "Index name string cannot be empty or null");
@@ -26,6 +27,7 @@ namespace K2Bridge.Models
             QueryCommandText = queryCommandText;
             IndexName = indexName;
             SortFields = sortFields;
+            DocValueFields = docValueFields;
             HighlightText = highlightText;
             HighlightPreTag = string.Empty;
             HighlightPostTag = string.Empty;
@@ -45,6 +47,11 @@ namespace K2Bridge.Models
         /// Gets the field names to sort by.
         /// </summary>
         public IList<string> SortFields { get; private set; }
+
+        /// <summary>
+        /// Gets the field names to be returned in the fields element.
+        /// </summary>
+        public IList<string> DocValueFields { get; private set; }
 
         /// <summary>
         /// Gets the Highlight request info.

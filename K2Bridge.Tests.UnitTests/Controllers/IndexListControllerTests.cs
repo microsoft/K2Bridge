@@ -7,7 +7,7 @@ namespace UnitTests.K2Bridge.Controllers
     using System;
     using System.Threading.Tasks;
     using global::K2Bridge.Controllers;
-    using global::K2Bridge.DAL;
+    using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
     using global::K2Bridge.Models.Response.Metadata;
     using Microsoft.AspNetCore.Http;

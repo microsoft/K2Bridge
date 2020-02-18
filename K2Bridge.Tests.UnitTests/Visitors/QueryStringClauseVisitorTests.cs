@@ -9,10 +9,10 @@ namespace UnitTests.K2Bridge.Visitors
     using NUnit.Framework;
 
     [TestFixture]
-    public class QueryVisitorTests
+    public class QueryStringClauseVisitorTests
     {
         [TestCase(ExpectedResult = "* has \"myPharse\"")]
-        public string QueryVisit_WithSimplePhrase_ReturnsHasResponse()
+        public string Visit_WithSimplePhrase_ReturnsHasResponse()
         {
             var queryClause = CreateQueryStringClause("myPharse", true);
 
@@ -21,7 +21,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(ExpectedResult =
             "(* has \"myPharse\") and (* has \"herPhrase\")")]
-        public string QueryVisit_WithMultiplePhrase_ReturnsHasAndResponse()
+        public string Visit_WithMultiplePhrase_ReturnsHasAndResponse()
         {
             var queryClause = CreateQueryStringClause("myPharse AND herPhrase", true);
 
@@ -30,7 +30,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(ExpectedResult =
             "(* has \"myPharse\") or (* has \"herPhrase\")")]
-        public string QueryVisit_WithMultipleOrPhrase_ReturnsHasOrResponse()
+        public string Visit_WithMultipleOrPhrase_ReturnsHasOrResponse()
         {
             var queryClause = CreateQueryStringClause("myPharse OR herPhrase", true);
 
@@ -39,7 +39,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(ExpectedResult =
             "not (* has \"myPharse\") and not (* has \"herPhrase\")")]
-        public string QueryVisit_WithMultipleNotPhrase_ReturnsHasAndNotResponse()
+        public string Visit_WithMultipleNotPhrase_ReturnsHasAndNotResponse()
         {
             var queryClause = CreateQueryStringClause("NOT myPharse AND NOT herPhrase", true);
 
@@ -48,7 +48,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(ExpectedResult =
             "(* has \"Dogs\") and (* contains \"My cats\")")]
-        public string QueryVisit_WithQuotationPhrase_ReturnsContainsResponse()
+        public string Visit_WithQuotationPhrase_ReturnsContainsResponse()
         {
             var queryClause = CreateQueryStringClause("Dogs AND \"My cats\"", true);
 
@@ -57,9 +57,35 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(ExpectedResult =
             "(* has \"Tokyo\") and (* contains \"Haneda International\") or ((* has \"A\") and (* contains \"b c\"))")]
-        public string QueryVisit_WithMultipleQuotationPhrase_ReturnsAndContainsResponse()
+        public string Visit_WithMultipleQuotationPhrase_ReturnsAndContainsResponse()
         {
             var queryClause = CreateQueryStringClause("Tokyo AND \"Haneda International\" OR (A AND \"b c\")", true);
+
+            return VisitQuery(queryClause);
+        }
+
+        [TestCase(ExpectedResult =
+            "* has \"\\\"Get\"")]
+        public string Visit_WithBreakQuotationPhrase_ReturnsAndContainsResponse()
+        {
+            var queryClause = CreateQueryStringClause("\\\"Get", false);
+
+            return VisitQuery(queryClause);
+        }
+
+        [TestCase(ExpectedResult =
+            "* has \"\\dev\\kusto\\KibanaKustoBridge\"")]
+        public string Visit_WithBreakQuotePhrase_ReturnsAndContainsResponse()
+        {
+            var queryClause = CreateQueryStringClause(@"\dev\kusto\KibanaKustoBridge", false);
+
+            return VisitQuery(queryClause);
+        }
+
+        [TestCase(ExpectedResult = null)]
+        public string Visit_WithEmptyQuotePhrase_ReturnsAndContainsResponse()
+        {
+            var queryClause = CreateQueryStringClause("\"\"", false);
 
             return VisitQuery(queryClause);
         }

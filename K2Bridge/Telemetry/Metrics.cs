@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Telemetry
 {
+    using Microsoft.ApplicationInsights;
     using Prometheus;
 
     /// <summary>
@@ -30,42 +31,46 @@ namespace K2Bridge.Telemetry
         /// <summary>
         /// A factory function.
         /// </summary>
+        /// <param name="telemetryClient">The ApplicationInsights telemery client (null if AppInsights is off).</param>
         /// <returns>a MetricsHistograms.</returns>
-        public static Metrics Create()
+        public static Metrics Create(TelemetryClient telemetryClient)
         {
-            var mh = new Metrics();
+            var metrics = new Metrics();
 
             var name = "adx_query_total_seconds";
             var help = "ADX query total execution time in seconds.";
-            mh.AdxQueryDurationMetric = new Histogram(
+            metrics.AdxQueryDurationMetric = new Histogram(
                 Prometheus.Metrics.CreateHistogram(name, help, new HistogramConfiguration
                 {
                     Buckets = Prometheus.Histogram.LinearBuckets(start: 1, width: 1, count: 60),
                 }),
                 name,
-                help);
+                help,
+                telemetryClient?.GetMetric(name));
 
             name = "adx_query_net_seconds";
             help = "ADX query net execution time in seconds.";
-            mh.AdxNetQueryDurationMetric = new Histogram(
+            metrics.AdxNetQueryDurationMetric = new Histogram(
                 Prometheus.Metrics.CreateHistogram(name, help, new HistogramConfiguration
                 {
                     Buckets = Prometheus.Histogram.LinearBuckets(start: 1, width: 1, count: 60),
                 }),
                 name,
-                help);
+                help,
+                telemetryClient?.GetMetric(name));
 
             name = "adx_query_result_bytes";
             help = "ADX query result payload size in bytes.";
-            mh.AdxQueryBytesMetric = new Histogram(
+            metrics.AdxQueryBytesMetric = new Histogram(
                 Prometheus.Metrics.CreateHistogram(name, help, new HistogramConfiguration
                 {
                     Buckets = Prometheus.Histogram.LinearBuckets(start: 1, width: 250000, count: 40),
                 }),
                 name,
-                help);
+                help,
+                telemetryClient?.GetMetric(name));
 
-            return mh;
+            return metrics;
         }
     }
 }

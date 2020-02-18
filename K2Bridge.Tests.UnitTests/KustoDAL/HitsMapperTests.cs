@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.KustoConnector
+namespace UnitTests.K2Bridge.KustoDAL
 {
     using System;
     using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace UnitTests.K2Bridge.KustoConnector
     using System.IO;
     using FluentAssertions;
     using FluentAssertions.Json;
-    using global::K2Bridge.KustoConnector;
+    using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
     using global::K2Bridge.Models.Response;
     using Microsoft.Extensions.Logging;
@@ -194,6 +194,38 @@ namespace UnitTests.K2Bridge.KustoConnector
             expected[0]["sort"] = JToken.FromObject(new object[] { expectedValue });
             query.HighlightPreTag = "Foo";
             query.HighlightPostTag = "Bar";
+
+            // Act
+            var hits = ReadHits(table, query);
+
+            // Assert
+            AssertHits(hits);
+        }
+
+        [Test]
+        [TestCase("label1", "boxes")]
+        [TestCase("instant", "2017-01-02T13:04:05.06Z")]
+        [TestCase("value", 234)]
+        public void MapRowsToHits_WithDocFields_ReturnsHitsWithFields(string field, object expectedValue)
+        {
+            // Arrange
+            using var table = SampleData();
+            var query = new QueryData(
+                "myKQL",
+                "myIndex",
+                sortFields: null,
+                docValueFields: new List<string> { field },
+                highlightText: null);
+
+            // for some reason working with date objects doesn't really work so we have
+            // to actually convert it to a datetime.
+            var isDate = DateTime.TryParse(expectedValue.ToString(), out var date);
+
+            var expectedObject = new Dictionary<string, List<object>>
+            {
+                { field, new List<object> { isDate ? date.ToUniversalTime() : expectedValue } },
+            };
+            expected[0]["fields"] = JToken.FromObject(expectedObject);
 
             // Act
             var hits = ReadHits(table, query);

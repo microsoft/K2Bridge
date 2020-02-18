@@ -2,15 +2,14 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.DAL
+namespace UnitTests.K2Bridge.KustoDAL
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Threading.Tasks;
     using FluentAssertions.Json;
-    using global::K2Bridge.DAL;
-    using global::K2Bridge.KustoConnector;
+    using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
     using global::K2Bridge.Models.Response;
     using Microsoft.Extensions.Logging;
@@ -39,7 +38,7 @@ namespace UnitTests.K2Bridge.DAL
             mockQueryExecutor = new Mock<IQueryExecutor>();
             mockDetails = new Mock<IConnectionDetails>();
             mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(string.Empty);
-            mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
+            mockQueryExecutor.SetupGet(x => x.DefaultDatabaseName).Returns(mockDetails.Object.DefaultDatabaseName);
             using IDataReader emptyReader = new DataReaderMock(new List<Dictionary<string, object>>());
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(emptyReader));
@@ -282,7 +281,7 @@ namespace UnitTests.K2Bridge.DAL
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var mockDetails = new Mock<IConnectionDetails>();
             mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(databaseName);
-            mockQueryExecutor.SetupGet(x => x.ConnectionDetails).Returns(mockDetails.Object);
+            mockQueryExecutor.SetupGet(x => x.DefaultDatabaseName).Returns(mockDetails.Object.DefaultDatabaseName);
             var searchString = $"search TableName: '{tableName}' | search DatabaseName: '{databaseName}' |";
             using IDataReader stubIndexReader = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
