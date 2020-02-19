@@ -140,8 +140,6 @@ namespace K2Bridge.KustoDAL
             {
                 Logger.LogWarning("Backend query bytes is zero.");
             }
-
-            Logger.LogDebug("Backend query resource usage: {resourceUsage}", parsedQueryStatus.SelectToken("resource_usage").ToString());
         }
 
         /// <summary>

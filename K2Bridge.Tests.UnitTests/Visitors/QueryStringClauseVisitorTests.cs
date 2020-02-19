@@ -74,10 +74,10 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(ExpectedResult =
-            "* has \"\\dev\\kusto\\KibanaKustoBridge\"")]
+            "* has \"\\dev\\kusto\\K2Bridge\"")]
         public string Visit_WithBreakQuotePhrase_ReturnsAndContainsResponse()
         {
-            var queryClause = CreateQueryStringClause(@"\dev\kusto\KibanaKustoBridge", false);
+            var queryClause = CreateQueryStringClause(@"\dev\kusto\K2Bridge", false);
 
             return VisitQuery(queryClause);
         }
