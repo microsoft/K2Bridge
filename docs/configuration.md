@@ -17,3 +17,4 @@
 | AAD tenant ID                                   | settings.aadTenantId            |                     NONE                     |     X    |                                                                     |
 | ApplicationInsights instrumentation key         | settings.instrumentationKey     |                     NONE                     |     V    | won't work without setting collectTelemetry to 'true'               |
 | Toggle telemetry sending to ApplicationInsights | settings.collectTelemetry       |                     false                    |     V    | when set to 'true' the instrumentation key must be provided         |
+|         Toggle query related data logging       | settings.enableQueryLogging     |                     true                     |     X    |                                                 |

@@ -23,6 +23,7 @@ settings:
   aadTenantId: "00000000-0000-0000-0000-000000000000"
   instrumentationKey: "00000000-0000-0000-0000-000000000000"
   collectTelemetry: false
+  enableQueryLogging: true
 
 service:
   type: ClusterIP

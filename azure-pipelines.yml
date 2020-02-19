@@ -288,6 +288,7 @@ stages:
           --set settings.aadTenantId="$TENANT_ID" \
           --set settings.collectTelemetry="$COLLECT_TELEMETRY" \
           --set settings.instrumentationKey="$TELEMETRY_KEY" \
+          --set settings.enableQueryLogging=true \
           ${NOT_MASTER_ES_CONFIG:-} #defaults to an empty string
         # List charts after deploying (for job log)
         helm list

@@ -24,6 +24,7 @@
       "metadataElasticAddress": "http://localhost:9200",
       "outputBackendQuery": "true",
       "collectTelemetry": "false", //unless you want to work on app-insights
+      "enableQueryLogging": "true",
 
        //this section overrides default Serilog configuration to make it easier to develop and see logs.
       "Serilog": {
