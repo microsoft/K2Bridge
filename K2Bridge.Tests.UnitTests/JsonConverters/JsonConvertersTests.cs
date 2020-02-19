@@ -5,16 +5,15 @@
 namespace UnitTests.K2Bridge.JsonConverters
 {
     using DeepEqual.Syntax;
-    using global::K2Bridge.Models.Request.Queries;
     using Newtonsoft.Json;
     using NUnit.Framework;
 
     public partial class JsonConvertersTests
     {
-        public static void TestQueryStringQueriesInternal(string queryString, object expected)
+        public static void TestQueryStringQueriesInternal<T>(string queryString, T expected)
         {
-            var expectedRes = (Query)expected;
-            var deserializedObj = JsonConvert.DeserializeObject<Query>(queryString);
+            var expectedRes = expected;
+            var deserializedObj = JsonConvert.DeserializeObject<T>(queryString);
             Assert.IsTrue(expectedRes.IsDeepEqual(deserializedObj));
         }
     }

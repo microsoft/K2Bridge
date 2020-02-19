@@ -137,7 +137,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         };
 
         [TestCaseSource(nameof(QueryStringClauseTestCases))]
-        public void TestQueryStringQueries(string queryString, object expected)
+        public void TestQueryStringQueries<T>(string queryString, T expected)
         {
             TestQueryStringQueriesInternal(queryString, expected);
         }
