@@ -19,14 +19,21 @@ If you need to build the image, please follow the [build instructions](./build.m
 
 1. Download the required Helm charts
 
-    * The chart is located under the [charts](./charts) directory. Clone the repository to get the chart.
-
-    * Add the Elasticsearch dependency to Helm:
+    1. Add the Elasticsearch dependency to Helm:
 
         ```sh
         helm repo add elastic https://helm.elastic.co
         helm repo update
         ```
+
+    1. The K2 chart is located under the [charts](../charts) directory. Clone the repository to get the chart.
+
+        1. go to the K2 root repository directory
+
+        1. run
+            ```sh
+            helm dependency update charts/k2bridge
+            ```
 
 1. Deploy
 

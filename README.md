@@ -33,7 +33,6 @@ K2Bridge generates a *random* number for this value. Please note that this is *n
 ## Installing
 
 K2Bridge deploys to Kubernetes. Instructions are available [here](./docs/installation.md).
-TODO: replace with a quick install guide when images are public.
 
 ## Connecting data
 
