@@ -458,3 +458,22 @@ stages:
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
             "$ACR_NAME.azurecr.io/k2bridge:latest"
           docker push "$ACR_NAME.azurecr.io/k2bridge:latest"
+
+          - task: AzureCLI@1
+          displayName: Tag Docker image as latest for MCR
+          inputs:
+            azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+            scriptLocation: inlineScript
+            inlineScript: |
+              set -eux  # fail on error
+              az configure --defaults acr="$ACR_MCR_NAME"
+              az acr login
+              docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
+              docker tag \
+                "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
+                "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:latest"
+              docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:latest"
+              docker tag \
+                "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
+                "$ACR_MCR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
+              docker push "$ACR_MCR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
