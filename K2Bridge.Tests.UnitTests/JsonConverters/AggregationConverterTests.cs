@@ -128,7 +128,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 },
         };
 
-        private static readonly object[] AggregationTestsCases = {
+        private static readonly object[] AggregationTestCases = {
             new TestCaseData(DateHistogramAggregation, ExpectedValidDateHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidDateHistogram_DeserializedCorrectly"),
             new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
             new TestCaseData(AvgAggregation, ExpectedValidAvgAggregation).SetName("JsonDeserializeObject_WithAggregationValidAvg_DeserializedCorrectly"),
@@ -136,7 +136,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
 
-        [TestCaseSource(nameof(AggregationTestsCases))]
+        [TestCaseSource(nameof(AggregationTestCases))]
         public void TestAggregationConverter(string queryString, object expected)
         {
             queryString.AssertJsonString((Aggregation)expected);

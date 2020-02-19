@@ -5,6 +5,7 @@
 namespace K2Bridge.Models.Response.Metadata
 {
     using System;
+    using K2Bridge.JsonConverters;
     using Newtonsoft.Json;
 
     [JsonConverter(typeof(FieldCapabilityElementConverter))]
