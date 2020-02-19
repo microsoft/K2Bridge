@@ -56,6 +56,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enable_auto_scaling   = true
     max_count             = 15
     min_count             = 3
+    lifecycle {
+      ignore_changes = [
+        node_count,
+      ]
+    }
   }
 
   addon_profile {
