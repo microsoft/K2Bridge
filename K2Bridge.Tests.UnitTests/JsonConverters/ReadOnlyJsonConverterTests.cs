@@ -9,7 +9,7 @@ namespace UnitTests.K2Bridge.JsonConverters
     using NUnit.Framework;
 
     [TestFixture]
-    public partial class JsonConvertersTests
+    public class ReadOnlyJsonConverterTests
     {
         [Test]
         public void ReadOnlyJsonConverter_CanWrite_ReturnsFalse()

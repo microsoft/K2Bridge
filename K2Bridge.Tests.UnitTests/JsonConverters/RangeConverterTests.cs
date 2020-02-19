@@ -10,7 +10,7 @@ namespace UnitTests.K2Bridge.JsonConverters
     using NUnit.Framework;
 
     [TestFixture]
-    public partial class JsonConvertersTests
+    public class RangeConverterTests
     {
         private const string QueryTimestampRangeSingle = @"
             {""bool"":
@@ -128,15 +128,15 @@ namespace UnitTests.K2Bridge.JsonConverters
         };
 
         private static readonly object[] RangeTestCases = {
-            new TestCaseData(QueryTimestampRangeSingle, ExpectedValidQueryTimestampRange).SetName("ValidRangeClause_SimpleTimestampRange_DeserializedCorrectly"),
-            new TestCaseData(QueryBetweenRangeSingle, ExpectedValidQueryBetweenRange).SetName("ValidRangeClause_FieldBetweenRange_DeserializedCorrectly"),
-            new TestCaseData(QueryTimestampRangeSingleNoPair, ExpectedValidQueryTimestampRangeSingleNoPair).SetName("ValidRangeClause_TimestampRangeNoPair_DeserializedCorrectly"),
+            new TestCaseData(QueryTimestampRangeSingle, ExpectedValidQueryTimestampRange).SetName("JsonDeserializeObject_WithQuerySimpleTimestampRange_DeserializedCorrectly"),
+            new TestCaseData(QueryBetweenRangeSingle, ExpectedValidQueryBetweenRange).SetName("JsonDeserializeObject_WithQueryFieldBetweenRange_DeserializedCorrectly"),
+            new TestCaseData(QueryTimestampRangeSingleNoPair, ExpectedValidQueryTimestampRangeSingleNoPair).SetName("JsonDeserializeObject_WithQueryTimestampRangeNoPair_DeserializedCorrectly"),
         };
 
         [TestCaseSource(nameof(RangeTestCases))]
-        public void TestRangeQueryStringQueries<T>(string queryString, T expected)
+        public void TestRangeQueryStringQueries(string queryString, object expected)
         {
-            TestQueryStringQueriesInternal(queryString, expected);
+            queryString.AssertJsonString((Query)expected);
         }
     }
 }

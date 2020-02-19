@@ -162,16 +162,15 @@ namespace UnitTests.K2Bridge.JsonConverters
         };
 
         private static readonly object[] QueryTestCases = {
-            new TestCaseData(OutterBoolQuery, OutterBoolResult).SetName("ReadJson_OutterBool_DeserializedCorrectly"),
-            new TestCaseData(InnerBoolQuery, InnerBoolResult).SetName("ReadJson_InnerBool_DeserializedCorrectly"),
-            new TestCaseData(LeafClause, LeafResult).SetName("ReadJson_LeafClause_DeserializedCorrectly"),
+            new TestCaseData(OutterBoolQuery, OutterBoolResult).SetName("JsonDeserializeObject_WithIQueryOutterBool_DeserializedCorrectly"),
+            new TestCaseData(InnerBoolQuery, InnerBoolResult).SetName("JsonDeserializeObject_WithIQueryInnerBool_DeserializedCorrectly"),
+            new TestCaseData(LeafClause, LeafResult).SetName("JsonDeserializeObject_WithIQueryLeafClause_DeserializedCorrectly"),
         };
 
         [TestCaseSource(nameof(QueryTestCases))]
         public void ReadQueryAndValidate(string queryString, object expected)
         {
-            var deserializedObj = JsonConvert.DeserializeObject<IQuery>(queryString);
-            Assert.IsTrue(expected.IsDeepEqual(deserializedObj));
+            queryString.AssertJsonString((IQuery)expected);
         }
     }
 }

@@ -8,13 +8,12 @@ namespace UnitTests.K2Bridge.JsonConverters
     using Newtonsoft.Json;
     using NUnit.Framework;
 
-    public partial class JsonConvertersTests
+    internal static class JsonConvertersExtensions
     {
-        public static void TestQueryStringQueriesInternal<T>(string queryString, T expected)
+        public static void AssertJsonString<T>(this string queryString, T expected)
         {
-            var expectedRes = expected;
             var deserializedObj = JsonConvert.DeserializeObject<T>(queryString);
-            Assert.IsTrue(expectedRes.IsDeepEqual(deserializedObj));
+            Assert.IsTrue(expected.IsDeepEqual(deserializedObj));
         }
     }
 }

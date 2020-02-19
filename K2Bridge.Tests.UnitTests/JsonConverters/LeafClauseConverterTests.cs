@@ -108,13 +108,13 @@ namespace UnitTests.K2Bridge.JsonConverters
         [TestCaseSource(nameof(LeafClauseTestCases))]
         public void TestLeafClauseConversions(string queryString, object expected)
         {
-            TestQueryStringQueriesInternal(queryString, (ILeafClause)expected);
+            queryString.AssertJsonString((ILeafClause)expected);
         }
 
         [TestCaseSource(nameof(LeafClauseQueryTestCases))]
         public void TestQueryConversions(string queryString, object expected)
         {
-            TestQueryStringQueriesInternal(queryString, (IQuery)expected);
+            queryString.AssertJsonString((IQuery)expected);
         }
     }
 }
