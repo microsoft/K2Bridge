@@ -73,9 +73,17 @@ namespace K2Bridge
                      s.GetRequiredService<Telemetry.Metrics>());
                 });
 
+            services.AddHttpContextAccessor();
+            services.AddScoped(
+                s => new RequestContext(s.GetRequiredService<IHttpContextAccessor>()));
+
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
-            services.AddTransient<IKustoDataAccess, KustoDataAccess>();
+            services.AddTransient<IKustoDataAccess, KustoDataAccess>(
+                s => new KustoDataAccess(
+                    s.GetRequiredService<IQueryExecutor>(),
+                    s.GetRequiredService<RequestContext>(),
+                    s.GetRequiredService<ILogger<KustoDataAccess>>()));
 
             services.AddTransient<ISchemaRetrieverFactory, SchemaRetrieverFactory>(
                 s => new SchemaRetrieverFactory(

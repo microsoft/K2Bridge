@@ -11,7 +11,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
     public sealed class DataReaderMock : IDataReader
     {
-        private List<Dictionary<string, object>> items;
+        private readonly List<Dictionary<string, object>> items;
         private int index = -1;
 
         public DataReaderMock(List<Dictionary<string, object>> items)

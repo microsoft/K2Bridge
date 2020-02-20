@@ -4,10 +4,8 @@
 
 namespace K2Bridge.Controllers
 {
-    using System;
     using System.Threading.Tasks;
     using K2Bridge.KustoDAL;
-    using K2Bridge.Models;
     using K2Bridge.RewriteRules;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -33,10 +31,10 @@ namespace K2Bridge.Controllers
         public FieldCapabilityController(IKustoDataAccess kustoDataAccess, ILogger<FieldCapabilityController> logger)
         {
             Logger = logger;
-            Kusto = kustoDataAccess;
+            KustoDataAccess = kustoDataAccess;
         }
 
-        private IKustoDataAccess Kusto { get; set; }
+        private IKustoDataAccess KustoDataAccess { get; set; }
 
         private ILogger Logger { get; set; }
 
@@ -46,18 +44,9 @@ namespace K2Bridge.Controllers
         /// <param name="indexName">Index name.</param>
         /// <returns>A response from Kusto.</returns>
         [HttpPost]
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IActionResult> Process(string indexName)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            const string correlationIdHeader = "x-correlation-id";
-            var requestContext = new RequestContext
-            {
-                // Header is added in CorrelationIdMiddleware
-                CorrelationId = Guid.Parse(HttpContext.Request.Headers[correlationIdHeader]),
-            };
-
-            var response = await Kusto.GetFieldCapsAsync(indexName, requestContext);
+            var response = await KustoDataAccess.GetFieldCapsAsync(indexName);
 
             return new ContentResult
             {
