@@ -49,4 +49,7 @@
   <ItemGroup>
     <Folder Include="types\" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Mytest.cs" />
+  </ItemGroup>
 </Project>

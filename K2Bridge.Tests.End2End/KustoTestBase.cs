@@ -166,6 +166,11 @@ namespace K2Bridge.Tests.End2End
             return esClient;
         }
 
+        protected KustoConnectionStringBuilder GetConn()
+        {
+            return kusto;
+        }
+
         /// <summary>
         /// Utility method for local development. Assuming the current user is logged
         /// in with a service principal that is authorized to write to the Kusto database,
