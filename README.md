@@ -85,6 +85,10 @@ The software may collect information about you and your use of the software and 
 Data collection may be disabled by installing the K2 helm chart by setting the collectTelemetry field to false.
 e.g: '--set settings.collectTelemetry=false'
 
+## Attribution
+Elasticsearch is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.  
+Kibana is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit [https://cla.opensource.microsoft.com](https://cla.opensource.microsoft.com).
