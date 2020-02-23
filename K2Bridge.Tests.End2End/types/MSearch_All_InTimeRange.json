@@ -14,7 +14,7 @@
   "aggs": {
     "2": {
       "date_histogram": {
-        "field": "timestamp",
+        "field": "DateTime",
         "interval": "1d",
         "time_zone": "Asia/Jerusalem",
         "min_doc_count": 1
@@ -27,7 +27,7 @@
   "script_fields": {},
   "docvalue_fields": [
     {
-      "field": "timestamp",
+      "field": "DateTime",
       "format": "date_time"
     }
   ],
@@ -39,9 +39,9 @@
         },
         {
           "range": {
-            "timestamp": {
-              "gte": 1574083980530,
-              "lte": 1581859980530,
+            "DateTime": {
+              "gte": 1574665077981,
+              "lte": 1582441077981,
               "format": "epoch_millis"
             }
           }
