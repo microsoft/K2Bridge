@@ -42,14 +42,4 @@
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="8.0.3" />
     <PackageReference Include="Microsoft.Azure.Kusto.Ingest" Version="8.0.3" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\K2Bridge\K2Bridge.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="types\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Mytest.cs" />
-  </ItemGroup>
 </Project>
