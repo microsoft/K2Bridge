@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <CodeAnalysisRuleSet>CodeAnalysis.ruleset</CodeAnalysisRuleSet>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="stylecop.json" />
-    <None Remove="KustoClientTests.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,5 +40,9 @@
     <PackageReference Include="FluentAssertions.Json" Version="5.4.0" />
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="8.0.3" />
     <PackageReference Include="Microsoft.Azure.Kusto.Ingest" Version="8.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\K2Bridge\K2Bridge.csproj" />
   </ItemGroup>
 </Project>
