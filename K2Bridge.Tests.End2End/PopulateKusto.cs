@@ -150,7 +150,7 @@ namespace K2Bridge.Tests.End2End
             using Stream fs = File.OpenRead("DataTypesIndexData.json.gz");
 
             TestContext.Progress.WriteLine("Done reading json file");
-            
+
             return await KustoIngest(kusto, db, table, "types_mapping", fs);
         }
 
