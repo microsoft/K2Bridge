@@ -14,13 +14,17 @@ namespace UnitTests.K2Bridge.JsonConverters
         public static void AssertJsonString<T>(this string jsonString, T expected)
         {
             var deserializedObj = JsonConvert.DeserializeObject<T>(jsonString);
-            Assert.IsTrue(expected.IsDeepEqual(deserializedObj));
+            Assert.IsTrue(expected.IsDeepEqual(deserializedObj), $"string {expected} did not match {deserializedObj}");
         }
 
         public static void AssertJson<T>(this T json, string expected)
         {
             var serializedString = JsonConvert.SerializeObject(json);
-            Assert.IsTrue(expected.NormalizeChars().Equals(serializedString.NormalizeChars(), StringComparison.OrdinalIgnoreCase));
+            Assert.IsTrue(
+                expected.NormalizeChars().Equals(
+                    serializedString.NormalizeChars(),
+                    StringComparison.OrdinalIgnoreCase),
+                $"json {expected.NormalizeChars()} did not match {serializedString.NormalizeChars()}");
         }
 
         private static string NormalizeChars(this string s) =>
