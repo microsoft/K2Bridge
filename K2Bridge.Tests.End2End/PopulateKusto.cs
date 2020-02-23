@@ -141,8 +141,6 @@ namespace K2Bridge.Tests.End2End
             kustoAdminClient.ExecuteControlCommand(command);
 
             // Populate Kusto
-            var path = Directory.GetCurrentDirectory();
-
             using Stream fs = File.OpenRead("../../../DataTypesIndexData.json.gz");
 
             return await KustoIngest(kusto, db, table, "types_mapping", fs);
