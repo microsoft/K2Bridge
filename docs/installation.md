@@ -59,14 +59,14 @@ If you need to build the image, please follow the [build instructions](./build.m
 
         The complete set of configuration options can be found [here](./configuration.md).
 
-    * Deploy Kibana
+    * Deploy Kibana  
     The command output will suggest a helm command to run to deploy Kibana, similar to:
 
         ```sh
         helm install kibana elastic/kibana -n k2bridge --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.5 --set elasticsearchHosts=http://k2bridge:8080
         ```
 
-1. Configure index-patterns
+1. Configure index-patterns  
 In a new installation of Kibana, you will need to configure the indexe-patterns to access your data.
 Navigate to Management -> Index Patterns and create new indexes.
 Note that the name of the index must be an **exact match** to the table name or function name, without any asterisk. You can copy the relevant line from the list.
