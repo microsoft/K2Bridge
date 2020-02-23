@@ -45,4 +45,9 @@
   <ItemGroup>
     <ProjectReference Include="..\K2Bridge\K2Bridge.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="DataTypesIndexData.json.gz">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
