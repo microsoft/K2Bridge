@@ -66,7 +66,7 @@ namespace K2Bridge
                 {
                     // KQL in an experimental search syntax in Kibana that is turned on in version 7 but also available in version 6.
                     // One can set it with option "search:queryLanguage" to "Lucene". More info: https://www.elastic.co/guide/en/kibana/current/advanced-options.html.
-                    Logger.LogWarning("Query includes a filter element idicating Kibana is working in KQL syntax which is not supported yet. You should search with Lucene syntax instead.");
+                    Logger.LogWarning("Query includes a filter element indicating Kibana is working in KQL syntax, which is not supported yet. You should search with Lucene syntax instead.");
                 }
 
                 foreach (var element in elasticSearchDsl.Query.Bool.Must)
