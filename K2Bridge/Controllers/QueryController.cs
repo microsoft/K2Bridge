@@ -53,6 +53,7 @@ namespace K2Bridge.Controllers
         /// </summary>
         /// <param name="totalHits">totalHits parameter coming from Kibana (currently not used).</param>
         /// <param name="ignoreThrottled">ignoreThrottled parameter coming from Kibana (currently not used).</param>
+        /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <returns>An ElasticResponse object or a passthrough object if an error occured.</returns>
         [HttpPost(template: "_msearch")]
         [Consumes("application/json", "application/x-ndjson")]
@@ -61,7 +62,8 @@ namespace K2Bridge.Controllers
         [ProducesResponseType(typeof(HttpResponseMessageResult), StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchAsync(
             [FromQuery(Name = "rest_total_hits_as_int")] bool totalHits,
-            [FromQuery(Name = "ignore_throttled")] bool ignoreThrottled)
+            [FromQuery(Name = "ignore_throttled")] bool ignoreThrottled,
+            [FromServices] RequestContext requestContext)
 
         // Model binding does not work as the application/json message contains an application/nd-json payload
         // once Kibana sends the right ContentType the line below can be commented in.
@@ -80,7 +82,7 @@ namespace K2Bridge.Controllers
                     }
                 }
 
-                return await SearchInternalAsync(totalHits, ignoreThrottled, await ExtractBodyAsync());
+                return await SearchInternalAsync(totalHits, ignoreThrottled, await ExtractBodyAsync(), requestContext);
             }
             catch (Exception exception)
             {
@@ -96,8 +98,13 @@ namespace K2Bridge.Controllers
         /// <param name="totalHits">totalHits parameter coming from Kibana (currently not used).</param>
         /// <param name="ignoreThrottled">ignoreThrottled parameter coming from Kibana (currently not used).</param>
         /// <param name="rawQueryData">Body Payload.</param>
+        /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <returns>An ElasticResponse object.</returns>
-        internal async Task<IActionResult> SearchInternalAsync(bool totalHits, bool ignoreThrottled, string rawQueryData)
+        internal async Task<IActionResult> SearchInternalAsync(
+            bool totalHits,
+            bool ignoreThrottled,
+            string rawQueryData,
+            RequestContext requestContext)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -113,13 +120,6 @@ namespace K2Bridge.Controllers
             // Translate Query
             var translatedQuery = translator.Translate(header, query);
             logger.LogDebug("Translated query:\n{@QueryCommandText}", translatedQuery.QueryCommandText.ToSensitiveData());
-
-            const string correlationIdHeader = "x-correlation-id";
-            var requestContext = new RequestContext
-            {
-                // Header is added in CorrelationIdMiddleware
-                CorrelationId = Guid.Parse(HttpContext.Request.Headers[correlationIdHeader]),
-            };
 
             // Execute Query
             var (timeTaken, dataReader) = await queryExecutor.ExecuteQueryAsync(translatedQuery, requestContext);

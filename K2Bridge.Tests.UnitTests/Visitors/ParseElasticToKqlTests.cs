@@ -374,7 +374,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryPrefixString,
-            ExpectedResult = "where (* hasprefix_cs \"TEST_RESULT\")",
+            ExpectedResult = "where (* hasprefix \"TEST_RESULT\")",
             TestName="QueryAccept_WithPrefix_ReturnsExpectedResult")]
         public string TestPrefixQuery(string queryString)
         {

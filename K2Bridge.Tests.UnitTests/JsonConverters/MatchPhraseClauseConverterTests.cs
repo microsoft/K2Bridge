@@ -79,7 +79,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         [TestCaseSource(nameof(MatchTestCases))]
         public void TestMatchClauseQueries(string queryString, object expected)
         {
-            TestQueryStringQueriesInternal(queryString, expected);
+            queryString.AssertJsonString((Query)expected);
         }
     }
 }

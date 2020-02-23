@@ -75,7 +75,7 @@ namespace K2Bridge.KustoDAL
         /// Executes a Control command in Kusto.
         /// </summary>
         /// <param name="command">The command to execute.</param>
-        /// <param name="requestContext">An object that represents properties that will be sent to Kusto.</param>
+        /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <returns>A data reader with a result.</returns>
         public async Task<IDataReader> ExecuteControlCommandAsync(string command, RequestContext requestContext)
         {
@@ -91,7 +91,7 @@ namespace K2Bridge.KustoDAL
         /// Executes a Monitored Query in Kusto.
         /// </summary>
         /// <param name="queryData">A Query data.</param>
-        /// <param name="requestContext">An object that represents properties that will be sent to Kusto.</param>
+        /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <returns>A data reader with response and time taken.</returns>
         public async Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData queryData, RequestContext requestContext)
         {

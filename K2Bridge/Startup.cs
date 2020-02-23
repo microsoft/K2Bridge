@@ -26,7 +26,6 @@ namespace K2Bridge
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Microsoft.OpenApi.Models;
     using Prometheus;
     using Serilog;
 
@@ -74,9 +73,17 @@ namespace K2Bridge
                      s.GetRequiredService<Telemetry.Metrics>());
                 });
 
+            services.AddHttpContextAccessor();
+            services.AddScoped(
+                s => new RequestContext(s.GetRequiredService<IHttpContextAccessor>()));
+
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
-            services.AddTransient<IKustoDataAccess, KustoDataAccess>();
+            services.AddTransient<IKustoDataAccess, KustoDataAccess>(
+                s => new KustoDataAccess(
+                    s.GetRequiredService<IQueryExecutor>(),
+                    s.GetRequiredService<RequestContext>(),
+                    s.GetRequiredService<ILogger<KustoDataAccess>>()));
 
             services.AddTransient<ISchemaRetrieverFactory, SchemaRetrieverFactory>(
                 s => new SchemaRetrieverFactory(
@@ -99,14 +106,6 @@ namespace K2Bridge
             {
                 var metadataConnectionDetails = svcProvider.GetRequiredService<MetadataConnectionDetails>();
                 elasticClient.BaseAddress = new Uri(metadataConnectionDetails.MetadataEndpoint);
-            });
-
-            services.AddHttpContextAccessor();
-
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo() { Title = "K2Bridge API", Version = "v1" });
             });
 
             // Add a health/liveness service
@@ -160,16 +159,6 @@ namespace K2Bridge
 
                 // Enable middleware to serve from health endpoint
                 endpoints.MapHealthChecks(HealthCheckRoute);
-            });
-
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "K2Bridge API v0.1-alpha");
             });
         }
 

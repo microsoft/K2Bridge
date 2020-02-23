@@ -8,25 +8,25 @@ namespace K2Bridge.Models
 
     /// <summary>
     /// A wrapper class for data with potential PII data.
-    /// This implementation allows Data to be replaced or reducted.
+    /// This implementation allows Data to be replaced or redacted.
     /// </summary>
     public class SensitiveData
     {
-        private const string DefaultReductMsg = "Reducted";
+        private const string DefaultRedactMsg = "Redacted";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SensitiveData"/> class.
         /// </summary>
         public SensitiveData()
         {
-            ReductMessage = DefaultReductMsg;
+            RedactMessage = DefaultRedactMsg;
         }
 
         /// <summary>
-        /// Gets or sets the message to display when data is reducted.
+        /// Gets or sets the message to display when data is redacted.
         /// </summary>
         [NotLogged]
-        public string ReductMessage { get; set; }
+        public string RedactMessage { get; set; }
 
         /// <summary>
         /// Gets or sets the data to be logged.

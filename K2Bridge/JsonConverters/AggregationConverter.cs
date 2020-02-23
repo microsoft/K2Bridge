@@ -22,7 +22,7 @@ namespace K2Bridge.JsonConverters
             object existingValue,
             JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
+            var jo = JObject.Load(reader);
 
             var obj = new Aggregation
             {

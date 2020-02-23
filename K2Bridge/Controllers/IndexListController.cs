@@ -4,10 +4,8 @@
 
 namespace K2Bridge.Controllers
 {
-    using System;
     using System.Threading.Tasks;
     using K2Bridge.KustoDAL;
-    using K2Bridge.Models;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
@@ -26,10 +24,10 @@ namespace K2Bridge.Controllers
         public IndexListController(IKustoDataAccess kustoDataAcess, ILogger<IndexListController> logger)
         {
             Logger = logger;
-            Kusto = kustoDataAcess;
+            KustoDataAccess = kustoDataAcess;
         }
 
-        private IKustoDataAccess Kusto { get; set; }
+        private IKustoDataAccess KustoDataAccess { get; set; }
 
         private ILogger Logger { get; set; }
 
@@ -39,18 +37,9 @@ namespace K2Bridge.Controllers
         /// <param name="indexName">The index to process.</param>
         /// <returns>The table list in the Kusto database.</returns>
         [Produces("application/json")]
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         public async Task<IActionResult> Process(string indexName)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            const string correlationIdHeader = "x-correlation-id";
-            var requestContext = new RequestContext
-            {
-                // Header is added in CorrelationIdMiddleware
-                CorrelationId = Guid.Parse(HttpContext.Request.Headers[correlationIdHeader]),
-            };
-
-            var response = await Kusto.GetIndexListAsync(indexName, requestContext);
+            var response = await KustoDataAccess.GetIndexListAsync(indexName);
 
             return Ok(response);
         }

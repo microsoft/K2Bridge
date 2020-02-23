@@ -15,7 +15,6 @@ namespace K2Bridge.KustoDAL
     public class SchemaRetriever : ISchemaRetriever
     {
         private readonly IKustoDataAccess kustoDataAccess;
-
         private readonly Lazy<Task<IDictionary>> schema;
 
         /// <summary>
@@ -47,13 +46,8 @@ namespace K2Bridge.KustoDAL
         /// <returns>The schema in a dictionary data structure.</returns>
         private async Task<IDictionary> MakeDictionary()
         {
-            var requestContext = new RequestContext
-            {
-                CorrelationId = Guid.Empty,
-            };
-
             Logger.LogDebug("Retrieving table schema for {IndexName} from the datasource", IndexName);
-            var response = await kustoDataAccess.GetFieldCapsAsync(IndexName, requestContext);
+            var response = await kustoDataAccess.GetFieldCapsAsync(IndexName);
 
             if (response == null)
             {

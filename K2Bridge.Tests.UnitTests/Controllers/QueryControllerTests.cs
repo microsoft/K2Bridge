@@ -43,7 +43,7 @@ namespace UnitTests.K2Bridge.Controllers
             var uat = GetController();
 
             // Act
-            var result = await uat.SearchInternalAsync(true, true, ValidQueryContent);
+            var result = await uat.SearchInternalAsync(true, true, ValidQueryContent, It.IsAny<RequestContext>());
 
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -109,11 +109,8 @@ namespace UnitTests.K2Bridge.Controllers
                 },
             };
 
-            const string correlationIdHeader = "x-correlation-id";
-            uat.Request.Headers[correlationIdHeader] = Guid.NewGuid().ToString();
-
             // Act
-            await uat.SearchInternalAsync(true, true, ValidQueryContent);
+            await uat.SearchInternalAsync(true, true, ValidQueryContent, It.IsAny<RequestContext>());
 
             // Assert
             mockTranslator.Verify(
@@ -131,7 +128,7 @@ namespace UnitTests.K2Bridge.Controllers
             var uat = GetController();
 
             // Assert
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await uat.SearchInternalAsync(true, true, input));
+            Assert.ThrowsAsync<ArgumentNullException>(async () => await uat.SearchInternalAsync(true, true, input, It.IsAny<RequestContext>()));
         }
 
         [TestCaseSource(nameof(IntegrationTestCases))]
@@ -147,8 +144,6 @@ namespace UnitTests.K2Bridge.Controllers
 
             var httpContext = new DefaultHttpContext();
 
-            const string correlationIdHeader = "x-correlation-id";
-            httpContext.Request.Headers[correlationIdHeader] = Guid.NewGuid().ToString();
             httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
             // Controller needs a controller context
@@ -165,7 +160,7 @@ namespace UnitTests.K2Bridge.Controllers
             { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.SearchAsync(true, true);
+            var result = await controller.SearchAsync(true, true, It.IsAny<RequestContext>());
 
             // Assert
             Assert.IsInstanceOf(resultType, result, $"result {result} is not of expected type {resultType.Name}");
@@ -197,7 +192,7 @@ namespace UnitTests.K2Bridge.Controllers
             { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.SearchAsync(true, true);
+            var result = await controller.SearchAsync(true, true, It.IsAny<RequestContext>());
 
             // Assert
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
@@ -230,7 +225,7 @@ namespace UnitTests.K2Bridge.Controllers
             { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.SearchAsync(true, true);
+            var result = await controller.SearchAsync(true, true, It.IsAny<RequestContext>());
 
             // Assert
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
@@ -261,7 +256,7 @@ namespace UnitTests.K2Bridge.Controllers
             { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.SearchAsync(true, true);
+            var result = await controller.SearchAsync(true, true, It.IsAny<RequestContext>());
 
             // Assert
             Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result} is not of expected type BadRequestObjectResult");
@@ -290,9 +285,6 @@ namespace UnitTests.K2Bridge.Controllers
                     HttpContext = new DefaultHttpContext(),
                 },
             };
-
-            const string correlationIdHeader = "x-correlation-id";
-            ctr.Request.Headers[correlationIdHeader] = Guid.NewGuid().ToString();
 
             return ctr;
         }

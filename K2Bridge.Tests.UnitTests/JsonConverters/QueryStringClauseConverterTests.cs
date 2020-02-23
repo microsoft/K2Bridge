@@ -10,7 +10,7 @@ namespace UnitTests.K2Bridge.JsonConverters
     using NUnit.Framework;
 
     [TestFixture]
-    public partial class JsonConvertersTests
+    public class QueryStringClauseConverterTests
     {
         private const string ValidQuery = @"
             {""bool"":
@@ -131,15 +131,15 @@ namespace UnitTests.K2Bridge.JsonConverters
         };
 
         private static readonly object[] QueryStringClauseTestCases = {
-            new TestCaseData(ValidQuery, ExpectedValidQuery).SetName("ValidQueryClause_Complete_DeserializedCorrectly"),
-            new TestCaseData(QueryMissingAnalyzeWildcardProperty, ExpectedValidQueryMissingAnalyzeWildcard).SetName("ValidQueryClause_MissingAnalyzeWildcardProperty_DeserializedCorrectly"),
-            new TestCaseData(QueryMissingDefaultFieldProperty, ExpectedValidQueryMissingDefaultField).SetName("ValidQueryClause_MissingDefaultFieldProperty_DeserializedCorrectly"),
+            new TestCaseData(ValidQuery, ExpectedValidQuery).SetName("JsonDeserializeObject_WithValidQueryClause_DeserializedCorrectly"),
+            new TestCaseData(QueryMissingAnalyzeWildcardProperty, ExpectedValidQueryMissingAnalyzeWildcard).SetName("JsonDeserializeObject_WithQueryMissingAnalyzeWildcardProperty_DeserializedCorrectly"),
+            new TestCaseData(QueryMissingDefaultFieldProperty, ExpectedValidQueryMissingDefaultField).SetName("JsonDeserializeObject_WithQueryMissingDefaultFieldProperty_DeserializedCorrectly"),
         };
 
         [TestCaseSource(nameof(QueryStringClauseTestCases))]
         public void TestQueryStringQueries(string queryString, object expected)
         {
-            TestQueryStringQueriesInternal(queryString, expected);
+            queryString.AssertJsonString((Query)expected);
         }
     }
 }

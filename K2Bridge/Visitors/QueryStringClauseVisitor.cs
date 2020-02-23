@@ -72,7 +72,7 @@ namespace K2Bridge.Visitors
                     queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
                     break;
                 case QueryStringClause.Subtype.Prefix:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefixCS} \"{queryStringClause.Phrase}\"";
+                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase}\"";
                     break;
                 default:
                     // should not happen

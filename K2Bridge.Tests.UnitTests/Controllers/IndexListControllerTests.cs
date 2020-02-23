@@ -8,7 +8,6 @@ namespace UnitTests.K2Bridge.Controllers
     using System.Threading.Tasks;
     using global::K2Bridge.Controllers;
     using global::K2Bridge.KustoDAL;
-    using global::K2Bridge.Models;
     using global::K2Bridge.Models.Response.Metadata;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -37,8 +36,8 @@ namespace UnitTests.K2Bridge.Controllers
             var response = new FieldCapabilityResponse();
             response.AddField(new FieldCapabilityElement { Name = "testFieldName" });
             var responseTask = Task.FromResult(response);
-            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(responseTask);
-            mockDAL.Setup(kusto => kusto.GetIndexListAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(Task.FromResult(new IndexListResponseElement() { }));
+            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
+            mockDAL.Setup(kusto => kusto.GetIndexListAsync(It.IsNotNull<string>())).Returns(Task.FromResult(new IndexListResponseElement() { }));
             var mockLogger = new Mock<ILogger<IndexListController>>();
 
             var ctr = new IndexListController(mockDAL.Object, mockLogger.Object)

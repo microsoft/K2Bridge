@@ -11,10 +11,7 @@ namespace K2Bridge.KustoDAL
 
     public interface IQueryExecutor
     {
-        string DefaultDatabaseName
-        {
-            get;
-        }
+        string DefaultDatabaseName { get; }
 
         Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext);
 

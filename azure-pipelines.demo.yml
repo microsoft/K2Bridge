@@ -1,5 +1,9 @@
 # Demo environment
 
+# manual operation only!
+trigger: none
+pr: none
+
 name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 
 variables:

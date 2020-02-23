@@ -10,7 +10,7 @@
     elasticsearch.hosts: ["http://127.0.0.1:8080"]
     ```
 
-1. Clone KibanaKustoBridge repository
+1. Clone this repository
 1. Create a new settings file and name it _K2Bridge/appsettings.development.json_, and configuration as demonstrated in [appsettings.json](../K2Bridge/appsettings.json). Below you can see a common settings file suitable for development:
 
     ```json
@@ -24,6 +24,7 @@
       "metadataElasticAddress": "http://localhost:9200",
       "outputBackendQuery": "true",
       "collectTelemetry": "false", //unless you want to work on app-insights
+      "enableQueryLogging": "true",
 
        //this section overrides default Serilog configuration to make it easier to develop and see logs.
       "Serilog": {
@@ -65,7 +66,7 @@ You can see example Kusto commands [here](tables.kql). Those commands include ta
 
 ## Testing
 
-The easiest way to run and debug is by using Visual Studio with the [solution file](../KibanaKustoBridge.sln) included in the root folder of this repository.
+The easiest way to run and debug is by using Visual Studio with the [solution file](../K2Bridge.sln) included in the root folder of this repository.
 More options are described below.
 
 ### Running Unit-tests from the command line

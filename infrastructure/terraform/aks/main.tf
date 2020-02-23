@@ -58,6 +58,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
     min_count             = 3
   }
 
+  lifecycle {
+    ignore_changes = [
+      default_node_pool.0.node_count,
+    ]
+  }
+
   addon_profile {
    oms_agent {
      enabled                    = true

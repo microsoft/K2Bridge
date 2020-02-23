@@ -15,33 +15,25 @@ If you need to build the image, please follow the [build instructions](./build.m
 
 ## Run on Azure Kubernetes Service (AKS)
 
-1. [If using a private ACR] - Ensure your AKS instance can [pull images from ACR](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration).
-
-    * Option A: Azure CLI (an owner role on the ACR is required):
-
-        ```sh
-        az aks update -n myAKSCluster -g myResourceGroup --attach-acr $REGISTRY_NAME
-        ```
-
-    * Option B: Kubernetes Secrets
-
-        ```sh
-        # if pulling from private ACR
-        IMAGE_PULL_SECRET_NAME=<YOUR ACR PULL SECRET NAME>
-
-        kubectl create secret docker-registry $IMAGE_PULL_SECRET_NAME --docker-server <acrname>.azurecr.io --docker-email <email> --docker-username <client id> --docker-password <client password>
-        ```
+1. By default, K2's Helm chart references a publicly available image located on Microsoft's Container Registry (MCR) which does not require any credentials and work out of the box.
 
 1. Download the required Helm charts
 
-    * The chart is located under the [charts](./charts) directory. Clone the repository to get the chart.
-
-    * Add the Elasticsearch dependency to Helm:
+    1. Add the Elasticsearch dependency to Helm:
 
         ```sh
         helm repo add elastic https://helm.elastic.co
         helm repo update
         ```
+
+    1. The K2 chart is located under the [charts](../charts) directory. Clone the repository to get the chart.
+
+        1. go to the K2 root repository directory
+
+        1. run
+            ```sh
+            helm dependency update charts/k2bridge
+            ```
 
 1. Deploy
 
@@ -62,17 +54,19 @@ If you need to build the image, please follow the [build instructions](./build.m
         ```
 
         ```sh
-        helm install k2bridge charts/k2bridge -n k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" --set replicaCount=2 [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"] [--set settings.instrumentationKey="$APPLICATION_INSIGHTS_KEY" --set settings.collectTelemetry=$COLLECT_TELEMETRY]
+        helm install k2bridge charts/k2bridge -n k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
         ```
 
-    * Deploy Kibana
+        The complete set of configuration options can be found [here](./configuration.md).
+
+    * Deploy Kibana  
     The command output will suggest a helm command to run to deploy Kibana, similar to:
 
         ```sh
         helm install kibana elastic/kibana -n k2bridge --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.5 --set elasticsearchHosts=http://k2bridge:8080
         ```
 
-1. Configure index-patterns
+1. Configure index-patterns  
 In a new installation of Kibana, you will need to configure the indexe-patterns to access your data.
 Navigate to Management -> Index Patterns and create new indexes.
 Note that the name of the index must be an **exact match** to the table name or function name, without any asterisk. You can copy the relevant line from the list.

@@ -5,12 +5,23 @@
 namespace K2Bridge.Models
 {
     using System;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// A class to hold different properties that will propagate in K2 and will later be a part of the request to Kusto.
     /// </summary>
     public class RequestContext
     {
+        private const string CorrelationIdHeader = "x-correlation-id";
+
+        public RequestContext(IHttpContextAccessor httpContextAccessor)
+        {
+            Ensure.IsNotNull(httpContextAccessor, nameof(httpContextAccessor));
+
+            // Header is added in CorrelationIdMiddleware
+            CorrelationId = Guid.Parse(httpContextAccessor.HttpContext.Request.Headers[CorrelationIdHeader]);
+        }
+
         /// <summary>
         /// Gets or sets a Guid that is used for logs and traces.
         /// </summary>

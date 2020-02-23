@@ -6,7 +6,6 @@ namespace UnitTests.K2Bridge.Visitors
 {
     using System.Threading.Tasks;
     using global::K2Bridge.KustoDAL;
-    using global::K2Bridge.Models;
     using global::K2Bridge.Models.Response.Metadata;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -25,7 +24,7 @@ namespace UnitTests.K2Bridge.Visitors
             var responseTask = Task.FromResult(response);
 
             var mockDAL = new Mock<IKustoDataAccess>();
-            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(responseTask);
+            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
 
             var mockLogger = new Mock<ILogger<SchemaRetriever>>();
             return new SchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
@@ -43,7 +42,7 @@ namespace UnitTests.K2Bridge.Visitors
             var responseTask = Task.FromResult(response);
 
             var mockDAL = new Mock<IKustoDataAccess>();
-            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>())).Returns(responseTask);
+            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
 
             var mockLogger = new Mock<ILogger<SchemaRetriever>>();
             return new SchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);

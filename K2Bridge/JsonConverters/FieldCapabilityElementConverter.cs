@@ -2,9 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response.Metadata
+namespace K2Bridge.JsonConverters
 {
     using System;
+    using K2Bridge.Models.Response.Metadata;
     using Newtonsoft.Json;
 
     internal class FieldCapabilityElementConverter : JsonConverter

@@ -16,7 +16,7 @@ namespace K2Bridge.JsonConverters
     /// Since the query element is a compound (vs. leaf) this can return
     /// a <see cref="BoolQuery"/> or <see cref="ILeafClause"/> object.
     /// </summary>
-    internal class QueryClauseConverter : ReadOnlyJsonConverter
+    internal class IQueryConverter : ReadOnlyJsonConverter
     {
         /// <inheritdoc/>
         public override object ReadJson(
@@ -25,7 +25,7 @@ namespace K2Bridge.JsonConverters
             object existingValue,
             JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
+            var jo = JObject.Load(reader);
 
             // if we know this is a Bool Clause, deserialize accordingly
             if (objectType == typeof(BoolQuery))
@@ -41,8 +41,7 @@ namespace K2Bridge.JsonConverters
             }
 
             // Its really a leaf
-            var leaf = jo.ToObject<ILeafClause>(serializer);
-            return leaf;
+            return jo.ToObject<ILeafClause>(serializer);
         }
 
         private static IEnumerable<IQuery> TokenToIQueryClauseList(JToken token, JsonSerializer serializer)

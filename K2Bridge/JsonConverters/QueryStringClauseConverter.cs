@@ -21,7 +21,7 @@ namespace K2Bridge.JsonConverters
             object existingValue,
             JsonSerializer serializer)
         {
-            JToken jt = JToken.Load(reader);
+            var jt = JToken.Load(reader);
 
             // we are setting the 'analyze_wildcard' and 'default_field' to defaults
             // as described here:

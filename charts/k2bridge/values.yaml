@@ -8,7 +8,7 @@ replicaCount: 2
 # privateRegistry: acr-auth
 
 image:
-  repository: repo-placeholder/k2bridge
+  repository: mcr.microsoft.com/azuredataexplorer/k2bridge
   tag: latest
   pullPolicy: Always
 
@@ -23,6 +23,7 @@ settings:
   aadTenantId: "00000000-0000-0000-0000-000000000000"
   instrumentationKey: "00000000-0000-0000-0000-000000000000"
   collectTelemetry: false
+  enableQueryLogging: true
 
 service:
   type: ClusterIP
