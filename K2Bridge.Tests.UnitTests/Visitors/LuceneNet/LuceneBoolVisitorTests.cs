@@ -37,7 +37,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
                 Throws.TypeOf<IllegalClauseException>());
         }
 
-        [TestCase(ExpectedResult = "not (* matches regex \"Lo[.\\\\S]*d[.\\\\S]n\")")]
+        [TestCase(ExpectedResult = "not (* matches regex \"Lo(.)*d(.)n\")")]
         public string Visit_WithValidBoolQuery_ReturnsSuccess()
         {
             var luceneNetBoolQuery = new Lucene.Net.Search.BooleanQuery();

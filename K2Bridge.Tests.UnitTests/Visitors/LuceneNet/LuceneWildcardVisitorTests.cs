@@ -37,7 +37,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
                 Throws.TypeOf<IllegalClauseException>());
         }
 
-        [TestCase(ExpectedResult = "* matches regex \"Lo[.\\\\S]*d[.\\\\S]n\"")]
+        [TestCase(ExpectedResult = "* matches regex \"Lo(.)*d(.)n\"")]
         public string Visit_WithValidWildcardQuery_ReturnsValidResponse()
         {
             var wildcardQuery = new LuceneWildcardQuery

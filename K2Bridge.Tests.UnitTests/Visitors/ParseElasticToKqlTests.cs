@@ -350,7 +350,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryWildcardString,
-            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT\")",
+            ExpectedResult = "where (* matches regex \"TEST(.)*RESULT\")",
             TestName="QueryAccept_WithWildCard_ReturnsExpectedResult")]
         public string TestWildcardQuery(string queryString)
         {
@@ -362,7 +362,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryComplexWildcardString,
-            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT[.\\\\S]*\")",
+            ExpectedResult = "where (* matches regex \"TEST(.)*RESULT(.)*\")",
             TestName="QueryAccept_WithComplexWildCard_ReturnsExpectedResult")]
         public string TestComplexWildcardQuery(string queryString)
         {

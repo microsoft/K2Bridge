@@ -9,6 +9,8 @@ You should not turn this option on via the UI or set it for all users like indic
 
     * A case sensitive search which was applied using a value expected to be found on an elasticseach keyword data type, will yield non case sensitive results on Azure Data Explorer.
 
+    * When searching using wildcards ('*' for multi characters and '?' for a single character), K2 will consider any character as valid, including space. This is in comparison to Elasticsearch which (unless configured otherwise) does not include space when searching for keywords and do allow spaces when searching for text.
+
 3. Multiple words in a search term are split based on operators and analyzed individually, combined with an OR operator in both elsticsearch and Azure Data Explorer.
 
 4. When enclosing strings with quotation marks, the exact quoted term is being searched in both elsticsearch and Azure Data Explorer.
