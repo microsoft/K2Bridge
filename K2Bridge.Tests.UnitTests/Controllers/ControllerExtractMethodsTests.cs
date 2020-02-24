@@ -31,9 +31,9 @@ namespace UnitTests.K2Bridge.Controllers
         private static readonly object[] TemplateReplaceBackStringTestCases = {
             new TestCaseData("/_template/kibana_index_template::kibana?include_type_name=true").Returns("/_template/kibana_index_template:.kibana?include_type_name=true").SetName("ReplaceTemplateString_WithValidInput_ReplaceTokens"),
             new TestCaseData("/_template/kibana_index_template/kibana?include_type_name=true").Returns("/_template/kibana_index_template/kibana?include_type_name=true").SetName("ReplaceTemplateString_WithValidTemplateNoToken_NoAction"),
-            new TestCaseData("/kibana_index_template::kibana?include_type_name=true").Returns("/kibana_index_template::kibana?include_type_name=true").SetName("ReplaceTemplateString_WithNoTemplate_NoAction"),
-            new TestCaseData(string.Empty).Returns(string.Empty).SetName("ReplaceTemplateString_WithEmptyString_NoError"),
-            new TestCaseData(null).Returns(null).SetName("ReplaceTemplateString_WithNullString_NoError"),
+            new TestCaseData("/kibana_index_template::kibana?include_type_name=true").Returns("/kibana_index_template::kibana?include_type_name=true").SetName("ReplaceBackTemplateString_WithNoTemplate_NoAction"),
+            new TestCaseData(string.Empty).Returns(string.Empty).SetName("ReplaceBackTemplateString_WithEmptyString_NoError"),
+            new TestCaseData(null).Returns(null).SetName("ReplaceBackTemplateString_WithNullString_NoError"),
         };
 
         [TestCaseSource(nameof(PartitionStringTestCases))]

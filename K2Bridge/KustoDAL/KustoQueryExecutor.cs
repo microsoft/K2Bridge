@@ -11,7 +11,6 @@ namespace K2Bridge.KustoDAL
     using K2Bridge.Telemetry;
     using Kusto.Data;
     using Kusto.Data.Common;
-    using Kusto.Data.Net.Client;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -93,19 +92,28 @@ namespace K2Bridge.KustoDAL
         /// <param name="queryData">A Query data.</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <returns>A data reader with response and time taken.</returns>
+        /// <exception cref="QueryException">Throws a QueryException on error.</exception>
         public async Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData queryData, RequestContext requestContext)
         {
-            // TODO: When a single K2 flow will generate multiple requests to Kusto - find a way to differentiate them using different ClientRequestIds
-            var clientRequestProperties = ClientRequestPropertiesExtensions.ConstructClientRequestPropertiesFromRequestContext(KustoApplicationNameForTracing, QueryActivityName, requestContext);
+            try
+            {
+                // TODO: When a single K2 flow will generate multiple requests to Kusto - find a way to differentiate them using different ClientRequestIds
+                var clientRequestProperties = ClientRequestPropertiesExtensions.ConstructClientRequestPropertiesFromRequestContext(KustoApplicationNameForTracing, QueryActivityName, requestContext);
 
-            // Use the kusto client to execute the query
-            var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, clientRequestProperties, metricsHistograms);
-            Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData.ToSensitiveData());
+                // Use the kusto client to execute the query
+                var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, clientRequestProperties, metricsHistograms);
+                Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData.ToSensitiveData());
 
-            var fieldCount = dataReader.FieldCount;
-            Logger.LogDebug("FieldCount: {@fieldCount}", fieldCount);
-            Logger.LogDebug("[metric] backend query total (sdk) duration: {timeTaken}", timeTaken);
-            return (timeTaken, dataReader);
+                var fieldCount = dataReader.FieldCount;
+                Logger.LogDebug("FieldCount: {@fieldCount}", fieldCount);
+                Logger.LogDebug("[metric] backend query total (sdk) duration: {timeTaken}", timeTaken);
+                return (timeTaken, dataReader);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to execute query.");
+                throw new QueryException("Failed executing azure data explorer query", ex);
+            }
         }
     }
 }

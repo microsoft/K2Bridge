@@ -98,7 +98,7 @@ namespace K2Bridge.KustoDAL
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error reading kusto response.");
-                throw;
+                throw new ParseException("Error reading kusto response", ex);
             }
         }
 

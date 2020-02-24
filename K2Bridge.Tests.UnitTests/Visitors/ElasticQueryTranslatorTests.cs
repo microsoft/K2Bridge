@@ -60,10 +60,10 @@ namespace UnitTests.K2Bridge.Visitors
                 () => elasticQueryTranslator.Translate(string.Empty, query),
                 Throws.TypeOf<ArgumentException>());
 
-            // will fail as a header without 'index' is not valid
+            // will fail in translation as a header without 'index' is not valid
             Assert.That(
                 () => elasticQueryTranslator.Translate("{\"notindex\":\"myIndex\"}", query),
-                Throws.TypeOf<KeyNotFoundException>());
+                Throws.TypeOf<TranslateException>());
         }
 
         [TestCase]
@@ -74,14 +74,14 @@ namespace UnitTests.K2Bridge.Visitors
             // will fail as query is not valid (missing query)
             Assert.That(
                 () => elasticQueryTranslator.Translate(INDEX, query),
-                Throws.TypeOf<ArgumentNullException>());
+                Throws.TypeOf<TranslateException>());
 
             query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_bool.json");
 
             // will fail as query is not valid (missing query.bool)
             Assert.That(
                 () => elasticQueryTranslator.Translate(INDEX, query),
-                Throws.TypeOf<ArgumentNullException>());
+                Throws.TypeOf<TranslateException>());
         }
 
         [TestCase]
