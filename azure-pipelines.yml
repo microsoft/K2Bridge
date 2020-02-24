@@ -399,6 +399,7 @@ stages:
           kubectl wait --timeout 45m --for=condition=ContainersReady pod "$podName"
           # Read test output from FIFO within container
           kubectl exec "$podName" cat /test-result-pipe > TestResult.xml
+          kubectl delete pod "$podName"
 
     - task: PublishTestResults@2
       displayName: Publish test results

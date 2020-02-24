@@ -128,12 +128,12 @@ namespace K2Bridge.Tests.End2End
 
             // Send drop table ifexists command to Kusto
             var command = CslCommandGenerator.GenerateTableDropCommand(table, true);
-            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+            kustoAdminClient.ExecuteControlCommand(db, command);
 
             // Send create table command to Kusto
             command = $".create table {table} ({string.Join(", ", kustoColumns)})";
             Console.WriteLine(command);
-            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+            kustoAdminClient.ExecuteControlCommand(db, command);
 
             // Send create table mapping command to Kusto
             command = CslCommandGenerator.GenerateTableJsonMappingCreateCommand(
