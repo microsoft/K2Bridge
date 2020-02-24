@@ -198,15 +198,17 @@ namespace K2Bridge.Tests.End2End
             var structure = File.ReadAllText(structureJsonFile);
             var esClient = await CreateElasticsearchClient("init");
 
+            PopulateKusto.PopulateTypesIndex(kusto, kustoDatabase, TYPESINDEX);
+            Progress.WriteLine($"Kusto Types index creation completed");
+
             // For immediately logging information to console, use Progress.WriteLine.
             // Can't use Console.WriteLine: https://github.com/nunit/nunit3-vs-adapter/issues/266
             var esTask = PopulateElastic.Populate(esClient, INDEX, structure, dataGzippedJsonFile).ContinueWith(
                 (t) => Progress.WriteLine($"Ingestion into Elasticsearch completed"), Current);
             var k2Task = PopulateKusto.Populate(kusto, kustoDatabase, INDEX, MAPPING, structure, "flights.json.gz").ContinueWith(
                 (t) => Progress.WriteLine($"Ingestion into Kusto completed"), Current);
-            var typesIndexTask = PopulateKusto.PopulateTypesIndex(kusto, kustoDatabase, TYPESINDEX).ContinueWith(
-                (t) => Progress.WriteLine($"Kusto Types index creation completed"), Current);
-            Task.WaitAll(esTask, k2Task, typesIndexTask);
+
+            Task.WaitAll(esTask, k2Task);
         }
 
         private static async Task<TestElasticClient> CreateElasticsearchClient(string prefix)

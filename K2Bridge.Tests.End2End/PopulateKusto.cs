@@ -110,7 +110,7 @@ namespace K2Bridge.Tests.End2End
         /// <param name="db">Kusto database.</param>
         /// <param name="table">Kusto table within database.</param>
         /// <returns>Bulk Insert operation result.</returns>
-        public static async Task<IDataReader> PopulateTypesIndex(KustoConnectionStringBuilder kusto, string db, string table)
+        public static IDataReader PopulateTypesIndex(KustoConnectionStringBuilder kusto, string db, string table)
         {
             // Build list of columns and mappings to provision Kusto
             var kustoColumns = new List<string>();
@@ -128,21 +128,21 @@ namespace K2Bridge.Tests.End2End
 
             // Send drop table ifexists command to Kusto
             var command = CslCommandGenerator.GenerateTableDropCommand(table, true);
-            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+            kustoAdminClient.ExecuteControlCommand(db, command);
 
             // Send create table command to Kusto
             command = $".create table {table} ({string.Join(", ", kustoColumns)})";
             Console.WriteLine(command);
-            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+            kustoAdminClient.ExecuteControlCommand(db, command);
 
             // Send create table mapping command to Kusto
             command = CslCommandGenerator.GenerateTableJsonMappingCreateCommand(
                                                 table, "types_mapping", columnMappings, true);
-            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+            kustoAdminClient.ExecuteControlCommand(db, command);
 
             // Populate Kusto
             command = ".append types_index <| print x = true, datetime('2020-02-23T07:22:29.1990163Z'), guid(74be27de-1e4e-49d9-b579-fe0b331d3642), int(17), long(17), real(0.3), 'string type', 30m, decimal(0.3), dynamic({'a':123, 'b':'hello'})";
-            return await kustoAdminClient.ExecuteControlCommandAsync(db, command);
+            return kustoAdminClient.ExecuteControlCommand(db, command);
         }
 
         /// <summary>
