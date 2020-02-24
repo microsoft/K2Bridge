@@ -128,21 +128,20 @@ namespace K2Bridge.Tests.End2End
 
             // Send drop table ifexists command to Kusto
             var command = CslCommandGenerator.GenerateTableDropCommand(table, true);
-            kustoAdminClient.ExecuteControlCommand(command);
+            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
 
             // Send create table command to Kusto
             command = $".create table {table} ({string.Join(", ", kustoColumns)})";
             Console.WriteLine(command);
-            kustoAdminClient.ExecuteControlCommand(command);
+            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
 
             // Send create table mapping command to Kusto
             command = CslCommandGenerator.GenerateTableJsonMappingCreateCommand(
-                                                table, "types_mapping", columnMappings);
-            kustoAdminClient.ExecuteControlCommand(command);
+                                                table, "types_mapping", columnMappings, true);
+            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
 
             // Populate Kusto
             using Stream fs = File.OpenRead("../../../DataTypesIndexData.json.gz");
-
             return await KustoIngest(kusto, db, table, "types_mapping", fs);
         }
 
