@@ -1,6 +1,6 @@
 # Searching
 
-1. We currently support the Lucene search syntax and not the experimental KQL syntax. 
+1. We currently support the Lucene search syntax and not the experimental KQL syntax.
 You should not turn this option on via the UI or set it for all users like indicated [here](https://www.elastic.co/guide/en/kibana/current/advanced-options.html) under the "search:queryLanguage" option.
 
 2. Text search in elasticsearch is implemented differently for the different string types, [keyword](https://www.elastic.co/guide/en/elasticsearch/reference/current/keyword.html) and [text](https://www.elastic.co/guide/en/elasticsearch/reference/current/text.html), as explained [here](https://www.elastic.co/blog/strings-are-dead-long-live-strings). With Azure Data Explorer, there is a single string type, and text searches are applied in a way that correlates to searching on an elasticsearch text data type. Some use cases which show the difference in search behavior include:
@@ -15,7 +15,7 @@ You should not turn this option on via the UI or set it for all users like indic
 
 5. Partial support for Azure Data Explorer's `dynamic column` - those columns represent objects with an unknown schema. Those columns are visible in the item view as "flat" properties. However, their 1-click search icons (the +/-) are disabled. Additionally, those columns won't appear in the add filter option.
 
-    TODO: update if/when we add support for dynamic columns. [issue](https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1253)
+    [Issue](https://github.com/microsoft/KibanaKustoBridge/issues/261)
 
     Options for better interaction with dynamic columns:
         * Use Lucene expressions in the search box with a fully qualified property path. For example: propertyA.propertyB:myValue

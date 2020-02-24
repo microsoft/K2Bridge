@@ -7,7 +7,7 @@ When run on a pull request or manually on a branch, the pipeline runs the follow
 * __Continuous Integration__:
   * Run static security analysis to ensure code security.
   * Build K2Bridge C# code to binaries, running linter to ensure code quality.
-  * Run unit tests, generate a test report and (TODO) a test coverage report.
+  * Run unit tests, generate a test report and a test coverage report.
   * Publish the K2Bridge container and helm chart to Azure Container Registry.
 * __Continuous Delivery__:
   * Provision an Azure environment with Azure Kubernetes Service and Kusto (Azure Data Explorer), using Terraform.
@@ -19,14 +19,14 @@ When run on a pull request or manually on a branch, the pipeline runs the follow
 When run on the `master` branch, the pipeline runs as above, with the following additions:
 
   * Uses a non-temporary Kusto database and AKS namespace (`master`), that is not deleted after the build.
-  * Promote successful builds by tagging them in ACR, and (TODO) publishing them to MCR.
+  * Promote successful builds by tagging them in ACR, and publishing them to MCR.
 
 The CI/CD Environment on Azure is depicted below. Kibana is not installed by the pipeline,
 but can be manually installed on the `master` namespace.
 
 ![CI/CD Environment](./images/CICD%20Environment.png)
 
-The CI/CD pipeline runs multiple jobs. 
+The CI/CD pipeline runs multiple jobs.
 The pipeline jobs (in blue) and their artifacts (in orange) are shown below.
 Arrows indicate antecendent dependencies between jobs. Jobs
 that are not in an antecedent relationship can run concurrently (as long as enough build agents

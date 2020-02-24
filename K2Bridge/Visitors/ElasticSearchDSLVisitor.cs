@@ -53,7 +53,6 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
 
             // aggregations
-            // TODO: process the entire list
             if (elasticSearchDSL.Aggregations?.Count > 0)
             {
                 queryStringBuilder.Append('\n').Append($"(_data | {KustoQLOperators.Summarize} ");

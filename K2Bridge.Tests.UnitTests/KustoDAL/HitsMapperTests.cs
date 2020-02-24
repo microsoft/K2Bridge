@@ -124,13 +124,11 @@ namespace UnitTests.K2Bridge.KustoDAL
         [TestCase("Jakarta website", "(jakarta OR apache) AND website", "@Jakarta$ @website$", TestName = "MapRowsToHits_HighlightWithLuceneAndOr_ReturnsValidHighlight")]
         [TestCase("return of the pink panther pink", "title:(+return +\"pink panther\")", "@return$ of the @pink$ @panther$ pink", TestName = "MapRowsToHits_HighlightWithLuceneAndFieldName_ReturnsValidHighlight")]
 
-        // TODO Elasticsearch treats ":", "'", "." specially, this is not implemented
-        // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1477
-        // [TestCase("Bob's your uncle", "Bob", null)]
-        // [TestCase("Joe.did.it", "Joe", null)]
-        // [TestCase("Joe.did.it", "Joe.did.it", "@Joe.did.it$")]
-        // [TestCase("1.3 123", "1.3", "@1.3$ 123")]
-        // [TestCase("Pat:my friend", "Pat", null)]
+        [TestCase("Bob's your uncle", "Bob", "@Bob$'s your uncle")]
+        [TestCase("Joe.did.it", "Joe", "@Joe$.did.it")]
+        [TestCase("Joe.did.it", "Joe.did.it", "@Joe$.@did$.@it$")]
+        [TestCase("1.3 123", "1.3", "@1$.@3$ 123")]
+        [TestCase("Pat:my friend", "Pat", "@Pat$:my friend")]
         public void HitCreateWithHighlightsAdvancedCases(string text, string highlightString, string expectedString)
         {
             // Arrange
