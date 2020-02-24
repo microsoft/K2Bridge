@@ -23,6 +23,13 @@ namespace K2Bridge.Models
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="RequestContext"/> class.
+        /// </summary>
+        public RequestContext()
+        {
+        }
+
+        /// <summary>
         /// Gets or sets a Guid that is used for logs and traces.
         /// </summary>
         public Guid CorrelationId { get; set; }
