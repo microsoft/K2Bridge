@@ -17,7 +17,7 @@ namespace K2Bridge.Tests.End2End
             var result = await K2Client().MSearch(TYPESINDEX, $"{TYPESDIR}/MSearch_All_InTimeRange.json");
             var totalHits = result.SelectToken("responses[0].hits.total");
             Assert.IsNotNull(totalHits);
-            Assert.IsTrue(totalHits.Value<int>() == 3);
+            Assert.IsTrue(totalHits.Value<int>() == 1);
         }
     }
 }

@@ -6,7 +6,6 @@ namespace K2Bridge.Tests.End2End
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.IO;
     using System.Threading.Tasks;
     using Kusto.Data;
@@ -141,8 +140,8 @@ namespace K2Bridge.Tests.End2End
             await kustoAdminClient.ExecuteControlCommandAsync(db, command);
 
             // Populate Kusto
-            using Stream fs = File.OpenRead("../../../DataTypesIndexData.json.gz");
-            return await KustoIngest(kusto, db, table, "types_mapping", fs);
+            command = ".append types_index <| print x = true, datetime('2020-02-23T07:22:29.1990163Z'), guid(74be27de-1e4e-49d9-b579-fe0b331d3642), int(17), long(17), real(0.3), 'string type', 30m, decimal(0.3), dynamic({'a':123, 'b':'hello'})";
+            await kustoAdminClient.ExecuteControlCommandAsync(db, command);
         }
 
         /// <summary>
