@@ -476,5 +476,5 @@ stages:
           docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:latest"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_MCR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
-          docker push "$ACR_MCR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
+            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$SEMANTIC_VERSION"
+          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$SEMANTIC_VERSION"
