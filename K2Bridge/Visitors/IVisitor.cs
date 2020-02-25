@@ -13,10 +13,22 @@ namespace K2Bridge.Visitors
     /// </summary>
     internal interface IVisitor
     {
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="existsClause">The ExistsClause object to visit.</param>
         void Visit(ExistsClause existsClause);
 
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="matchPhraseClause">The MatchPhraseClause object to visit.</param>
         void Visit(MatchPhraseClause matchPhraseClause);
 
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="query">The Query object to visit.</param>
         void Visit(Query query);
 
         /// <summary>
@@ -25,20 +37,46 @@ namespace K2Bridge.Visitors
         /// <param name="elasticSearchDSL">An Elasticsearch DSL query.</param>
         void Visit(ElasticSearchDSL elasticSearchDSL);
 
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="rangeClause">The rangeClause to visit.</param>
         void Visit(RangeClause rangeClause);
 
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="boolQuery">The boolQuery to visit.</param>
         void Visit(BoolQuery boolQuery);
 
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="sortClause">The sortClause to visit.</param>
         void Visit(SortClause sortClause);
 
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="aggregation">The aggregation to visit.</param>
         void Visit(Aggregation aggregation);
 
-        // Bucket Aggregations
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="dateHistogramAggregation">The  Bucket Aggregations to visit.</param>
         void Visit(DateHistogramAggregation dateHistogramAggregation);
 
-        // Metric Aggregations
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="avgAggregation">The Metric Aggregations to visit.</param>
         void Visit(AvgAggregation avgAggregation);
 
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="cardinalityAggregation">The Cardinality Aggregations to visit.</param>
         void Visit(CardinalityAggregation cardinalityAggregation);
 
         /// <summary>
