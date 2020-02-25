@@ -5,7 +5,7 @@
 namespace UnitTests.K2Bridge.KustoDAL
 {
     using System;
-    using global::K2Bridge.Models;
+    using global::K2Bridge.Utils;
     using NUnit.Framework;
 
     [TestFixture]

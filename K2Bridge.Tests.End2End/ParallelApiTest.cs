@@ -108,6 +108,12 @@ namespace K2Bridge.Tests.End2End
         [Description("/_msearch Kibana aggregation query with text (includes wildcard) filter")]
         public void CompareElasticKusto_WhenMSearchTextFilterWildcard_ResponsesAreEquivalent()
         {
+            // Note: ELK uses 'keyword' and 'text' data types for text values, wildcards behavior for
+            // those can vary (depends on the way the data was indexed), in the common, default scenario,
+            // wildcard will not allow spaces for keywords but will allow spaces for text.
+            // In ADX there is only string data type, hence one approach was chosen, to include spaces.
+            // In this test, we chose a query of form FieldName:Something*Something* because this particular
+            // field is of type text rather than keyword, hence ES and K2 results will be the same.
             ParallelQuery(
                 $"{FLIGHTSDIR}/MSearch_TextFilter_Wildcard_Equivalent.json");
         }
@@ -180,6 +186,15 @@ namespace K2Bridge.Tests.End2End
         {
             var es = ESClient().FieldCaps(INDEX);
             var k2 = K2Client().FieldCaps($"{KustoDatabase()}%3A{INDEX}");
+            AssertJsonIdentical(k2.Result, es.Result);
+        }
+
+        [Test]
+        [Description("_cat/templates/kibana_index_template Kibana 7 query")]
+        public void CompareElasticKusto_WhenKibanaTemplateQuery_ResponsesAreEquivalent()
+        {
+            var es = ESClient().Templates("kibana_index_template");
+            var k2 = K2Client().Templates("kibana_index_template");
             AssertJsonIdentical(k2.Result, es.Result);
         }
 

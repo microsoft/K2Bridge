@@ -64,12 +64,9 @@ namespace UnitTests.K2Bridge.KustoDAL
                 column("mystring", "System.String"),
                 column("mydatetime", "System.DateTime"),
                 column("mydynamic", "System.Object"),
-
-                // TODO add missing Kusto types
-                // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1452
-                // column("myguid", "System.Guid"),
-                // column("mytimespan", "System.TimeSpan"),
-                // column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
+                column("myguid", "System.Guid"),
+                column("mytimespan", "System.TimeSpan"),
+                column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
             };
             using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
@@ -128,6 +125,27 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""aggregatable"": true,
                           ""searchable"": true,
                           ""type"": ""object""
+                        }
+                      },
+                      ""myguid"": {
+                        ""string"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""string""
+                        }
+                      },
+                      ""mytimespan"": {
+                        ""string"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""string""
+                        }
+                      },
+                      ""mydecimal"": {
+                        ""double"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""double""
                         }
                       }
                     }

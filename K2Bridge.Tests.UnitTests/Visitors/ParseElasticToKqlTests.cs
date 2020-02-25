@@ -274,11 +274,11 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(
             QueryMatchPhraseSingle,
             ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\")",
-            TestName="QueryAccept_WithSingleMatchPhrase_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithSingleMatchPhrase_ReturnsExpectedResult")]
         [TestCase(
             QueryMatchPhraseMulti,
             ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\") and (TEST_FIELD_2 == \"TEST_RESULT_2\")",
-            TestName="QueryAccept_WithMultiMatchPhrase_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithMultiMatchPhrase_ReturnsExpectedResult")]
         public string TestMatchPhraseQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -290,7 +290,7 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(
             QueryExists,
             ExpectedResult = "where (isnotnull(TEST_FIELD))",
-            TestName="QueryAccept_WithSingleExists_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithSingleExists_ReturnsExpectedResult")]
         public string TestExistsClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -302,11 +302,11 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(
             QueryTimestampRangeSingle,
             ExpectedResult = "where (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))",
-            TestName="QueryAccept_WithTimestamp_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithTimestamp_ReturnsExpectedResult")]
         [TestCase(
             QueryBetweenRangeSingle,
             ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)",
-            TestName="QueryAccept_WithBetweenRange_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithBetweenRange_ReturnsExpectedResult")]
         public string TestRangeQueries(string queryString)
         {
             return TestRangeClause(queryString);
@@ -314,7 +314,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryTimestampRangeSingleNoPair,
-            TestName="QueryAccept_WithBetweenRangeSingleNoPair_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithBetweenRangeSingleNoPair_ReturnsExpectedResult")]
         public void TestRangeQueriesMissingValues(string queryString)
         {
             Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
@@ -323,7 +323,7 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(
             QueryString,
             ExpectedResult = "where (* has \"TEST_RESULT\")",
-            TestName="QueryAccept_WithValidInput_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithValidInput_ReturnsExpectedResult")]
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -335,11 +335,11 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(
             CombinedQuery,
             ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= fromUnixTimeMilli(0) and timestamp <= fromUnixTimeMilli(10))",
-            TestName="QueryAccept_WithCombinedQuery_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithCombinedQuery_ReturnsExpectedResult")]
         [TestCase(
             NotQueryStringClause,
             ExpectedResult = "where (* has \"TEST_RESULT\") and not (TEST_FIELD == \"TEST_RESULT_2\")",
-            TestName="QueryAccept_WithNotString_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithNotString_ReturnsExpectedResult")]
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
@@ -350,7 +350,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryWildcardString,
-            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT\")",
+            ExpectedResult = "where (* matches regex \"TEST(.)*RESULT\")",
             TestName="QueryAccept_WithWildCard_ReturnsExpectedResult")]
         public string TestWildcardQuery(string queryString)
         {
@@ -362,7 +362,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryComplexWildcardString,
-            ExpectedResult = "where (* matches regex \"TEST[.\\\\S]*RESULT[.\\\\S]*\")",
+            ExpectedResult = "where (* matches regex \"TEST(.)*RESULT(.)*\")",
             TestName="QueryAccept_WithComplexWildCard_ReturnsExpectedResult")]
         public string TestComplexWildcardQuery(string queryString)
         {
@@ -375,7 +375,7 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(
             QueryPrefixString,
             ExpectedResult = "where (* hasprefix \"TEST_RESULT\")",
-            TestName="QueryAccept_WithPrefix_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithPrefix_ReturnsExpectedResult")]
         public string TestPrefixQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);

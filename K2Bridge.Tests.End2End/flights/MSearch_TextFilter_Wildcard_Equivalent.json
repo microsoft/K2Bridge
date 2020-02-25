@@ -37,7 +37,7 @@
       "must": [
         {
           "query_string": {
-            "query": "L*d*n",
+            "query": "Origin:*Capital*",
             "analyze_wildcard": true,
             "default_field": "*"
           }

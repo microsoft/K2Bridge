@@ -6,7 +6,7 @@ namespace UnitTests.K2Bridge.Models.Response
 {
     using System;
     using System.Data;
-    using global::K2Bridge.Models.Response;
+    using global::K2Bridge.Factories;
     using NUnit.Framework;
 
     [TestFixture]
@@ -24,7 +24,7 @@ namespace UnitTests.K2Bridge.Models.Response
             row["Count"] = 234;
 
             // Act
-            var bucket = DateHistogramBucket.Create(row);
+            var bucket = BucketFactory.CreateFromDataRow(row);
 
             // Assert
             Assert.AreEqual("2017-01-02T13:04:05.060Z", bucket.KeyAsString);

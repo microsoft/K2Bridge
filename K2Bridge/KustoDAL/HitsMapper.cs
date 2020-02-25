@@ -10,8 +10,10 @@ namespace K2Bridge.KustoDAL
     using System.Data.SqlTypes;
     using System.Linq;
     using System.Xml;
+    using K2Bridge.Factories;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using K2Bridge.Utils;
 
     /// <summary>
     /// Provides parsing for hit rows in Data Explorer response objects.
@@ -61,7 +63,7 @@ namespace K2Bridge.KustoDAL
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var hit = Hit.Create(Random.Next().ToString(), query.IndexName);
+            var hit = HitsFactory.Create(Random.Next().ToString(), query.IndexName);
             var columns = row.Table.Columns;
 
             for (int columnIndex = 0; columnIndex < row.ItemArray.Length; columnIndex++)

@@ -41,6 +41,7 @@ namespace K2Bridge
         /// <param name="header">A header.</param>
         /// <param name="query">A query.</param>
         /// <returns>A <see cref="QueryData"/>.</returns>
+        /// <exception cref="TranslateException">Throws a TranslateException on error.</exception>
         public QueryData Translate(string header, string query)
         {
             Ensure.IsNotNullOrEmpty(header, nameof(header));
@@ -117,7 +118,7 @@ namespace K2Bridge
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Failed to execute translate.");
-                throw;
+                throw new TranslateException("Failed translating elasticsearch query", ex);
             }
         }
     }

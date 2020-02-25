@@ -8,7 +8,6 @@ namespace K2Bridge.Visitors
 
     /// <content>
     /// A visitor for the different <see cref="MetricAggregation"/> types.
-    /// TODO: This probably needs to be several files.
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {

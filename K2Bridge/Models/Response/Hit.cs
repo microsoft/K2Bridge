@@ -44,9 +44,6 @@ namespace K2Bridge.Models.Response
         [JsonProperty("highlight", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, object> Highlight { get; private set; }
 
-        public static Hit Create(string id, string indexName)
-        => new Hit() { Id = id, Index = indexName };
-
         public void AddSource(string keyName, object value)
         {
             Source.Add(keyName, value == null ? null : JToken.FromObject(value));

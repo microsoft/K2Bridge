@@ -66,8 +66,8 @@ namespace K2Bridge.Visitors
                     // to be consistent with the way ES works
                     // for example consider the following queries:
                     // TelA* => TelA[.\S]*
-                    var phrase = SingleCharPattern.Replace(queryStringClause.Phrase, @"[.\\S]");
-                    phrase = MultiCharPattern.Replace(phrase, @"[.\\S]*");
+                    var phrase = SingleCharPattern.Replace(queryStringClause.Phrase, @"(.)");
+                    phrase = MultiCharPattern.Replace(phrase, @"(.)*");
 
                     queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
                     break;

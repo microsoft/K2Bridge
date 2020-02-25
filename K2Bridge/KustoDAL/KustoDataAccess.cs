@@ -7,9 +7,10 @@ namespace K2Bridge.KustoDAL
     using System;
     using System.Data;
     using System.Threading.Tasks;
+    using K2Bridge.Factories;
     using K2Bridge.Models;
-    using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Metadata;
+    using K2Bridge.Utils;
     using K2Bridge.Visitors;
     using Microsoft.Extensions.Logging;
 
@@ -68,9 +69,9 @@ namespace K2Bridge.KustoDAL
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error while executing GetFieldCaps.");
+                throw;
             }
 
-            // TODO: should we return an empty response in case of an error? or just throw?
             return response;
         }
 
@@ -88,21 +89,29 @@ namespace K2Bridge.KustoDAL
                 Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
                 var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.DefaultDatabaseName);
                 string readTablesCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
+
                 using IDataReader kustoTables = await Kusto.ExecuteControlCommandAsync(readTablesCommand, RequestContext);
-                MapIndexList(kustoTables, response);
+                if (kustoTables != null)
+                {
+                    MapIndexList(kustoTables, response);
+                }
 
                 Logger.LogDebug("Listing functions matching '{@indexName}'", indexName);
                 var defaultDb = Kusto.DefaultDatabaseName;
                 string readFunctionsCommand = $".show {KustoQLOperators.Functions} | {KustoQLOperators.Where} Parameters == '()' | {KustoQLOperators.Distinct} Name | {KustoQLOperators.Search} Name: '{tableName}' | {KustoQLOperators.Project} strcat(\"{defaultDb}\", \"{KustoDatabaseTableNames.Separator}\", Name)";
+
                 using IDataReader kustoFunctions = await Kusto.ExecuteControlCommandAsync(readFunctionsCommand, RequestContext);
-                MapIndexList(kustoFunctions, response);
+                if (kustoFunctions != null)
+                {
+                    MapIndexList(kustoFunctions, response);
+                }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Error while executing GetIndexList.");
+                throw;
             }
 
-            // TODO: should we return an empty response in case of an error? or just throw?
             return response;
         }
 
@@ -110,10 +119,9 @@ namespace K2Bridge.KustoDAL
         {
             while (kustoResults.Read())
             {
-                var fieldCapabilityElement = FieldCapabilityElement.Create(kustoResults);
+                var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(kustoResults);
                 if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
                 {
-                    // TODO add metric
                     Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
                 }
 
@@ -127,7 +135,7 @@ namespace K2Bridge.KustoDAL
         {
             while (kustoResults.Read())
             {
-                var termBucket = TermBucket.Create(kustoResults);
+                var termBucket = TermBucketFactory.CreateFromDataRecord(kustoResults);
                 response.Aggregations.IndexCollection.AddBucket(termBucket);
 
                 Logger.LogDebug("Found table/function: {@termBucket}", termBucket);

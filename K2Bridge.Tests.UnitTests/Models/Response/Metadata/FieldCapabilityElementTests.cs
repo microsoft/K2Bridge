@@ -6,7 +6,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
 {
     using System;
     using System.Data;
-    using global::K2Bridge.Models.Response.Metadata;
+    using global::K2Bridge.Factories;
     using Moq;
     using NUnit.Framework;
 
@@ -27,7 +27,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("intColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.Int32");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "intColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "integer");
         }
@@ -38,7 +38,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("longColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.Int64");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "longColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "long");
         }
@@ -49,7 +49,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("floatColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.Single");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "floatColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "float");
         }
@@ -60,7 +60,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("doubleColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.Double");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "doubleColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "double");
         }
@@ -71,7 +71,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("boolColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.SByte");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "boolColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "boolean");
         }
@@ -82,7 +82,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("objectColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.Object");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "objectColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "object");
         }
@@ -93,7 +93,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("stringColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.String");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "stringColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "keyword");
         }
@@ -104,7 +104,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("dateColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.DateTime");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "dateColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "date");
         }
@@ -115,7 +115,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("doubleColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.Data.SqlTypes.SqlDecimal");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "doubleColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "double");
         }
@@ -126,7 +126,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("guidColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.Guid");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "guidColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "string");
         }
@@ -137,7 +137,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             stubDataRecord.Setup(r => r[0]).Returns("timespanColumnName");
             stubDataRecord.Setup(r => r[1]).Returns("System.TimeSpan");
 
-            var fieldCapabilityElement = FieldCapabilityElement.Create(stubDataRecord.Object);
+            var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object);
             Assert.AreEqual(fieldCapabilityElement.Name, "timespanColumnName");
             Assert.AreEqual(fieldCapabilityElement.Type, "string");
         }
@@ -152,7 +152,7 @@ namespace UnitTests.K2Bridge.Models.Response.Metadata
             Assert.Throws(
                 Is.TypeOf<ArgumentException>()
                  .And.Message.EqualTo($"Kusto Type {dataType} does not map to a known ElasticSearch type"),
-                () => FieldCapabilityElement.Create(stubDataRecord.Object));
+                () => FieldCapabilityElementFactory.CreateFromDataRecord(stubDataRecord.Object));
         }
     }
 }
