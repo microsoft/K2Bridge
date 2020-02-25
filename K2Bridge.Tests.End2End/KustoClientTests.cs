@@ -54,7 +54,7 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("MSearch returns data a functions")]
+        [Description("MSearch returns all data types as expected")]
         public async Task MSearch_All_ReturnsAllHitsAsExpected()
         {
             var result = await K2Client().MSearch(TypesIndex, $"{TypesDir}/MSearch_All_InTimeRange.json");
@@ -85,8 +85,8 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("FieldCaps returns fields for all types")]
-        public async Task FieldCaps_WithFunction_ReturnsResponseWithAllTypes()
+        [Description("FieldCaps returns fields for all types as expected")]
+        public async Task FieldCaps_WithAllTypes_ReturnsTypesConvertedToESTypes()
         {
             var fieldCaps = await K2Client().FieldCaps(typesIndexFullName);
             var expected = JObject.Parse(@"{
@@ -194,7 +194,8 @@ namespace K2Bridge.Tests.End2End
                                                 TypesIndex, TypesMapping, columnMappings, true);
             KustoExecute(command);
 
-            command = ".append types_index <| print x = true, datetime('2020-02-23T07:22:29.1990163Z'), guid(74be27de-1e4e-49d9-b579-fe0b331d3642), int(17), long(17), real(0.3), 'string type', 30m, decimal(0.3), dynamic({'a':123, 'b':'hello'})";
+            command = ".append types_index <|" +
+                "print x = true, datetime('2020-02-23T07:22:29.1990163Z'), guid(74be27de-1e4e-49d9-b579-fe0b331d3642), int(17), long(17), real(0.3), 'string type', 30m, decimal(0.3), dynamic({'a':123, 'b':'hello'})";
             KustoExecute(command);
         }
 
