@@ -197,7 +197,6 @@ namespace K2Bridge.Tests.End2End
                 (t) => Progress.WriteLine($"Ingestion into Elasticsearch completed"), Current);
             var k2Task = PopulateKusto.Populate(kusto, kustoDatabase, INDEX, MAPPING, structure, "flights.json.gz").ContinueWith(
                 (t) => Progress.WriteLine($"Ingestion into Kusto completed"), Current);
-
             Task.WaitAll(esTask, k2Task);
         }
 
