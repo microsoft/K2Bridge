@@ -7,8 +7,8 @@ namespace K2Bridge.Visitors
     using System.Collections.Generic;
     using System.Text;
     using K2Bridge.KustoDAL;
-    using K2Bridge.Models;
     using K2Bridge.Models.Request;
+    using K2Bridge.Utils;
 
     /// <summary>
     /// Main visitor entry point used to convert an ElasticSearch DSL to Kusto queries.

@@ -14,7 +14,6 @@ namespace UnitTests.K2Bridge.Controllers
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
     using global::K2Bridge.Models.Response;
-    using global::K2Bridge.Telemetry;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;

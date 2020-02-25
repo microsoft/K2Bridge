@@ -5,7 +5,8 @@
 namespace UnitTests.K2Bridge.Models
 {
     using System;
-    using global::K2Bridge.Models;
+    using global::K2Bridge.Factories;
+    using global::K2Bridge.Utils;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using NUnit.Framework;
@@ -21,7 +22,7 @@ namespace UnitTests.K2Bridge.Models
             configurationRoot.SetupGet(
                 x => x[It.Is<string>(s => s.Equals("metadataElasticAddress", StringComparison.OrdinalIgnoreCase))]).Returns(contosoesAddress);
 
-            var metadataConnectionDetails = MetadataConnectionDetails.MakeFromConfiguration(configurationRoot.Object);
+            var metadataConnectionDetails = MetadataConnectionDetailsFactory.MakeFromConfiguration(configurationRoot.Object);
             Assert.NotNull(metadataConnectionDetails);
             Assert.AreEqual(contosoesAddress, metadataConnectionDetails.MetadataEndpoint);
         }
@@ -32,7 +33,7 @@ namespace UnitTests.K2Bridge.Models
             var configurationRoot = new Mock<IConfigurationRoot>();
 
             // missing 'metadataElasticAddress'
-            Assert.That(() => MetadataConnectionDetails.MakeFromConfiguration(configurationRoot.Object), Throws.TypeOf<ArgumentNullException>());
+            Assert.That(() => MetadataConnectionDetailsFactory.MakeFromConfiguration(configurationRoot.Object), Throws.TypeOf<ArgumentNullException>());
         }
     }
 }

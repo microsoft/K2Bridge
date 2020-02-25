@@ -9,6 +9,7 @@ namespace K2Bridge.Models
     /// <summary>
     /// Represents the data needed to search for information in the database.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "Not needed for this class.")]
     public struct QueryData
     {
         /// <summary>

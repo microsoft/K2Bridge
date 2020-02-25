@@ -12,6 +12,7 @@ namespace K2Bridge.Models
         /// <summary>
         /// Gets the kusto cluster URL.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "String is valid.")]
         string ClusterUrl { get; }
 
         /// <summary>

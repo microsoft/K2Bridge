@@ -7,9 +7,10 @@ namespace K2Bridge.KustoDAL
     using System;
     using System.Data;
     using System.Threading.Tasks;
+    using K2Bridge.Factories;
     using K2Bridge.Models;
-    using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Metadata;
+    using K2Bridge.Utils;
     using K2Bridge.Visitors;
     using Microsoft.Extensions.Logging;
 
@@ -118,7 +119,7 @@ namespace K2Bridge.KustoDAL
         {
             while (kustoResults.Read())
             {
-                var fieldCapabilityElement = FieldCapabilityElement.Create(kustoResults);
+                var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(kustoResults);
                 if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
                 {
                     Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
@@ -134,7 +135,7 @@ namespace K2Bridge.KustoDAL
         {
             while (kustoResults.Read())
             {
-                var termBucket = TermBucket.Create(kustoResults);
+                var termBucket = TermBucketFactory.CreateFromDataRecord(kustoResults);
                 response.Aggregations.IndexCollection.AddBucket(termBucket);
 
                 Logger.LogDebug("Found table/function: {@termBucket}", termBucket);

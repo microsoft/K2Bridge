@@ -9,6 +9,7 @@ namespace K2Bridge.KustoDAL
     using System.Data;
     using System.Linq;
     using K2Bridge;
+    using K2Bridge.Factories;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Telemetry;
@@ -168,7 +169,7 @@ namespace K2Bridge.KustoDAL
                 // read aggregations
                 foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                 {
-                    var bucket = BucketFactory.MakeBucket(row);
+                    var bucket = BucketFactory.CreateFromDataRow(row);
                     response.AddAggregation(bucket);
                 }
             }

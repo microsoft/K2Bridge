@@ -5,7 +5,6 @@
 namespace K2Bridge.KustoDAL
 {
     using System.Threading.Tasks;
-    using K2Bridge.Models;
     using K2Bridge.Models.Response.Metadata;
 
     /// <summary>

@@ -5,7 +5,7 @@
 namespace UnitTests.K2Bridge.Models.Response
 {
     using System;
-    using global::K2Bridge.Models.Response;
+    using global::K2Bridge.Utils;
     using NUnit.Framework;
 
     [TestFixture]

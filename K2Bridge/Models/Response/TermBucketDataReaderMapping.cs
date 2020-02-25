@@ -4,14 +4,14 @@
 
 namespace K2Bridge.Models.Response
 {
-    using Newtonsoft.Json;
-
-    public class TermBucket : IBucket
+    /// <summary>
+    /// DataReaderMapping.
+    /// </summary>
+    internal enum TermBucketDataReaderMapping
     {
-        [JsonProperty("doc_count")]
-        public int DocCount { get; set; }
-
-        [JsonProperty("key")]
-        public string Key { get; set; }
+        /// <summary>
+        /// Key.
+        /// </summary>
+        Key = 0,
     }
 }

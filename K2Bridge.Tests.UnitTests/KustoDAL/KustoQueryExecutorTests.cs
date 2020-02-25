@@ -10,6 +10,7 @@ namespace UnitTests.K2Bridge.KustoDAL
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
     using global::K2Bridge.Telemetry;
+    using global::K2Bridge.Utils;
     using Kusto.Data.Common;
     using Microsoft.ApplicationInsights;
     using Microsoft.ApplicationInsights.Channel;

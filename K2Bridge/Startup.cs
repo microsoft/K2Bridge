@@ -10,6 +10,7 @@ namespace K2Bridge
     using System.Security.Cryptography;
     using System.Text;
     using K2Bridge.Controllers;
+    using K2Bridge.Factories;
     using K2Bridge.KustoDAL;
     using K2Bridge.Models;
     using K2Bridge.RewriteRules;
@@ -55,10 +56,10 @@ namespace K2Bridge
             services.AddSingleton(Log.Logger);
 
             services.AddSingleton<IConnectionDetails, KustoConnectionDetails>(
-                s => KustoConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+                s => KustoConnectionDetailsFactory.MakeFromConfiguration(Configuration as IConfigurationRoot));
 
             services.AddSingleton(
-                s => MetadataConnectionDetails.MakeFromConfiguration(Configuration as IConfigurationRoot));
+                s => MetadataConnectionDetailsFactory.MakeFromConfiguration(Configuration as IConfigurationRoot));
 
             services.AddSingleton<IQueryExecutor, KustoQueryExecutor>(
                 s =>

@@ -4,14 +4,20 @@
 
 namespace K2Bridge.Models
 {
-    using Microsoft.Extensions.Configuration;
-
     /// <summary>
     /// Holds the different connection details for the kusto cluster. such as database name and credentials.
     /// </summary>
     internal class KustoConnectionDetails : IConnectionDetails
     {
-        private KustoConnectionDetails(
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KustoConnectionDetails"/> class.
+        /// </summary>
+        /// <param name="clusterUrl"></param>
+        /// <param name="defaultDatabaseName"></param>
+        /// <param name="aadClientId"></param>
+        /// <param name="aadClientSecret"></param>
+        /// <param name="aadTenantId"></param>
+        internal KustoConnectionDetails(
             string clusterUrl,
             string defaultDatabaseName,
             string aadClientId,
@@ -55,18 +61,5 @@ namespace K2Bridge.Models
         /// Gets and Sets Kusto AAD Tenant ID.
         /// </summary>
         public string AadTenantId { get; private set; }
-
-        /// <summary>
-        /// Creates a Kusto Connection Details object using configuration.
-        /// </summary>
-        /// <param name="config">Configuration element.</param>
-        /// <returns>A Kusto Connection Details Object.</returns>
-        public static KustoConnectionDetails MakeFromConfiguration(IConfigurationRoot config) =>
-            new KustoConnectionDetails(
-                config["adxClusterUrl"],
-                config["adxDefaultDatabaseName"],
-                config["aadClientId"],
-                config["aadClientSecret"],
-                config["aadTenantId"]);
     }
 }

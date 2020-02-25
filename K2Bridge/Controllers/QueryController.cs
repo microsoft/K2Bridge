@@ -63,6 +63,7 @@ namespace K2Bridge.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(ElasticResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(HttpResponseMessageResult), StatusCodes.Status200OK)]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "An uncommon behavior.")]
         public async Task<IActionResult> SearchAsync(
             [FromQuery(Name = "rest_total_hits_as_int")] bool totalHits,
             [FromQuery(Name = "ignore_throttled")] bool ignoreThrottled,

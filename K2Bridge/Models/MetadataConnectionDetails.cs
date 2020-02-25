@@ -4,15 +4,13 @@
 
 namespace K2Bridge.Models
 {
-    using Microsoft.Extensions.Configuration;
-
     internal class MetadataConnectionDetails
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MetadataConnectionDetails"/> class.
         /// </summary>
         /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint.</param>
-        private MetadataConnectionDetails(string metadataEndpoint)
+        internal MetadataConnectionDetails(string metadataEndpoint)
         {
             Ensure.IsNotNullOrEmpty(
                 metadataEndpoint,
@@ -23,9 +21,5 @@ namespace K2Bridge.Models
         }
 
         public string MetadataEndpoint { get; private set; }
-
-        public static MetadataConnectionDetails MakeFromConfiguration(IConfigurationRoot config) =>
-            new MetadataConnectionDetails(
-                config["metadataElasticAddress"]);
     }
 }

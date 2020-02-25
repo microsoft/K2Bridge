@@ -4,18 +4,10 @@
 
 namespace K2Bridge.Models.Response
 {
-    using System;
-    using System.Data;
     using Newtonsoft.Json;
 
     public class DateHistogramBucket : IBucket
     {
-        private enum ColumnNames
-        {
-            Timestamp = 0,
-            Count = 1,
-        }
-
         [JsonProperty("doc_count")]
         public int DocCount { get; set; }
 
@@ -24,26 +16,5 @@ namespace K2Bridge.Models.Response
 
         [JsonProperty("key_as_string")]
         public string KeyAsString { get; set; }
-
-        /// <summary>
-        /// Create a new <see cref="DateHistogramBucket" from a given <see cref="DataRow"/>/>.
-        /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
-        /// <returns>A new DateHistogramBucket.</returns>
-        public static DateHistogramBucket Create(DataRow row)
-        {
-            Ensure.IsNotNull(row, nameof(row));
-
-            var timestamp = row[(int)ColumnNames.Timestamp];
-            var count = row[(int)ColumnNames.Count];
-            var dateBucket = (DateTime)timestamp;
-
-            return new DateHistogramBucket
-            {
-                DocCount = Convert.ToInt32(count),
-                Key = TimeUtils.ToEpochMilliseconds(dateBucket),
-                KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
-            };
-        }
     }
 }
