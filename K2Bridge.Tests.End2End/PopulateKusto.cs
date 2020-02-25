@@ -30,20 +30,6 @@ namespace K2Bridge.Tests.End2End
                 { "geo_point", "dynamic" },
             };
 
-        // Map Kusto columns to types
-        private static readonly Dictionary<string, string> KustoColumnType = new Dictionary<string, string> {
-                { "Boolean", "bool" },
-                { "DateTime", "datetime" },
-                { "Guid", "guid" },
-                { "Int32", "int" },
-                { "Int64", "long" },
-                { "Double", "real" },
-                { "String", "string" },
-                { "TimeSpan", "timespan" },
-                { "SqlDecimal", "decimal" },
-                { "Dynamic", "dynamic" },
-            };
-
         /// <summary>
         ///  Populate the Kusto backend with test data.
         /// </summary>
@@ -101,48 +87,6 @@ namespace K2Bridge.Tests.End2End
             // Populate Kusto
             using Stream fs = File.OpenRead(dataFile);
             return await KustoIngest(kusto, db, table, mapping, fs);
-        }
-
-        /// <summary>
-        ///  Populate the Kusto backend with test data.
-        /// </summary>
-        /// <param name="kusto">Kusto connection string builder.</param>
-        /// <param name="db">Kusto database.</param>
-        /// <param name="table">Kusto table within database.</param>
-        /// <returns>Bulk Insert operation result.</returns>
-        public static IDataReader PopulateTypesIndex(KustoConnectionStringBuilder kusto, string db, string table)
-        {
-            // Build list of columns and mappings to provision Kusto
-            var kustoColumns = new List<string>();
-            var columnMappings = new List<JsonColumnMapping>();
-
-            foreach (var entry in KustoColumnType)
-            {
-                var name = entry.Key;
-                kustoColumns.Add($"{name}:{entry.Value}");
-                columnMappings.Add(new JsonColumnMapping()
-                { ColumnName = name, JsonPath = $"$.{name}" });
-            }
-
-            using var kustoAdminClient = KustoClientFactory.CreateCslAdminProvider(kusto);
-
-            // Send drop table ifexists command to Kusto
-            var command = CslCommandGenerator.GenerateTableDropCommand(table, true);
-            kustoAdminClient.ExecuteControlCommand(db, command);
-
-            // Send create table command to Kusto
-            command = $".create table {table} ({string.Join(", ", kustoColumns)})";
-            Console.WriteLine(command);
-            kustoAdminClient.ExecuteControlCommand(db, command);
-
-            // Send create table mapping command to Kusto
-            command = CslCommandGenerator.GenerateTableJsonMappingCreateCommand(
-                                                table, "types_mapping", columnMappings, true);
-            kustoAdminClient.ExecuteControlCommand(db, command);
-
-            // Populate Kusto
-            command = ".append types_index <| print x = true, datetime('2020-02-23T07:22:29.1990163Z'), guid(74be27de-1e4e-49d9-b579-fe0b331d3642), int(17), long(17), real(0.3), 'string type', 30m, decimal(0.3), dynamic({'a':123, 'b':'hello'})";
-            return kustoAdminClient.ExecuteControlCommand(db, command);
         }
 
         /// <summary>

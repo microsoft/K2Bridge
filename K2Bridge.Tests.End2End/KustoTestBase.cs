@@ -77,18 +77,11 @@ namespace K2Bridge.Tests.End2End
         protected const string INDEX = "kibana_sample_data_flights";
 
         /// <summary>
-        /// Name of the Kusto index for types check.
-        /// </summary>
-        protected const string TYPESINDEX = "types_index";
-
-        /// <summary>
         /// Name of the Kusto ingestion mapping to create.
         /// </summary>
         protected const string MAPPING = "test_mapping";
 
         protected const string FLIGHTSDIR = "../../../flights";
-
-        protected const string TYPESDIR = "../../../types";
 
         /// <summary>
         ///  Name of the Kusto database to populate with test data.
@@ -197,9 +190,6 @@ namespace K2Bridge.Tests.End2End
         {
             var structure = File.ReadAllText(structureJsonFile);
             var esClient = await CreateElasticsearchClient("init");
-
-            PopulateKusto.PopulateTypesIndex(kusto, kustoDatabase, TYPESINDEX);
-            Progress.WriteLine($"Kusto Types index creation completed");
 
             // For immediately logging information to console, use Progress.WriteLine.
             // Can't use Console.WriteLine: https://github.com/nunit/nunit3-vs-adapter/issues/266
