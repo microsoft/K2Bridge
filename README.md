@@ -4,7 +4,7 @@ K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://
 
 ---
 
-[![Build Status](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_apis/build/status/K2Bridge-CICD-Dev?branchName=master)](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_build/latest?definitionId=160&branchName=master)
+[![Build Status](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_apis/build/status/K2bridge-Dev-CICD?branchName=master)](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_build/latest?definitionId=169&branchName=master)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 ## Description
@@ -86,7 +86,7 @@ Data collection may be disabled by installing the K2 helm chart by setting the c
 e.g: '--set settings.collectTelemetry=false'
 
 ## Attribution
-Elasticsearch is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.  
+Elasticsearch is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.
 Kibana is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.
 
 ## Contributing
