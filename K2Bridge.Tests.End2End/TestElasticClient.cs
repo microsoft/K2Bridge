@@ -216,6 +216,13 @@ namespace K2Bridge.Tests.End2End
             return result;
         }
 
+        public async Task<JToken> Templates(string templateName)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"_cat/templates/{templateName}?format=json");
+            var result = await JsonQuery(request);
+            return result;
+        }
+
         public HttpClient Client()
         {
             return client;

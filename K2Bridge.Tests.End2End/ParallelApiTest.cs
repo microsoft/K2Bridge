@@ -189,6 +189,15 @@ namespace K2Bridge.Tests.End2End
             AssertJsonIdentical(k2.Result, es.Result);
         }
 
+        [Test]
+        [Description("_cat/templates/kibana_index_template Kibana 7 query")]
+        public void CompareElasticKusto_WhenKibanaTemplateQuery_ResponsesAreEquivalent()
+        {
+            var es = ESClient().Templates("kibana_index_template");
+            var k2 = K2Client().Templates("kibana_index_template");
+            AssertJsonIdentical(k2.Result, es.Result);
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);
