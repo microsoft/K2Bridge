@@ -11,16 +11,40 @@ namespace K2Bridge.Visitors.LuceneNet
     /// </summary>
     internal interface ILuceneVisitor
     {
+        /// <summary>
+        /// Accepts a given lucene visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="termQueryWrapper">The LuceneTermQuery object to visit.</param>
         void Visit(LuceneTermQuery termQueryWrapper);
 
+        /// <summary>
+        /// Accepts a given lucene visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="boolQueryWrapper">The LuceneBoolQuery object to visit.</param>
         void Visit(LuceneBoolQuery boolQueryWrapper);
 
+        /// <summary>
+        /// Accepts a given lucene visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="phraseQueryWrapper">The LucenePhraseQuery object to visit.</param>
         void Visit(LucenePhraseQuery phraseQueryWrapper);
 
+        /// <summary>
+        /// Accepts a given lucene visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="prefixQueryWrapper">The LucenePrefixQuery object to visit.</param>
         void Visit(LucenePrefixQuery prefixQueryWrapper);
 
+        /// <summary>
+        /// Accepts a given lucene visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="wildcardQueryWrapper">The LuceneWildcardQuery object to visit.</param>
         void Visit(LuceneWildcardQuery wildcardQueryWrapper);
 
+        /// <summary>
+        /// Accepts a given lucene visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="rangeQueryWrapper">The LuceneRangeQuery object to visit.</param>
         void Visit(LuceneRangeQuery rangeQueryWrapper);
     }
 }
