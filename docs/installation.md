@@ -3,11 +3,13 @@
 ## Requirements
 
 * [Helm 3](https://github.com/helm/helm#install)
-* AKS cluster or any other Kubernetes cluster (version 1.14 or newer - tested and verified up to version 1.16)
+* AKS cluster ([create an AKS cluster instructions](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal#create-an-aks-cluster)) or any other Kubernetes cluster (version 1.14 or newer - tested and verified up to version 1.16. A minimun of 5 node count).
 * An Azure Data Explorer (ADX) instance
     * You will need the ADX cluster URL and a database name
 * An Azure AD service principal authorized to view data in ADX
     * You will need the ClientID and Secret
+    * [Create an Azure AD service principal instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#create-an-azure-active-directory-application)
+    * Instructions on how to set cluster's view permissions for the Azure AD service principal, can be found here: [manage permissions](https://docs.microsoft.com/en-us/azure/data-explorer/manage-database-permissions#manage-permissions-in-the-azure-portal)
     * Important note: A service principal with 'Viewer' permission is enough. It is highly discouraged to use higher permissions (read, admin, etc...)
 * [Optional] - Docker for image build
 
