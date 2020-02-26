@@ -5,8 +5,10 @@
 namespace UnitTests.K2Bridge.Visitors.LuceneNet
 {
     using System;
+    using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Queries;
     using global::K2Bridge.Models.Request.Queries.LuceneNet;
+    using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using global::K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
@@ -57,7 +59,8 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
             var es = rangeQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever("days"));
+            VisitorTestsUtils.AddDefaultDsl(visitor);
             visitor.Visit((RangeClause)es);
 
             return ((RangeClause)es).KustoQL;

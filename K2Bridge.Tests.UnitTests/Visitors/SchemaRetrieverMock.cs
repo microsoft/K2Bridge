@@ -12,14 +12,14 @@ namespace UnitTests.K2Bridge.Visitors
 
     public static class SchemaRetrieverMock
     {
-        public static ISchemaRetrieverFactory CreateMockSchemaRetriever()
+        public static ISchemaRetrieverFactory CreateMockSchemaRetriever(string name = "dayOfWeek", string type = "string")
         {
             var response = new FieldCapabilityResponse();
             response.AddField(
                 new FieldCapabilityElement
                 {
-                    Name = "dayOfWeek",
-                    Type = "string",
+                    Name = name,
+                    Type = type,
                 });
             var responseTask = Task.FromResult(response);
 
@@ -30,22 +30,14 @@ namespace UnitTests.K2Bridge.Visitors
             return new SchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
         }
 
-        public static ISchemaRetrieverFactory CreateMockNumericSchemaRetriever()
+        public static ISchemaRetrieverFactory CreateMockNumericSchemaRetriever(string name = "dayOfWeek", string type = "long")
         {
-            var response = new FieldCapabilityResponse();
-            response.AddField(
-                new FieldCapabilityElement
-                {
-                    Name = "dayOfWeek",
-                    Type = "long",
-                });
-            var responseTask = Task.FromResult(response);
+            return CreateMockSchemaRetriever(name, type);
+        }
 
-            var mockDAL = new Mock<IKustoDataAccess>();
-            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
-
-            var mockLogger = new Mock<ILogger<SchemaRetriever>>();
-            return new SchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
+        public static ISchemaRetrieverFactory CreateMockDateSchemaRetriever(string name = "MyField", string type = "date")
+        {
+            return CreateMockSchemaRetriever(name, type);
         }
     }
 }

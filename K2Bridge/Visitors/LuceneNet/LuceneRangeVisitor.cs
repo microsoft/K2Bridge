@@ -23,8 +23,8 @@ namespace K2Bridge.Visitors.LuceneNet
             var rangeClause = new RangeClause
             {
                 FieldName = rangeQuery.Field,
-                GTEValue = decimal.Parse(rangeQuery.LowerTerm, CultureInfo.InvariantCulture),
-                LTValue = decimal.Parse(rangeQuery.UpperTerm, CultureInfo.InvariantCulture),
+                GTEValue = rangeQuery.LowerTerm,
+                LTValue = rangeQuery.UpperTerm,
             };
             rangeQueryWrapper.ESQuery = rangeClause;
         }

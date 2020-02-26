@@ -14,14 +14,14 @@ namespace K2Bridge.Models.Request.Queries
     {
         public string FieldName { get; set; }
 
-        public decimal? GTEValue { get; set; }
+        public string GTEValue { get; set; }
 
         // isn't created by kibana but kept here for completeness
-        public decimal? GTValue { get; set; }
+        public string GTValue { get; set; }
 
-        public decimal? LTEValue { get; set; }
+        public string LTEValue { get; set; }
 
-        public decimal? LTValue { get; set; }
+        public string LTValue { get; set; }
 
         public string Format { get; set; }
 

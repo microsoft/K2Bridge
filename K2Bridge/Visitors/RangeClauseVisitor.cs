@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using K2Bridge.Models.Request.Queries;
 
     /// <content>
@@ -29,8 +30,19 @@ namespace K2Bridge.Visitors
             {
                 // general "is between" filter on numeric fields uses a rangeClause query with GTE+LT (not LTE like above)
                 EnsureClause.IsNotNull(rangeClause.LTValue, nameof(rangeClause.LTValue));
-
-                rangeClause.KustoQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
+                var t = ClauseFieldTypeProcessor.GetType(schemaRetriever, rangeClause.FieldName).Result;
+                switch (t)
+                {
+                    case ClauseFieldType.Numeric:
+                    case ClauseFieldType.Text:
+                        rangeClause.KustoQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
+                        break;
+                    case ClauseFieldType.Date:
+                        rangeClause.KustoQL = $"{rangeClause.FieldName} >= todatetime('{rangeClause.GTEValue}') and {rangeClause.FieldName} < todatetime('{rangeClause.LTValue}')";
+                        break;
+                    case ClauseFieldType.Unknown:
+                        throw new Exception($"Field name {rangeClause.FieldName} has an unknown type.");
+                }
             }
         }
     }

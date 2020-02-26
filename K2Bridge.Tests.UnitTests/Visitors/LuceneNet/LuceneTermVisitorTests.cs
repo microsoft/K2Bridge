@@ -7,6 +7,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
     using System;
     using global::K2Bridge.Models.Request.Queries;
     using global::K2Bridge.Models.Request.Queries.LuceneNet;
+    using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using global::K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
@@ -53,7 +54,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
             var es = termQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
             visitor.Visit((QueryStringClause)es);
 
             return ((QueryStringClause)es).KustoQL;

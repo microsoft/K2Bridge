@@ -5,6 +5,7 @@
 namespace UnitTests.K2Bridge.Visitors
 {
     using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using Newtonsoft.Json;
     using NUnit.Framework;
@@ -282,7 +283,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestMatchPhraseQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -294,7 +295,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestExistsClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -309,7 +310,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName = "QueryAccept_WithBetweenRange_ReturnsExpectedResult")]
         public string TestRangeQueries(string queryString)
         {
-            return TestRangeClause(queryString);
+            return TestRangeClause(queryString, "TEST_FIELD");
         }
 
         [TestCase(
@@ -327,7 +328,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -343,7 +344,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -355,7 +356,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -367,7 +368,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestComplexWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -379,15 +380,16 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestPrefixQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
 
-        private string TestRangeClause(string queryString)
+        private string TestRangeClause(string queryString, string field = "MyField")
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(field));
+            VisitorTestsUtils.AddDefaultDsl(visitor);
             query.Accept(visitor);
             return query.KustoQL;
         }

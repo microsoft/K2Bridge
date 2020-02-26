@@ -4,7 +4,9 @@
 
 namespace UnitTests.K2Bridge.Visitors
 {
+    using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using NUnit.Framework;
 
@@ -17,7 +19,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName="Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse")]
         public string TestValidRangeClauseVisitNumberBetweenTwoInts()
         {
-            return RangeClauseToKQL(CreateRangeClause(0, 10m));
+            return RangeClauseToKQL(CreateRangeClause("0", "10"));
         }
 
         [TestCase(
@@ -25,7 +27,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName="Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse")]
         public string TestValidRangeClauseVisitNumberBetweenIntAndDecimal()
         {
-            return RangeClauseToKQL(CreateRangeClause(0, 10.10m));
+            return RangeClauseToKQL(CreateRangeClause("0", "10.10"));
         }
 
         [TestCase(
@@ -33,7 +35,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName="Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse")]
         public string TestValidRangeClauseVisitNumberBetweenTwoDecimalss()
         {
-            return RangeClauseToKQL(CreateRangeClause(10.10m, 20.20m));
+            return RangeClauseToKQL(CreateRangeClause("10.10", "20.20"));
         }
 
         // Time RangeClause Query Tests
@@ -42,7 +44,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName="Visit_WithValidRangeBetweenInts_ReturnsValidResponse")]
         public string TestValidTimeRangeClauseVisitNumberBetweenTwoInts()
         {
-            return RangeClauseToKQL(CreateTimeRangeClause(0, 10m));
+            return RangeClauseToKQL(CreateTimeRangeClause("0", "10"));
         }
 
         [TestCase(
@@ -50,7 +52,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName="Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse")]
         public string TestValidTimeRangeClauseVisitNumberBetweenIntAndDecimal()
         {
-            return RangeClauseToKQL(CreateTimeRangeClause(0, 10.10m));
+            return RangeClauseToKQL(CreateTimeRangeClause("0", "10.10"));
         }
 
         [TestCase(
@@ -58,10 +60,18 @@ namespace UnitTests.K2Bridge.Visitors
             TestName="Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse")]
         public string TestValidTimeRangeClauseVisitNumberBetweenTwoDecimalss()
         {
-            return RangeClauseToKQL(CreateTimeRangeClause(10.10m, 20.20m));
+            return RangeClauseToKQL(CreateTimeRangeClause("10.10", "20.20"));
         }
 
-        private static RangeClause CreateRangeClause(decimal min, decimal max)
+        [TestCase(
+            ExpectedResult = "MyField >= todatetime('2020-01-01 00:00') and MyField < todatetime('2020-02-22 10:00')",
+            TestName = "Visit_ValidDateRange_ReturnsValidResponse")]
+        public string TestValidDateRange_ReturnsValidResponse()
+        {
+            return DateRangeClauseToKQL(CreateDateRangeClause("2020-01-01 00:00", "2020-02-22 10:00"));
+        }
+
+        private static RangeClause CreateRangeClause(string min, string max)
         {
             return new RangeClause()
             {
@@ -74,7 +84,7 @@ namespace UnitTests.K2Bridge.Visitors
             };
         }
 
-        private static RangeClause CreateTimeRangeClause(decimal min, decimal max)
+        private static RangeClause CreateTimeRangeClause(string min, string max)
         {
             return new RangeClause()
             {
@@ -87,9 +97,31 @@ namespace UnitTests.K2Bridge.Visitors
             };
         }
 
+        private static RangeClause CreateDateRangeClause(string min, string max)
+        {
+            return new RangeClause()
+            {
+                FieldName = "MyField",
+                GTEValue = min,
+                GTValue = null,
+                LTEValue = null,
+                LTValue = max,
+                Format = null,
+            };
+        }
+
         private static string RangeClauseToKQL(RangeClause rangeClause)
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever("MyField"));
+            VisitorTestsUtils.AddDefaultDsl(visitor);
+            visitor.Visit(rangeClause);
+            return rangeClause.KustoQL;
+        }
+
+        private static string DateRangeClauseToKQL(RangeClause rangeClause)
+        {
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockDateSchemaRetriever());
+            VisitorTestsUtils.AddDefaultDsl(visitor);
             visitor.Visit(rangeClause);
             return rangeClause.KustoQL;
         }
