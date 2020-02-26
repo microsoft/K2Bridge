@@ -44,10 +44,17 @@ namespace K2Bridge.Visitors
             switch (queryStringClause.ParsedType)
             {
                 case QueryStringClause.Subtype.Term:
-                    var isNumeric = GetIsFieldNumeric(queryStringClause.ParsedFieldName).Result;
-                    if (isNumeric)
+                    var isMatchPhraseFieldType = IsMatchPhraseFieldType(queryStringClause.ParsedFieldName).Result;
+                    if (isMatchPhraseFieldType)
                     {
-                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Equal} {queryStringClause.Phrase}";
+                        var matchPhraseClause = new MatchPhraseClause()
+                        {
+                            FieldName = queryStringClause.ParsedFieldName,
+                            Phrase = queryStringClause.Phrase,
+                        };
+
+                        matchPhraseClause.Accept(this);
+                        queryStringClause.KustoQL = matchPhraseClause.KustoQL;
                     }
                     else
                     {
@@ -80,7 +87,7 @@ namespace K2Bridge.Visitors
             }
         }
 
-        private async Task<bool> GetIsFieldNumeric(string fieldName)
+        private async Task<bool> IsMatchPhraseFieldType(string fieldName)
         {
             // for tests
             if (schemaRetriever == null)
