@@ -104,6 +104,7 @@ namespace K2Bridge.Visitors
                 "long" => true,
                 "float" => true,
                 "double" => true,
+                "boolean" => true,
                 _ => false,
             };
         }
