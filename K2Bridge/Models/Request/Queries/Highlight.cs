@@ -12,9 +12,15 @@ namespace K2Bridge.Models.Request.Queries
     /// </summary>
     internal class Highlight
     {
+        /// <summary>
+        /// Gets or sets pre tags.
+        /// </summary>
         [JsonProperty("pre_tags")]
         public List<string> PreTags { get; set; }
 
+        /// <summary>
+        /// Gets or sets post tags.
+        /// </summary>
         [JsonProperty("post_tags")]
         public List<string> PostTags { get; set; }
     }

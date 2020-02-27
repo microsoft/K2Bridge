@@ -8,6 +8,9 @@ namespace K2Bridge.Models.Request.Aggregations
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// A single-value metrics aggregation that computes the average of numeric values that are extracted from the aggregated documents.
+    /// </summary>
     [JsonConverter(typeof(AggregationFieldConverter))]
     internal class AvgAggregation : MetricAggregation
     {
