@@ -3,7 +3,7 @@
 ## Requirements
 
 * [Helm 3](https://github.com/helm/helm#install)
-* AKS cluster ([create an AKS cluster instructions](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal#create-an-aks-cluster)) or any other Kubernetes cluster (version 1.14 or newer - tested and verified up to version 1.16. A minimun of 5 node count).
+* AKS cluster ([create an AKS cluster instructions](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal#create-an-aks-cluster)) or any other Kubernetes cluster (version 1.14 or newer - tested and verified up to version 1.16. A minimum of 3 node count).
 * An Azure Data Explorer (ADX) instance
     * You will need the ADX cluster URL and a database name
 * An Azure AD service principal authorized to view data in ADX
