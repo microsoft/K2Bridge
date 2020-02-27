@@ -15,6 +15,7 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Kibana public api", Scope = "member", Target = "~M:K2Bridge.Controllers.QueryController.SearchAsync(System.Boolean,System.Boolean)~System.Threading.Tasks.Task{Microsoft.AspNetCore.Mvc.IActionResult}")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "Follows the public method", Scope = "member", Target = "~M:K2Bridge.Controllers.QueryController.SearchInternalAsync(System.Boolean,System.Boolean,System.String)~System.Threading.Tasks.Task{Microsoft.AspNetCore.Mvc.IActionResult}")]
 
+<<<<<<< Updated upstream
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "member", Target = "~F:K2Bridge.Controllers.MetadataController.ElasticMetadataClientName")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "member", Target = "~M:K2Bridge.KsutoDAL.ISchemaRetriever.RetrieveTableSchema~System.Threading.Tasks.Task{System.Collections.IDictionary}")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "member", Target = "~M:K2Bridge.KsutoDAL.ISchemaRetrieverFactory.Make(System.String)~K2Bridge.KsutoDAL.ISchemaRetriever")]
@@ -151,6 +152,8 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "type", Target = "~T:K2Bridge.Models.Response.Shards")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "type", Target = "~T:K2Bridge.Models.Response.TermBucket")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "type", Target = "~T:K2Bridge.Models.Response.TimeUtils")]
+=======
+>>>>>>> Stashed changes
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "type", Target = "~T:K2Bridge.Startup")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "type", Target = "~T:K2Bridge.Models.Request.DocValueField")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Cannot be null", Scope = "member", Target = "~M:K2Bridge.CorrelationIdHeaderMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext)~System.Threading.Tasks.Task")]
