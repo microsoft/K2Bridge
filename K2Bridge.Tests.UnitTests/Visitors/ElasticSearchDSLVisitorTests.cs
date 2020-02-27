@@ -41,7 +41,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(ExpectedResult =
-    "let fromUnixTimeMilli = (t:long) {datetime(1970 - 01 - 01) + t * 1millisec};\nlet _data = database(\"\").myindex | where (dayOfWeek >2);\n(_data | limit 0 | as hits)")]
+        "let fromUnixTimeMilli = (t:long) {datetime(1970 - 01 - 01) + t * 1millisec};\nlet _data = database(\"\").myindex | where (dayOfWeek >2);\n(_data | limit 0 | as hits)")]
         public string Visit_WithGreaterThanExpression_ExpectedResults()
         {
             var queryClause = CreateQueryStringClause("dayOfWeek:>2", false);
@@ -63,8 +63,6 @@ namespace UnitTests.K2Bridge.Visitors
             visitor.Visit(dsl);
             return dsl.KustoQL;
         }
-
-
 
         [TestCase(ExpectedResult =
             "let fromUnixTimeMilli = (t:long) {datetime(1970 - 01 - 01) + t * 1millisec};\nlet _data = database(\"\").myindex | where (dayOfWeek has \"1\");\n(_data | limit 0 | as hits)")]
