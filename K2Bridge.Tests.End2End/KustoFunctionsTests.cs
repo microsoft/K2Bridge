@@ -17,8 +17,6 @@ namespace K2Bridge.Tests.End2End
 
         private static string functionFullName;
 
-        private static string typesIndexFullName;
-
         [OneTimeSetUp]
         public static void CreateClient()
         {
@@ -28,8 +26,6 @@ namespace K2Bridge.Tests.End2End
             }
 
             functionFullName = $"{KustoDatabase()}:fn_countries_and_airports";
-
-            typesIndexFullName = $"{KustoDatabase()}:{TYPESINDEX}";
         }
 
         [Test]
@@ -69,88 +65,6 @@ namespace K2Bridge.Tests.End2End
                     ""type"": ""date""
                   }
                 }
-              }
-            }");
-            fieldCaps.Should().BeEquivalentTo(expected);
-        }
-
-        [Test]
-        [Description("FieldCaps returns fields for functions")]
-        public async Task FieldCaps_WithFunction_ReturnsResponseWithAllTypes()
-        {
-            var fieldCaps = await K2Client().FieldCaps(typesIndexFullName);
-            var expected = JObject.Parse(@"{
-              ""fields"": {
-                ""Boolean"": {
-                  ""boolean"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""boolean""
-                  }
-                },
-                ""DateTime"": {
-                  ""date"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""date""
-                  }
-                },
-                ""Guid"": {
-                  ""string"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""string""
-                  }
-                },
-                ""Int32"": {
-                  ""integer"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""integer""
-                  }
-                },
-                ""Int64"": {
-                  ""long"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""long""
-                  }
-                },
-                ""Double"": {
-                  ""double"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""double""
-                  }
-                },
-                ""String"": {
-                  ""keyword"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""keyword""
-                  }
-                },
-                ""TimeSpan"": {
-                  ""string"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""string""
-                  }
-                },
-                ""SqlDecimal"": {
-                  ""double"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""double""
-                  }
-                },
-                ""Dynamic"": {
-                  ""object"": {
-                    ""aggregatable"": true,
-                    ""searchable"": true,
-                    ""type"": ""object""
-                  }
-                },
               }
             }");
             fieldCaps.Should().BeEquivalentTo(expected);
