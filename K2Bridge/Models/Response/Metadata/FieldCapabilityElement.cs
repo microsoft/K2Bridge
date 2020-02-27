@@ -7,15 +7,30 @@ namespace K2Bridge.Models.Response.Metadata
     using K2Bridge.JsonConverters;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Field capability response element.
+    /// </summary>
     [JsonConverter(typeof(FieldCapabilityElementConverter))]
     public class FieldCapabilityElement
     {
+        /// <summary>
+        /// Gets or sets field name.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Gets or sets field type.
+        /// </summary>
         public string Type { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the field is aggregatable.
+        /// </summary>
         public bool IsAggregatable { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the field is searchable.
+        /// </summary>
         public bool IsSearchable { get; set; } = true;
     }
 }

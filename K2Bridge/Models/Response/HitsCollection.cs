@@ -7,6 +7,9 @@ namespace K2Bridge.Models.Response
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Hits response.
+    /// </summary>
     public class HitsCollection
     {
         private readonly List<Hit> hits = new List<Hit>();
