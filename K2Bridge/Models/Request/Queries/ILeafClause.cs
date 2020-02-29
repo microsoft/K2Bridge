@@ -8,6 +8,9 @@ namespace K2Bridge.Models.Request.Queries
     using K2Bridge.Models.Request;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Leaf clause to visit.
+    /// </summary>
     [JsonConverter(typeof(LeafClauseConverter))]
     internal interface ILeafClause : IQuery
     {

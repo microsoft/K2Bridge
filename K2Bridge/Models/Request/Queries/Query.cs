@@ -8,8 +8,14 @@ namespace K2Bridge.Models.Request.Queries
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Full query to visit.
+    /// </summary>
     internal class Query : KustoQLBase, IVisitable
     {
+        /// <summary>
+        /// Gets or sets bool query.
+        /// </summary>
         [JsonProperty("bool")]
         public BoolQuery Bool { get; set; }
 
