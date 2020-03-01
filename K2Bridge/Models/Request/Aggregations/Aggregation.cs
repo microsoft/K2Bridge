@@ -10,11 +10,20 @@ namespace K2Bridge.Models.Request.Aggregations
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Aggregation element in an Elasticsearch query.
+    /// </summary>
     [JsonConverter(typeof(AggregationConverter))]
     internal class Aggregation : KustoQLBase, IVisitable
     {
+        /// <summary>
+        /// Gets or sets primary/most relevant aggregation.
+        /// </summary>
         public LeafAggregation PrimaryAggregation { get; set; }
 
+        /// <summary>
+        /// Gets or sets sub aggregations.
+        /// </summary>
         public Dictionary<string, Aggregation> SubAggregations { get; set; }
 
         /// <inheritdoc/>
