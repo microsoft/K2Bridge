@@ -28,7 +28,7 @@ namespace K2Bridge.KustoDAL
         Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext);
 
         /// <summary>
-        /// Execute conrol command asynchronously.
+        /// Execute an asynchronous control command.
         /// </summary>
         /// <param name="query">The control command to execute.</param>
         /// <param name="requestContext">The request context.</param>
