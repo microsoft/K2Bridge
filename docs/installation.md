@@ -69,8 +69,8 @@ If you need to build the image, please follow the [build instructions](./build.m
         ```
 
 1. Configure index-patterns  
-In a new installation of Kibana, you will need to configure the indexe-patterns to access your data.
-Navigate to Management -> Index Patterns and create new indexes.
+In a new installation of Kibana, you will need to configure the index-patterns to access your data.
+Navigate to Management -> Index Patterns -> Create index pattern.
 Note that the name of the index must be an **exact match** to the table name or function name, without any asterisk. You can copy the relevant line from the list.
 
 Notes:
