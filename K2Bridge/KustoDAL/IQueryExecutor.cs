@@ -24,7 +24,7 @@ namespace K2Bridge.KustoDAL
         /// </summary>
         /// <param name="query">String respresenting a query to execute.</param>
         /// <param name="requestContext">The request context.</param>
-        /// <returns>Task.<(TimeSpan timeTaken, IDataReader reader)> - timeTakenis the query execution time and reader is the query result.</returns>
+        /// <returns>Task.<(TimeSpan timeTaken, IDataReader reader)> - timeTaken is the query execution time and reader is the query result.</returns>
         Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext);
 
         /// <summary>
