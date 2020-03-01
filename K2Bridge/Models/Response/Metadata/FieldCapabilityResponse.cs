@@ -15,9 +15,9 @@ namespace K2Bridge.Models.Response.Metadata
         private readonly Dictionary<string, FieldCapabilityElement> fields = new Dictionary<string, FieldCapabilityElement>();
 
         /// <summary>
-        /// Gets all fields dictionary.
-        /// Where key is the field name and the value is the field capability element.
+        /// Gets all fields.
         /// </summary>
+        /// <returns>Dictionary of all fields with key field name and field capability element value.</returns>
         [JsonProperty("fields")]
         public IDictionary<string, FieldCapabilityElement> Fields => fields;
 

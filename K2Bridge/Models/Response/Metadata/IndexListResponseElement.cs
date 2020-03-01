@@ -7,7 +7,7 @@ namespace K2Bridge.Models.Response.Metadata
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Indices collecton response element.
+    /// Index collecton response element.
     /// </summary>
     public class IndexListResponseElement : ResponseElementBase
     {
