@@ -50,8 +50,15 @@ You need to be able to connect to your cluster from your machine.
         ADX_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
         ```
 
+        Optional - enable ApplicationInsights telemetry
+
         ```sh
-        helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=latest] [--set settings.collectTelemetry=true]
+        APPLICATION_INSIGHTS_KEY=[INSTRUMENTATION_KEY]
+        COLLECT_TELEMETRY=true
+        ```
+
+        ```sh
+        helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
         ```
 
         The complete set of configuration options can be found [here](./configuration.md).
