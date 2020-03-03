@@ -13,16 +13,14 @@ namespace K2Bridge.Models.Response
     {
         /// <summary>
         /// Gets or sets the total number of shards.
-        /// Exists in order to support Kibana's expected response
-        /// In our case it is a const == 1.
+        /// Exists in order to support Kibana's expected response (default = 1)
         /// </summary>
         [JsonProperty("total")]
         public int Total { get; set; } = 1;
 
         /// <summary>
         /// Gets or sets the indication of success.
-        /// Exists in order to support Kibana's expected response
-        /// In our case it is a const == 1.
+        /// Exists in order to support Kibana's expected response (default = 1)
         /// </summary>
         [JsonProperty("successful")]
         public int Successful { get; set; } = 1;
