@@ -2,8 +2,9 @@
 
 ## Requirements
 
-* [Helm 3](https://github.com/helm/helm#install)
 * AKS cluster ([create an AKS cluster instructions](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal#create-an-aks-cluster)) or any other Kubernetes cluster (version 1.14 or newer - tested and verified up to version 1.16. A minimum of 3 node count).
+You need to be able to connect to your cluster from your machine.
+* [Helm 3](https://github.com/helm/helm#install)
 * An Azure Data Explorer (ADX) instance
     * You will need the ADX cluster URL and a database name
 * An Azure AD service principal authorized to view data in ADX
@@ -12,8 +13,7 @@
     * Instructions on how to set cluster's view permissions for the Azure AD service principal, can be found here: [manage permissions](https://docs.microsoft.com/en-us/azure/data-explorer/manage-database-permissions#manage-permissions-in-the-azure-portal)
     * Important note: A service principal with 'Viewer' permission is enough. It is highly discouraged to use higher permissions (read, admin, etc...)
 * [Optional] - Docker for image build
-
-If you need to build the image, please follow the [build instructions](./build.md).
+    If you need to build the image, please follow the [build instructions](./build.md).
 
 ## Run on Azure Kubernetes Service (AKS)
 
@@ -33,6 +33,7 @@ If you need to build the image, please follow the [build instructions](./build.m
         1. go to the K2 root repository directory
 
         1. run
+
             ```sh
             helm dependency update charts/k2bridge
             ```
@@ -49,20 +50,21 @@ If you need to build the image, please follow the [build instructions](./build.m
         ADX_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
         ```
 
-        Optional - Enable ApplicationInsights telemetry
+        Optional - enable ApplicationInsights telemetry
+
         ```sh
         APPLICATION_INSIGHTS_KEY=[INSTRUMENTATION_KEY]
         COLLECT_TELEMETRY=true
         ```
 
         ```sh
-        helm install k2bridge charts/k2bridge -n k2bridge --set image.repository=$REPOSITORY_NAME/$CONTAINER_NAME --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=latest] [--set privateRegistry="$IMAGE_PULL_SECRET_NAME"] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
+        helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
         ```
 
         The complete set of configuration options can be found [here](./configuration.md).
 
     * Deploy Kibana  
-    The command output will suggest a helm command to run to deploy Kibana, similar to:
+        The command output will suggest a helm command to run to deploy Kibana, similar to:
 
         ```sh
         helm install kibana elastic/kibana -n k2bridge --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.5 --set elasticsearchHosts=http://k2bridge:8080

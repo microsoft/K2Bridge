@@ -86,6 +86,7 @@ Data collection may be disabled by installing the K2 helm chart by setting the c
 e.g: '--set settings.collectTelemetry=false'
 
 ## Attribution
+
 Elasticsearch is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.
 Kibana is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.
 
