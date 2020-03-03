@@ -9,6 +9,9 @@ namespace K2Bridge.Models.Request.Aggregations
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Leaf Aggregation to visit.
+    /// </summary>
     [JsonConverter(typeof(LeafAggregationConverter))]
     internal abstract class LeafAggregation : KustoQLBase, IVisitable
     {

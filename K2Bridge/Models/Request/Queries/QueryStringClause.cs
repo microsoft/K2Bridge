@@ -9,9 +9,15 @@ namespace K2Bridge.Models.Request.Queries
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Find documents based on string query.
+    /// </summary>
     [JsonConverter(typeof(QueryStringClauseConverter))]
     internal class QueryStringClause : KustoQLBase, ILeafClause, IVisitable
     {
+        /// <summary>
+        /// Query subtype.
+        /// </summary>
         public enum Subtype
         {
             /// <summary>
@@ -42,13 +48,24 @@ namespace K2Bridge.Models.Request.Queries
         /// </summary>
         public Subtype? ParsedType { get; set; }
 
+        /// <summary>
+        /// Gets or sets field name to query.
+        /// </summary>
         public string ParsedFieldName { get; set; }
 
-        // original properties of QueryStringClause
+        /// <summary>
+        /// Gets or sets original properties of QueryStringClause.
+        /// </summary>
         public string Phrase { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether wildcard exists.
+        /// </summary>
         public bool Wildcard { get; set; }
 
+        /// <summary>
+        /// Gets or sets default value.
+        /// </summary>
         public string Default { get; set; }
 
         /// <inheritdoc/>

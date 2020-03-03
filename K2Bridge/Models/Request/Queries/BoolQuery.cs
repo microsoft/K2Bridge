@@ -9,16 +9,28 @@ namespace K2Bridge.Models.Request.Queries
     using K2Bridge.Visitors;
 
     /// <summary>
-    /// Represents a boolean clause.
+    /// A query that matches documents by boolean combinations of other queries.
     /// </summary>
     internal class BoolQuery : KustoQLBase, IVisitable, IQuery
     {
+        /// <summary>
+        /// Gets or sets Must value in bool query.
+        /// </summary>
         public IEnumerable<IQuery> Must { get; set; }
 
+        /// <summary>
+        /// Gets or sets MustNot value in bool query.
+        /// </summary>
         public IEnumerable<IQuery> MustNot { get; set; }
 
+        /// <summary>
+        /// Gets or sets Should value in bool query.
+        /// </summary>
         public IEnumerable<IQuery> Should { get; set; }
 
+        /// <summary>
+        /// Gets or sets ShouldNot value in bool query.
+        /// </summary>
         public IEnumerable<IQuery> ShouldNot { get; set; }
 
         /// <summary>
