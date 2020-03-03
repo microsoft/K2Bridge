@@ -40,6 +40,10 @@ namespace K2Bridge.Telemetry
                 LabelNames = new[] { "ExceptionType", "SourceContext", "ActionName" },
             });
 
+        /// <summary>
+        /// Emit event.
+        /// </summary>
+        /// <param name="logEvent">The log event.</param>
         public void Emit(LogEvent logEvent)
         {
             if (logEvent == null || logEvent.Exception == null)
