@@ -76,7 +76,7 @@ namespace UnitTests.K2Bridge.Visitors
         private static string VisitRangeClause(RangeClause clause, string fieldName = "MyField", string type = "string")
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(fieldName, type));
-            VisitorTestsUtils.AddDefaultDsl(visitor);
+            VisitorTestsUtils.AddRootDsl(visitor);
             visitor.Visit(clause);
             return clause.KustoQL;
         }

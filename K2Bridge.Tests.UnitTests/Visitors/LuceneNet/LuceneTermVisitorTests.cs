@@ -54,7 +54,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
             var es = termQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             visitor.Visit((QueryStringClause)es);
 
             return ((QueryStringClause)es).KustoQL;

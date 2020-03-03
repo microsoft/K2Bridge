@@ -113,7 +113,7 @@ namespace UnitTests.K2Bridge.Visitors
         private static string RangeClauseToKQL(RangeClause rangeClause)
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever("MyField", "long"));
-            VisitorTestsUtils.AddDefaultDsl(visitor);
+            VisitorTestsUtils.AddRootDsl(visitor);
             visitor.Visit(rangeClause);
             return rangeClause.KustoQL;
         }
@@ -121,7 +121,7 @@ namespace UnitTests.K2Bridge.Visitors
         private static string DateRangeClauseToKQL(RangeClause rangeClause)
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockDateSchemaRetriever());
-            VisitorTestsUtils.AddDefaultDsl(visitor);
+            VisitorTestsUtils.AddRootDsl(visitor);
             visitor.Visit(rangeClause);
             return rangeClause.KustoQL;
         }

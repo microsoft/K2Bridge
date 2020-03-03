@@ -16,7 +16,7 @@ namespace K2Bridge.Tests.UnitTests.Visitors
         /// Have the ISchemaRetriever initialised by the default visitor.
         /// </summary>
         /// <param name="visitor"></param>
-        internal static void AddDefaultDsl(ElasticSearchDSLVisitor visitor)
+        internal static void AddRootDsl(ElasticSearchDSLVisitor visitor)
         {
             var dsl = new ElasticSearchDSL
             {
@@ -29,10 +29,10 @@ namespace K2Bridge.Tests.UnitTests.Visitors
             visitor.Visit(dsl);
         }
 
-        internal static ElasticSearchDSLVisitor CreateDefaultVisitor()
+        internal static ElasticSearchDSLVisitor CreateRootVisitor()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            AddDefaultDsl(visitor);
+            AddRootDsl(visitor);
             return visitor;
         }
     }

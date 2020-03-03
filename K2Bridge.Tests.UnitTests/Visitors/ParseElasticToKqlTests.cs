@@ -283,7 +283,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestMatchPhraseQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -295,7 +295,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestExistsClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -328,7 +328,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -344,7 +344,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -356,7 +356,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -368,7 +368,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestComplexWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -380,7 +380,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestPrefixQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -389,7 +389,7 @@ namespace UnitTests.K2Bridge.Visitors
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(field, type));
-            VisitorTestsUtils.AddDefaultDsl(visitor);
+            VisitorTestsUtils.AddRootDsl(visitor);
             query.Accept(visitor);
             return query.KustoQL;
         }

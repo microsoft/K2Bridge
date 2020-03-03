@@ -94,7 +94,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         private static string VisitQuery(QueryStringClause queryStringClause)
         {
-            var visitor = VisitorTestsUtils.CreateDefaultVisitor();
+            var visitor = VisitorTestsUtils.CreateRootVisitor();
             visitor.Visit(queryStringClause);
             return queryStringClause.KustoQL;
         }
