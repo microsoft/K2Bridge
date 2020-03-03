@@ -13,6 +13,7 @@ namespace K2Bridge.Visitors
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Resource are not available in this version.")]
         public void Visit(RangeClause rangeClause)
         {
             Ensure.IsNotNull(rangeClause, nameof(rangeClause));
@@ -34,12 +35,13 @@ namespace K2Bridge.Visitors
                 switch (t)
                 {
                     case ClauseFieldType.Numeric:
-                    case ClauseFieldType.Text:
                         rangeClause.KustoQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
                         break;
                     case ClauseFieldType.Date:
                         rangeClause.KustoQL = $"{rangeClause.FieldName} >= todatetime('{rangeClause.GTEValue}') and {rangeClause.FieldName} < todatetime('{rangeClause.LTValue}')";
                         break;
+                    case ClauseFieldType.Text:
+                        throw new NotSupportedException("Text Range is not supported.");
                     case ClauseFieldType.Unknown:
                         throw new Exception($"Field name {rangeClause.FieldName} has an unknown type.");
                 }

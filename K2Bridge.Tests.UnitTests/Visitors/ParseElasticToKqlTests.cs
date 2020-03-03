@@ -310,7 +310,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName = "QueryAccept_WithBetweenRange_ReturnsExpectedResult")]
         public string TestRangeQueries(string queryString)
         {
-            return TestRangeClause(queryString, "TEST_FIELD");
+            return TestRangeClause(queryString, "TEST_FIELD", "long");
         }
 
         [TestCase(
@@ -385,10 +385,10 @@ namespace UnitTests.K2Bridge.Visitors
             return query.KustoQL;
         }
 
-        private string TestRangeClause(string queryString, string field = "MyField")
+        private string TestRangeClause(string queryString, string field = "MyField", string type = "string")
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(field));
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(field, type));
             VisitorTestsUtils.AddDefaultDsl(visitor);
             query.Accept(visitor);
             return query.KustoQL;

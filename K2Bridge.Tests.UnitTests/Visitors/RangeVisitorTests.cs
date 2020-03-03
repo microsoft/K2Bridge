@@ -19,7 +19,7 @@ namespace UnitTests.K2Bridge.Visitors
         {
             var rangeClause = CreateRangeClause("myField", "3", null, null, "5", "other");
 
-            return VisitRangeClause(rangeClause, "myField");
+            return VisitRangeClause(rangeClause, "myField", "integer");
         }
 
         [TestCase(
@@ -73,9 +73,9 @@ namespace UnitTests.K2Bridge.Visitors
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
         }
 
-        private static string VisitRangeClause(RangeClause clause, string fieldName = "MyField")
+        private static string VisitRangeClause(RangeClause clause, string fieldName = "MyField", string type = "string")
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(fieldName));
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(fieldName, type));
             VisitorTestsUtils.AddDefaultDsl(visitor);
             visitor.Visit(clause);
             return clause.KustoQL;

@@ -112,7 +112,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         private static string RangeClauseToKQL(RangeClause rangeClause)
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever("MyField"));
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever("MyField", "long"));
             VisitorTestsUtils.AddDefaultDsl(visitor);
             visitor.Visit(rangeClause);
             return rangeClause.KustoQL;

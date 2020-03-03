@@ -22,10 +22,7 @@ namespace K2Bridge.Visitors
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Resources are not supported yet.")]
         public static async Task<ClauseFieldType> GetType(ISchemaRetriever schemaRetriever, string fieldName)
         {
-            if (schemaRetriever == null)
-            {
-                throw new System.Exception("schemaRetriever cannot be null.");
-            }
+            Ensure.IsNotNull(schemaRetriever, nameof(schemaRetriever), "schemaRetriever cannot be null.");
 
             Ensure.IsNotNullOrEmpty(fieldName, nameof(fieldName));
 
