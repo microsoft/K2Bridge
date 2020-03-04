@@ -4,8 +4,14 @@
 
 namespace K2Bridge.Models.Response
 {
+    /// <summary>
+    /// An interface for a bucket class.
+    /// </summary>
     public interface IBucket
     {
+        /// <summary>
+        /// Gets or sets documents count.
+        /// </summary>
         int DocCount { get; set; }
     }
 }
