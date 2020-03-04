@@ -11,6 +11,12 @@ namespace K2Bridge
     /// </summary>
     public interface ITranslator
     {
+        /// <summary>
+        /// Translate query.
+        /// </summary>
+        /// <param name="header">Query header.</param>
+        /// <param name="query">Query to translate.</param>
+        /// <returns>Translated QueryData.</returns>
         QueryData Translate(string header, string query);
     }
 }

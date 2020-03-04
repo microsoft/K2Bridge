@@ -14,8 +14,15 @@ namespace K2Bridge.KustoDAL
     /// </summary>
     public interface ISchemaRetriever
     {
+        /// <summary>
+        /// Gets the index name.
+        /// </summary>
         string IndexName { get; }
 
+        /// <summary>
+        /// Retrieves table schema.
+        /// </summary>
+        /// <returns>Task.<IDictionary> with a table schema.</returns>
         Task<IDictionary> RetrieveTableSchema();
     }
 }

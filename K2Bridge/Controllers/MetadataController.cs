@@ -20,6 +20,9 @@ namespace K2Bridge.Controllers
     [ApiController]
     public class MetadataController : ControllerBase
     {
+        /// <summary>
+        /// Elasticsearch metadata instance client name.
+        /// </summary>
         internal const string ElasticMetadataClientName = "elasticMetadata";
         private readonly IHttpClientFactory clientFactory;
         private readonly ILogger<MetadataController> logger;
