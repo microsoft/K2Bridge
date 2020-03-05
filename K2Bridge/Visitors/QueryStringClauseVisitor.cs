@@ -92,8 +92,8 @@ namespace K2Bridge.Visitors
         private async Task<bool> GetIsFieldNumeric(string fieldName)
         {
             Ensure.IsNotNullOrEmpty(fieldName, nameof(fieldName));
-            var t = await ClauseFieldTypeProcessor.GetType(schemaRetriever, fieldName);
-            return t == ClauseFieldType.Numeric;
+            var fieldType = await ClauseFieldTypeProcessor.GetType(schemaRetriever, fieldName);
+            return fieldType == ClauseFieldType.Numeric;
         }
 
         /// <summary>

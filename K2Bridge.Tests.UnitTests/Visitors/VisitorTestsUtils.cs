@@ -16,7 +16,7 @@ namespace K2Bridge.Tests.UnitTests.Visitors
         /// Have the ISchemaRetriever initialised by the default visitor.
         /// </summary>
         /// <param name="visitor"></param>
-        internal static void AddRootDsl(ElasticSearchDSLVisitor visitor)
+        internal static void VisitRootDsl(ElasticSearchDSLVisitor visitor)
         {
             var dsl = new ElasticSearchDSL
             {
@@ -29,10 +29,10 @@ namespace K2Bridge.Tests.UnitTests.Visitors
             visitor.Visit(dsl);
         }
 
-        internal static ElasticSearchDSLVisitor CreateRootVisitor()
+        internal static ElasticSearchDSLVisitor CreateAndVisitRootVisitor(string name = "dayOfWeek", string type = "string")
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            AddRootDsl(visitor);
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(name, type));
+            VisitRootDsl(visitor);
             return visitor;
         }
     }

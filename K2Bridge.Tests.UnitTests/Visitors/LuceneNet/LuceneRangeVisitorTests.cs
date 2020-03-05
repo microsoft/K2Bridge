@@ -59,8 +59,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
             var es = rangeQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever("days", "long"));
-            VisitorTestsUtils.AddRootDsl(visitor);
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("days", "long");
             visitor.Visit((RangeClause)es);
 
             return ((RangeClause)es).KustoQL;

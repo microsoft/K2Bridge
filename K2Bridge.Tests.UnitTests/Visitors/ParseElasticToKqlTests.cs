@@ -283,7 +283,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestMatchPhraseQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateRootVisitor();
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -295,7 +295,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestExistsClause(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateRootVisitor();
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -328,7 +328,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestQueryStringQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateRootVisitor();
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -344,7 +344,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestCombinedQueries(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateRootVisitor();
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -352,11 +352,11 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(
             QueryWildcardString,
             ExpectedResult = "where (* matches regex \"TEST(.)*RESULT\")",
-            TestName="QueryAccept_WithWildCard_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithWildCard_ReturnsExpectedResult")]
         public string TestWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateRootVisitor();
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -364,11 +364,11 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(
             QueryComplexWildcardString,
             ExpectedResult = "where (* matches regex \"TEST(.)*RESULT(.)*\")",
-            TestName="QueryAccept_WithComplexWildCard_ReturnsExpectedResult")]
+            TestName = "QueryAccept_WithComplexWildCard_ReturnsExpectedResult")]
         public string TestComplexWildcardQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateRootVisitor();
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -380,7 +380,7 @@ namespace UnitTests.K2Bridge.Visitors
         public string TestPrefixQuery(string queryString)
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateRootVisitor();
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             query.Accept(visitor);
             return query.KustoQL;
         }
@@ -388,8 +388,7 @@ namespace UnitTests.K2Bridge.Visitors
         private string TestRangeClause(string queryString, string field = "MyField", string type = "string")
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever(field, type));
-            VisitorTestsUtils.AddRootDsl(visitor);
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor(field, type);
             query.Accept(visitor);
             return query.KustoQL;
         }

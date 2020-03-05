@@ -56,7 +56,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
             var es = phraseQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             visitor.Visit((QueryStringClause)es);
 
             return ((QueryStringClause)es).KustoQL;
@@ -78,7 +78,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
             var es = phraseQuery.ESQuery;
             Assert.NotNull(es);
 
-            var visitor = VisitorTestsUtils.CreateRootVisitor();
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             visitor.Visit((QueryStringClause)es);
 
             return ((QueryStringClause)es).KustoQL;
