@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using K2Bridge.Models.Request.Queries;
 
     /// <content>
@@ -12,6 +13,7 @@ namespace K2Bridge.Visitors
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         /// <inheritdoc/>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Resource are not available in this version.")]
         public void Visit(RangeClause rangeClause)
         {
             Ensure.IsNotNull(rangeClause, nameof(rangeClause));
@@ -29,8 +31,20 @@ namespace K2Bridge.Visitors
             {
                 // general "is between" filter on numeric fields uses a rangeClause query with GTE+LT (not LTE like above)
                 EnsureClause.IsNotNull(rangeClause.LTValue, nameof(rangeClause.LTValue));
-
-                rangeClause.KustoQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
+                var t = ClauseFieldTypeProcessor.GetType(schemaRetriever, rangeClause.FieldName).Result;
+                switch (t)
+                {
+                    case ClauseFieldType.Numeric:
+                        rangeClause.KustoQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
+                        break;
+                    case ClauseFieldType.Date:
+                        rangeClause.KustoQL = $"{rangeClause.FieldName} >= todatetime('{rangeClause.GTEValue}') and {rangeClause.FieldName} < todatetime('{rangeClause.LTValue}')";
+                        break;
+                    case ClauseFieldType.Text:
+                        throw new NotSupportedException("Text Range is not supported.");
+                    case ClauseFieldType.Unknown:
+                        throw new Exception($"Field name {rangeClause.FieldName} has an unknown type.");
+                }
             }
         }
     }

@@ -27,10 +27,10 @@ namespace K2Bridge.JsonConverters
             var obj = new RangeClause
             {
                 FieldName = first.Name,
-                GTEValue = first.First.Value<decimal?>("gte"),
-                GTValue = first.First.Value<decimal?>("gt"),
-                LTEValue = first.First.Value<decimal?>("lte"),
-                LTValue = first.First.Value<decimal?>("lt"),
+                GTEValue = first.First.Value<string>("gte"),
+                GTValue = first.First.Value<string>("gt"),
+                LTEValue = first.First.Value<string>("lte"),
+                LTValue = first.First.Value<string>("lt"),
                 Format = (string)first.First["format"],
             };
 

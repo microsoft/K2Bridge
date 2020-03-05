@@ -58,8 +58,8 @@ namespace UnitTests.K2Bridge.JsonConverters
                     new RangeClause
                     {
                         FieldName = "timestamp",
-                        GTEValue = 0,
-                        LTEValue = 10,
+                        GTEValue = "0",
+                        LTEValue = "10",
                         Format = "epoch_millis",
                     };
 

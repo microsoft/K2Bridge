@@ -5,6 +5,7 @@
 namespace UnitTests.K2Bridge.Visitors
 {
     using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using NUnit.Framework;
 
@@ -16,9 +17,9 @@ namespace UnitTests.K2Bridge.Visitors
             TestName = "Visit_WithBasicInput_ReturnsValidResponse")]
         public string TestBasicRangeVisitor()
         {
-            var rangeClause = CreateRangeClause("myField", 3, null, null, 5, "other");
+            var rangeClause = CreateRangeClause("myField", "3", null, null, "5", "other");
 
-            return VisitRangeClause(rangeClause);
+            return VisitRangeClause(rangeClause, "myField", "integer");
         }
 
         [TestCase(
@@ -27,7 +28,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName = "Visit_WithEpochInput_ReturnsValidResponse")]
         public string TestEpochBasicRangeVisitor()
         {
-            var rangeClause = CreateRangeClause("myField", 1212121121, null, 2121212121, null, "epoch_millis");
+            var rangeClause = CreateRangeClause("myField", "1212121121", null, "2121212121", null, "epoch_millis");
 
             return VisitRangeClause(rangeClause);
         }
@@ -35,7 +36,7 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void Visit_WithMissingFieldNameInput_ThrowsException()
         {
-            var rangeClause = CreateRangeClause(null, 3, null, null, 5, "other");
+            var rangeClause = CreateRangeClause(null, "3", null, null, "5", "other");
 
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
         }
@@ -43,7 +44,7 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void Visit_WithMissingGTEInput_ThrowsException()
         {
-            var rangeClause = CreateRangeClause("myField", null, null, null, 5, "other");
+            var rangeClause = CreateRangeClause("myField", null, null, null, "5", "other");
 
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
         }
@@ -51,7 +52,7 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void Visit_WithMissingLTEInput_ThrowsException()
         {
-            var rangeClause = CreateRangeClause("myField", 5, null, null, null, "other");
+            var rangeClause = CreateRangeClause("myField", "5", null, null, null, "other");
 
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
         }
@@ -59,7 +60,7 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void Visit_WithEpochMissingGTEInput_ThrowsException()
         {
-            var rangeClause = CreateRangeClause("myField", null, null, null, 5, "epoch_millis");
+            var rangeClause = CreateRangeClause("myField", null, null, null, "5", "epoch_millis");
 
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
         }
@@ -67,14 +68,14 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void Visit_WithEpochMissingLTEInput_ThrowsException()
         {
-            var rangeClause = CreateRangeClause("myField", 5, null, null, null, "epoch_millis");
+            var rangeClause = CreateRangeClause("myField", "5", null, null, null, "epoch_millis");
 
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
         }
 
-        private static string VisitRangeClause(RangeClause clause)
+        private static string VisitRangeClause(RangeClause clause, string fieldName = "MyField", string type = "string")
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor(fieldName, type);
             visitor.Visit(clause);
             return clause.KustoQL;
         }
@@ -82,7 +83,7 @@ namespace UnitTests.K2Bridge.Visitors
         private static RangeClause CreateRangeClause(
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 #pragma warning disable SA1114 // Parameter list should follow declaration
-            string fieldName, decimal? gte, decimal? gt, decimal? lte, decimal? lt, string? format)
+            string fieldName, string gte, string gt, string lte, string lt, string? format)
 #pragma warning restore SA1114 // Parameter list should follow declaration
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         {

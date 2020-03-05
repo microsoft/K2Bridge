@@ -142,8 +142,8 @@ namespace UnitTests.K2Bridge.JsonConverters
                 new RangeClause()
                 {
                     FieldName = "timestamp",
-                    GTEValue = 1581963795598,
-                    LTEValue = 1581964695598,
+                    GTEValue = "1581963795598",
+                    LTEValue = "1581964695598",
                     Format = "epoch_millis",
                 },
             },
@@ -156,8 +156,8 @@ namespace UnitTests.K2Bridge.JsonConverters
         private static readonly RangeClause LeafResult = new RangeClause()
         {
             FieldName = "timestamp",
-            GTEValue = 1581963795598,
-            LTEValue = 1581964695598,
+            GTEValue = "1581963795598",
+            LTEValue = "1581964695598",
             Format = "epoch_millis",
         };
 

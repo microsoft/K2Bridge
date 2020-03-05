@@ -91,30 +91,9 @@ namespace K2Bridge.Visitors
 
         private async Task<bool> GetIsFieldNumeric(string fieldName)
         {
-            // for tests
-            if (schemaRetriever == null)
-            {
-                return false;
-            }
-
-            var dic = await schemaRetriever.RetrieveTableSchema();
-
-            // if we failed to get this field type, treat as non numeric (string)
-            if (dic.Contains(fieldName) == false)
-            {
-                return false;
-            }
-
-            var fieldType = dic[fieldName];
-
-            return fieldType switch
-            {
-                "integer" => true,
-                "long" => true,
-                "float" => true,
-                "double" => true,
-                _ => false,
-            };
+            Ensure.IsNotNullOrEmpty(fieldName, nameof(fieldName));
+            var fieldType = await ClauseFieldTypeProcessor.GetType(schemaRetriever, fieldName);
+            return fieldType == ClauseFieldType.Numeric;
         }
 
         /// <summary>

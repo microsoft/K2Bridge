@@ -4,7 +4,9 @@
 
 namespace UnitTests.K2Bridge.Visitors
 {
+    using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Queries;
+    using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using NUnit.Framework;
 
@@ -92,7 +94,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         private static string VisitQuery(QueryStringClause queryStringClause)
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
             visitor.Visit(queryStringClause);
             return queryStringClause.KustoQL;
         }
