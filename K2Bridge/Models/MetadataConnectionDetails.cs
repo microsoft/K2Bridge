@@ -4,6 +4,9 @@
 
 namespace K2Bridge.Models
 {
+    /// <summary>
+    /// A class representing connection details for Elasticsearch metadata instance.
+    /// </summary>
     internal class MetadataConnectionDetails
     {
         /// <summary>
@@ -20,6 +23,9 @@ namespace K2Bridge.Models
             MetadataEndpoint = metadataEndpoint;
         }
 
+        /// <summary>
+        /// Gets metadata endpoint.
+        /// </summary>
         public string MetadataEndpoint { get; private set; }
     }
 }

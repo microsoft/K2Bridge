@@ -31,10 +31,12 @@ namespace K2Bridge.KustoDAL
             schema = new Lazy<Task<IDictionary>>(async () => { return await MakeDictionary(); });
         }
 
+        /// <inheritdoc/>
         public string IndexName { get; private set; }
 
         private ILogger Logger { get; set; }
 
+        /// <inheritdoc/>
         public async Task<IDictionary> RetrieveTableSchema()
         {
             return await schema.Value;

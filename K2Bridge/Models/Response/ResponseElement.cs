@@ -6,8 +6,14 @@ namespace K2Bridge.Models.Response
 {
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Response element.
+    /// </summary>
     public class ResponseElement : ResponseElementBase
     {
+        /// <summary>
+        /// Gets or sets aggregations in a response element.
+        /// </summary>
         [JsonProperty("aggregations")]
         public Aggregations Aggregations { get; set; } = new Aggregations();
     }
