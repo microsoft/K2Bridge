@@ -65,7 +65,7 @@ spec:
             - name: aadClientSecret
               valueFrom:
                 secretKeyRef:
-                  name: kusto-credentials
+                  name: {{ include "k2bridge.fullname" . }}-kusto-credentials
                   key: aadClientSecret
             - name: aadTenantId
               value: "{{ .Values.settings.aadTenantId }}"
