@@ -218,7 +218,6 @@ stages:
   - job: Deploy_Kusto
     displayName: Provision a new Kusto database
     condition: or(and(succeeded(), not(eq(variables['KUSTO_DB'], 'demo'))), and(succeeded(), eq(variables['KUSTO_DB'], 'demo'), variables['RUN_CREATE_DEMO_KUSTO']))
-    dependsOn: Terraform
     steps:
 
         - task: AzureCLI@1
@@ -232,7 +231,6 @@ stages:
 
   - job: Deploy_K2Bridge
     displayName: Deploy K2Bridge
-    dependsOn: Terraform
     variables:
       ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
         NOT_MASTER_ES_CONFIG: "--set elasticsearch.replicas=2 --set elasticsearch.minimumMasterNodes=2"
@@ -286,9 +284,6 @@ stages:
 
   - job: Deploy_Elasticsearch
     displayName: Deploy Elasticsearch
-    dependsOn: Terraform
-    variables:
-      KUBERNETES_NAMESPACE: $[dependencies.Terraform.outputs['GenerateNS.KUBERNETES_NAMESPACE']]
     steps:
 
     - template: infrastructure/setup-k8s-clients-template.yml
