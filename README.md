@@ -26,7 +26,7 @@ The bridge accept each request and redirects business (data) requests to ADX and
 1. Each document in Elasticsearch has a unique id usually noted in the "_id" field. This isn't inherently available for data stored in ADX and because Kibana expects it,
 K2Bridge generates a *random* number for this value. Please note that this is *not a reproducible* value and you shouldn't search for documents/items that have specific values.
 
-1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features. Feel free to vote and/or comment on this [issue](../../issues/239).
+1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features. Feel free to vote and/or comment on this [issue](../../issues/3).
 
 1. We have used and tested the OSS version of Kibana 6.8. Using other versions might work but you would probably need to disable various modules such as xpack.
 
