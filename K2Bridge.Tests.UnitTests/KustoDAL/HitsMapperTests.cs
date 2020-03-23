@@ -240,6 +240,13 @@ namespace UnitTests.K2Bridge.KustoDAL
         }
 
         [Test]
+        public void MapRowsToHits_WithNullSByte_ReturnsHitsWithNull()
+        {
+            using var hitsTable = HitTypeTestTable(Type.GetType("System.SByte"), DBNull.Value);
+            MapHitTypeAndAssert(hitsTable, defaultQuery, JValue.CreateNull());
+        }
+
+        [Test]
         public void MapRowsToHits_WithSqlDecimal_ReturnsHitsWithDouble()
         {
             var value = new SqlDecimal(1.6);
