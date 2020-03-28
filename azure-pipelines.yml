@@ -133,13 +133,8 @@ stages:
         pathToSources: '$(Build.SourcesDirectory)/K2Bridge/'
         failIfCoverageEmpty: true
 
-    - task: HelmInstaller@1
-      displayName: Helm installer
-      inputs:
-        helmVersionToInstall: $(HELM_VERSION)
-
     - task: AzureCLI@1
-      displayName: Build images and charts
+      displayName: Login to ACR
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -176,6 +171,11 @@ stages:
           # Push Docker image
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
+          
+    - task: HelmInstaller@1
+      displayName: Helm installer
+      inputs:
+        helmVersionToInstall: $(HELM_VERSION)
 
     - task: AzureCLI@1
       displayName: Push Helm Charts to ACR
@@ -192,7 +192,7 @@ stages:
           az acr helm push --force "$(ls $empty_dir/*)"
 
 - stage: terraform
-  displayName: Terraform
+  displayName: Prepare Test Env
   dependsOn: []
   jobs:
   - job: Terraform
