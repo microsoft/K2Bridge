@@ -106,7 +106,6 @@ stages:
         set -eux  # fail on error
         # Only build first stage of Dockerfile (build and unit test)
         docker build --target build --build-arg VersionPrefix="$(SEMANTIC_VERSION)" -t k2bridge-build .
-
         # Temporarily create container in order to extract test results file
         id=$(docker create k2bridge-build)
         docker cp $id:/app/TestResult.xml .
@@ -146,27 +145,45 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           set -eux  # fail on error
-
           az configure --defaults acr="$ACR_NAME"
           az acr login
 
-          # Build runtime Docker image
-          # Reuses the cached build stage from the previous docker build task
-          docker build --build-arg VersionPrefix="$SEMANTIC_VERSION" \
+    - bash: |
+        set -eux  # fail on error
+        # Build runtime Docker image
+        # Reuses the cached build stage from the previous docker build task
+        docker build --build-arg VersionPrefix="$SEMANTIC_VERSION" \
             -t "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
             .
+      displayName: Build Runtime Image
 
-          # Build end-to-end test image
-          docker build --target end2endtest \
+    - bash: |
+        set -eux  # fail on error
+        # Build e2e-test Docker image
+        docker build --target end2endtest \
             --build-arg VersionPrefix="$SEMANTIC_VERSION" \
             -t "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION" \
             .
+      displayName: Build E2E-Test Image
 
-          # Push Docker image to ACR
+    - task: AzureCLI@1
+      displayName: Push Images
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          # Push Docker image
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
 
-          # Push Helm chart to ACR
+    - task: AzureCLI@1
+      displayName: Push Helm Charts to ACR
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          # Push Helm chart
           helm repo add elastic https://helm.elastic.co
           helm repo update
           helm dependency update charts/k2bridge
