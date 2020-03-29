@@ -24,13 +24,8 @@ namespace K2Bridge.RewriteRules
             {
                 var segments = context.HttpContext.Request.Path.ToString().Split('/');
                 context.HttpContext.Request.Path = "/FieldCapability/Process/" + segments[1];
-                context.HttpContext.Request.QueryString = context.HttpContext.Request.QueryString;
-                context.HttpContext.Request.Method = HttpMethods.Post;
-                var mem = new MemoryStream();
-                using StreamWriter writer = new StreamWriter(mem);
-                writer.WriteLine();
-                mem.Seek(0, SeekOrigin.Current);
-                context.HttpContext.Request.Body = mem;
+
+                context.Result = RuleResult.SkipRemainingRules;
             }
         }
     }
