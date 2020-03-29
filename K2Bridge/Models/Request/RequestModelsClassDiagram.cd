@@ -1,201 +1,208 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="K2Bridge.Models.Request.ElasticSearchDSL" Collapsed="true">
-    <Position X="8.5" Y="7" Width="1.5" />
+    <Position X="13" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAQAAAAAgAAAAAAQAAAAAAAAAAgAAAIAAAAAAAA=</HashCode>
+      <HashCode>AIAAAAQAAAAAgAAAAAAQAAAAAACAAEgAAAIAAAAAACA=</HashCode>
       <FileName>Models\Request\ElasticSearchDSL.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.KQLBase" Collapsed="true">
-    <Position X="19.75" Y="5.75" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.KustoQLBase" Collapsed="true">
+    <Position X="14" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\KQLBase.cs</FileName>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\KustoQLBase.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="K2Bridge.Models.Request.ReadOnlyJsonConverter" Collapsed="true">
-    <Position X="17.25" Y="2.75" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Queries.LuceneNet.LuceneBoolQuery" Collapsed="true">
+    <Position X="3.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQQAAAAAEAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
-      <FileName>Models\Request\ReadOnlyJsonConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="K2Bridge.Models.Request.SortClause" Collapsed="true">
-    <Position X="10.75" Y="7" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIEAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\SortClause.cs</FileName>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\LuceneNet\LuceneBoolQuery.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.SortClauseConverter" Collapsed="true">
-    <Position X="8.25" Y="4.25" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Queries.LuceneNet.LucenePhraseQuery" Collapsed="true">
+    <Position X="7.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\SortClauseConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.BoolClause" Collapsed="true">
-    <Position X="13" Y="7" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\BoolClause.cs</FileName>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\LuceneNet\LucenePhraseQuery.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.LeafQueryClause" Collapsed="true">
-    <Position X="17.5" Y="7" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Queries.LuceneNet.LucenePrefixQuery" Collapsed="true">
+    <Position X="10" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\LeafQueryClause.cs</FileName>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\LuceneNet\LucenePrefixQuery.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="K2Bridge.Models.Request.Queries.LuceneNet.LuceneQueryBase" Collapsed="true">
+    <Position X="6.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAAAgAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\LuceneNet\LuceneQueryBase.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.LeafQueryClauseConverter" Collapsed="true">
-    <Position X="17.25" Y="4.25" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Queries.LuceneNet.LuceneRangeQuery" Collapsed="true">
+    <Position X="12.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\LeafQueryClauseConverter.cs</FileName>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\LuceneNet\LuceneRangeQuery.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.MatchPhraseQuery" Collapsed="true">
-    <Position X="19.75" Y="8.5" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Queries.LuceneNet.LuceneTermQuery" Collapsed="true">
+    <Position X="1" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\LuceneNet\LuceneTermQuery.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="K2Bridge.Models.Request.Queries.LuceneNet.LuceneWildcardQuery" Collapsed="true">
+    <Position X="5.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\LuceneNet\LuceneWildcardQuery.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="K2Bridge.Models.Request.Queries.BoolQuery" Collapsed="true">
+    <Position X="8.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAABAAAEABAAAAAAAAAAABAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\BoolQuery.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="K2Bridge.Models.Request.Queries.ExistsClause" Collapsed="true">
+    <Position X="15.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\ExistsClause.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="K2Bridge.Models.Request.Queries.MatchPhraseClause" Collapsed="true">
+    <Position X="4" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIAAAAAAQAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\MatchPhraseQuery.cs</FileName>
+      <FileName>Models\Request\Queries\MatchPhraseClause.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.MatchPhraseQueryConverter" Collapsed="true">
-    <Position X="12.75" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\MatchPhraseQueryConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="K2Bridge.Models.Request.Queries.Query" Collapsed="true">
-    <Position X="22" Y="7" Width="1.5" />
+    <Position X="6.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Request\Queries\Query.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.QueryStringQuery" Collapsed="true">
-    <Position X="17.5" Y="8.5" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Queries.QueryStringClause" Collapsed="true">
+    <Position X="10.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAQAAAAAAAAAAAIAAAAAiAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\QueryStringQuery.cs</FileName>
+      <HashCode>AIAAAAAAQAAAAAAAAIAAIAAAAAgAAAAAAAAAAAAABAA=</HashCode>
+      <FileName>Models\Request\Queries\QueryStringClause.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.QueryStringQueryConverter" Collapsed="true">
-    <Position X="10.5" Y="4.25" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Queries.RangeClause" Collapsed="true">
+    <Position X="17.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\QueryStringQueryConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.RangeQuery" Collapsed="true">
-    <Position X="15.25" Y="8.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAQAAAAABAACAAAAAAAAiAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\RangeQuery.cs</FileName>
+      <HashCode>AICAAAAAQAAAAABAACAAAAAAAAiAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\RangeClause.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="K2Bridge.Models.Request.Queries.RangeQueryConverter" Collapsed="true">
-    <Position X="15" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Queries\RangeQueryConverter.cs</FileName>
-    </TypeIdentifier>
   </Class>
   <Class Name="K2Bridge.Models.Request.Aggregations.Aggregation" Collapsed="true">
-    <Position X="24.25" Y="7" Width="1.5" />
+    <Position X="26.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAA=</HashCode>
       <FileName>Models\Request\Aggregations\Aggregation.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.Aggregations.AggregationConverter" Collapsed="true">
-    <Position X="19.5" Y="4.25" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Aggregations.AvgAggregation" Collapsed="true">
+    <Position X="22" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Aggregations\AggregationConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="K2Bridge.Models.Request.Aggregations.Avg" Collapsed="true">
-    <Position X="28.75" Y="10" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Aggregations\Avg.cs</FileName>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Aggregations\AvgAggregation.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="K2Bridge.Models.Request.Aggregations.BucketAggregation" Collapsed="true">
-    <Position X="31" Y="8.5" Width="1.5" />
+    <Position X="19.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
       <FileName>Models\Request\Aggregations\BucketAggregation.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="K2Bridge.Models.Request.Aggregations.Cardinality" Collapsed="true">
-    <Position X="26.5" Y="10" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Aggregations.CardinalityAggregation" Collapsed="true">
+    <Position X="24.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Aggregations\Cardinality.cs</FileName>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Aggregations\CardinalityAggregation.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="K2Bridge.Models.Request.Aggregations.DateHistogram" Collapsed="true">
-    <Position X="31" Y="10" Width="1.5" />
+  <Class Name="K2Bridge.Models.Request.Aggregations.DateHistogramAggregation" Collapsed="true">
+    <Position X="19.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIAAAAAAAAAAAAAAAIAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Aggregations\DateHistogram.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="K2Bridge.Models.Request.Aggregations.DateHistogramConverter" Collapsed="true">
-    <Position X="24" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Aggregations\DateHistogramConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="K2Bridge.Models.Request.Aggregations.JustFieldConverter" Collapsed="true">
-    <Position X="26.25" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Aggregations\JustFieldConverter.cs</FileName>
+      <FileName>Models\Request\Aggregations\DateHistogramAggregation.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="K2Bridge.Models.Request.Aggregations.LeafAggregation" Collapsed="true">
-    <Position X="28.75" Y="7" Width="1.5" />
+    <Position X="22" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Request\Aggregations\LeafAggregation.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="K2Bridge.Models.Request.Aggregations.LeafAggregationConverter" Collapsed="true">
-    <Position X="21.75" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Models\Request\Aggregations\LeafAggregationConverter.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="K2Bridge.Models.Request.Aggregations.MetricAggregation" Collapsed="true">
-    <Position X="27.75" Y="8.5" Width="1.5" />
+    <Position X="23" Y="3.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Request\Aggregations\MetricAggregation.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="K2Bridge.Models.Request.SortClause" Collapsed="true">
+    <Position X="1.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIEAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\SortClause.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="K2Bridge.Models.Request.IQuery" Collapsed="true">
+    <Position X="28" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\IQuery.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Interface Name="K2Bridge.Models.Request.IVisitable" Collapsed="true">
-    <Position X="29" Y="3" Width="1.5" />
+    <Position X="26.25" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Models\Request\IVisitable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="K2Bridge.Models.Request.Queries.LuceneNet.ILuceneVisitable" Collapsed="true">
+    <Position X="26.25" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAgAAAAAgAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\LuceneNet\ILuceneVisitable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="K2Bridge.Models.Request.Queries.ILeafClause" Collapsed="true">
+    <Position X="28" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Request\Queries\ILeafClause.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Font Name="Segoe UI" Size="9" />
