@@ -30,6 +30,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         private static string NormalizeChars(this string s) =>
             s.
             Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase).
+            Replace("\r", string.Empty, StringComparison.OrdinalIgnoreCase).
             Replace("\n", string.Empty, StringComparison.OrdinalIgnoreCase);
     }
 }
