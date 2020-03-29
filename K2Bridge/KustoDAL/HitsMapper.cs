@@ -25,7 +25,7 @@ namespace K2Bridge.KustoDAL
         /// </summary>
         private static readonly Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>
         {
-            { typeof(sbyte), (value) => (sbyte)value != 0 },
+            { typeof(sbyte), (value) => value is DBNull || value == null ? null : (bool?)((sbyte)value != 0) },
             { typeof(SqlDecimal), (value) => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble() },
             { typeof(Guid), (value) => value is DBNull || value == null ? null : ((Guid)value).ToString() },
             { typeof(TimeSpan), (value) => value is DBNull || value == null ? null : XmlConvert.ToString((TimeSpan)value) },
