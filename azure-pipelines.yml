@@ -13,13 +13,12 @@
 #   that DB (which shouldn't normally happen)
 stages:
 
-- stage: security_analysis
-  displayName: Security Analysis
-  dependsOn: []
+- stage: build
+  displayName: Build
   jobs:
 
-  - job: run_analysis
-    displayName: Run Analysis
+  - job: security_analysis
+    displayName: Security Analysis
 
     pool:
       # CredScan only runs on Windows
@@ -99,16 +98,12 @@ stages:
         alertWarningLevel: 'Medium'
         failOnAlert: true
 
-- stage: build
-  displayName: Build
-  dependsOn: []
-  jobs:
-
   - job: build_and_unittest
     displayName: Build with UnitTests
     steps:
 
     - bash: |
+        set -eux  # fail on error
         # Only build first stage of Dockerfile (build and unit test)
         docker build --target build --build-arg VersionPrefix="$(SEMANTIC_VERSION)" -t k2bridge-build .
         # Temporarily create container in order to extract test results file
@@ -138,16 +133,6 @@ stages:
         pathToSources: '$(Build.SourcesDirectory)/K2Bridge/'
         failIfCoverageEmpty: true
 
-  - job: push_artifacts
-    displayName: Push Artifacts to ACR
-    dependsOn: build_and_unittest
-    steps:
-
-    - task: HelmInstaller@1
-      displayName: Helm installer
-      inputs:
-        helmVersionToInstall: $(HELM_VERSION)
-
     - task: AzureCLI@1
       displayName: Login to ACR
       inputs:
@@ -155,30 +140,42 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
           set -eux  # fail on error
-
           az configure --defaults acr="$ACR_NAME"
           az acr login
 
     - bash: |
         set -eux  # fail on error
-
         # Build runtime Docker image
         # Reuses the cached build stage from the previous docker build task
         docker build --build-arg VersionPrefix="$SEMANTIC_VERSION" \
-          -t "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-          .
+            -t "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
+            .
       displayName: Build Runtime Image
 
+    - bash: |
+        set -eux  # fail on error
+        # Build e2e-test Docker image
+        docker build --target end2endtest \
+            --build-arg VersionPrefix="$SEMANTIC_VERSION" \
+            -t "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION" \
+            .
+      displayName: Build E2E-Test Image
+
     - task: AzureCLI@1
-      displayName: Push Image
+      displayName: Push Images
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
         inlineScript: |
           set -eux  # fail on error
-
           # Push Docker image
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
+          docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
+          
+    - task: HelmInstaller@1
+      displayName: Helm installer
+      inputs:
+        helmVersionToInstall: $(HELM_VERSION)
 
     - task: AzureCLI@1
       displayName: Push Helm Charts to ACR
@@ -194,15 +191,11 @@ stages:
           helm package --version "$SEMANTIC_VERSION" charts/k2bridge -d $empty_dir
           az acr helm push --force "$(ls $empty_dir/*)"
 
-- stage: integration
-  displayName: Integration Tests
-  dependsOn:
-  - security_analysis
-  - build
+- stage: terraform
+  displayName: Prepare Test Env
+  dependsOn: []
   jobs:
-
   - job: Terraform
-    displayName: Prepare Terraform
     steps:
 
     - bash: |
@@ -230,13 +223,18 @@ stages:
         TerraformEnvVariables:
           TF_VAR_aks_sp_client_secret: $(AKS_SP_CLIENT_SECRET)
 
+- stage: integration_tests
+  displayName: Integration Tests
+  dependsOn:
+  - build
+  - terraform
   # Deploy a new Kusto db
   # Either if the db name is not set to 'demo' which means it is the Dev CI process
   # Or it is the Demo CI process AND the RUN_CREATE_DEMO_KUSTO was set
+  jobs:
   - job: Deploy_Kusto
     displayName: Provision a new Kusto database
     condition: or(and(succeeded(), not(eq(variables['KUSTO_DB'], 'demo'))), and(succeeded(), eq(variables['KUSTO_DB'], 'demo'), variables['RUN_CREATE_DEMO_KUSTO']))
-    dependsOn: Terraform
     steps:
 
         - task: AzureCLI@1
@@ -250,7 +248,6 @@ stages:
 
   - job: Deploy_K2Bridge
     displayName: Deploy K2Bridge
-    dependsOn: Terraform
     variables:
       ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
         NOT_MASTER_ES_CONFIG: "--set elasticsearch.replicas=2 --set elasticsearch.minimumMasterNodes=2"
@@ -304,9 +301,6 @@ stages:
 
   - job: Deploy_Elasticsearch
     displayName: Deploy Elasticsearch
-    dependsOn: Terraform
-    variables:
-      KUBERNETES_NAMESPACE: $[dependencies.Terraform.outputs['GenerateNS.KUBERNETES_NAMESPACE']]
     steps:
 
     - template: infrastructure/setup-k8s-clients-template.yml
@@ -332,47 +326,12 @@ stages:
 
       displayName: Deploy Elasticsearch
 
-  - job: e2e_image
-    displayName: Prepare E2E Image
-    steps:
-
-    - task: AzureCLI@1
-      displayName: Login to ACR
-      inputs:
-        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
-        scriptLocation: inlineScript
-        inlineScript: |
-          set -eux  # fail on error
-
-          az configure --defaults acr="$ACR_NAME"
-          az acr login
-
-    - bash: |
-          # Build end-to-end test image
-          docker build --target end2endtest \
-            --build-arg VersionPrefix="$SEMANTIC_VERSION" \
-            -t "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION" \
-            .
-      displayName: Build E2E-Test Image
-
-    - task: AzureCLI@1
-      displayName: Push Image
-      inputs:
-        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
-        scriptLocation: inlineScript
-        inlineScript: |
-          docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
-
   - job: Test
     displayName: Run Tests
     dependsOn:
-    - Terraform
     - Deploy_Kusto
     - Deploy_K2Bridge
     - Deploy_Elasticsearch
-    - e2e_image
-    variables:
-      KUBERNETES_NAMESPACE: $[dependencies.Terraform.outputs['GenerateNS.KUBERNETES_NAMESPACE']]
     steps:
 
     - template: infrastructure/setup-k8s-clients-template.yml
@@ -410,15 +369,17 @@ stages:
         failTaskOnFailedTests: true
         testRunTitle: 'E2E Tests'
 
+- stage: cleanup_integration_tests
+  displayName: Cleanup Tests
+  dependsOn: integration_tests
+  # Do not delete AKS namespace:
+  # - if pipeline was canceled or failed before a Kubernetes namespace was generated
+  # - if deploying on master branch
+  # - if namespace was manually set with RUN_SET_NAMESPACE
+  condition: and(always(), not(variables['RUN_SET_NAMESPACE']))
+  jobs:
+
   - job: Cleanup
-    dependsOn:
-    - Terraform
-    - Test
-    # Do not delete AKS namespace:
-    # - if pipeline was canceled or failed before a Kubernetes namespace was generated
-    # - if deploying on master branch
-    # - if namespace was manually set with RUN_SET_NAMESPACE
-    condition: and(always(), not(variables['RUN_SET_NAMESPACE']))
     steps:
 
     - template: infrastructure/setup-k8s-clients-template.yml
@@ -436,8 +397,7 @@ stages:
 
 - stage: release
   displayName: Release Artifacts
-  dependsOn:
-  - integration
+  dependsOn: integration_tests
   jobs:
 
   - job: Promote

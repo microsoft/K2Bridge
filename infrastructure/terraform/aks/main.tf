@@ -49,12 +49,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
   default_node_pool {
     type                  = "VirtualMachineScaleSets"
     name                  = "default"
-    node_count            = 4
+    node_count            = 3
     vm_size               = "Standard_D2s_v3"
     os_disk_size_gb       = 30
     vnet_subnet_id        = var.subnet_id
     enable_auto_scaling   = true
-    max_count             = 15
+    max_count             = 5
     min_count             = 3
   }
 
