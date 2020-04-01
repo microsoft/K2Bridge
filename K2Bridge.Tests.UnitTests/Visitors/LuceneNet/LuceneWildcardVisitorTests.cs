@@ -58,5 +58,27 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
 
             return ((QueryStringClause)es).KustoQL;
         }
+
+        [TestCase(ExpectedResult = "* matches regex \"L\\\\o(.)*d(.)n\"")]
+        public string Visit_WithValidEscapedWildcardQuery_ReturnsValidResponse()
+        {
+            var wildcardQuery = new LuceneWildcardQuery
+            {
+                LuceneQuery =
+                new Lucene.Net.Search.WildcardQuery(
+                    new Lucene.Net.Index.Term("*", "L\\o*d?n")),
+            };
+
+            var luceneVisitor = new LuceneVisitor();
+            luceneVisitor.Visit(wildcardQuery);
+
+            var es = wildcardQuery.ESQuery;
+            Assert.NotNull(es);
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit((QueryStringClause)es);
+
+            return ((QueryStringClause)es).KustoQL;
+        }
     }
 }

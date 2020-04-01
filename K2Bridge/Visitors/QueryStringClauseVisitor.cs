@@ -40,6 +40,8 @@ namespace K2Bridge.Visitors
                 return;
             }
 
+            var escapedPhrase = queryStringClause.Phrase.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
+
             // Depends on the exact request there are 3 possible options for the phrase:
             // wildcard, prefix and simple equality
             switch (queryStringClause.ParsedType)
@@ -60,14 +62,12 @@ namespace K2Bridge.Visitors
                     }
                     else
                     {
-                        var escaped = queryStringClause.Phrase.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
-                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Has} \"{escaped}\"";
+                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Has} \"{escapedPhrase}\"";
                     }
 
                     break;
 
                 case QueryStringClause.Subtype.Phrase:
-                    var escapedPhrase = queryStringClause.Phrase.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
                     queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{escapedPhrase}\"";
                     break;
 
@@ -77,13 +77,13 @@ namespace K2Bridge.Visitors
                     // to be consistent with the way ES works
                     // for example consider the following queries:
                     // TelA* => TelA[.\S]*
-                    var phrase = SingleCharPattern.Replace(queryStringClause.Phrase, @"(.)");
+                    var phrase = SingleCharPattern.Replace(escapedPhrase, @"(.)");
                     phrase = MultiCharPattern.Replace(phrase, @"(.)*");
 
                     queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
                     break;
                 case QueryStringClause.Subtype.Prefix:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase}\"";
+                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{escapedPhrase}\"";
                     break;
                 default:
                     // should not happen
