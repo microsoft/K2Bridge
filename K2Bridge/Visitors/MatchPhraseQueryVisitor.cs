@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Request.Queries;
 
@@ -25,7 +26,8 @@ namespace K2Bridge.Visitors
             // Must have a field name
             EnsureClause.StringIsNotNullOrEmpty(matchPhraseClause.FieldName, nameof(matchPhraseClause.FieldName));
 
-            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase}\"";
+            var escapedPhrase = matchPhraseClause.Phrase.Replace(@"\", @"\\\", StringComparison.OrdinalIgnoreCase);
+            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{escapedPhrase}\"";
         }
     }
 }
