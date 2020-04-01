@@ -26,8 +26,14 @@ namespace K2Bridge.Visitors
             // Must have a field name
             EnsureClause.StringIsNotNullOrEmpty(matchPhraseClause.FieldName, nameof(matchPhraseClause.FieldName));
 
-            var escapedPhrase = matchPhraseClause.Phrase.Replace(@"\", @"\\\", StringComparison.OrdinalIgnoreCase);
-            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{escapedPhrase}\"";
+            if (matchPhraseClause.Phrase != null)
+            {
+                var escapedPhrase = matchPhraseClause.Phrase.Replace(@"\", @"\\\", StringComparison.OrdinalIgnoreCase);
+                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{escapedPhrase}\"";
+                return;
+            }
+
+            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"\"";
         }
     }
 }
