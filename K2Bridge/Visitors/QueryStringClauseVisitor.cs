@@ -60,13 +60,15 @@ namespace K2Bridge.Visitors
                     }
                     else
                     {
-                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Has} \"{queryStringClause.Phrase}\"";
+                        var escaped = queryStringClause.Phrase.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
+                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Has} \"{escaped}\"";
                     }
 
                     break;
 
                 case QueryStringClause.Subtype.Phrase:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase}\"";
+                    var escapedPhrase = queryStringClause.Phrase.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
+                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{escapedPhrase}\"";
                     break;
 
                 case QueryStringClause.Subtype.Wildcard:

@@ -28,7 +28,7 @@ namespace K2Bridge.Visitors
 
             if (matchPhraseClause.Phrase != null)
             {
-                var escapedPhrase = matchPhraseClause.Phrase.Replace(@"\", @"\\\", StringComparison.OrdinalIgnoreCase);
+                var escapedPhrase = matchPhraseClause.Phrase.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
                 matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{escapedPhrase}\"";
                 return;
             }
