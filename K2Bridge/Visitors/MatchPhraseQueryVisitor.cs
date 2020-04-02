@@ -7,6 +7,7 @@ namespace K2Bridge.Visitors
     using System;
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="MatchPhraseClause"/> element.
@@ -28,8 +29,7 @@ namespace K2Bridge.Visitors
 
             if (matchPhraseClause.Phrase != null)
             {
-                var escapedPhrase = matchPhraseClause.Phrase.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
-                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{escapedPhrase}\"";
+                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase.EscapeSlashes()}\"";
                 return;
             }
 
