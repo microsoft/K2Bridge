@@ -11,8 +11,10 @@ namespace K2Bridge.Utils
     /// </summary>
     public static class StringExtensions
     {
-        public static string EscapeSlashes(this String str)
+        public static string EscapeSlashes(this string str)
         {
+            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null");
+
             return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
         }
     }
