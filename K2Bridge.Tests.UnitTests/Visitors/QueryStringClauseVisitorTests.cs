@@ -67,7 +67,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(ExpectedResult =
-            "* has \"\\\"Get\"")]
+            "* has \"\\\\\"Get\"")]
         public string Visit_WithBreakQuotationPhrase_ReturnsAndContainsResponse()
         {
             var queryClause = CreateQueryStringClause("\\\"Get", false);
@@ -76,7 +76,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(ExpectedResult =
-            "* has \"\\dev\\kusto\\K2Bridge\"")]
+            "* has \"\\\\dev\\\\kusto\\\\K2Bridge\"")]
         public string Visit_WithBreakQuotePhrase_ReturnsAndContainsResponse()
         {
             var queryClause = CreateQueryStringClause(@"\dev\kusto\K2Bridge", false);
