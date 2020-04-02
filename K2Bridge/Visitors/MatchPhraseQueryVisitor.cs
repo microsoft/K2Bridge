@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Utils;
