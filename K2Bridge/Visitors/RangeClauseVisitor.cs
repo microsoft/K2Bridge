@@ -20,12 +20,25 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(rangeClause.FieldName, nameof(rangeClause.FieldName));
             EnsureClause.IsNotNull(rangeClause.GTEValue, nameof(rangeClause.GTEValue));
 
+            // format used by Kibana 6
             if (rangeClause.Format == "epoch_millis")
             {
                 // default time filter through a rangeClause query uses epoch times with GTE+LTE
                 EnsureClause.IsNotNull(rangeClause.LTEValue, nameof(rangeClause.LTEValue));
 
                 rangeClause.KustoQL = $"{rangeClause.FieldName} >= fromUnixTimeMilli({rangeClause.GTEValue}) {KustoQLOperators.And} {rangeClause.FieldName} <= fromUnixTimeMilli({rangeClause.LTEValue})";
+            }
+
+            // format used by Kibana 7
+            else if (rangeClause.Format == "strict_date_optional_time")
+            {
+                // default time filter through a rangeClause query uses epoch times with GTE+LTE
+                EnsureClause.IsNotNull(rangeClause.LTEValue, nameof(rangeClause.LTEValue));
+
+                var gte = DateTime.Parse(rangeClause.GTEValue).ToUniversalTime().ToString("o");
+                var lte = DateTime.Parse(rangeClause.LTEValue).ToUniversalTime().ToString("o");
+
+                rangeClause.KustoQL = $"{rangeClause.FieldName} >= {KustoQLOperators.ToDateTime}(\"{gte}\") {KustoQLOperators.And} {rangeClause.FieldName} <= {KustoQLOperators.ToDateTime}(\"{lte}\")";
             }
             else
             {
@@ -38,7 +51,7 @@ namespace K2Bridge.Visitors
                         rangeClause.KustoQL = $"{rangeClause.FieldName} >= {rangeClause.GTEValue} and {rangeClause.FieldName} < {rangeClause.LTValue}";
                         break;
                     case ClauseFieldType.Date:
-                        rangeClause.KustoQL = $"{rangeClause.FieldName} >= todatetime('{rangeClause.GTEValue}') and {rangeClause.FieldName} < todatetime('{rangeClause.LTValue}')";
+                        rangeClause.KustoQL = $"{rangeClause.FieldName} >= {KustoQLOperators.ToDateTime}(\"{rangeClause.GTEValue}\") {KustoQLOperators.And} {rangeClause.FieldName} < {KustoQLOperators.ToDateTime}(\"{rangeClause.LTValue}\")";
                         break;
                     case ClauseFieldType.Text:
                         throw new NotSupportedException("Text Range is not supported.");

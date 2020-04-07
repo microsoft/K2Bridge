@@ -8,6 +8,7 @@ namespace K2Bridge.Controllers
     using System.Data;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using K2Bridge.HttpMessages;
     using K2Bridge.KustoDAL;
@@ -101,7 +102,7 @@ namespace K2Bridge.Controllers
 
             string header = "{index:\"" + indexName + "\"}";
 
-            return await SearchInternalAsync(header, await ExtractBodyAsync(), requestContext);
+            return await SearchInternalAsync(header, await ExtractBodyAsync(), requestContext, true);
         }
 
         /// <summary>
@@ -115,7 +116,8 @@ namespace K2Bridge.Controllers
         internal async Task<IActionResult> SearchInternalAsync(
             string header,
             string query,
-            RequestContext requestContext)
+            RequestContext requestContext,
+            bool isSingle = false)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -149,21 +151,47 @@ namespace K2Bridge.Controllers
                 return Ok(queryResponse.errorResponse);
             }
 
+            /*
+            // TODO: make this way work...
             // Parse Response
             (ElasticResponse elasticResponse, bool error, ElasticErrorResponse errorResponse) parseResponse = TryFuncReturnsElasticError(
                 () =>
                 {
-                    return responseParser.Parse(queryResponse.response.dataReader, translatedQuery, queryResponse.response.timeTaken);
+                    var elasticResponse = responseParser.Parse(queryResponse.response.dataReader, translatedQuery, queryResponse.response.timeTaken);
+
+                    if (isSingle)
+                    {
+                        return elasticResponse.Responses.First();
+                    }
+                    else
+                    {
+                        return elasticResponse;
+                    }
                 },
                 translatedQuery.IndexName);
             if (parseResponse.error)
             {
                 return Ok(parseResponse.errorResponse);
             }
+            */
+
+            object tempResponse;
+            var elasticResponse = responseParser.Parse(queryResponse.response.dataReader, translatedQuery, queryResponse.response.timeTaken);
+
+            if (isSingle)
+            {
+                tempResponse = elasticResponse.Responses.First();
+            }
+            else
+            {
+                tempResponse = elasticResponse;
+            }
 
             sw.Stop();
             logger.LogDebug($"[metric] search request duration: {sw.Elapsed}");
-            return Ok(parseResponse.elasticResponse);
+
+            // return Ok(parseResponse.elasticResponse);
+            return Ok(tempResponse);
         }
 
         /// <summary>

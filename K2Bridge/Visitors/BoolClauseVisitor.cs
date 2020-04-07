@@ -18,6 +18,7 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(boolQuery, nameof(boolQuery));
 
+            AddListInternal(boolQuery.Filter, KustoQLOperators.And, false /* positive */, boolQuery);
             AddListInternal(boolQuery.Must, KustoQLOperators.And, false /* positive */, boolQuery);
             AddListInternal(boolQuery.MustNot, KustoQLOperators.And, true /* negative */, boolQuery);
             AddListInternal(boolQuery.Should, KustoQLOperators.Or, false /* positive */, boolQuery);
