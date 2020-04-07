@@ -6,6 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="MatchPhraseClause"/> element.
@@ -25,7 +26,13 @@ namespace K2Bridge.Visitors
             // Must have a field name
             EnsureClause.StringIsNotNullOrEmpty(matchPhraseClause.FieldName, nameof(matchPhraseClause.FieldName));
 
-            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase}\"";
+            if (matchPhraseClause.Phrase != null)
+            {
+                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase.EscapeSlashes()}\"";
+                return;
+            }
+
+            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"\"";
         }
     }
 }

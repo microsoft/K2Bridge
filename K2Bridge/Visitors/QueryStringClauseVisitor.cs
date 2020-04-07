@@ -11,6 +11,7 @@ namespace K2Bridge.Visitors
     using System.Threading.Tasks;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Models.Request.Queries.LuceneNet;
+    using K2Bridge.Utils;
     using K2Bridge.Visitors.LuceneNet;
     using Lucene.Net.Analysis;
     using Lucene.Net.QueryParsers;
@@ -60,13 +61,13 @@ namespace K2Bridge.Visitors
                     }
                     else
                     {
-                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Has} \"{queryStringClause.Phrase}\"";
+                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Has} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
                     }
 
                     break;
 
                 case QueryStringClause.Subtype.Phrase:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase}\"";
+                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
                     break;
 
                 case QueryStringClause.Subtype.Wildcard:
@@ -75,13 +76,13 @@ namespace K2Bridge.Visitors
                     // to be consistent with the way ES works
                     // for example consider the following queries:
                     // TelA* => TelA[.\S]*
-                    var phrase = SingleCharPattern.Replace(queryStringClause.Phrase, @"(.)");
+                    var phrase = SingleCharPattern.Replace(queryStringClause.Phrase.EscapeSlashes(), @"(.)");
                     phrase = MultiCharPattern.Replace(phrase, @"(.)*");
 
                     queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
                     break;
                 case QueryStringClause.Subtype.Prefix:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase}\"";
+                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
                     break;
                 default:
                     // should not happen
