@@ -13,6 +13,7 @@ namespace K2Bridge.RewriteRules
     /// <summary>
     /// Normalizes the route of IndexList.
     /// </summary>
+    /// TODO: rename to RewriteSearchRule
     internal class RewriteIndexListRule : IRule
     {
         /// <summary>
@@ -28,13 +29,16 @@ namespace K2Bridge.RewriteRules
             if (context.HttpContext.Request.Path.Value.Contains("_search", System.StringComparison.OrdinalIgnoreCase)
                 && !context.HttpContext.Request.Path.Value.Contains(".kibana", System.StringComparison.OrdinalIgnoreCase))
             {
+                // enable buffering to read the body stream multiple times.
                 context.HttpContext.Request.EnableBuffering();
+
                 using var reader = new StreamReader(
                     context.HttpContext.Request.Body,
                     encoding: Encoding.UTF8,
                     detectEncodingFromByteOrderMarks: false,
                     bufferSize: 8 * 1024,
                     leaveOpen: true);
+
                 var body = await reader.ReadToEndAsync();
                 JObject jo = JObject.Parse(body);
                 var aggsIndices = jo.SelectToken("aggs.indices.terms.field");
@@ -43,12 +47,11 @@ namespace K2Bridge.RewriteRules
                 {
                     // This is a request for the index list
                     context.HttpContext.Request.Path = $"/IndexList/Process/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
-                    context.Result = RuleResult.SkipRemainingRules;
                 }
                 else
                 {
                     // This is a regular search (documents) request
-
+                    context.HttpContext.Request.Path = $"/Query/SingleSearchAsync/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
                 }
 
                 // Reset the request body stream position so the next middleware can read it
@@ -60,7 +63,6 @@ namespace K2Bridge.RewriteRules
         {
             var segments = pathString.ToString().Split('/', System.StringSplitOptions.RemoveEmptyEntries);
             return segments[0];
-
         }
     }
 }

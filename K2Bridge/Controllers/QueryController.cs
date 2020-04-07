@@ -20,13 +20,13 @@ namespace K2Bridge.Controllers
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Handles requests to Kusto.
+    /// Handles requests for business data from Kusto.
     /// </summary>
     [Route("")]
     [ApiController]
     public class QueryController : ControllerBase
     {
-        public const string UnknownIndexName = "unknown";
+        private const string UnknownIndexName = "unknown";
         private readonly IQueryExecutor queryExecutor;
         private readonly ITranslator translator;
         private readonly ILogger<QueryController> logger;
@@ -52,10 +52,8 @@ namespace K2Bridge.Controllers
         }
 
         /// <summary>
-        /// Perform a Kibana search query against the data backend.
+        /// Perform a Kibana multi-search query against the data backend.
         /// </summary>
-        /// <param name="totalHits">totalHits parameter coming from Kibana (currently not used).</param>
-        /// <param name="ignoreThrottled">ignoreThrottled parameter coming from Kibana (currently not used).</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <returns>An ElasticResponse object or a passthrough object if an error occured.</returns>
         [HttpPost(template: "_msearch")]
@@ -64,29 +62,20 @@ namespace K2Bridge.Controllers
         [ProducesResponseType(typeof(ElasticResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(HttpResponseMessageResult), StatusCodes.Status200OK)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "An uncommon behavior.")]
-        public async Task<IActionResult> SearchAsync(
-            [FromQuery(Name = "rest_total_hits_as_int")] bool totalHits,
-            [FromQuery(Name = "ignore_throttled")] bool ignoreThrottled,
+        public async Task<IActionResult> MultiSearchAsync(
             [FromServices] RequestContext requestContext)
-
-        // Model binding does not work as the application/json message contains an application/nd-json payload
-        // once Kibana sends the right ContentType the line below can be commented in.
-        // [FromBody] IEnumerable<string> rawQueryData
         {
             try
             {
-                // It's not common for Kibana to ask the response to be compressed.
-                // Since by default we ignore this, adding a log to see if it does happen.
-                if (logger.IsEnabled(LogLevel.Warning))
-                {
-                    var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out var encodingData);
-                    if (hasEncodingHeader ?? false)
-                    {
-                        logger.LogWarning("Unsupported encoding was requested: {encodingData}", encodingData);
-                    }
-                }
+                CheckEncodingHeader();
 
-                return await SearchInternalAsync(totalHits, ignoreThrottled, await ExtractBodyAsync(), requestContext);
+                string rawQueryData = await ExtractBodyAsync();
+                Ensure.IsNotNull(rawQueryData, nameof(rawQueryData), "Invalid request body. rawQueryData is null.", logger);
+
+                // Extract Query
+                (string header, string query) = ControllerExtractMethods.SplitQueryBody(rawQueryData);
+
+                return await SearchInternalAsync(header, query, requestContext);
             }
             catch (Exception exception)
             {
@@ -96,52 +85,65 @@ namespace K2Bridge.Controllers
         }
 
         /// <summary>
+        /// Perform a Kibana single-search query against the data backend.
+        /// </summary>
+        /// <param name="indexName">The index that will be queried.</param>
+        /// <param name="requestContext">An object that represents properties of the entire request process.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+        [HttpPost(template: "Query/SingleSearchAsync/{indexName}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> SingleSearchAsync(
+            string indexName,
+            [FromServices] RequestContext requestContext)
+        {
+            CheckEncodingHeader();
+
+            string header = "{index:\"" + indexName + "\"}";
+
+            return await SearchInternalAsync(header, await ExtractBodyAsync(), requestContext);
+        }
+
+        /// <summary>
         /// Internal implementation of the search API logic.
         /// Mainly used to improve testability (as certain parameters needs to be extracted from the body).
         /// </summary>
-        /// <param name="totalHits">totalHits parameter coming from Kibana (currently not used).</param>
-        /// <param name="ignoreThrottled">ignoreThrottled parameter coming from Kibana (currently not used).</param>
-        /// <param name="rawQueryData">Body Payload.</param>
+        /// <param name="header">The header of the query request that includes the index to be queried.</param>
+        /// <param name="query">The actual query that will be executed.</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <returns>An ElasticResponse object.</returns>
         internal async Task<IActionResult> SearchInternalAsync(
-            bool totalHits,
-            bool ignoreThrottled,
-            string rawQueryData,
+            string header,
+            string query,
             RequestContext requestContext)
         {
             var sw = new Stopwatch();
             sw.Start();
 
-            Ensure.IsNotNull(rawQueryData, nameof(rawQueryData), "Invalid request body. rawQueryData is null.", logger);
-
-            // Extract Query
-            (string header, string query) = ControllerExtractMethods.SplitQueryBody(rawQueryData);
-
             Ensure.IsNotNullOrEmpty(header, nameof(header), "Invalid request body. header is null or empty.", logger);
             Ensure.IsNotNullOrEmpty(query, nameof(query), "Invalid request body. query is null or empty.", logger);
 
             // Translate Query
-            (QueryData translatedQuery, bool error, ElasticErrorResponse errorResponse) translateResponse = TryFuncReturnsElasticError(
+            (QueryData translatedQuery, bool error, ElasticErrorResponse errorResponse) = TryFuncReturnsElasticError(
                 () =>
                 {
                     return translator.Translate(header, query);
                 },
                 UnknownIndexName); // At this point we don't know the index name.
-            if (translateResponse.error)
+            if (error)
             {
-                return Ok(translateResponse.errorResponse);
+                return Ok(errorResponse);
             }
 
-            logger.LogDebug("Translated query:\n{@QueryCommandText}", translateResponse.translatedQuery.QueryCommandText.ToSensitiveData());
+            logger.LogDebug("Translated query:\n{@QueryCommandText}", translatedQuery.QueryCommandText.ToSensitiveData());
 
             // Execute Query
             ((TimeSpan timeTaken, IDataReader dataReader) response, bool error, ElasticErrorResponse errorResponse) queryResponse = await TryAsyncFuncReturnsElasticError(
                 async () =>
                 {
-                    return await queryExecutor.ExecuteQueryAsync(translateResponse.translatedQuery, requestContext);
+                    return await queryExecutor.ExecuteQueryAsync(translatedQuery, requestContext);
                 },
-                translateResponse.translatedQuery.IndexName);
+                translatedQuery.IndexName);
             if (queryResponse.error)
             {
                 return Ok(queryResponse.errorResponse);
@@ -151,9 +153,9 @@ namespace K2Bridge.Controllers
             (ElasticResponse elasticResponse, bool error, ElasticErrorResponse errorResponse) parseResponse = TryFuncReturnsElasticError(
                 () =>
                 {
-                    return responseParser.Parse(queryResponse.response.dataReader, translateResponse.translatedQuery, queryResponse.response.timeTaken);
+                    return responseParser.Parse(queryResponse.response.dataReader, translatedQuery, queryResponse.response.timeTaken);
                 },
-                translateResponse.translatedQuery.IndexName);
+                translatedQuery.IndexName);
             if (parseResponse.error)
             {
                 return Ok(parseResponse.errorResponse);
@@ -221,6 +223,20 @@ namespace K2Bridge.Controllers
         {
             using var reader = new StreamReader(Request.Body);
             return await reader.ReadToEndAsync();
+        }
+
+        private void CheckEncodingHeader()
+        {
+            // It's not common for Kibana to ask the response to be compressed.
+            // Since by default we ignore this, adding a log to see if it does happen.
+            if (logger.IsEnabled(LogLevel.Warning))
+            {
+                var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out var encodingData);
+                if (hasEncodingHeader ?? false)
+                {
+                    logger.LogWarning("Unsupported encoding was requested: {encodingData}", encodingData);
+                }
+            }
         }
     }
 }
