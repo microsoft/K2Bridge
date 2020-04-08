@@ -15,7 +15,7 @@ namespace K2Bridge.Controllers
     /// Handle Fields capability requests.
     /// This controller is intentionally not mapped with [ApiController] attribute in order to avoid registering the route during startup.
     /// Instead, we first want to rewrite the original URL, and only then map it to this controller.
-    /// Please see the related Rewrite Rule. <see cref="RewriteIndexListRule"/>.
+    /// Please see the related Rewrite Rule. <see cref="RewriteSearchRule"/>.
     /// The original HTTP request from Kibana is in the format of:
     /// POST /kibana_sample_data_logs/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false HTTP/1.1
     /// Where "kibana_sample_data_logs" is an index name.

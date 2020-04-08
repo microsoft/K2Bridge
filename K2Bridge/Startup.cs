@@ -134,7 +134,7 @@ namespace K2Bridge
             var options = new RewriteOptions()
                 .Add(new RewriteRequestsForTemplateRule())
                 .Add(new RewriteFieldCapabilitiesRule())
-                .Add(new RewriteIndexListRule())
+                .Add(new RewriteSearchRule())
                 .Add(new RewriteTrailingSlashesRule());
             app.UseRewriter(options);
             app.UseRouting();

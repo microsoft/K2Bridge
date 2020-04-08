@@ -13,8 +13,7 @@ namespace K2Bridge.RewriteRules
     /// <summary>
     /// Normalizes the route of IndexList.
     /// </summary>
-    /// TODO: rename to RewriteSearchRule
-    internal class RewriteIndexListRule : IRule
+    internal class RewriteSearchRule : IRule
     {
         /// <summary>
         /// Apply this rule on the given context object, i.e. add trailing slashes
@@ -40,6 +39,18 @@ namespace K2Bridge.RewriteRules
                     leaveOpen: true);
 
                 var body = await reader.ReadToEndAsync();
+
+                // Reset the request body stream position so the next middleware can read it
+                context.HttpContext.Request.Body.Position = 0;
+
+                // Although it doesn't make sense for a search query to have an empty body, we let it pass here and fail it later own when the body is analyzed.
+                if (string.IsNullOrEmpty(body))
+                {
+                    // This is a regular search (documents) request
+                    context.HttpContext.Request.Path = $"/Query/SingleSearch/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
+                    return;
+                }
+
                 JObject jo = JObject.Parse(body);
                 var aggsIndices = jo.SelectToken("aggs.indices.terms.field");
 
@@ -51,11 +62,8 @@ namespace K2Bridge.RewriteRules
                 else
                 {
                     // This is a regular search (documents) request
-                    context.HttpContext.Request.Path = $"/Query/SingleSearchAsync/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
+                    context.HttpContext.Request.Path = $"/Query/SingleSearch/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
                 }
-
-                // Reset the request body stream position so the next middleware can read it
-                context.HttpContext.Request.Body.Position = 0;
             }
         }
 

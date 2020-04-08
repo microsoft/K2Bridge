@@ -64,7 +64,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(
-            ExpectedResult = "MyField >= todatetime('2020-01-01 00:00') and MyField < todatetime('2020-02-22 10:00')",
+            ExpectedResult = "MyField >= todatetime(\"2020-01-01 00:00\") and MyField < todatetime(\"2020-02-22 10:00\")",
             TestName = "Visit_ValidDateRange_ReturnsValidResponse")]
         public string TestValidDateRange_ReturnsValidResponse()
         {

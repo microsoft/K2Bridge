@@ -91,7 +91,7 @@ namespace K2Bridge.Controllers
         /// <param name="indexName">The index that will be queried.</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-        [HttpPost(template: "Query/SingleSearchAsync/{indexName}")]
+        [HttpPost(template: "Query/SingleSearch/{indexName}")]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> SingleSearchAsync(
