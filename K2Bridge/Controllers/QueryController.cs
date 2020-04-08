@@ -68,8 +68,6 @@ namespace K2Bridge.Controllers
         {
             try
             {
-                CheckEncodingHeader();
-
                 string rawQueryData = await ExtractBodyAsync();
                 Ensure.IsNotNull(rawQueryData, nameof(rawQueryData), "Invalid request body. rawQueryData is null.", logger);
 
@@ -98,8 +96,7 @@ namespace K2Bridge.Controllers
             string indexName,
             [FromServices] RequestContext requestContext)
         {
-            CheckEncodingHeader();
-
+            Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), null, logger);
             string header = "{index:\"" + indexName + "\"}";
 
             return await SearchInternalAsync(header, await ExtractBodyAsync(), requestContext, true);
@@ -125,39 +122,39 @@ namespace K2Bridge.Controllers
             Ensure.IsNotNullOrEmpty(header, nameof(header), "Invalid request body. header is null or empty.", logger);
             Ensure.IsNotNullOrEmpty(query, nameof(query), "Invalid request body. query is null or empty.", logger);
 
+            CheckEncodingHeader();
+
             // Translate Query
-            (QueryData translatedQuery, bool error, ElasticErrorResponse errorResponse) = TryFuncReturnsElasticError(
+            (QueryData translationResult, ElasticErrorResponse translationError) = TryFuncReturnsElasticError(
                 () =>
                 {
                     return translator.Translate(header, query);
                 },
                 UnknownIndexName); // At this point we don't know the index name.
-            if (error)
+            if (translationError != null)
             {
-                return Ok(errorResponse);
+                return Ok(translationError);
             }
 
-            logger.LogDebug("Translated query:\n{@QueryCommandText}", translatedQuery.QueryCommandText.ToSensitiveData());
+            logger.LogDebug("Translated query:\n{@QueryCommandText}", translationResult.QueryCommandText.ToSensitiveData());
 
             // Execute Query
-            ((TimeSpan timeTaken, IDataReader dataReader) response, bool error, ElasticErrorResponse errorResponse) queryResponse = await TryAsyncFuncReturnsElasticError(
+            ((TimeSpan timeTaken, IDataReader dataReader) queryResult, ElasticErrorResponse queryError) = await TryAsyncFuncReturnsElasticError(
                 async () =>
                 {
-                    return await queryExecutor.ExecuteQueryAsync(translatedQuery, requestContext);
+                    return await queryExecutor.ExecuteQueryAsync(translationResult, requestContext);
                 },
-                translatedQuery.IndexName);
-            if (queryResponse.error)
+                translationResult.IndexName);
+            if (queryError != null)
             {
-                return Ok(queryResponse.errorResponse);
+                return Ok(queryError);
             }
 
-            /*
-            // TODO: make this way work...
             // Parse Response
-            (ElasticResponse elasticResponse, bool error, ElasticErrorResponse errorResponse) parseResponse = TryFuncReturnsElasticError(
+            (object parsingResult, ElasticErrorResponse parsingError) = TryFuncReturnsElasticError<object>(
                 () =>
                 {
-                    var elasticResponse = responseParser.Parse(queryResponse.response.dataReader, translatedQuery, queryResponse.response.timeTaken);
+                    var elasticResponse = responseParser.Parse(queryResult.dataReader, translationResult, queryResult.timeTaken);
 
                     if (isSingle)
                     {
@@ -168,30 +165,16 @@ namespace K2Bridge.Controllers
                         return elasticResponse;
                     }
                 },
-                translatedQuery.IndexName);
-            if (parseResponse.error)
+                translationResult.IndexName);
+            if (parsingError != null)
             {
-                return Ok(parseResponse.errorResponse);
-            }
-            */
-
-            object tempResponse;
-            var elasticResponse = responseParser.Parse(queryResponse.response.dataReader, translatedQuery, queryResponse.response.timeTaken);
-
-            if (isSingle)
-            {
-                tempResponse = elasticResponse.Responses.First();
-            }
-            else
-            {
-                tempResponse = elasticResponse;
+                return Ok(parsingError);
             }
 
             sw.Stop();
             logger.LogDebug($"[metric] search request duration: {sw.Elapsed}");
 
-            // return Ok(parseResponse.elasticResponse);
-            return Ok(tempResponse);
+            return Ok(parsingResult);
         }
 
         /// <summary>
@@ -201,19 +184,19 @@ namespace K2Bridge.Controllers
         /// <typeparam name="TResult">The result type of the function.</typeparam>
         /// <param name="func">The function to run.</param>
         /// <param name="indexName">index name where action is running on.</param>
-        /// <returns>A tuple of either the result of running the function and error boolean is false, or the elastic response when the error boolean is true.</returns>
-        private async Task<(TResult result, bool error, ElasticErrorResponse errorResponse)> TryAsyncFuncReturnsElasticError<TResult>(
+        /// <returns>A tuple of either the result of running the function or an elastic error response if there's an exception.</returns>
+        private async Task<(TResult result, ElasticErrorResponse errorResponse)> TryAsyncFuncReturnsElasticError<TResult>(
             Func<Task<TResult>> func,
             string indexName)
         {
             try
             {
-                return (await func(), false /* error */, null /* exception */);
+                return (await func(), null /* exception */);
             }
             catch (K2Exception exception)
             {
                 logger.LogError(exception.Message, exception.InnerException);
-                return (default(TResult), true, new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
+                return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
                     WithRootCause(exception.InnerException.GetType().Name, exception.InnerException.Message, indexName));
             }
         }
@@ -225,19 +208,19 @@ namespace K2Bridge.Controllers
         /// <typeparam name="TResult">The result type of the function.</typeparam>
         /// <param name="func">The async function to run.</param>
         /// <param name="indexName">index name where action is running on.</param>
-        /// <returns>A tuple of either the result of running the function and error boolean is false, or the elastic response when the error boolean is true.</returns>
-        private (TResult result, bool error, ElasticErrorResponse errorResponse) TryFuncReturnsElasticError<TResult>(
+        /// <returns>A tuple of either the result of running the function or an elastic error response if there's an exception.</returns>
+        private (TResult result, ElasticErrorResponse errorResponse) TryFuncReturnsElasticError<TResult>(
             Func<TResult> func,
             string indexName)
         {
             try
             {
-                return (func(), false, null);
+                return (func(), null);
             }
             catch (K2Exception exception)
             {
                 logger.LogError(exception.Message, exception.InnerException);
-                return (default(TResult), true, new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
+                return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
                     WithRootCause(exception.InnerException.GetType().Name, exception.InnerException.Message, indexName));
             }
         }

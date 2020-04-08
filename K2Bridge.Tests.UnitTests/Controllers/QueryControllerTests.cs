@@ -111,20 +111,6 @@ namespace UnitTests.K2Bridge.Controllers
         };
 
         [Test]
-        public async Task SearchInternalAsync_WithOKfromKustoAsync_ReturnsOkActionResult()
-        {
-            // Arrange
-            var uat = GetController();
-
-            // Act
-            var result = await uat.SearchInternalAsync(ValidHeaderContent, ValidSearchRequestContent, It.IsAny<RequestContext>());
-
-            // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsInstanceOf<ElasticResponse>(((OkObjectResult)result).Value);
-        }
-
-        [Test]
         public void QueryControllerConstructor_WithNoArgs_ThrowsOnInit()
         {
             // Arrange
@@ -155,7 +141,21 @@ namespace UnitTests.K2Bridge.Controllers
         }
 
         [Test]
-        public async Task SearchInternalAsync_WithValidInput_TranslatesAndExecutesQuery()
+        public async Task SearchInternalAsync_WithValidRequestData_ReturnsOkActionResult()
+        {
+            // Arrange
+            var uat = GetController();
+
+            // Act
+            var result = await uat.SearchInternalAsync(ValidHeaderContent, ValidSearchRequestContent, It.IsAny<RequestContext>());
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<ElasticResponse>(((OkObjectResult)result).Value);
+        }
+
+        [Test]
+        public async Task SearchInternalAsync_WithValidRequestData_RunsTranslateExecuteAndParse()
         {
             // Arrange
             var queryData = new QueryData(ValidHeaderContent, ValidSearchRequestContent);
@@ -254,7 +254,6 @@ namespace UnitTests.K2Bridge.Controllers
                     "test error message",
                     new ArgumentException("test")));
             var mockLogger = new Mock<ILogger<QueryController>>();
-            var mockLoggerParser = new Mock<ILogger<KustoResponseParser>>();
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var mockResponseParser = new Mock<IResponseParser>();
             var httpContext = new DefaultHttpContext();
@@ -370,6 +369,15 @@ namespace UnitTests.K2Bridge.Controllers
             var asOkResult = (OkObjectResult)result;
             var resultValue = asOkResult.Value;
             resultValue.AssertJson(QueryControllerQueryErrorString);
+        }
+
+        [Test]
+        public void SingleSearchAsync_WithInvalidIndexName_ReturnsError()
+        {
+            var uat = GetController();
+
+            Assert.ThrowsAsync(typeof(ArgumentNullException), async () => await uat.SingleSearchAsync(null, It.IsAny<RequestContext>()));
+            Assert.ThrowsAsync(typeof(ArgumentException), async () => await uat.SingleSearchAsync(string.Empty, It.IsAny<RequestContext>()));
         }
 
         private QueryController GetController()
