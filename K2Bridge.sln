@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		azure-pipelines.demo.yml = azure-pipelines.demo.yml
+		azure-pipelines.dev.yml = azure-pipelines.dev.yml
 		azure-pipelines.yml = azure-pipelines.yml
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
 		Dockerfile = Dockerfile
@@ -18,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "K2Bridge.Tests.UnitTests", "K2Bridge.Tests.UnitTests\K2Bridge.Tests.UnitTests.csproj", "{B219CDAD-7641-4ECB-8B96-EB47E25DE5AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K2Bridge.Tests.End2End", "K2Bridge.Tests.End2End\K2Bridge.Tests.End2End.csproj", "{AD555889-1C2D-492D-B594-4270DCA3A30A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "K2Bridge.Tests.End2End", "K2Bridge.Tests.End2End\K2Bridge.Tests.End2End.csproj", "{AD555889-1C2D-492D-B594-4270DCA3A30A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -19,7 +19,7 @@ stages:
 
   - job: security_analysis
     displayName: Security Analysis
-
+    condition: not(variables['SKIP_MSAZURE'])
     pool:
       # CredScan only runs on Windows
       vmImage: 'windows-latest'
@@ -193,9 +193,10 @@ stages:
 
 - stage: terraform
   displayName: Prepare Test Env
-  dependsOn: []
+  dependsOn: []  
   jobs:
   - job: Terraform
+    condition: not(variables['SKIP_MSAZURE'])
     steps:
 
     - bash: |
