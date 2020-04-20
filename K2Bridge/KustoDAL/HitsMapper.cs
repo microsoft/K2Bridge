@@ -63,7 +63,13 @@ namespace K2Bridge.KustoDAL
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var hit = HitsFactory.Create(Random.Next().ToString(), query.IndexName);
+            object id = null;
+            if (row.Table.Columns.Contains("_id"))
+            {
+                id = row["_id"];
+            }
+
+            var hit = HitsFactory.Create(id?.ToString() ?? Random.Next().ToString(), query.IndexName);
             var columns = row.Table.Columns;
 
             for (int columnIndex = 0; columnIndex < row.ItemArray.Length; columnIndex++)
