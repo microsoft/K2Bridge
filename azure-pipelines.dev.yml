@@ -26,7 +26,7 @@ variables:
 - name: MAJOR_MINOR_VERSION
   value: "0.2" # ONLY UPDATE THIS
 - name: SEMANTIC_VERSION
-  value: "$(MAJOR_MINOR_VERSION).0.4"
+  value: "$(MAJOR_MINOR_VERSION).$(Build.BuildId)"
 - name: KUSTO_DB
   value: "build$(Build.BuildId)"
 - name: COLLECT_TELEMETRY
