@@ -11,7 +11,6 @@ namespace UnitTests.K2Bridge.KustoDAL
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using FluentAssertions;
     using FluentAssertions.Json;
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
@@ -376,7 +375,6 @@ namespace UnitTests.K2Bridge.KustoDAL
             {
                 table.Columns.Add("label3", typeof(string));
             }
-
 
             var row = table.NewRow();
 
