@@ -30,7 +30,6 @@ namespace K2Bridge.Models.Response
 
         /// <summary>
         /// Gets or sets the doc id.
-        /// In our case the id is random.
         /// </summary>
         [JsonProperty("_id")]
         public string Id { get; set; }

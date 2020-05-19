@@ -59,11 +59,18 @@ namespace K2Bridge.KustoDAL
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="highlighter">Lucene Highligher.</param>
         /// <returns>Hit model.</returns>
+        /// <remarks>If there is no "_id" field in Kusto data, it will be a random integer.</remarks>
         private static Hit ReadHit(DataRow row, QueryData query, LuceneHighlighter highlighter)
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var hit = HitsFactory.Create(Random.Next().ToString(), query.IndexName);
+            object id = null;
+            if (row.Table.Columns.Contains("_id"))
+            {
+                id = row["_id"];
+            }
+
+            var hit = HitsFactory.Create(id?.ToString() ?? Random.Next().ToString(), query.IndexName);
             var columns = row.Table.Columns;
 
             for (int columnIndex = 0; columnIndex < row.ItemArray.Length; columnIndex++)
