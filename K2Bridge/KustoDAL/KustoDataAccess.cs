@@ -142,7 +142,16 @@ namespace K2Bridge.KustoDAL
                     string dynamicQuery = $"{tableName} | {KustoQLOperators.Where} ingestion_time() > ago({MaxFieldCapsLookbackTime}) | {KustoQLOperators.Where} isnotempty({fieldCapabilityElement.Name}) | {KustoQLOperators.Sample} {MaxFieldCapsSampleSize} | {KustoQLOperators.Project} {MaxFieldCapsUniqueGetSchemaColumn}={fieldCapabilityElement.Name} | {KustoQLOperators.Evaluate} bag_unpack({MaxFieldCapsUniqueGetSchemaColumn}) | {KustoQLOperators.GetSchema} | {KustoQLOperators.Project} ColumnName=strcat('{fieldCapabilityElement.Name}','.',ColumnName),ColumnType=DataType";
 
                     var dynamicQueryData = new QueryData(dynamicQuery, tableName, null, null);
-                    var (timeTaken, reader) = await Kusto.ExecuteQueryAsync(dynamicQueryData, RequestContext);
+                    TimeSpan timeTaken;
+                    IDataReader reader;
+                    try
+                    {
+                        (timeTaken, reader) = await Kusto.ExecuteQueryAsync(dynamicQueryData, RequestContext);
+                    }
+                    catch (K2Bridge.KustoDAL.QueryException)
+                    {
+                        continue;
+                    }
 
                     await MapFieldCapsAsync(reader, response, tableName, depth + 1);
                 }
