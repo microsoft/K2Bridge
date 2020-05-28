@@ -19,6 +19,11 @@ namespace K2Bridge.KustoDAL
     /// </summary>
     internal class KustoDataAccess : IKustoDataAccess
     {
+        private const int MaxFieldCapsSampleSize = 8;
+        private const string MaxFieldCapsLookbackTime = "4h";
+        private const int MaxFieldCapsRecursionDepth = 4;
+        private const string MaxFieldCapsUniqueGetSchemaColumn = "K2BridgeGetSchemaColumn";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoDataAccess"/> class.
         /// </summary>
@@ -53,7 +58,8 @@ namespace K2Bridge.KustoDAL
                 string kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=='{tableName}' {KustoQLOperators.And} DatabaseName=='{databaseName}' {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
 
                 using IDataReader kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, RequestContext);
-                MapFieldCaps(kustoResults, response);
+
+                await MapFieldCapsAsync(kustoResults, response, tableName);
 
                 if (response.Fields.Count > 0)
                 {
@@ -64,7 +70,7 @@ namespace K2Bridge.KustoDAL
                 string functionQuery = $"{tableName} | {KustoQLOperators.GetSchema} | project ColumnName, ColumnType=DataType";
                 var functionQueryData = new QueryData(functionQuery, tableName, null, null);
                 var (timeTaken, reader) = await Kusto.ExecuteQueryAsync(functionQueryData, RequestContext);
-                MapFieldCaps(reader, response);
+                await MapFieldCapsAsync(reader, response, tableName);
             }
             catch (Exception ex)
             {
@@ -115,11 +121,32 @@ namespace K2Bridge.KustoDAL
             return response;
         }
 
-        private void MapFieldCaps(IDataReader kustoResults, FieldCapabilityResponse response)
+        private async Task MapFieldCapsAsync(IDataReader kustoResults, FieldCapabilityResponse response, string tableName, int depth = 0)
         {
+            if (depth > MaxFieldCapsRecursionDepth)
+            {
+                return;
+            }
+
             while (kustoResults.Read())
             {
                 var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(kustoResults);
+
+                if (fieldCapabilityElement.Name.EndsWith(MaxFieldCapsUniqueGetSchemaColumn, StringComparison.InvariantCulture))
+                {
+                    continue;
+                }
+
+                if (fieldCapabilityElement.Type == "object")
+                {
+                    string dynamicQuery = $"{tableName} | {KustoQLOperators.Where} ingestion_time() > ago({MaxFieldCapsLookbackTime}) | {KustoQLOperators.Where} isnotempty({fieldCapabilityElement.Name}) | {KustoQLOperators.Sample} {MaxFieldCapsSampleSize} | {KustoQLOperators.Project} {MaxFieldCapsUniqueGetSchemaColumn}={fieldCapabilityElement.Name} | {KustoQLOperators.Evaluate} bag_unpack({MaxFieldCapsUniqueGetSchemaColumn}) | {KustoQLOperators.GetSchema} | {KustoQLOperators.Project} ColumnName=strcat('{fieldCapabilityElement.Name}','.',ColumnName),ColumnType=DataType";
+
+                    var dynamicQueryData = new QueryData(dynamicQuery, tableName, null, null);
+                    var (timeTaken, reader) = await Kusto.ExecuteQueryAsync(dynamicQueryData, RequestContext);
+
+                    await MapFieldCapsAsync(reader, response, tableName, depth + 1);
+                }
+
                 if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
                 {
                     Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
