@@ -67,7 +67,7 @@ namespace K2Bridge.Visitors
                     break;
 
                 case QueryStringClause.Subtype.Phrase:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
+                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase}\"";
                     break;
 
                 case QueryStringClause.Subtype.Wildcard:

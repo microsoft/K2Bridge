@@ -17,5 +17,12 @@ namespace K2Bridge.Utils
 
             return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
         }
+
+        public static string EscapeDoublequotes(this string str)
+        {
+            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null");
+
+            return str.Replace(@"""", @"\""", StringComparison.OrdinalIgnoreCase);
+        }
     }
 }
