@@ -10,7 +10,7 @@ namespace UnitTests.K2Bridge.KustoDAL
     using System.Data.SqlTypes;
     using System.Globalization;
     using System.IO;
-    using FluentAssertions;
+    using System.Linq;
     using FluentAssertions.Json;
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
@@ -53,6 +53,28 @@ namespace UnitTests.K2Bridge.KustoDAL
             }
 
             defaultQuery = new QueryData("query", "index", null);
+        }
+
+        [Test]
+        public void MapRowsToHits_WithIdInSample_ReturnsIdInHitsArray()
+        {
+            var table = SampleDataWith("12345");
+
+            var hits = ReadHits(table, defaultQuery);
+
+            // Assert
+            Assert.That(hits.Single().Id, Is.EqualTo("12345"));
+        }
+
+        [Test]
+        public void MapsRowsToHits_WithoutIdInSample_ReturnsSomeRandomNonEmptyArray()
+        {
+            var table = SampleDataWith(id: string.Empty);
+
+            var hits = ReadHits(table, defaultQuery);
+
+            // Assert
+            Assert.That(hits.Single().Id, Is.Not.Empty);
         }
 
         [Test]
@@ -313,18 +335,79 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static DataTable SampleData()
         {
-            var table = new DataTable();
-            table.Columns.Add("instant", typeof(DateTime)).DateTimeMode = DataSetDateTime.Utc;
-            table.Columns.Add("value", typeof(int));
-            table.Columns.Add("label1", typeof(string));
-            table.Columns.Add("label2", typeof(string));
-            table.Columns.Add("label3", typeof(string));
+            return SampleDataWith(
+                instant: new DateTime(2017, 1, 2, 13, 4, 5, 60, DateTimeKind.Utc),
+                value: 234,
+                label1: "boxes",
+                label2: "boxes",
+                label3: "boxes of boxes");
+        }
+
+        private static DataTable SampleDataWith(string id = "", DateTime? instant = null, int value = 0, string label1 = "", string label2 = "", string label3 = "")
+        {
+            using var table = new DataTable();
+            if (!string.IsNullOrEmpty(id))
+            {
+                table.Columns.Add("_id", typeof(string));
+            }
+
+            if (instant.HasValue)
+            {
+                table.Columns.Add("instant", typeof(DateTime)).DateTimeMode = DataSetDateTime.Utc;
+            }
+
+            if (value > 0)
+            {
+                table.Columns.Add("value", typeof(int));
+            }
+
+            if (!string.IsNullOrEmpty(label1))
+            {
+                table.Columns.Add("label1", typeof(string));
+            }
+
+            if (!string.IsNullOrEmpty(label2))
+            {
+                table.Columns.Add("label2", typeof(string));
+            }
+
+            if (!string.IsNullOrEmpty(label3))
+            {
+                table.Columns.Add("label3", typeof(string));
+            }
+
             var row = table.NewRow();
-            row["instant"] = new DateTime(2017, 1, 2, 13, 4, 5, 60, DateTimeKind.Utc);
-            row["value"] = 234;
-            row["label1"] = "boxes";
-            row["label2"] = "boxes";
-            row["label3"] = "boxes of boxes";
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                row["_id"] = id;
+            }
+
+            if (instant.HasValue)
+            {
+                row["instant"] = instant.Value;
+            }
+
+            if (value > 0)
+            {
+                row["value"] = value;
+            }
+
+            if (!string.IsNullOrEmpty(label1))
+            {
+                row["label1"] = label1;
+            }
+
+            if (!string.IsNullOrEmpty(label2))
+            {
+                row["label2"] = label2;
+            }
+
+            if (!string.IsNullOrEmpty(label3))
+            {
+                row["label3"] = label3;
+            }
+
             table.Rows.Add(row);
             return table;
         }

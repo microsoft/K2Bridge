@@ -22,7 +22,7 @@ pr:
 name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 
 variables:
-- group: K2Bridge CI-CD pipeline - Dev
+- group: K2Bridge CI-CD - dev
 - name: MAJOR_MINOR_VERSION
   value: "0.2" # ONLY UPDATE THIS
 - name: SEMANTIC_VERSION
