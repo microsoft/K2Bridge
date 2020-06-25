@@ -16,6 +16,21 @@ namespace K2Bridge
     public static class Ensure
     {
         /// <summary>
+        /// Throws <see cref="ArgumentException"/> if the condition is not met.
+        /// </summary>
+        /// <param name="condition">A condition to be met.</param>
+        /// <param name="conditionDescription">A description to be traced with the exception.</param>
+        /// <param name="logger">Optional logger to log Error.</param>
+        public static void ConditionIsMet(bool condition, string conditionDescription, ILogger logger = null)
+        {
+            if (!condition)
+            {
+                logger?.LogError(conditionDescription);
+                throw new ArgumentException(conditionDescription);
+            }
+        }
+
+        /// <summary>
         /// Throws an <see cref="ArgumentNullException"/> if the argument is null.
         /// </summary>
         /// <typeparam name="T">Type of argument.</typeparam>

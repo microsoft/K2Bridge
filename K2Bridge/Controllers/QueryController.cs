@@ -114,7 +114,7 @@ namespace K2Bridge.Controllers
             string header,
             string query,
             RequestContext requestContext,
-            bool isSingle = false)
+            bool isSingleDocument = false)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -126,10 +126,7 @@ namespace K2Bridge.Controllers
 
             // Translate Query
             (QueryData translationResult, ElasticErrorResponse translationError) = TryFuncReturnsElasticError(
-                () =>
-                {
-                    return translator.Translate(header, query);
-                },
+                () => isSingleDocument ? translator.TranslateSingleDocument(header, query) : translator.TranslateData(header, query),
                 UnknownIndexName); // At this point we don't know the index name.
             if (translationError != null)
             {
@@ -139,31 +136,29 @@ namespace K2Bridge.Controllers
             logger.LogDebug("Translated query:\n{@QueryCommandText}", translationResult.QueryCommandText.ToSensitiveData());
 
             // Execute Query
-            ((TimeSpan timeTaken, IDataReader dataReader) queryResult, ElasticErrorResponse queryError) = await TryAsyncFuncReturnsElasticError(
-                async () =>
-                {
-                    return await queryExecutor.ExecuteQueryAsync(translationResult, requestContext);
-                },
+            var ((timeTaken, dataReader), queryError) = await TryAsyncFuncReturnsElasticError(
+                async () => await queryExecutor.ExecuteQueryAsync(translationResult, requestContext),
                 translationResult.IndexName);
+
             if (queryError != null)
             {
                 return Ok(queryError);
             }
 
             // Parse Response
-            (object parsingResult, ElasticErrorResponse parsingError) = TryFuncReturnsElasticError<object>(
+            var (parsingResult, parsingError) = TryFuncReturnsElasticError(
                 () =>
                 {
-                    var elasticResponse = responseParser.Parse(queryResult.dataReader, translationResult, queryResult.timeTaken);
+                    var elasticResponse = responseParser.Parse(dataReader, translationResult, timeTaken);
 
-                    if (isSingle)
+                    if (isSingleDocument)
                     {
-                        return elasticResponse.Responses.First();
+                        elasticResponse.Responses.First().Aggregations = null;
                     }
-                    else
-                    {
-                        return elasticResponse;
-                    }
+
+                    var xx = isSingleDocument ? (object)elasticResponse.Responses.First() : elasticResponse;
+
+                    return xx;
                 },
                 translationResult.IndexName);
             if (parsingError != null)
@@ -221,7 +216,7 @@ namespace K2Bridge.Controllers
             {
                 logger.LogError(exception.Message, exception.InnerException);
                 return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                    WithRootCause(exception.InnerException.GetType().Name, exception.InnerException.Message, indexName));
+                    WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException.Message, indexName));
             }
         }
 

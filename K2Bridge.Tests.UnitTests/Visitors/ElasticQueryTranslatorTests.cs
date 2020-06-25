@@ -46,7 +46,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             // Should succeed as all arguments are valid. the result is just a simple
             // hard coded mock
-            var querydata = elasticQueryTranslator.Translate(INDEX, query);
+            var querydata = elasticQueryTranslator.TranslateData(INDEX, query);
             return querydata.QueryCommandText;
         }
 
@@ -57,12 +57,12 @@ namespace UnitTests.K2Bridge.Visitors
 
             // will fail as empty header is not valid
             Assert.That(
-                () => elasticQueryTranslator.Translate(string.Empty, query),
+                () => elasticQueryTranslator.TranslateData(string.Empty, query),
                 Throws.TypeOf<ArgumentException>());
 
             // will fail in translation as a header without 'index' is not valid
             Assert.That(
-                () => elasticQueryTranslator.Translate("{\"notindex\":\"myIndex\"}", query),
+                () => elasticQueryTranslator.TranslateData("{\"notindex\":\"myIndex\"}", query),
                 Throws.TypeOf<TranslateException>());
         }
 
@@ -73,14 +73,14 @@ namespace UnitTests.K2Bridge.Visitors
 
             // will fail as query is not valid (missing query)
             Assert.That(
-                () => elasticQueryTranslator.Translate(INDEX, query),
+                () => elasticQueryTranslator.TranslateData(INDEX, query),
                 Throws.TypeOf<TranslateException>());
 
             query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_bool.json");
 
             // will fail as query is not valid (missing query.bool)
             Assert.That(
-                () => elasticQueryTranslator.Translate(INDEX, query),
+                () => elasticQueryTranslator.TranslateData(INDEX, query),
                 Throws.TypeOf<TranslateException>());
         }
 
@@ -89,7 +89,7 @@ namespace UnitTests.K2Bridge.Visitors
         {
             var query = File.ReadAllText($"{DATADIR}/query_no_sort.json");
 
-            Assert.That(() => elasticQueryTranslator.Translate(INDEX, query), Throws.Nothing);
+            Assert.That(() => elasticQueryTranslator.TranslateData(INDEX, query), Throws.Nothing);
         }
     }
 }

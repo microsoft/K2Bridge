@@ -84,12 +84,12 @@ namespace K2Bridge.KustoDAL
         }
 
         /// <inheritdoc/>
-        public ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken)
+        public ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken, bool isSingleDoc = false)
         {
             try
             {
                 // Read results and transform to Elastic form
-                var response = ReadResponse(queryData, reader, timeTaken);
+                var response = ReadResponse(queryData, reader, timeTaken, isSingleDoc);
 
                 // Log total number of hits to have an idea of how many rows were returned by the search expression and aggregated.
                 Logger.LogDebug("Total number of hits: {totalHits}", response?.Responses?.First()?.Hits.Total);
@@ -149,11 +149,13 @@ namespace K2Bridge.KustoDAL
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="reader">Kusto IDataReader response.</param>
         /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
+        /// <param name="isSingleDoc">Indicates whether this was a single document query.</param>
         /// <returns>ElasticResponse object.</returns>
         private ElasticResponse ReadResponse(
                 QueryData query,
                 IDataReader reader,
-                TimeSpan timeTaken)
+                TimeSpan timeTaken,
+                bool isSingleDoc)
         {
             var response = new ElasticResponse();
 

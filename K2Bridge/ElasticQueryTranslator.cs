@@ -36,19 +36,19 @@ namespace K2Bridge
         private ILogger Logger { get; set; }
 
         /// <summary>
-        /// Translate a given request into QueryData.
+        /// Translate a given Data request into QueryData.
         /// </summary>
         /// <param name="header">A header.</param>
         /// <param name="query">A query.</param>
         /// <returns>A <see cref="QueryData"/>.</returns>
         /// <exception cref="TranslateException">Throws a TranslateException on error.</exception>
-        public QueryData Translate(string header, string query)
+        public QueryData TranslateData(string header, string query)
         {
             Ensure.IsNotNullOrEmpty(header, nameof(header));
 
             try
             {
-                Logger.LogDebug("Translate params: header:{@header}, query:{@query}", header, query.ToSensitiveData());
+                Logger.LogDebug("Translate data params: header:{@header}, query:{@query}", header, query.ToSensitiveData());
 
                 // Prepare the esDSL object, except some fields such as the query field which will be built later
                 var elasticSearchDsl = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
@@ -119,6 +119,58 @@ namespace K2Bridge
             {
                 Logger.LogError(ex, "Failed to execute translate.");
                 throw new TranslateException("Failed translating elasticsearch query", ex);
+            }
+        }
+
+        /// <summary>
+        /// Translate a given Single Document request into QueryData.
+        /// </summary>
+        /// <param name="header">A header.</param>
+        /// <param name="query">A query.</param>
+        /// <returns>A <see cref="QueryData"/>.</returns>
+        /// <exception cref="TranslateException">Throws a TranslateException on error.</exception>
+        public QueryData TranslateSingleDocument(string header, string query)
+        {
+            Ensure.IsNotNullOrEmpty(header, nameof(header));
+
+            try
+            {
+                Logger.LogDebug("Translate single document params: header:{@header}, query:{@query}", header, query.ToSensitiveData());
+
+                // Prepare the esDSL object, except some fields such as the query field which will be built later
+                var singleDocumentDsl = JsonConvert.DeserializeObject<SingleDocumentDsl>(query);
+
+                // deserialize the headers and extract the index name
+                var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
+                singleDocumentDsl.IndexName = headerDictionary["index"];
+
+                // elasticSearchDsl.HighlightText = new Dictionary<string, string>();
+                Ensure.IsNotNull(singleDocumentDsl.SingleDocQuery, nameof(singleDocumentDsl.SingleDocQuery));
+                Ensure.IsNotNull(singleDocumentDsl.SingleDocQuery.DocumentId, nameof(singleDocumentDsl.SingleDocQuery.DocumentId));
+                Ensure.IsNotNull(singleDocumentDsl.SingleDocQuery.DocumentId.Id, nameof(singleDocumentDsl.SingleDocQuery.DocumentId.Id));
+
+                var docValueFields = new List<string>();
+                singleDocumentDsl.DocValueFields?.ForEach(item =>
+                {
+                    docValueFields.Add(item.Field);
+                });
+
+                // Use the visitor and build the KustoQL string from the esDSL object
+                singleDocumentDsl.Accept(visitor);
+
+                var queryData = new QueryData(
+                    singleDocumentDsl.KustoQL,
+                    singleDocumentDsl.IndexName,
+                    null,
+                    docValueFields,
+                    null);
+
+                return queryData;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to execute translate.");
+                throw new TranslateException("Failed translating single document elasticsearch query", ex);
             }
         }
     }

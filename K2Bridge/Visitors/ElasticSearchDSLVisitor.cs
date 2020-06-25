@@ -98,5 +98,34 @@ namespace K2Bridge.Visitors
 
             elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
         }
+
+        /// <inheritdoc/>
+        public void Visit(SingleDocumentDsl singleDocumentDsl)
+        {
+            Ensure.IsNotNull(singleDocumentDsl, nameof(singleDocumentDsl));
+
+            // Preparing the schema with the index name to be used later
+            schemaRetriever = schemaRetrieverFactory.Make(singleDocumentDsl.IndexName);
+
+            // base query
+            singleDocumentDsl.SingleDocQuery.Accept(this);
+
+            // when an index-pattern doesn't have a default time filter the query element can be empty
+            var translatedQueryExpression = !string.IsNullOrEmpty(singleDocumentDsl.SingleDocQuery.KustoQL) ? $"| {singleDocumentDsl.SingleDocQuery.KustoQL}" : string.Empty;
+            var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(singleDocumentDsl.IndexName, defaultDatabaseName);
+
+            var queryStringBuilder = ConstructBasicQuery();
+
+            queryStringBuilder.Append($"database(\"{databaseName}\").{tableName} {translatedQueryExpression} | as hits;");
+            singleDocumentDsl.KustoQL = queryStringBuilder.ToString();
+        }
+
+        private static StringBuilder ConstructBasicQuery()
+        {
+            var queryStringBuilder = new StringBuilder();
+            queryStringBuilder.Append($"{KustoQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');
+
+            return queryStringBuilder;
+        }
     }
 }

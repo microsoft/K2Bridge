@@ -22,6 +22,6 @@ namespace K2Bridge.KustoDAL
         /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
         /// <returns>"ElasticResponse".</returns>
         /// <exception cref="ParseException">Throws a ParseException on error.</exception>
-        ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken);
+        ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken, bool isSingleDoc = false);
     }
 }
