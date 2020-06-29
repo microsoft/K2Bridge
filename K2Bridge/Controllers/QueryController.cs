@@ -109,6 +109,7 @@ namespace K2Bridge.Controllers
         /// <param name="header">The header of the query request that includes the index to be queried.</param>
         /// <param name="query">The actual query that will be executed.</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
+        /// <param name="isSingleDocument">True if this is part of the ViewSingleDocument flow.</param>
         /// <returns>An ElasticResponse object.</returns>
         internal async Task<IActionResult> SearchInternalAsync(
             string header,
