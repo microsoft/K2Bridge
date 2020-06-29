@@ -176,6 +176,11 @@ namespace K2Bridge.KustoDAL
                 }
             }
 
+            if (isSingleDoc)
+            {
+                response.AddToTotal(1);
+            }
+
             // read hits
             Logger.LogDebug("Reading Hits using QueryData: {@query}", query.ToSensitiveData());
             var hits = ReadHits(parsedKustoResponse, query);

@@ -149,16 +149,9 @@ namespace K2Bridge.Controllers
             var (parsingResult, parsingError) = TryFuncReturnsElasticError(
                 () =>
                 {
-                    var elasticResponse = responseParser.Parse(dataReader, translationResult, timeTaken);
+                    var elasticResponse = responseParser.Parse(dataReader, translationResult, timeTaken, isSingleDocument);
 
-                    if (isSingleDocument)
-                    {
-                        elasticResponse.Responses.First().Aggregations = null;
-                    }
-
-                    var xx = isSingleDocument ? (object)elasticResponse.Responses.First() : elasticResponse;
-
-                    return xx;
+                    return isSingleDocument ? (object)elasticResponse.Responses.First() : elasticResponse;
                 },
                 translationResult.IndexName);
             if (parsingError != null)
