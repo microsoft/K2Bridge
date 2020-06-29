@@ -51,7 +51,7 @@ namespace K2Bridge.Models.Response
         /// <summary>
         /// Add hits to first response.
         /// </summary>
-        /// <param name="hits">The added hits</param>
+        /// <param name="hits">The added hits.</param>
         public void AddHits(IEnumerable<Hit> hits)
         {
             // TODO: support more than one response
@@ -71,7 +71,7 @@ namespace K2Bridge.Models.Response
         /// <summary>
         /// Add the query execution time.
         /// </summary>
-        /// <param name="timeTaken"></param>
+        /// <param name="timeTaken">Time to add.</param>
         public void AddTook(TimeSpan timeTaken)
         {
             responses[0].TookMilliseconds += timeTaken.Milliseconds;
