@@ -37,14 +37,11 @@ namespace K2Bridge.KustoDAL
             // Timer to be used to report the duration of a query to.
             var stopwatch = new Stopwatch();
             stopwatch.Start();
-            var reader = await client?.ExecuteQueryAsync(string.Empty, query, clientRequestProperties);
+            var reader = await client.ExecuteQueryAsync(string.Empty, query, clientRequestProperties);
             stopwatch.Stop();
             var duration = stopwatch.Elapsed;
 
-            if (metrics != null)
-            {
-                metrics.AdxQueryDurationMetric.Observe(duration.TotalSeconds);
-            }
+            metrics?.AdxQueryDurationMetric.Observe(duration.TotalSeconds);
 
             return (duration, reader);
         }
