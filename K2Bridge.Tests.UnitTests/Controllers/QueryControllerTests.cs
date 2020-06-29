@@ -174,7 +174,8 @@ namespace UnitTests.K2Bridge.Controllers
                 exec.Parse(
                     reader.Object,
                     queryData,
-                    ts));
+                    ts,
+                    false));
 
             var uat = new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object)
             {
@@ -193,7 +194,7 @@ namespace UnitTests.K2Bridge.Controllers
             mockQueryExecutor.Verify(
                  executor => executor.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>()), Times.Once());
             mockResponseParser.Verify(
-                parsr => parsr.Parse(reader.Object, queryData, ts), Times.Once());
+                parsr => parsr.Parse(reader.Object, queryData, ts, false), Times.Once());
         }
 
         [TestCaseSource(nameof(InvalidQueryContent))]
@@ -293,11 +294,12 @@ namespace UnitTests.K2Bridge.Controllers
 
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
-            mockResponseParser.Setup(parser
-                => parser.Parse(
-                    It.IsAny<IDataReader>(),
-                    It.IsAny<QueryData>(),
-                    It.IsAny<TimeSpan>()))
+            mockResponseParser.Setup(
+                parser => parser.Parse(
+                        It.IsAny<IDataReader>(),
+                        It.IsAny<QueryData>(),
+                        It.IsAny<TimeSpan>(),
+                        It.IsAny<bool>()))
                 .Throws(new ParseException(
                     "test error message",
                     new ArgumentException("test")));
@@ -393,7 +395,8 @@ namespace UnitTests.K2Bridge.Controllers
                 exec.Parse(
                     It.IsAny<IDataReader>(),
                     It.IsAny<QueryData>(),
-                    It.IsAny<TimeSpan>()))
+                    It.IsAny<TimeSpan>(),
+                    It.IsAny<bool>()))
                 .Returns(new ElasticResponse());
 
             var ctr = new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object)

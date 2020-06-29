@@ -5,7 +5,6 @@
 namespace K2Bridge.Controllers
 {
     using System;
-    using System.Data;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -68,11 +67,11 @@ namespace K2Bridge.Controllers
         {
             try
             {
-                string rawQueryData = await ExtractBodyAsync();
+                var rawQueryData = await ExtractBodyAsync();
                 Ensure.IsNotNull(rawQueryData, nameof(rawQueryData), "Invalid request body. rawQueryData is null.", logger);
 
                 // Extract Query
-                (string header, string query) = ControllerExtractMethods.SplitQueryBody(rawQueryData);
+                var (header, query) = ControllerExtractMethods.SplitQueryBody(rawQueryData);
 
                 return await SearchInternalAsync(header, query, requestContext);
             }
@@ -126,7 +125,7 @@ namespace K2Bridge.Controllers
             CheckEncodingHeader();
 
             // Translate Query
-            (QueryData translationResult, ElasticErrorResponse translationError) = TryFuncReturnsElasticError(
+            var (translationResult, translationError) = TryFuncReturnsElasticError(
                 () => isSingleDocument ? translator.TranslateSingleDocument(header, query) : translator.TranslateData(header, query),
                 UnknownIndexName); // At this point we don't know the index name.
             if (translationError != null)
@@ -186,7 +185,7 @@ namespace K2Bridge.Controllers
             {
                 logger.LogError(exception.Message, exception.InnerException);
                 return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                    WithRootCause(exception.InnerException.GetType().Name, exception.InnerException.Message, indexName));
+                    WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
             }
         }
 
@@ -210,7 +209,7 @@ namespace K2Bridge.Controllers
             {
                 logger.LogError(exception.Message, exception.InnerException);
                 return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                    WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException.Message, indexName));
+                    WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
             }
         }
 
