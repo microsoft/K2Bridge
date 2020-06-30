@@ -34,7 +34,8 @@ namespace K2Bridge.Tests.End2End
             var responseData = await response.Content.ReadAsStringAsync();
 
             Assert.True(
-                responseData.Contains(@"exceptions_by_type{ExceptionType=""ArgumentNullException"",SourceContext=""K2Bridge.Controllers.QueryController"",ActionName=""K2Bridge.Controllers.QueryController.MultiSearchAsync (K2Bridge)""} ", Ordinal), responseData);
+                responseData.Contains(@"exceptions_by_type{ExceptionType=""ArgumentNullException"",SourceContext=""K2Bridge.Controllers.QueryController"",ActionName=""K2Bridge.Controllers.QueryController.MultiSearchAsync (K2Bridge)""} ", Ordinal),
+                responseData.Substring(responseData.IndexOf("exceptions_by_type", Ordinal)));
 
             Assert.True(
                 responseData.Contains(
