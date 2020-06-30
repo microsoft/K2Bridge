@@ -19,6 +19,12 @@ namespace K2Bridge.Models.Request.Queries
         [JsonProperty("bool")]
         public BoolQuery Bool { get; set; }
 
+        /// <summary>
+        /// Gets or sets the id with which to perform a ViewSingleDocument query.
+        /// </summary>
+        [JsonProperty("ids")]
+        public DocumentIds DocumentId { get; set; }
+
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)
         {

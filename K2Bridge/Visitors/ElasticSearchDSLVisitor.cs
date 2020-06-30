@@ -50,82 +50,63 @@ namespace K2Bridge.Visitors
 
             // when an index-pattern doesn't have a default time filter the query element can be empty
             var translatedQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KustoQL) ? $"| {elasticSearchDSL.Query.KustoQL}" : string.Empty;
-            queryStringBuilder.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
 
-            // aggregations
-            if (elasticSearchDSL.Aggregations?.Count > 0)
+            // Data query
+            if (elasticSearchDSL.Query.Bool != null)
             {
-                queryStringBuilder.Append('\n').Append($"(_data | {KustoQLOperators.Summarize} ");
+                queryStringBuilder.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
 
-                foreach (var (_, aggregation) in elasticSearchDSL.Aggregations)
+                // Aggregations
+                if (elasticSearchDSL.Aggregations?.Count > 0)
                 {
-                    aggregation.Accept(this);
-                    queryStringBuilder.Append($"{aggregation.KustoQL} ");
+                    queryStringBuilder.Append('\n').Append($"(_data | {KustoQLOperators.Summarize} ");
+
+                    foreach (var (_, aggregation) in elasticSearchDSL.Aggregations)
+                    {
+                        aggregation.Accept(this);
+                        queryStringBuilder.Append($"{aggregation.KustoQL} ");
+                    }
+
+                    queryStringBuilder.Append("| as aggs);");
                 }
 
-                queryStringBuilder.Append("| as aggs);");
-            }
-
-            // hits (projections...)
-            // The size is deserialized property
-            // therefore we check 'Size >= 0' to protect the query.
-            if (elasticSearchDSL.Size >= 0)
-            {
-                queryStringBuilder.Append("\n(_data ");
-
-                if (elasticSearchDSL.Size > 0)
+                // hits (projections...)
+                // The size is deserialized property
+                // therefore we check 'Size >= 0' to protect the query.
+                if (elasticSearchDSL.Size >= 0)
                 {
-                    // we only need to sort if we're returning hits
-                    var orderingList = new List<string>();
+                    queryStringBuilder.Append("\n(_data ");
 
-                    foreach (var sortClause in elasticSearchDSL.Sort)
+                    if (elasticSearchDSL.Size > 0)
                     {
-                        sortClause.Accept(this);
-                        if (!string.IsNullOrEmpty(sortClause.KustoQL))
+                        // we only need to sort if we're returning hits
+                        var orderingList = new List<string>();
+
+                        foreach (var sortClause in elasticSearchDSL.Sort)
                         {
-                            orderingList.Add(sortClause.KustoQL);
+                            sortClause.Accept(this);
+                            if (!string.IsNullOrEmpty(sortClause.KustoQL))
+                            {
+                                orderingList.Add(sortClause.KustoQL);
+                            }
+                        }
+
+                        if (orderingList.Count > 0)
+                        {
+                            queryStringBuilder.Append($"| {KustoQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
                         }
                     }
 
-                    if (orderingList.Count > 0)
-                    {
-                        queryStringBuilder.Append($"| {KustoQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
-                    }
+                    queryStringBuilder.Append($"| {KustoQLOperators.Limit} {elasticSearchDSL.Size} | as hits)");
                 }
-
-                queryStringBuilder.Append($"| {KustoQLOperators.Limit} {elasticSearchDSL.Size} | as hits)");
+            }
+            else
+            {
+                // ViewSingleDocument query
+                queryStringBuilder.Append($"database(\"{databaseName}\").{tableName} {translatedQueryExpression} | as hits;");
             }
 
             elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
-        }
-
-        /// <inheritdoc/>
-        public void Visit(SingleDocumentDsl singleDocumentDsl)
-        {
-            Ensure.IsNotNull(singleDocumentDsl, nameof(singleDocumentDsl));
-
-            // Preparing the schema with the index name to be used later
-            schemaRetriever = schemaRetrieverFactory.Make(singleDocumentDsl.IndexName);
-
-            // base query
-            singleDocumentDsl.SingleDocQuery.Accept(this);
-
-            // when an index-pattern doesn't have a default time filter the query element can be empty
-            var translatedQueryExpression = !string.IsNullOrEmpty(singleDocumentDsl.SingleDocQuery.KustoQL) ? $"| {singleDocumentDsl.SingleDocQuery.KustoQL}" : string.Empty;
-            var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(singleDocumentDsl.IndexName, defaultDatabaseName);
-
-            var queryStringBuilder = ConstructBasicQuery();
-
-            queryStringBuilder.Append($"database(\"{databaseName}\").{tableName} {translatedQueryExpression} | as hits;");
-            singleDocumentDsl.KustoQL = queryStringBuilder.ToString();
-        }
-
-        private static StringBuilder ConstructBasicQuery()
-        {
-            var queryStringBuilder = new StringBuilder();
-            queryStringBuilder.Append($"{KustoQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');
-
-            return queryStringBuilder;
         }
     }
 }

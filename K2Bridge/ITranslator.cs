@@ -17,14 +17,6 @@ namespace K2Bridge
         /// <param name="header">Query header.</param>
         /// <param name="query">Query to translate.</param>
         /// <returns>Translated QueryData.</returns>
-        QueryData TranslateData(string header, string query);
-
-        /// <summary>
-        /// Translate Single Document query.
-        /// </summary>
-        /// <param name="header">Query header.</param>
-        /// <param name="query">Query to translate.</param>
-        /// <returns>Translated QueryData.</returns>
-        QueryData TranslateSingleDocument(string header, string query);
+        QueryData TranslateQuery(string header, string query);
     }
 }

@@ -7,7 +7,7 @@ namespace K2Bridge.Visitors
     using K2Bridge.Models.Request.Queries;
 
     /// <content>
-    /// A visitor for the <see cref="Query"/> and the <see cref="SingleDocQuery"/> elements.
+    /// A visitor for the <see cref="Query"/> element.
     /// This includes all the "search" parts of an incoming request.
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
@@ -16,20 +16,27 @@ namespace K2Bridge.Visitors
         public void Visit(Query query)
         {
             Ensure.IsNotNull(query, nameof(query));
-            EnsureClause.IsNotNull(query.Bool, nameof(query.Bool));
 
-            query.Bool.Accept(this);
-            query.KustoQL = !string.IsNullOrEmpty(query.Bool.KustoQL) ? $"{KustoQLOperators.Where} {query.Bool.KustoQL}" : string.Empty;
-        }
+            string kustoQL;
 
-        /// <inheritdoc/>
-        public void Visit(SingleDocQuery singleDocQuery)
-        {
-            Ensure.IsNotNull(singleDocQuery, nameof(singleDocQuery));
-            EnsureClause.IsNotNull(singleDocQuery.DocumentId, nameof(singleDocQuery.DocumentId));
+            // Data query
+            if (query.Bool != null)
+            {
+                query.Bool.Accept(this);
+                kustoQL = query.Bool.KustoQL;
+            }
+            else if (query.DocumentId != null)
+            {
+                // View Single Document query
+                query.DocumentId.Accept(this);
+                kustoQL = query.DocumentId.KustoQL;
+            }
+            else
+            {
+                throw new IllegalClauseException("Either Bool or DocumentId clauses must not be null");
+            }
 
-            singleDocQuery.DocumentId.Accept(this);
-            singleDocQuery.KustoQL = !string.IsNullOrEmpty(singleDocQuery.DocumentId.KustoQL) ? $"{KustoQLOperators.Where} {singleDocQuery.DocumentId.KustoQL}" : string.Empty;
+            query.KustoQL = !string.IsNullOrEmpty(kustoQL) ? $"{KustoQLOperators.Where} {kustoQL}" : string.Empty;
         }
     }
 }

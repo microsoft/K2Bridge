@@ -26,28 +26,16 @@ namespace K2Bridge.Visitors
         void Visit(MatchPhraseClause matchPhraseClause);
 
         /// <summary>
-        /// Accepts a given visitable object and builds a Kusto query for data.
+        /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
         /// <param name="query">The Query object to visit.</param>
         void Visit(Query query);
 
         /// <summary>
-        /// Accepts a given visitable object and builds a Kusto query for a single document.
-        /// </summary>
-        /// <param name="singleDocQuery">The SingleDocQuery to visit.</param>
-        void Visit(SingleDocQuery singleDocQuery);
-
-        /// <summary>
-        /// Accepts a given visitable object and builds a Kusto query for data.
+        /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
         /// <param name="elasticSearchDSL">An Elasticsearch DSL query.</param>
         void Visit(ElasticSearchDSL elasticSearchDSL);
-
-        /// <summary>
-        /// Accepts a given visitable object and builds a Kusto query for a single document.
-        /// </summary>
-        /// <param name="singleDocumentDsl">An Elastic search single document query.</param>
-        void Visit(SingleDocumentDsl singleDocumentDsl);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
@@ -56,7 +44,7 @@ namespace K2Bridge.Visitors
         void Visit(RangeClause rangeClause);
 
         /// <summary>
-        /// Accepts a given visitable object and builds a Kusto query.
+        /// Accepts a given visitable object and builds a Kusto query for data.
         /// </summary>
         /// <param name="boolQuery">The boolQuery to visit.</param>
         void Visit(BoolQuery boolQuery);

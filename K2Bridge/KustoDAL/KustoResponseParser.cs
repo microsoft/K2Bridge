@@ -84,12 +84,12 @@ namespace K2Bridge.KustoDAL
         }
 
         /// <inheritdoc/>
-        public ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken, bool isSingleDoc = false)
+        public ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken)
         {
             try
             {
                 // Read results and transform to Elastic form
-                var response = ReadResponse(queryData, reader, timeTaken, isSingleDoc);
+                var response = ReadResponse(queryData, reader, timeTaken);
 
                 // Log total number of hits to have an idea of how many rows were returned by the search expression and aggregated.
                 Logger.LogDebug("Total number of hits: {totalHits}", response?.Responses?.First()?.Hits.Total);
@@ -154,8 +154,7 @@ namespace K2Bridge.KustoDAL
         private ElasticResponse ReadResponse(
                 QueryData query,
                 IDataReader reader,
-                TimeSpan timeTaken,
-                bool isSingleDoc)
+                TimeSpan timeTaken)
         {
             var response = new ElasticResponse();
 
@@ -175,9 +174,9 @@ namespace K2Bridge.KustoDAL
                     response.AddAggregation(bucket);
                 }
             }
-
-            if (isSingleDoc)
+            else
             {
+                // VSD Query
                 response.AddToTotal(1);
             }
 

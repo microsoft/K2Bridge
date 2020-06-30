@@ -163,7 +163,7 @@ namespace UnitTests.K2Bridge.Controllers
             var reader = new Mock<IDataReader>();
 
             var mockTranslator = new Mock<ITranslator>();
-            mockTranslator.Setup(translator => translator.TranslateData(ValidHeaderContent, ValidSearchRequestContent)).Returns(queryData);
+            mockTranslator.Setup(translator => translator.TranslateQuery(ValidHeaderContent, ValidSearchRequestContent)).Returns(queryData);
 
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>())).Returns(Task.FromResult((ts, reader.Object)));
@@ -174,8 +174,7 @@ namespace UnitTests.K2Bridge.Controllers
                 exec.Parse(
                     reader.Object,
                     queryData,
-                    ts,
-                    false));
+                    ts));
 
             var uat = new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object)
             {
@@ -190,11 +189,11 @@ namespace UnitTests.K2Bridge.Controllers
 
             // Assert
             mockTranslator.Verify(
-                translator => translator.TranslateData(ValidHeaderContent, ValidSearchRequestContent), Times.Once());
+                translator => translator.TranslateQuery(ValidHeaderContent, ValidSearchRequestContent), Times.Once());
             mockQueryExecutor.Verify(
                  executor => executor.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>()), Times.Once());
             mockResponseParser.Verify(
-                parsr => parsr.Parse(reader.Object, queryData, ts, false), Times.Once());
+                parsr => parsr.Parse(reader.Object, queryData, ts), Times.Once());
         }
 
         [TestCaseSource(nameof(InvalidQueryContent))]
@@ -248,7 +247,7 @@ namespace UnitTests.K2Bridge.Controllers
             // Arrange
             var mockTranslator = new Mock<ITranslator>();
             mockTranslator.Setup(translate
-                => translate.TranslateData(
+                => translate.TranslateQuery(
                     It.IsAny<string>(),
                     It.IsAny<string>()))
                 .Throws(new TranslateException(
@@ -290,7 +289,7 @@ namespace UnitTests.K2Bridge.Controllers
             var mockQueryData = new QueryData("query", "kibana_logs");
 
             var mockTranslator = new Mock<ITranslator>();
-            mockTranslator.Setup(x => x.TranslateData(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
+            mockTranslator.Setup(x => x.TranslateQuery(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
 
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
@@ -298,8 +297,7 @@ namespace UnitTests.K2Bridge.Controllers
                 parser => parser.Parse(
                         It.IsAny<IDataReader>(),
                         It.IsAny<QueryData>(),
-                        It.IsAny<TimeSpan>(),
-                        It.IsAny<bool>()))
+                        It.IsAny<TimeSpan>()))
                 .Throws(new ParseException(
                     "test error message",
                     new ArgumentException("test")));
@@ -337,7 +335,7 @@ namespace UnitTests.K2Bridge.Controllers
             // Arrange
             var mockQueryData = new QueryData("query", "kibana_logs");
             var mockTranslator = new Mock<ITranslator>();
-            mockTranslator.Setup(x => x.TranslateData(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
+            mockTranslator.Setup(x => x.TranslateQuery(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             var mockQueryExecutor = new Mock<IQueryExecutor>();
@@ -386,7 +384,7 @@ namespace UnitTests.K2Bridge.Controllers
         {
             var mockQueryData = new QueryData("query", "kibana_logs");
             var mockTranslator = new Mock<ITranslator>();
-            mockTranslator.Setup(x => x.TranslateData(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
+            mockTranslator.Setup(x => x.TranslateQuery(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>())).Returns(Task.FromResult((default(TimeSpan), new Mock<IDataReader>().Object)));
             var mockLogger = new Mock<ILogger<QueryController>>();
@@ -395,8 +393,7 @@ namespace UnitTests.K2Bridge.Controllers
                 exec.Parse(
                     It.IsAny<IDataReader>(),
                     It.IsAny<QueryData>(),
-                    It.IsAny<TimeSpan>(),
-                    It.IsAny<bool>()))
+                    It.IsAny<TimeSpan>()))
                 .Returns(new ElasticResponse());
 
             var ctr = new QueryController(mockQueryExecutor.Object, mockTranslator.Object, mockLogger.Object, mockResponseParser.Object)

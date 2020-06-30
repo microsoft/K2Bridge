@@ -96,7 +96,7 @@ namespace K2Bridge.Controllers
             [FromServices] RequestContext requestContext)
         {
             Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), null, logger);
-            string header = "{index:\"" + indexName + "\"}";
+            var header = "{index:\"" + indexName + "\"}";
 
             return await SearchInternalAsync(header, await ExtractBodyAsync(), requestContext, true);
         }
@@ -108,7 +108,7 @@ namespace K2Bridge.Controllers
         /// <param name="header">The header of the query request that includes the index to be queried.</param>
         /// <param name="query">The actual query that will be executed.</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
-        /// <param name="isSingleDocument">True if this is part of the ViewSingleDocument flow.</param>
+        /// <param name="isSingleDocument">True if this is part of a flow which requires a single response.</param>
         /// <returns>An ElasticResponse object.</returns>
         internal async Task<IActionResult> SearchInternalAsync(
             string header,
@@ -126,8 +126,9 @@ namespace K2Bridge.Controllers
 
             // Translate Query
             var (translationResult, translationError) = TryFuncReturnsElasticError(
-                () => isSingleDocument ? translator.TranslateSingleDocument(header, query) : translator.TranslateData(header, query),
+                () => translator.TranslateQuery(header, query),
                 UnknownIndexName); // At this point we don't know the index name.
+
             if (translationError != null)
             {
                 return Ok(translationError);
@@ -149,7 +150,7 @@ namespace K2Bridge.Controllers
             var (parsingResult, parsingError) = TryFuncReturnsElasticError(
                 () =>
                 {
-                    var elasticResponse = responseParser.Parse(dataReader, translationResult, timeTaken, isSingleDocument);
+                    var elasticResponse = responseParser.Parse(dataReader, translationResult, timeTaken);
 
                     return isSingleDocument ? (object)elasticResponse.Responses.First() : elasticResponse;
                 },
