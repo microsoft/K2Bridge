@@ -35,7 +35,7 @@ namespace K2Bridge.Tests.End2End
 
             Assert.True(
                 responseData.Contains(@"exceptions_by_type{ExceptionType=""ArgumentNullException"",SourceContext=""K2Bridge.Controllers.QueryController"",ActionName=""K2Bridge.Controllers.QueryController.MultiSearchAsync (K2Bridge)""} ", Ordinal),
-                responseData.Substring(responseData.IndexOf("exceptions_by_type", Ordinal)));
+                responseData.Substring(responseData.IndexOf("exceptions_by_type", Ordinal), 300));
 
             Assert.True(
                 responseData.Contains(
