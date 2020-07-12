@@ -19,21 +19,21 @@ namespace K2Bridge.Visitors
 
             string kustoQL;
 
-            // Data query
             if (query.Bool != null)
             {
+                // Data query
                 query.Bool.Accept(this);
                 kustoQL = query.Bool.KustoQL;
             }
-            else if (query.DocumentId != null)
+            else if (query.Ids != null)
             {
                 // View Single Document query
-                query.DocumentId.Accept(this);
-                kustoQL = query.DocumentId.KustoQL;
+                query.Ids.Accept(this);
+                kustoQL = query.Ids.KustoQL;
             }
             else
             {
-                throw new IllegalClauseException("Either Bool or DocumentId clauses must not be null");
+                throw new IllegalClauseException("Either Bool or Ids clauses must not be null");
             }
 
             query.KustoQL = !string.IsNullOrEmpty(kustoQL) ? $"{KustoQLOperators.Where} {kustoQL}" : string.Empty;

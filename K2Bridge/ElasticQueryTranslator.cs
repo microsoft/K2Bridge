@@ -48,7 +48,7 @@ namespace K2Bridge
 
             try
             {
-                Logger.LogDebug("Translate data params: header:{@header}, query:{@query}", header, query.ToSensitiveData());
+                Logger.LogDebug("Translate params: header:{@header}, query:{@query}", header, query.ToSensitiveData());
 
                 // Prepare the esDSL object, except some fields such as the query field which will be built later
                 var elasticSearchDsl = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
@@ -88,27 +88,21 @@ namespace K2Bridge
                         }
                     }
 
-                    if (elasticSearchDsl.Sort != null)
-                    {
-                        sortFields = new List<string>();
-                        elasticSearchDsl.Sort.ForEach(clause => sortFields.Add(clause.FieldName));
-                    }
+                    sortFields = new List<string>();
+                    elasticSearchDsl.Sort?.ForEach(clause => sortFields.Add(clause.FieldName));
                 }
-                else if (elasticSearchDsl.Query.DocumentId != null)
+                else if (elasticSearchDsl.Query.Ids != null)
                 {
-                    EnsureClause.IsNotNull(elasticSearchDsl.Query.DocumentId.Id, nameof(elasticSearchDsl.Query.DocumentId.Id));
-                    Ensure.ConditionIsMet(elasticSearchDsl.Query.DocumentId.Id.Length == 1, $"{nameof(elasticSearchDsl.Query.DocumentId.Id)} must include exactly one value");
+                    EnsureClause.IsNotNull(elasticSearchDsl.Query.Ids.Id, nameof(elasticSearchDsl.Query.Ids.Id));
+                    Ensure.ConditionIsMet(elasticSearchDsl.Query.Ids.Id.Length == 1, $"{nameof(elasticSearchDsl.Query.Ids.Id)} must include exactly one value");
                 }
                 else
                 {
-                    throw new IllegalClauseException("Either Bool or DocumentId clauses must not be null");
+                    throw new IllegalClauseException("Either Bool or Ids clauses must not be null");
                 }
 
-                if (elasticSearchDsl.DocValueFields != null)
-                {
-                    docValueFields = new List<string>();
-                    elasticSearchDsl.DocValueFields.ForEach(item => docValueFields.Add(item.Field));
-                }
+                docValueFields = new List<string>();
+                elasticSearchDsl.DocValueFields?.ForEach(item => docValueFields.Add(item.Field));
 
                 // Use the visitor and build the KustoQL string from the esDSL object
                 elasticSearchDsl.Accept(visitor);

@@ -23,7 +23,7 @@ namespace K2Bridge.Models.Request.Queries
         /// Gets or sets the id with which to perform a ViewSingleDocument query.
         /// </summary>
         [JsonProperty("ids")]
-        public DocumentIds DocumentId { get; set; }
+        public DocumentIds Ids { get; set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

@@ -51,7 +51,7 @@ namespace K2Bridge.Visitors
             // when an index-pattern doesn't have a default time filter the query element can be empty
             var translatedQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KustoQL) ? $"| {elasticSearchDSL.Query.KustoQL}" : string.Empty;
 
-            // Data query
+            // Aggregations
             if (elasticSearchDSL.Query.Bool != null)
             {
                 queryStringBuilder.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");

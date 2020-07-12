@@ -176,7 +176,8 @@ namespace K2Bridge.KustoDAL
             }
             else
             {
-                // VSD Query
+                // A ViewSingleDocument queries do not produce any aggregations used for total,
+                // but Kibana expects this value
                 response.AddToTotal(1);
             }
 
