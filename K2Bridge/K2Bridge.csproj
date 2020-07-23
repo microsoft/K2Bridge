@@ -56,7 +56,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="RewriteRules\" />
     <Folder Include="HttpMessages\" />
     <Folder Include="Factories\" />
     <Folder Include="Utils\" />

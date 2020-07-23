@@ -4,6 +4,8 @@
 
 namespace UnitTests.K2Bridge.RewriteRules
 {
+    using System.IO;
+    using System.Text;
     using global::K2Bridge.RewriteRules;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Rewrite;
@@ -13,67 +15,70 @@ namespace UnitTests.K2Bridge.RewriteRules
     [TestFixture]
     public class RewriteRulesTests
     {
+        private const string SearchBodyForIndicies = "{\"size\":0,\"aggs\":{\"indices\":{\"terms\":{\"field\":\"_index\",\"size\":200}}}}";
+
         private static readonly object[] RewriteMissingTrailsPath = {
-            new TestCaseData("/test/validfile.html").Returns("/test/validfile.html").SetName("TrailSlashRewriteRules_WhenValidFile_DoNotAddSlash"),
-            new TestCaseData("/test/.html").Returns("/test/.html/").SetName("TrailSlashRewriteRules_EmptyFileName_AddSlash"),
-            new TestCaseData("/test/.html/").Returns("/test/.html/").SetName("TrailSlashRewriteRules_ContainsTrailingSlash_LeaveTrailingSlashes"),
-            new TestCaseData("/a").Returns("/a/").SetName("TrailSlashRewriteRules_NoTrailingSlash_AddSlash"),
-            new TestCaseData(string.Empty).Returns(string.Empty).SetName("TrailSlashRewriteRules_EmptyString_NoError"),
-            new TestCaseData("/").Returns("/").SetName("TrailSlashRewriteRules_OnlySlash_NoError"),
-            new TestCaseData("/./.").Returns("/././").SetName("TrailSlashRewriteRules_MultipleSlashesAndDot_AddsSlash"),
-            new TestCaseData("/./a.").Returns("/./a./").SetName("TrailSlashRewriteRules_MultipleSlashesAndDotAndCharacter_AddsSlash"),
+            new TestCaseData("/test/validfile.html").Returns("/test/validfile.html").SetName("RewriteTrailingSlashesRule_WhenValidFile_DoNotAddSlash"),
+            new TestCaseData("/test/.html").Returns("/test/.html/").SetName("RewriteTrailingSlashesRule_EmptyFileName_AddSlash"),
+            new TestCaseData("/test/.html/").Returns("/test/.html/").SetName("RewriteTrailingSlashesRule_ContainsTrailingSlash_LeaveTrailingSlashes"),
+            new TestCaseData("/a").Returns("/a/").SetName("RewriteTrailingSlashesRule_NoTrailingSlash_AddSlash"),
+            new TestCaseData(string.Empty).Returns(string.Empty).SetName("RewriteTrailingSlashesRule_EmptyString_NoError"),
+            new TestCaseData("/").Returns("/").SetName("RewriteTrailingSlashesRule_OnlySlash_NoError"),
+            new TestCaseData("/./.").Returns("/././").SetName("RewriteTrailingSlashesRule_MultipleSlashesAndDot_AddsSlash"),
+            new TestCaseData("/./a.").Returns("/./a./").SetName("RewriteTrailingSlashesRule_MultipleSlashesAndDotAndCharacter_AddsSlash"),
         };
 
         private static readonly object[] RewriteFieldCapsPath = {
-            new TestCaseData("/myindex/_field_caps").Returns("/FieldCapability/Process/myindex").SetName("FieldCapsRewriteRules_ValidInput_SetFieldCaps"),
-            new TestCaseData("/*/_field_caps").Returns("/FieldCapability/Process/*").SetName("FieldCapsRewriteRules_StarValidInput_SetFieldCapsStar"),
-            new TestCaseData(string.Empty).Returns(string.Empty).SetName("FieldCapsRewriteRules_EmptyString_NoError"),
-            new TestCaseData("/not_parsed").Returns("/not_parsed").SetName("FieldCapsRewriteRules_OtherInput_DoesNotHandle"),
-            new TestCaseData("/_field_caps").Returns("/FieldCapability/Process/_field_caps").SetName("FieldCapsRewriteRules_FieldCaps_NoError"),
+            new TestCaseData("/myindex/_field_caps").Returns("/FieldCapability/Process/myindex").SetName("RewriteFieldCapabilitiesRule_ValidInput_SetFieldCaps"),
+            new TestCaseData("/*/_field_caps").Returns("/FieldCapability/Process/*").SetName("RewriteFieldCapabilitiesRule_StarValidInput_SetFieldCapsStar"),
+            new TestCaseData(string.Empty).Returns(string.Empty).SetName("RewriteFieldCapabilitiesRule_EmptyString_NoError"),
+            new TestCaseData("/not_parsed").Returns("/not_parsed").SetName("RewriteFieldCapabilitiesRule_OtherInput_DoesNotHandle"),
+            new TestCaseData("/_field_caps").Returns("/FieldCapability/Process/_field_caps").SetName("RewriteFieldCapabilitiesRule_FieldCaps_NoError"),
         };
 
-        private static readonly object[] RewriteIndexListPath = {
-            new TestCaseData("/myindex/_search").Returns("/IndexList/Process/myindex").SetName("IndexListRewriteRule_ValidInput_SetIndexList"),
-            new TestCaseData("/.kibana/_search").Returns("/.kibana/_search").SetName("IndexListRewriteRule_KibanaInternal_NotChanged"),
-            new TestCaseData("/myindex/notsearch").Returns("/myindex/notsearch").SetName("IndexListRewriteRule_OtherInput_NotChanged"),
-            new TestCaseData("/_search").Returns("/IndexList/Process/_search").SetName("IndexListRewriteRule_EmptySearch_NoError"),
+        private static readonly object[] RewriteSearchPath = {
+            new TestCaseData("/myindex/_search", SearchBodyForIndicies).Returns("/IndexList/Process/myindex").SetName("RewriteSearchRule_IndiciesSearch_RerouteToIndexList"),
+            new TestCaseData("/.kibana/_search", SearchBodyForIndicies).Returns("/.kibana/_search").SetName("RewriteSearchRule_KibanaInternal_NotChanged"),
+            new TestCaseData("/myindex/notsearch", SearchBodyForIndicies).Returns("/myindex/notsearch").SetName("RewriteSearchRule_OtherInput_NotChanged"),
+            new TestCaseData("/myindex/_search", "{}").Returns("/Query/SingleSearch/myindex").SetName("RewriteSearchRule_SearchEmptyJsonBody_RerouteToSearch"),
+            new TestCaseData("/myindex/_search", string.Empty).Returns("/Query/SingleSearch/myindex").SetName("RewriteSearchRule_SearchEmptyBody_RerouteToSearch"),
         };
 
         private static readonly object[] RewriteRequestForTemplatePath = {
-            new TestCaseData("/_template/myindex:.someindex/").Returns("/_template/myindex::someindex/").SetName("TemplateRewriteRules_ValidInput_SetTemplate"),
-            new TestCaseData("/_template/myindex/").Returns("/_template/myindex/").SetName("TemplateRewriteRules_NoIllegalChars_NotChanged"),
-            new TestCaseData("/nottemplate/myindex:.").Returns("/nottemplate/myindex:.").SetName("TemplateRewriteRules_NotTemplate_NotChanged"),
-            new TestCaseData("/nottemplatetemplate/myindex/").Returns("/nottemplatetemplate/myindex/").SetName("TemplateRewriteRules_NoIllegalCharAndNotTemplate_NotChanged"),
+            new TestCaseData("/_template/myindex:.someindex/").Returns("/_template/myindex::someindex/").SetName("RewriteRequestsForTemplateRule_ValidInput_SetTemplate"),
+            new TestCaseData("/_template/myindex/").Returns("/_template/myindex/").SetName("RewriteRequestsForTemplateRule_NoIllegalChars_NotChanged"),
+            new TestCaseData("/nottemplate/myindex:.").Returns("/nottemplate/myindex:.").SetName("RewriteRequestsForTemplateRule_NotTemplate_NotChanged"),
+            new TestCaseData("/nottemplatetemplate/myindex/").Returns("/nottemplatetemplate/myindex/").SetName("RewriteRequestsForTemplateRule_NoIllegalCharAndNotTemplate_NotChanged"),
         };
 
         [TestCaseSource(nameof(RewriteMissingTrailsPath))]
-        public string TrailingSlashRulesTest(string request)
+        public string TrailingSlashRulesTest(string requestPath)
         {
-            return TestIRule(new RewriteTrailingSlashesRule(), request);
+            return TestIRule(new RewriteTrailingSlashesRule(), requestPath);
         }
 
         [TestCaseSource(nameof(RewriteFieldCapsPath))]
-        public string RewriteFieldCapsTest(string request)
+        public string RewriteFieldCapsTest(string requestPath)
         {
-            return TestIRule(new RewriteFieldCapabilitiesRule(), request);
+            return TestIRule(new RewriteFieldCapabilitiesRule(), requestPath);
         }
 
-        [TestCaseSource(nameof(RewriteIndexListPath))]
-        public string RewriteIndexListsTest(string request)
+        [TestCaseSource(nameof(RewriteSearchPath))]
+        public string RewriteSearchRuleTest(string requestPath, string requestBody)
         {
-            return TestIRule(new RewriteIndexListRule(), request);
+            return TestIRule(new RewriteSearchRule(), requestPath, requestBody);
         }
 
         [TestCaseSource(nameof(RewriteRequestForTemplatePath))]
-        public string RewriteRequestForTemplateTest(string request)
+        public string RewriteRequestForTemplateTest(string requestPath)
         {
-            return TestIRule(new RewriteRequestsForTemplateRule(), request);
+            return TestIRule(new RewriteRequestsForTemplateRule(), requestPath);
         }
 
-        private static string TestIRule(IRule rule, string request)
+        private static string TestIRule(IRule rule, string requestPath, string requestBody = null)
         {
             // Arrange
-            var context = MakeContext(request);
+            var context = MakeContext(requestPath, requestBody);
 
             // Act
             rule.ApplyRule(context);
@@ -82,14 +87,16 @@ namespace UnitTests.K2Bridge.RewriteRules
             return context.HttpContext.Request.Path.ToString();
         }
 
-        private static RewriteContext MakeContext(string requestString)
+        private static RewriteContext MakeContext(string requestPath, string requestBody)
         {
-            var clusureRequestString = requestString;
             var request = new Mock<HttpRequest>();
+            request.Setup(x => x.Path).Returns(() => new PathString(requestPath));
+            request.SetupSet(x => x.Path = It.IsAny<PathString>()).Callback<PathString>(p => requestPath = p.Value);
+            request.Setup(x => x.Body).Returns(() => new MemoryStream(Encoding.UTF8.GetBytes(requestBody)));
+
             var httpContext = new Mock<HttpContext>();
-            request.Setup(x => x.Path).Returns(() => new PathString(clusureRequestString));
-            request.SetupSet(x => x.Path = It.IsAny<PathString>()).Callback<PathString>(p => clusureRequestString = p.Value);
             httpContext.Setup(x => x.Request).Returns(request.Object);
+
             return new RewriteContext() { HttpContext = httpContext.Object };
         }
     }

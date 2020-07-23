@@ -42,7 +42,7 @@ namespace K2Bridge
         /// <param name="query">A query.</param>
         /// <returns>A <see cref="QueryData"/>.</returns>
         /// <exception cref="TranslateException">Throws a TranslateException on error.</exception>
-        public QueryData Translate(string header, string query)
+        public QueryData TranslateQuery(string header, string query)
         {
             Ensure.IsNotNullOrEmpty(header, nameof(header));
 
@@ -55,48 +55,58 @@ namespace K2Bridge
 
                 // deserialize the headers and extract the index name
                 var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
-                elasticSearchDsl.IndexName = headerDictionary["index"];
-
-                elasticSearchDsl.HighlightText = new Dictionary<string, string>();
 
                 Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
-                Ensure.IsNotNull(elasticSearchDsl.Query.Bool, nameof(elasticSearchDsl.Query.Bool));
-                Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Must, nameof(elasticSearchDsl.Query.Bool.Must));
 
-                if (elasticSearchDsl.Query.Bool.Filter.Any())
-                {
-                    // KQL in an experimental search syntax in Kibana that is turned on in version 7 but also available in version 6.
-                    // One can set it with option "search:queryLanguage" to "Lucene". More info: https://www.elastic.co/guide/en/kibana/current/advanced-options.html.
-                    Logger.LogWarning("Query includes a filter element indicating Kibana is working in KQL syntax, which is not supported yet. You should search with Lucene syntax instead.");
-                }
+                elasticSearchDsl.IndexName = headerDictionary["index"];
+                elasticSearchDsl.HighlightText = new Dictionary<string, string>();
 
-                foreach (var element in elasticSearchDsl.Query.Bool.Must)
+                List<string> sortFields = null;
+                List<string> docValueFields = null;
+
+                if (elasticSearchDsl.Query.Bool != null)
                 {
-                    switch (element)
+                    Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Must, nameof(elasticSearchDsl.Query.Bool.Must));
+
+                    if (elasticSearchDsl.Query.Bool.Filter.Any())
                     {
-                        case QueryStringClause queryStringClause:
-                            elasticSearchDsl.HighlightText.Add("*", queryStringClause.Phrase);
-                            break;
-                        case MatchPhraseClause matchPhraseClause:
-                            elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
-                            break;
+                        // KQL in an experimental search syntax in Kibana that is turned on in version 7 but also available in version 6.
+                        // One can set it with option "search:queryLanguage" to "Lucene". More info: https://www.elastic.co/guide/en/kibana/current/advanced-options.html.
+                        Logger.LogWarning("Query includes a filter element indicating Kibana is working in KQL syntax, which is not supported yet. You should search with Lucene syntax instead.");
                     }
+
+                    foreach (var element in elasticSearchDsl.Query.Bool.Must)
+                    {
+                        switch (element)
+                        {
+                            case QueryStringClause queryStringClause:
+                                elasticSearchDsl.HighlightText.Add("*", queryStringClause.Phrase);
+                                break;
+                            case MatchPhraseClause matchPhraseClause:
+                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
+                                break;
+                        }
+                    }
+
+                    sortFields = new List<string>();
+                    elasticSearchDsl.Sort?.ForEach(clause => sortFields.Add(clause.FieldName));
+                }
+                else if (elasticSearchDsl.Query.Ids != null)
+                {
+                    EnsureClause.IsNotNull(elasticSearchDsl.Query.Ids.Id, nameof(elasticSearchDsl.Query.Ids.Id));
+                    Ensure.ConditionIsMet(elasticSearchDsl.Query.Ids.Id.Length == 1, $"{nameof(elasticSearchDsl.Query.Ids.Id)} must include exactly one value");
+                }
+                else
+                {
+                    throw new IllegalClauseException("Either Bool or Ids clauses must not be null");
                 }
 
-                var sortFields = new List<string>();
-                elasticSearchDsl.Sort?.ForEach(clause =>
-                {
-                    sortFields.Add(clause.FieldName);
-                });
-
-                var docValueFields = new List<string>();
-                elasticSearchDsl.DocValueFields?.ForEach(item =>
-                {
-                    docValueFields.Add(item.Field);
-                });
+                docValueFields = new List<string>();
+                elasticSearchDsl.DocValueFields?.ForEach(item => docValueFields.Add(item.Field));
 
                 // Use the visitor and build the KustoQL string from the esDSL object
                 elasticSearchDsl.Accept(visitor);
+
                 var queryData = new QueryData(
                     elasticSearchDsl.KustoQL,
                     elasticSearchDsl.IndexName,
@@ -117,7 +127,7 @@ namespace K2Bridge
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to execute translate.");
+                Logger.LogError(ex, "Failed to execute translate operation.");
                 throw new TranslateException("Failed translating elasticsearch query", ex);
             }
         }

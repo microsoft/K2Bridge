@@ -7,8 +7,8 @@ namespace K2Bridge.Visitors
     using K2Bridge.Models.Request.Queries;
 
     /// <content>
-    /// A visitor for the <see cref="Query"/> element. This includes all
-    /// the "search" parts of an incoming request.
+    /// A visitor for the <see cref="Query"/> element.
+    /// This includes all the "search" parts of an incoming request.
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
@@ -16,10 +16,27 @@ namespace K2Bridge.Visitors
         public void Visit(Query query)
         {
             Ensure.IsNotNull(query, nameof(query));
-            EnsureClause.IsNotNull(query.Bool, nameof(query.Bool));
 
-            query.Bool.Accept(this);
-            query.KustoQL = !string.IsNullOrEmpty(query.Bool.KustoQL) ? $"{KustoQLOperators.Where} {query.Bool.KustoQL}" : string.Empty;
+            string kustoQL;
+
+            if (query.Bool != null)
+            {
+                // Data query
+                query.Bool.Accept(this);
+                kustoQL = query.Bool.KustoQL;
+            }
+            else if (query.Ids != null)
+            {
+                // View Single Document query
+                query.Ids.Accept(this);
+                kustoQL = query.Ids.KustoQL;
+            }
+            else
+            {
+                throw new IllegalClauseException("Either Bool or Ids clauses must not be null");
+            }
+
+            query.KustoQL = !string.IsNullOrEmpty(kustoQL) ? $"{KustoQLOperators.Where} {kustoQL}" : string.Empty;
         }
     }
 }

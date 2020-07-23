@@ -44,7 +44,7 @@ namespace K2Bridge.Visitors
         void Visit(RangeClause rangeClause);
 
         /// <summary>
-        /// Accepts a given visitable object and builds a Kusto query.
+        /// Accepts a given visitable object and builds a Kusto query for data.
         /// </summary>
         /// <param name="boolQuery">The boolQuery to visit.</param>
         void Visit(BoolQuery boolQuery);
@@ -84,5 +84,11 @@ namespace K2Bridge.Visitors
         /// </summary>
         /// <param name="queryStringClause">The query string clause.</param>
         void Visit(QueryStringClause queryStringClause);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto single doc query.
+        /// </summary>
+        /// <param name="documentIds">The DocumentIds object to visit.</param>
+        void Visit(DocumentIds documentIds);
     }
 }

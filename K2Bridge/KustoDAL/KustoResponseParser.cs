@@ -149,6 +149,7 @@ namespace K2Bridge.KustoDAL
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="reader">Kusto IDataReader response.</param>
         /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
+        /// <param name="isSingleDoc">Indicates whether this was a single document query.</param>
         /// <returns>ElasticResponse object.</returns>
         private ElasticResponse ReadResponse(
                 QueryData query,
@@ -172,6 +173,12 @@ namespace K2Bridge.KustoDAL
                     var bucket = BucketFactory.CreateFromDataRow(row);
                     response.AddAggregation(bucket);
                 }
+            }
+            else
+            {
+                // A ViewSingleDocument queries do not produce any aggregations used for total,
+                // but Kibana expects this value
+                response.AddToTotal(1);
             }
 
             // read hits

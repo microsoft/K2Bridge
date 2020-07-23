@@ -24,7 +24,10 @@ namespace UnitTests.K2Bridge.Controllers
     [TestFixture]
     public class QueryControllerTests
     {
-        private const string ValidQueryContent = "{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}\n{\"version\":true,\"size\":500,\"sort\":[{\"timestamp\":{\"order\":\"desc\",\"unmapped_type\":\"boolean\"}}],\"_source\":{\"excludes\":[]},\"aggs\":{\"2\":{\"date_histogram\":{\"field\":\"timestamp\",\"interval\":\"1d\",\"time_zone\":\"America/Los_Angeles\",\"min_doc_count\":1}}},\"stored_fields\":[\"*\"],\"script_fields\":{},\"docvalue_fields\":[{\"field\":\"timestamp\",\"format\":\"date_time\"}],\"query\":{\"bool\":{\"must\":[{\"match_all\":{}},{\"range\":{\"timestamp\":{\"gte\":1561673881638,\"lte\":1566712210749,\"format\":\"epoch_millis\"}}}],\"filter\":[],\"should\":[],\"must_not\":[]}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"timeout\":\"30000ms\"}";
+        private const string ValidMSearchRequestContent = "{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}\n{\"version\":true,\"size\":500,\"sort\":[{\"timestamp\":{\"order\":\"desc\",\"unmapped_type\":\"boolean\"}}],\"_source\":{\"excludes\":[]},\"aggs\":{\"2\":{\"date_histogram\":{\"field\":\"timestamp\",\"interval\":\"1d\",\"time_zone\":\"America/Los_Angeles\",\"min_doc_count\":1}}},\"stored_fields\":[\"*\"],\"script_fields\":{},\"docvalue_fields\":[{\"field\":\"timestamp\",\"format\":\"date_time\"}],\"query\":{\"bool\":{\"must\":[{\"match_all\":{}},{\"range\":{\"timestamp\":{\"gte\":1561673881638,\"lte\":1566712210749,\"format\":\"epoch_millis\"}}}],\"filter\":[],\"should\":[],\"must_not\":[]}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"timeout\":\"30000ms\"}";
+
+        private const string ValidHeaderContent = "{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}";
+        private const string ValidSearchRequestContent = "{\"version\":true,\"size\":500,\"sort\":[{\"timestamp\":{\"order\":\"desc\",\"unmapped_type\":\"boolean\"}}],\"_source\":{\"excludes\":[]},\"aggs\":{\"2\":{\"date_histogram\":{\"field\":\"timestamp\",\"interval\":\"1d\",\"time_zone\":\"America/Los_Angeles\",\"min_doc_count\":1}}},\"stored_fields\":[\"*\"],\"script_fields\":{},\"docvalue_fields\":[{\"field\":\"timestamp\",\"format\":\"date_time\"}],\"query\":{\"bool\":{\"must\":[{\"match_all\":{}},{\"range\":{\"timestamp\":{\"gte\":1561673881638,\"lte\":1566712210749,\"format\":\"epoch_millis\"}}}],\"filter\":[],\"should\":[],\"must_not\":[]}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"timeout\":\"30000ms\"}";
 
         private const string QueryControllerTranslateErrorString = @"
             { 
@@ -95,30 +98,17 @@ namespace UnitTests.K2Bridge.Controllers
                 }
         ";
 
-        private static readonly object[] InValidQueryContent = {
-            new TestCaseData("{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}").SetName("SearchInternal_WhenNoQuery_IsInvalid"),
-            new TestCaseData(null).SetName("SearchInternal_WhenNullValue_IsInvalid"),
-            new TestCaseData(string.Empty).SetName("SearchInternal_WhenEmptyValue_IsInvalid"),
+        private static readonly object[] InvalidQueryContent = {
+            new TestCaseData(ValidHeaderContent, null, typeof(ArgumentNullException)).SetName("SearchInternal_WhenNullQuery_IsInvalid"),
+            new TestCaseData(ValidHeaderContent, string.Empty, typeof(ArgumentException)).SetName("SearchInternal_WhenEmptyQuery_IsInvalid"),
+            new TestCaseData(null, ValidSearchRequestContent, typeof(ArgumentNullException)).SetName("SearchInternal_WhenNullHeader_IsInvalid"),
+            new TestCaseData(string.Empty, ValidSearchRequestContent, typeof(ArgumentException)).SetName("SearchInternal_WhenEmptyHeader_IsInvalid"),
         };
 
         private static readonly object[] IntegrationTestCases = {
-            new TestCaseData("{\"index\":\"kibana_sample_data_flights\",\"ignore_unavailable\":true,\"preference\":1572955935509}\n{\"version\":true,\"size\":500,\"sort\":[{\"timestamp\":{\"order\":\"desc\",\"unmapped_type\":\"boolean\"}}],\"_source\":{\"excludes\":[]},\"aggs\":{\"2\":{\"date_histogram\":{\"field\":\"timestamp\",\"interval\":\"1d\",\"time_zone\":\"America/Los_Angeles\",\"min_doc_count\":1}}},\"stored_fields\":[\"*\"],\"script_fields\":{},\"docvalue_fields\":[{\"field\":\"timestamp\",\"format\":\"date_time\"}],\"query\":{\"bool\":{\"must\":[{\"match_all\":{}},{\"range\":{\"timestamp\":{\"gte\":1561673881638,\"lte\":1566712210749,\"format\":\"epoch_millis\"}}}],\"filter\":[],\"should\":[],\"must_not\":[]}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"timeout\":\"30000ms\"}", typeof(OkObjectResult)).SetName("QueryController_WhenQueryIsValid_ReturnsOk"),
-            new TestCaseData(string.Empty, typeof(BadRequestObjectResult)).SetName("QueryController_WhenQueryIsValid_ReturnsOk"),
+            new TestCaseData(ValidMSearchRequestContent, typeof(OkObjectResult)).SetName("QueryController_WhenMSearchRequestIsValid_ReturnsOk"),
+            new TestCaseData(string.Empty, typeof(BadRequestObjectResult)).SetName("QueryController_WhenMSearchRequestIsEmpty_ReturnsBadRequest"),
         };
-
-        [Test]
-        public async Task SearchInternalAsync_WithOKfromKustoAsync_ReturnsOkActionResult()
-        {
-            // Arrange
-            var uat = GetController();
-
-            // Act
-            var result = await uat.SearchInternalAsync(true, true, ValidQueryContent, It.IsAny<RequestContext>());
-
-            // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsInstanceOf<ElasticResponse>(((OkObjectResult)result).Value);
-        }
 
         [Test]
         public void QueryControllerConstructor_WithNoArgs_ThrowsOnInit()
@@ -151,18 +141,33 @@ namespace UnitTests.K2Bridge.Controllers
         }
 
         [Test]
-        public async Task SearchInternalAsync_WithValidInput_TranslatesAndExecutesQuery()
+        public async Task SearchInternalAsync_WithValidRequestData_ReturnsOkActionResult()
         {
             // Arrange
-            (string header, string query) = ControllerExtractMethods.SplitQueryBody(ValidQueryContent);
-            var queryData = new QueryData(query, header);
+            var uat = GetController();
+
+            // Act
+            var result = await uat.SearchInternalAsync(ValidHeaderContent, ValidSearchRequestContent, It.IsAny<RequestContext>());
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<ElasticResponse>(((OkObjectResult)result).Value);
+        }
+
+        [Test]
+        public async Task SearchInternalAsync_WithValidRequestData_RunsTranslateExecuteAndParse()
+        {
+            // Arrange
+            var queryData = new QueryData(ValidHeaderContent, ValidSearchRequestContent);
             var ts = new TimeSpan(1);
             var reader = new Mock<IDataReader>();
+
             var mockTranslator = new Mock<ITranslator>();
-            mockTranslator.Setup(translator => translator.Translate(
-                header, query)).Returns(queryData);
+            mockTranslator.Setup(translator => translator.TranslateQuery(ValidHeaderContent, ValidSearchRequestContent)).Returns(queryData);
+
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>())).Returns(Task.FromResult((ts, reader.Object)));
+
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             mockResponseParser.Setup(exec =>
@@ -180,29 +185,29 @@ namespace UnitTests.K2Bridge.Controllers
             };
 
             // Act
-            await uat.SearchInternalAsync(true, true, ValidQueryContent, It.IsAny<RequestContext>());
+            await uat.SearchInternalAsync(ValidHeaderContent, ValidSearchRequestContent, It.IsAny<RequestContext>());
 
             // Assert
             mockTranslator.Verify(
-                translator => translator.Translate(header, query), Times.Once());
+                translator => translator.TranslateQuery(ValidHeaderContent, ValidSearchRequestContent), Times.Once());
             mockQueryExecutor.Verify(
                  executor => executor.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>()), Times.Once());
             mockResponseParser.Verify(
                 parsr => parsr.Parse(reader.Object, queryData, ts), Times.Once());
         }
 
-        [TestCaseSource(nameof(InValidQueryContent))]
-        public void SearchInternalAsync_WithInvaliddRequestData_ThrowsArgumentException(string input)
+        [TestCaseSource(nameof(InvalidQueryContent))]
+        public void SearchInternalAsync_WithInvalidRequestData_ThrowsArgumentException(string header, string query, Type exceptionType)
         {
             // Arrange
             var uat = GetController();
 
             // Assert
-            Assert.ThrowsAsync<ArgumentNullException>(async () => await uat.SearchInternalAsync(true, true, input, It.IsAny<RequestContext>()));
+            Assert.ThrowsAsync(exceptionType, async () => await uat.SearchInternalAsync(header, query, It.IsAny<RequestContext>()));
         }
 
         [TestCaseSource(nameof(IntegrationTestCases))]
-        public async Task SearchInternalAsync_WithValidRequest_ReturnsExpectedResult(string content, Type resultType)
+        public async Task MultiSearchAsync_WithValidRequest_ReturnsExpectedResult(string content, Type resultType)
         {
             Ensure.IsNotNull(resultType, nameof(resultType));
 
@@ -230,30 +235,29 @@ namespace UnitTests.K2Bridge.Controllers
             { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.SearchAsync(true, true, It.IsAny<RequestContext>());
+            var result = await controller.MultiSearchAsync(It.IsAny<RequestContext>());
 
             // Assert
             Assert.IsInstanceOf(resultType, result, $"result {result} is not of expected type {resultType.Name}");
         }
 
         [Test]
-        public async Task SearchAsync_WithErrorInTranslator_ReturnsError()
+        public async Task MultiSearchAsync_WithErrorInTranslator_ReturnsError()
         {
             // Arrange
             var mockTranslator = new Mock<ITranslator>();
             mockTranslator.Setup(translate
-                => translate.Translate(
+                => translate.TranslateQuery(
                     It.IsAny<string>(),
                     It.IsAny<string>()))
                 .Throws(new TranslateException(
                     "test error message",
                     new ArgumentException("test")));
             var mockLogger = new Mock<ILogger<QueryController>>();
-            var mockLoggerParser = new Mock<ILogger<KustoResponseParser>>();
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var mockResponseParser = new Mock<IResponseParser>();
             var httpContext = new DefaultHttpContext();
-            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
+            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidMSearchRequestContent));
 
             // Controller needs a controller context
             var controllerContext = new ControllerContext()
@@ -268,36 +272,39 @@ namespace UnitTests.K2Bridge.Controllers
             { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.SearchAsync(true, true, It.IsAny<RequestContext>());
+            var result = await controller.MultiSearchAsync(It.IsAny<RequestContext>());
 
             // Assert
-            Assert.IsInstanceOf(typeof(OkObjectResult), result, $"result {result.ToString()} is not of expected type OkObjectResult");
+            Assert.IsInstanceOf(typeof(OkObjectResult), result, $"result {result} is not of expected type OkObjectResult");
             var asOkResult = (OkObjectResult)result;
             var resultValue = asOkResult.Value;
             resultValue.AssertJson(QueryControllerTranslateErrorString);
         }
 
         [Test]
-        public async Task SearchAsync_WithErrorInParser_ReturnsError()
+        [Ignore("This needs to be enabled when the controller wraps parse errors again")]
+        public async Task MultiSearchAsync_WithErrorInParser_ReturnsError()
         {
             // Arrange
             var mockQueryData = new QueryData("query", "kibana_logs");
+
             var mockTranslator = new Mock<ITranslator>();
-            mockTranslator.Setup(x => x.Translate(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
+            mockTranslator.Setup(x => x.TranslateQuery(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
+
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
-            mockResponseParser.Setup(parser
-                => parser.Parse(
-                    It.IsAny<IDataReader>(),
-                    It.IsAny<QueryData>(),
-                    It.IsAny<TimeSpan>()))
+            mockResponseParser.Setup(
+                parser => parser.Parse(
+                        It.IsAny<IDataReader>(),
+                        It.IsAny<QueryData>(),
+                        It.IsAny<TimeSpan>()))
                 .Throws(new ParseException(
                     "test error message",
                     new ArgumentException("test")));
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var httpContext = new DefaultHttpContext();
 
-            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
+            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidMSearchRequestContent));
 
             // Controller needs a controller context
             var controllerContext = new ControllerContext()
@@ -313,22 +320,22 @@ namespace UnitTests.K2Bridge.Controllers
             { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.SearchAsync(true, true, It.IsAny<RequestContext>());
+            var result = await controller.MultiSearchAsync(It.IsAny<RequestContext>());
 
             // Assert
-            Assert.IsInstanceOf(typeof(OkObjectResult), result, $"result {result.ToString()} is not of expected type OkObjectResult");
+            Assert.IsInstanceOf(typeof(OkObjectResult), result, $"result {result} is not of expected type OkObjectResult");
             var asOkResult = (OkObjectResult)result;
             var resultValue = asOkResult.Value;
             resultValue.AssertJson(QueryControllerParseErrorString);
         }
 
         [Test]
-        public async Task SearchAsync_WithErrorInExecutor_ReturnsError()
+        public async Task MultiSearchAsync_WithErrorInExecutor_ReturnsError()
         {
             // Arrange
             var mockQueryData = new QueryData("query", "kibana_logs");
             var mockTranslator = new Mock<ITranslator>();
-            mockTranslator.Setup(x => x.Translate(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
+            mockTranslator.Setup(x => x.TranslateQuery(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
             var mockLogger = new Mock<ILogger<QueryController>>();
             var mockResponseParser = new Mock<IResponseParser>();
             var mockQueryExecutor = new Mock<IQueryExecutor>();
@@ -340,7 +347,7 @@ namespace UnitTests.K2Bridge.Controllers
                     "test error message",
                     new ArgumentException("test")));
             var httpContext = new DefaultHttpContext();
-            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidQueryContent));
+            httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(ValidMSearchRequestContent));
 
             // Controller needs a controller context
             var controllerContext = new ControllerContext()
@@ -355,20 +362,29 @@ namespace UnitTests.K2Bridge.Controllers
             { ControllerContext = controllerContext };
 
             // Act
-            var result = await controller.SearchAsync(true, true, It.IsAny<RequestContext>());
+            var result = await controller.MultiSearchAsync(It.IsAny<RequestContext>());
 
             // Assert
-            Assert.IsInstanceOf(typeof(OkObjectResult), result, $"result {result.ToString()} is not of expected type OkObjectResult");
+            Assert.IsInstanceOf(typeof(OkObjectResult), result, $"result {result} is not of expected type OkObjectResult");
             var asOkResult = (OkObjectResult)result;
             var resultValue = asOkResult.Value;
             resultValue.AssertJson(QueryControllerQueryErrorString);
+        }
+
+        [Test]
+        public void SingleSearchAsync_WithInvalidIndexName_ReturnsError()
+        {
+            var uat = GetController();
+
+            Assert.ThrowsAsync(typeof(ArgumentNullException), async () => await uat.SingleSearchAsync(null, It.IsAny<RequestContext>()));
+            Assert.ThrowsAsync(typeof(ArgumentException), async () => await uat.SingleSearchAsync(string.Empty, It.IsAny<RequestContext>()));
         }
 
         private QueryController GetController()
         {
             var mockQueryData = new QueryData("query", "kibana_logs");
             var mockTranslator = new Mock<ITranslator>();
-            mockTranslator.Setup(x => x.Translate(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
+            mockTranslator.Setup(x => x.TranslateQuery(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>())).Returns(Task.FromResult((default(TimeSpan), new Mock<IDataReader>().Object)));
             var mockLogger = new Mock<ILogger<QueryController>>();
