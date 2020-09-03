@@ -53,7 +53,7 @@ namespace K2Bridge.Visitors
             // Aggregations
             if (elasticSearchDSL.Query.Bool != null)
             {
-                queryStringBuilder.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
+                queryStringBuilder.Append($"{KustoQLOperators.Let} _data = {KustoQLOperators.Materialize}(database(\"{databaseName}\").{tableName} {translatedQueryExpression});");
 
                 // Aggregations
                 if (elasticSearchDSL.Aggregations?.Count > 0)

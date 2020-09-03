@@ -17,7 +17,7 @@ namespace UnitTests.K2Bridge.Visitors
     public class ElasticSearchDSLVisitorTests
     {
         [TestCase(ExpectedResult =
-            "let _data = database(\"\").myindex | where (dayOfWeek == 1);\n(_data | limit 0 | as hits)")]
+            "let _data = materialize(database(\"\").myindex | where (dayOfWeek == 1));\n(_data | limit 0 | as hits)")]
         public string Visit_WithNumericFieldType_GeneratesQueryWithEqual()
         {
             var queryClause = CreateQueryStringClause("dayOfWeek:1", false);
@@ -41,7 +41,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(ExpectedResult =
-        "let _data = database(\"\").myindex | where (dayOfWeek >2);\n(_data | limit 0 | as hits)")]
+        "let _data = materialize(database(\"\").myindex | where (dayOfWeek >2));\n(_data | limit 0 | as hits)")]
         public string Visit_WithGreaterThanExpression_ExpectedResults()
         {
             var queryClause = CreateQueryStringClause("dayOfWeek:>2", false);
@@ -65,7 +65,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(ExpectedResult =
-            "let _data = database(\"\").myindex | where (dayOfWeek has \"1\");\n(_data | limit 0 | as hits)")]
+            "let _data = materialize(database(\"\").myindex | where (dayOfWeek has \"1\"));\n(_data | limit 0 | as hits)")]
         public string Visit_WithStringFieldType_GeneratesQueryWithHas()
         {
             var queryClause = CreateQueryStringClause("dayOfWeek:1", false);
@@ -102,7 +102,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl, "defaultDBName");
 
-            Assert.AreEqual(dsl.KustoQL, "let _data = database(\"defaultDBName\").someindex " + string.Empty + ";\n(_data | limit 0 | as hits)");
+            Assert.AreEqual(dsl.KustoQL, "let _data = materialize(database(\"defaultDBName\").someindex " + string.Empty + ");\n(_data | limit 0 | as hits)");
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl, "defaultDBName");
 
-            Assert.True(dsl.KustoQL.Contains("let _data = database(\"defaultDBName\").someindex", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("let _data = materialize(database(\"defaultDBName\").someindex", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
