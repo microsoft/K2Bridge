@@ -24,7 +24,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             ExpectedResult =
-            "myField >= fromUnixTimeMilli(1212121121) and myField <= fromUnixTimeMilli(2121212121)",
+            "myField >= unixtime_milliseconds_todatetime(1212121121) and myField <= unixtime_milliseconds_todatetime(2121212121)",
             TestName = "Visit_WithEpochInput_ReturnsValidResponse")]
         public string TestEpochBasicRangeVisitor()
         {

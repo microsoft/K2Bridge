@@ -44,7 +44,6 @@ namespace K2Bridge.Visitors
             elasticSearchDSL.Query.Accept(this);
 
             var queryStringBuilder = new StringBuilder();
-            queryStringBuilder.Append($"{KustoQLOperators.Let} fromUnixTimeMilli = (t:long) {{datetime(1970 - 01 - 01) + t * 1millisec}};").Append('\n');
 
             var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(elasticSearchDSL.IndexName, defaultDatabaseName);
 
