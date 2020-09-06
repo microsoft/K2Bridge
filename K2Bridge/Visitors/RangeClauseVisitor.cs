@@ -26,7 +26,7 @@ namespace K2Bridge.Visitors
                 // default time filter through a rangeClause query uses epoch times with GTE+LTE
                 EnsureClause.IsNotNull(rangeClause.LTEValue, nameof(rangeClause.LTEValue));
 
-                rangeClause.KustoQL = $"{rangeClause.FieldName} >= fromUnixTimeMilli({rangeClause.GTEValue}) {KustoQLOperators.And} {rangeClause.FieldName} <= fromUnixTimeMilli({rangeClause.LTEValue})";
+                rangeClause.KustoQL = $"{rangeClause.FieldName} >= unixtime_milliseconds_todatetime({rangeClause.GTEValue}) {KustoQLOperators.And} {rangeClause.FieldName} <= unixtime_milliseconds_todatetime({rangeClause.LTEValue})";
             }
 
             // format used by Kibana 7
