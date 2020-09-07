@@ -5,6 +5,7 @@
 namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
 
@@ -13,6 +14,8 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        private static readonly Regex OperatorsRegex = new Regex($"^[^ ]+ ({KustoQLOperators.Has}|{KustoQLOperators.Contains}|{KustoQLOperators.HasPrefix})|({KustoQLOperators.Equal})");
+
         /// <inheritdoc/>
         public void Visit(BoolQuery boolQuery)
         {
@@ -49,7 +52,7 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Create a list of clauses of a specific type (must / must not / should / should not).
         /// </summary>
-        private void AddListInternal(IEnumerable<IQuery> list, string delimiterKeyword, bool negativeCondition, BoolQuery boolQuery)
+        private void AddListInternal(IEnumerable<IQuery> list, string delimiterKeyword, bool negateCondition, BoolQuery boolQuery)
         {
             if (list == null)
             {
@@ -62,14 +65,36 @@ namespace K2Bridge.Visitors
             {
                 if (leafQuery == null)
                 {
-                    // probably deserialization problem
+                    // Probably deserialization problem
                     continue;
                 }
 
                 leafQuery.Accept(this);
                 if (leafQuery.KustoQL != null)
                 {
-                    kqlExpressions.Add($"{(negativeCondition ? $"{KustoQLOperators.Not} " : string.Empty)}({leafQuery.KustoQL})");
+                    string expression;
+
+                    if (negateCondition)
+                    {
+                        var matcher = OperatorsRegex.Match(leafQuery.KustoQL);
+
+                        if (matcher.Success)
+                        {
+                            expression = matcher.Groups[1].Success
+                                ? $"({leafQuery.KustoQL.Insert(matcher.Groups[1].Index, "!")})"
+                                : $"({leafQuery.KustoQL.Remove(matcher.Groups[2].Index, 1).Insert(matcher.Groups[2].Index, "!")})";
+                        }
+                        else
+                        {
+                            expression = $"{KustoQLOperators.Not} ({leafQuery.KustoQL})";
+                        }
+                    }
+                    else
+                    {
+                        expression = $"({leafQuery.KustoQL})";
+                    }
+
+                    kqlExpressions.Add(expression);
                 }
             }
 

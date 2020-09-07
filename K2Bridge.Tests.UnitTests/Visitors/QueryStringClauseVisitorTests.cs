@@ -40,7 +40,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(ExpectedResult =
-            "not (* has \"myPharse\") and not (* has \"herPhrase\")")]
+            "(* !has \"myPharse\") and (* !has \"herPhrase\")")]
         public string Visit_WithMultipleNotPhrase_ReturnsHasAndNotResponse()
         {
             var queryClause = CreateQueryStringClause("NOT myPharse AND NOT herPhrase", true);

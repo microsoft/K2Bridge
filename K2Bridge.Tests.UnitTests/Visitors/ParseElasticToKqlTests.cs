@@ -339,7 +339,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName = "QueryAccept_WithCombinedQuery_ReturnsExpectedResult")]
         [TestCase(
             NotQueryStringClause,
-            ExpectedResult = "where (* has \"TEST_RESULT\") and not (TEST_FIELD == \"TEST_RESULT_2\")",
+            ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD != \"TEST_RESULT_2\")",
             TestName = "QueryAccept_WithNotString_ReturnsExpectedResult")]
         public string TestCombinedQueries(string queryString)
         {

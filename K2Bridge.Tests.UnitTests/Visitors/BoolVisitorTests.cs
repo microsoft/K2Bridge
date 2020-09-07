@@ -24,7 +24,7 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "not (* has \"ItemB\")")]
+        [TestCase(ExpectedResult = "(* !has \"ItemB\")")]
         public string BoolQueryVisit_WithMustNotLeaf_ReturnsValidResponse()
         {
             var boolQuery = new BoolQuery
@@ -46,7 +46,7 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(boolQuery);
         }
 
-        [TestCase(ExpectedResult = "not (* has \"ItemD\")")]
+        [TestCase(ExpectedResult = "(* !has \"ItemD\")")]
         public string BoolQueryVisit_WithShouldNotLeaf_ReturnsValidResponse()
         {
             var boolQuery = new BoolQuery
@@ -78,9 +78,9 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(ExpectedResult = "(* has \"ItemA\") and " +
-            "not (* has \"ItemB\") or " +
+            "(* !has \"ItemB\") or " +
             "(* has \"ItemC\") or " +
-            "not (* has \"ItemD\")")]
+            "(* !has \"ItemD\")")]
         public string BoolQueryVisit_WithMultipleTypeLeafs_ReturnsValidResponse()
         {
             var boolQuery = new BoolQuery
