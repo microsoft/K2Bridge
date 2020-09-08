@@ -50,6 +50,8 @@ namespace K2Bridge.Visitors
                 kustoQuery.Append($"{paddedJoinString}");
             }
 
+            // Group2 will be matched if a period character '.' is found in field name, meaning the filter is on a dynamic column.
+            // OrderBy will sort the list such that non-dynamic filters will be followed by dynamic ones, which improves Kusto query performance.
             var orderedList = queryList.OrderBy(exp => DynamicRegex.Match(exp).Groups[2].Success);
 
             kustoQuery.Append($"{string.Join(paddedJoinString, orderedList)}");
