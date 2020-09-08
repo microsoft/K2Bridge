@@ -45,7 +45,8 @@ namespace K2Bridge.KustoDAL
             this.metricsHistograms = metricsHistograms;
         }
 
-        public string DefaultDatabaseName { get => queryClient.DefaultDatabaseName; }
+        /// <inheritdoc/>
+        public string DefaultDatabaseName => queryClient.DefaultDatabaseName;
 
         private ILogger Logger { get; set; }
 

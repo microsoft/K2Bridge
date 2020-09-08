@@ -21,12 +21,12 @@ namespace K2Bridge.Models.Request.Queries
         public enum Subtype
         {
             /// <summary>
-            /// A pharse which is a word (no tokens inside).
+            /// A phrase which is a word (no tokens inside).
             /// </summary>
             Term = 0,
 
             /// <summary>
-            /// A pharse which can be multiple terms (a sentance with spaces).
+            /// A phrase which can be multiple terms (a sentence with spaces).
             /// </summary>
             Phrase,
 
