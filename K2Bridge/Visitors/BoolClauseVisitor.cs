@@ -31,7 +31,10 @@ namespace K2Bridge.Visitors
             AddListInternal(boolQuery.Should, KustoQLOperators.Or, false /* positive */, kustoQuery);
             AddListInternal(boolQuery.ShouldNot, KustoQLOperators.Or, true /* negative */, kustoQuery);
 
-            boolQuery.KustoQL = kustoQuery.ToString();
+            if (kustoQuery.Length > 0 && (boolQuery.KustoQL == null || kustoQuery.Length > boolQuery.KustoQL.Length))
+            {
+                boolQuery.KustoQL = kustoQuery.ToString();
+            }
         }
 
         /// <summary>
