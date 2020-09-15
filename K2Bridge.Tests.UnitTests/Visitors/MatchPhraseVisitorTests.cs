@@ -19,6 +19,14 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(matchPhraseClause);
         }
 
+        [TestCase(ExpectedResult = "MyField == \"\\\"MyPhrase\"")]
+        public string MatchPhraseVisit_WithValidClause_ReturnsEscapedEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", "\"MyPhrase");
+
+            return VisitQuery(matchPhraseClause);
+        }
+
         [TestCase(ExpectedResult = "MyField == \"\"")]
         public string MatchPhraseVisit_WithoutClause_ReturnsEqualsEmpty()
         {
