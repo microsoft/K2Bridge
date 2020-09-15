@@ -20,7 +20,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(documentIds.Id, nameof(documentIds.Id));
             Ensure.ConditionIsMet(documentIds.Id.Length == 1, $"{nameof(documentIds.Id)} must have exactly one document id");
 
-            documentIds.KustoQL = $"{IdColumnName} {KustoQLOperators.Equal} {documentIds.Id[0]}";
+            documentIds.KustoQL = $"{IdColumnName} {KustoQLOperators.Equal} \"{documentIds.Id[0]}\"";
         }
     }
 }
