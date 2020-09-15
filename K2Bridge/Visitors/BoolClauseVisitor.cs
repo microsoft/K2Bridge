@@ -5,6 +5,9 @@
 namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Text.RegularExpressions;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
 
@@ -13,43 +16,51 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        private static readonly Regex OperatorsRegex = new Regex($"^[^ ]+ ({KustoQLOperators.Has}|{KustoQLOperators.Contains}|{KustoQLOperators.HasPrefix})|({KustoQLOperators.Equal})");
+        private static readonly Regex DynamicRegex = new Regex("^((\\.)|[^ !=])+");
+
         /// <inheritdoc/>
         public void Visit(BoolQuery boolQuery)
         {
             Ensure.IsNotNull(boolQuery, nameof(boolQuery));
+            var kustoQuery = new StringBuilder(boolQuery.KustoQL);
 
-            AddListInternal(boolQuery.Filter, KustoQLOperators.And, false /* positive */, boolQuery);
-            AddListInternal(boolQuery.Must, KustoQLOperators.And, false /* positive */, boolQuery);
-            AddListInternal(boolQuery.MustNot, KustoQLOperators.And, true /* negative */, boolQuery);
-            AddListInternal(boolQuery.Should, KustoQLOperators.Or, false /* positive */, boolQuery);
-            AddListInternal(boolQuery.ShouldNot, KustoQLOperators.Or, true /* negative */, boolQuery);
+            AddListInternal(boolQuery.Filter, KustoQLOperators.And, false /* positive */, kustoQuery);
+            AddListInternal(boolQuery.Must, KustoQLOperators.And, false /* positive */, kustoQuery);
+            AddListInternal(boolQuery.MustNot, KustoQLOperators.And, true /* negative */, kustoQuery);
+            AddListInternal(boolQuery.Should, KustoQLOperators.Or, false /* positive */, kustoQuery);
+            AddListInternal(boolQuery.ShouldNot, KustoQLOperators.Or, true /* negative */, kustoQuery);
+
+            if (kustoQuery.Length > 0 && (boolQuery.KustoQL == null || kustoQuery.Length > boolQuery.KustoQL.Length))
+            {
+                boolQuery.KustoQL = kustoQuery.ToString();
+            }
         }
 
         /// <summary>
-        /// Joins the list of KustoQL commands and modifies the given BoolQuery.
+        /// Joins the list of KustoQL commands and modifies the given StringBuilder.
         /// </summary>
-        private static void QueryListToString(List<string> queryList, string joinString, BoolQuery boolQuery)
+        private static void QueryListToString(ICollection<string> queryList, string joinString, StringBuilder kustoQuery)
         {
-            joinString = $" {joinString} ";
+            var paddedJoinString = $" {joinString} ";
 
-            if (queryList?.Count > 0)
+            // In case we already have something in KustoQL, we need to first add a separator
+            if (kustoQuery.Length > 0)
             {
-                // In case we already have something in KustoQL, we need to first
-                // add a separator
-                if (!string.IsNullOrEmpty(boolQuery.KustoQL))
-                {
-                    boolQuery.KustoQL += $"{joinString}";
-                }
-
-                // Now, join the given list separated with the given word
-                boolQuery.KustoQL += $"{string.Join(joinString, queryList)}";
+                kustoQuery.Append($"{paddedJoinString}");
             }
+
+            // Group2 will be matched if a period character '.' is found in field name, meaning the filter is on a dynamic column.
+            // OrderBy will sort the list such that non-dynamic filters will be followed by dynamic ones, which improves Kusto query performance.
+            var orderedList = queryList.OrderBy(exp => DynamicRegex.Match(exp).Groups[2].Success);
+
+            kustoQuery.Append($"{string.Join(paddedJoinString, orderedList)}");
         }
 
         /// <summary>
         /// Create a list of clauses of a specific type (must / must not / should / should not).
         /// </summary>
-        private void AddListInternal(IEnumerable<IQuery> list, string delimiterKeyword, bool negativeCondition, BoolQuery boolQuery)
+        private void AddListInternal(IEnumerable<IQuery> list, string delimiterKeyword, bool negateCondition, StringBuilder kustoQuery)
         {
             if (list == null)
             {
@@ -62,18 +73,43 @@ namespace K2Bridge.Visitors
             {
                 if (leafQuery == null)
                 {
-                    // probably deserialization problem
+                    // Probably deserialization problem
                     continue;
                 }
 
                 leafQuery.Accept(this);
                 if (leafQuery.KustoQL != null)
                 {
-                    kqlExpressions.Add($"{(negativeCondition ? $"{KustoQLOperators.Not} " : string.Empty)}({leafQuery.KustoQL})");
+                    string expression;
+
+                    if (negateCondition)
+                    {
+                        var matcher = OperatorsRegex.Match(leafQuery.KustoQL);
+
+                        if (matcher.Success)
+                        {
+                            expression = matcher.Groups[1].Success
+                                ? $"({leafQuery.KustoQL.Insert(matcher.Groups[1].Index, "!")})"
+                                : $"({leafQuery.KustoQL.Remove(matcher.Groups[2].Index, 1).Insert(matcher.Groups[2].Index, "!")})";
+                        }
+                        else
+                        {
+                            expression = $"{KustoQLOperators.Not} ({leafQuery.KustoQL})";
+                        }
+                    }
+                    else
+                    {
+                        expression = $"({leafQuery.KustoQL})";
+                    }
+
+                    kqlExpressions.Add(expression);
                 }
             }
 
-            QueryListToString(kqlExpressions, delimiterKeyword, boolQuery);
+            if (kqlExpressions.Count > 0)
+            {
+                QueryListToString(kqlExpressions, delimiterKeyword, kustoQuery);
+            }
         }
     }
 }
