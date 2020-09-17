@@ -28,7 +28,7 @@ namespace K2Bridge.Visitors
 
             if (matchPhraseClause.Phrase != null)
             {
-                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase.EscapeSlashes().EscapeDoublequotes()}\"";
+                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase.EscapeSlashes().EscapeDoubleQuotes()}\"";
                 return;
             }
 

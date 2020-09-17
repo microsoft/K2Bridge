@@ -13,14 +13,14 @@ namespace K2Bridge.Utils
     {
         public static string EscapeSlashes(this string str)
         {
-            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null");
+            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null or empty");
 
             return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static string EscapeDoublequotes(this string str)
+        public static string EscapeDoubleQuotes(this string str)
         {
-            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null");
+            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null or empty");
 
             return str.Replace(@"""", @"\""", StringComparison.OrdinalIgnoreCase);
         }
