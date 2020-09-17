@@ -22,7 +22,7 @@ namespace K2Bridge.Models.Request.Queries
         /// Gets or sets the values for the required document (meaning: value of _id).
         /// </summary>
         [JsonProperty("values")]
-        public long[] Id { get; set; }
+        public string[] Id { get; set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)
