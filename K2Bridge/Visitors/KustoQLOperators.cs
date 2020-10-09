@@ -46,6 +46,8 @@ namespace K2Bridge.Visitors
         public const string HasPrefix = "hasprefix";
         public const string MatchRegex = "matches regex";
         public const string GetSchema = "getschema";
+        public const string Evaluate = "evaluate";
+        public const string Sample = "sample";
         public const string Equal = "==";
         public const string CommandSeparator = "\n| ";
 #pragma warning restore SA1600 // Elements should be documented
