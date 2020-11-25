@@ -1,0 +1,14 @@
+{
+    "tool": "Credential Scanner",
+    "suppressions":
+	[
+        {
+            "file":
+		[
+			"charts\\k2bridge\\templates\\secrets.yaml"	
+					
+		],
+	"_justification": "False positives - fake secrets used in documentation."
+		}
+	]
+}
