@@ -323,7 +323,8 @@ stages:
           --set resources.requests.cpu="100m" \
           --set resources.requests.memory="1024M" \
           --set limits.cpu="1000m" \
-          --set limits.memory="2048M"
+          --set limits.memory="2048M" \
+          --version 7.5.2
 
       displayName: Deploy Elasticsearch
 
