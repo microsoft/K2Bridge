@@ -228,7 +228,7 @@ stages:
   displayName: Integration Tests
   dependsOn:
   - build
- # - terraform
+  - terraform
   # Deploy a new Kusto db
   # Either if the db name is not set to 'demo' which means it is the Dev CI process
   # Or it is the Demo CI process AND the RUN_CREATE_DEMO_KUSTO was set
