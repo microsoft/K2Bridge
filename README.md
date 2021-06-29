@@ -54,7 +54,7 @@ For example:
 .create function ListContainers() {
     cluster('https://ade.loganalytics.io/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.OperationalInsights/workspaces/k8s-workspace-0000')
     .database('k8s-workspace-0000')
-    .ContainerInventory | limit 100
+    .ContainerInventory
 }
 ```
 
