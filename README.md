@@ -51,7 +51,7 @@ Through functions, you can perform preform calculations, joins as well as [cross
 For example:
 
 ```kql
-.create function ListContainers() {
+.create function MyAzureMonitorConnectionFunction() {
     cluster('https://ade.loganalytics.io/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.OperationalInsights/workspaces/<workspace-name>')
     .database('<workspace-name>')
     .<tablename>
