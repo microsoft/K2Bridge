@@ -9,6 +9,7 @@ namespace K2Bridge.Tests.End2End
     using System.Threading.Tasks;
     using FluentAssertions.Json;
     using Kusto.Data.Common;
+    using Kusto.Data.Ingestion;
     using Kusto.Data.Net.Client;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
@@ -170,14 +171,20 @@ namespace K2Bridge.Tests.End2End
         {
             // Build list of columns and mappings to provision Kusto
             var kustoColumns = new List<string>();
-            var columnMappings = new List<JsonColumnMapping>();
+            var columnMappings = new List<ColumnMapping>();
 
             foreach (var entry in KustoColumnType)
             {
-                var name = entry.Key;
-                kustoColumns.Add($"{name}:{entry.Value}");
-                columnMappings.Add(new JsonColumnMapping()
-                { ColumnName = name, JsonPath = $"$.{name}" });
+              var name = entry.Key;
+              kustoColumns.Add($"{name}:{entry.Value}");
+              columnMappings.Add(new ColumnMapping()
+              {
+                ColumnName = name,
+                Properties = new Dictionary<string, string>
+                {
+                  ["Path"] = $"$.{name}",
+                },
+              });
             }
 
             // Send drop table ifexists command to Kusto
@@ -190,8 +197,7 @@ namespace K2Bridge.Tests.End2End
             KustoExecute(command);
 
             // Send create table mapping command to Kusto
-            command = CslCommandGenerator.GenerateTableJsonMappingCreateCommand(
-                                                TypesIndex, TypesMapping, columnMappings, true);
+            command = CslCommandGenerator.GenerateTableMappingCreateCommand(IngestionMappingKind.Json, TypesIndex, TypesMapping, columnMappings, true);
             KustoExecute(command);
 
             command = ".append types_index <|" +

@@ -6,11 +6,11 @@ namespace K2Bridge.Tests.End2End
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.IO;
     using System.Threading.Tasks;
     using Kusto.Data;
     using Kusto.Data.Common;
+    using Kusto.Data.Ingestion;
     using Kusto.Data.Net.Client;
     using Kusto.Ingest;
     using Newtonsoft.Json.Linq;
@@ -47,7 +47,7 @@ namespace K2Bridge.Tests.End2End
 
             // Build list of columns and mappings to provision Kusto
             var kustoColumns = new List<string>();
-            var columnMappings = new List<JsonColumnMapping>();
+            var columnMappings = new List<ColumnMapping>();
             foreach (var prop in properties)
             {
                 string name = prop.Key;
@@ -59,8 +59,14 @@ namespace K2Bridge.Tests.End2End
                 }
 
                 kustoColumns.Add($"{name}:{type}");
-                columnMappings.Add(new JsonColumnMapping()
-                { ColumnName = name, JsonPath = $"$.{name}" });
+                columnMappings.Add(new ColumnMapping()
+                {
+                    ColumnName = name,
+                    Properties = new Dictionary<string, string>
+                    {
+                        ["Path"] = $"$.{name}",
+                    },
+                });
             }
 
             using (var kustoAdminClient = KustoClientFactory.CreateCslAdminProvider(kusto))
@@ -75,8 +81,7 @@ namespace K2Bridge.Tests.End2End
                 kustoAdminClient.ExecuteControlCommand(command);
 
                 // Send create table mapping command to Kusto
-                command = CslCommandGenerator.GenerateTableJsonMappingCreateCommand(
-                                                    table, mapping, columnMappings);
+                command = CslCommandGenerator.GenerateTableMappingCreateCommand(IngestionMappingKind.Json, table, mapping, columnMappings);
                 kustoAdminClient.ExecuteControlCommand(command);
             }
 
@@ -102,7 +107,11 @@ namespace K2Bridge.Tests.End2End
             using IKustoIngestClient client = KustoIngestFactory.CreateDirectIngestClient(kusto);
             var ingestProps = new KustoIngestionProperties(db, table)
             {
-                JSONMappingReference = mappingName,
+                IngestionMapping = new IngestionMapping
+                {
+                    IngestionMappingKind = IngestionMappingKind.Json,
+                    IngestionMappingReference = mappingName,
+                },
                 Format = DataSourceFormat.json,
             };
             var ssOptions = new StreamSourceOptions
