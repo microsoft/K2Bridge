@@ -51,12 +51,15 @@ Through functions, you can perform preform calculations, joins as well as [cross
 For example:
 
 ```kql
-.create function ListContainers() {
-    cluster('https://ade.loganalytics.io/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-rg/providers/Microsoft.OperationalInsights/workspaces/k8s-workspace-0000')
-    .database('k8s-workspace-0000')
-    .ContainerInventory
+.create function MyAzureMonitorConnectionFunction() {
+    cluster('https://ade.loganalytics.io/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.OperationalInsights/workspaces/<workspace-name>')
+    .database('<workspace-name>')
+    .<tablename>
 }
 ```
+
+Make sure you grant access to the service principal (that you created as part of the [installation](./docs/installation.md) requirements) from your Log Analytics workspaces.
+To do so, go to your Log Analytics resource on the Azure portal, click on Access Control (IAM) and then Add. Click "Add role assignment", set the Role to Reader, and select the service principal created earlier.
 
 Be mindful of the performance impact of such distributed queries, which can easily result into Kibana timeouts.
 
