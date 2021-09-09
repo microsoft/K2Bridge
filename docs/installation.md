@@ -40,6 +40,13 @@ You need to be able to connect to your cluster from your machine.
 
 1. Deploy
 
+    * Recommended - create a kubernetis namespace.  
+         This namespace is later passed to `helm install` via the `-n` switch.
+
+      ```sh
+      kubectl create namespace k2bridge
+      ```
+
     * Set a few variables with the correct values for your environment:
 
         ```sh
