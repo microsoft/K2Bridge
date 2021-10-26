@@ -1,10 +1,10 @@
 # Multi-stage Docker build, test and package
 # Based on https://github.com/dotnet/dotnet-docker/blob/master/samples/dotnetapp/dotnet-docker-unit-testing.md
 
-ARG DOTNET_VERSION=3.1
+ARG DOTNET_VERSION=5.0
 
 # STAGE: Base build and test
-FROM mcr.microsoft.com/dotnet/core/sdk:$DOTNET_VERSION AS build
+FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_VERSION AS build
 WORKDIR /app
 ARG VersionPrefix
 
@@ -32,7 +32,7 @@ RUN dotnet build K2Bridge.Tests.End2End /p:TreatWarningsAsErrors=true -warnaserr
 
 
 # STAGE: Build image for executing End2End tests in Kubernetes
-FROM mcr.microsoft.com/dotnet/core/sdk:$DOTNET_VERSION AS end2endtest
+FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_VERSION AS end2endtest
 
 COPY --from=build /app/K2Bridge ./K2Bridge
 COPY --from=build /app/K2Bridge.Tests.End2End ./K2Bridge.Tests.End2End
@@ -45,7 +45,7 @@ CMD ["bash", "-x", "-c", "dotnet test K2Bridge.Tests.End2End '--logger:trx;LogFi
 
 
 # STAGE: Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:$DOTNET_VERSION AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:$DOTNET_VERSION AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
 ENTRYPOINT ["dotnet", "K2Bridge.dll"]
