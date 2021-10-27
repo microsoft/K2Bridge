@@ -10,7 +10,7 @@ ARG BUILD_TERRAFORM_VERSION="1.0.9"
 # Update & Install common tools
 RUN apt-get update && \ 
     apt-get upgrade -y && \
-    apt-get install -y sudo git curl wget unzip apt-transport-https default-jre
+    apt-get install -y sudo git curl wget unzip jq apt-transport-https default-jre
 
 # Add a non-root user
 RUN groupadd --gid $USER_GID $USERNAME && \
@@ -39,7 +39,7 @@ RUN dpkg -i packages-microsoft-prod.deb
 RUN rm packages-microsoft-prod.deb
 
 RUN apt-get update && \
-    apt-get install -y dotnet-sdk-3.1
+    apt-get install -y dotnet-sdk-3.1 dotnet-sdk-5.0
 
 # Set non-root user as default container user
 USER $USERNAME
