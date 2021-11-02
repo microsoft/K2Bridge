@@ -1,22 +1,10 @@
-FROM ubuntu:20.10
-
-ARG USERNAME=dev
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
+FROM mcr.microsoft.com/vscode/devcontainers/base:0-ubuntu20.04
 
 ARG BUILD_ELASTIC_STACK_VERSION="6.8.20"
 ARG BUILD_TERRAFORM_VERSION="1.0.9"
 
-# Update & Install common tools
-RUN apt-get update && \ 
-    apt-get upgrade -y && \
-    apt-get install -y sudo git curl wget unzip jq apt-transport-https default-jre
-
-# Add a non-root user
-RUN groupadd --gid $USER_GID $USERNAME && \
-    useradd --uid $USER_UID --gid $USER_GID -m $USERNAME && \
-    echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME && \
-    chmod 0440 /etc/sudoers.d/$USERNAME
+# Update & Install Open JDK
+RUN apt-get update && apt-get upgrade -y && apt-get install -y default-jre
 
 # Install Terraform
 ENV TERRAFORM_VERSION=${BUILD_TERRAFORM_VERSION}
@@ -41,9 +29,9 @@ RUN rm packages-microsoft-prod.deb
 RUN apt-get update && \
     apt-get install -y dotnet-sdk-3.1 dotnet-sdk-5.0
 
-# Set non-root user as default container user
-USER $USERNAME
-ENV HOME=/home/$USERNAME
+# Set current working directory to /home/vscode
+USER vscode
+ENV HOME=/home/vscode
 WORKDIR $HOME
 
 # Install ElasticSearch

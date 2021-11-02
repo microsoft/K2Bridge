@@ -7,6 +7,7 @@
         "hashicorp.terraform",
         "ms-vscode.azurecli"
     ],
+    "forwardPorts": [5601, 9200],
     "settings": {
         "editor.formatOnSave": true,
         "terminal.integrated.defaultProfile.linux": "bash",
