@@ -25,5 +25,12 @@ namespace K2Bridge.KustoDAL
         /// <param name="indexName">Index name.</param>
         /// <returns>A list of Indexes.</returns>
         Task<IndexListResponseElement> GetIndexListAsync(string indexName);
+
+        /// <summary>
+        /// Resolves index name.
+        /// </summary>
+        /// <param name="indexName">Index name.</param>
+        /// <returns>A list of Indexes.</returns>
+        Task<ResolveIndexResponse> ResolveIndexAsync(string indexName);
     }
 }

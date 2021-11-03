@@ -115,6 +115,41 @@ namespace K2Bridge.KustoDAL
             return response;
         }
 
+        /// <summary>
+        /// Executes a query to Kusto for Index List.
+        /// Searches for all tables and all functions that match the index name pattern.
+        /// </summary>
+        /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
+        /// <returns>A list of Indexes matching the given name pattern.</returns>
+        public async Task<ResolveIndexResponse> ResolveIndexAsync(string indexName)
+        {
+            var response = new ResolveIndexResponse();
+            try
+            {
+                Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
+                var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.DefaultDatabaseName);
+                string readTablesCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
+
+                using IDataReader kustoTables = await Kusto.ExecuteControlCommandAsync(readTablesCommand, RequestContext);
+                if (kustoTables != null)
+                {
+                    while (kustoTables.Read())
+                    {
+                        Logger.LogDebug(string.Format("{0}", kustoTables[0]));
+                        var index = new ResolveIndexResponseIndex() { Name = (string)kustoTables[0] };
+                        response.AddIndex(index);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while executing ResolveIndexAsync.");
+                throw;
+            }
+
+            return response;
+        }
+
         private void MapFieldCaps(IDataReader kustoResults, FieldCapabilityResponse response)
         {
             while (kustoResults.Read())

@@ -13,6 +13,8 @@ namespace K2Bridge.Controllers
     /// Handles Index List requests.
     /// The original request produced by Kibana is in the format of:
     /// POST /*/_search?ignore_unavailable=true HTTP/1.1.
+    /// In addition, for Kibana 7:
+    /// GET /_resolve/index/* HTTP/1.1.
     /// </summary>
     public class IndexListController : ControllerBase
     {
@@ -40,6 +42,19 @@ namespace K2Bridge.Controllers
         public async Task<IActionResult> Process(string indexName)
         {
             var response = await KustoDataAccess.GetIndexListAsync(indexName);
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Resolve the index.
+        /// </summary>
+        /// <param name="indexName">The index pattern to process.</param>
+        /// <returns>The table list in the Kusto database.</returns>
+        [Produces("application/json")]
+        public async Task<IActionResult> Resolve(string indexName)
+        {
+            var response = await KustoDataAccess.ResolveIndexAsync(indexName);
 
             return Ok(response);
         }
