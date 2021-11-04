@@ -55,6 +55,8 @@ namespace K2Bridge.KustoDAL
                 using IDataReader kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, RequestContext);
                 MapFieldCaps(kustoResults, response);
 
+                response.AddIndex(tableName);
+
                 if (response.Fields.Count > 0)
                 {
                     return response;

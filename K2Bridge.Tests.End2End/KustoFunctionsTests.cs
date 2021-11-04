@@ -43,6 +43,9 @@ namespace K2Bridge.Tests.End2End
         {
             var fieldCaps = await K2Client().FieldCaps(functionFullName);
             var expected = JObject.Parse(@"{
+              ""indices"": [
+                ""fn_countries_and_airports""
+              ],
               ""fields"": {
                 ""OriginCountry"": {
                   ""keyword"": {

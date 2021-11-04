@@ -91,6 +91,9 @@ namespace K2Bridge.Tests.End2End
         {
             var fieldCaps = await K2Client().FieldCaps(typesIndexFullName);
             var expected = JObject.Parse(@"{
+              ""indices"": [
+                ""types_index""
+              ],
               ""fields"": {
                 ""Boolean"": {
                   ""boolean"": {
