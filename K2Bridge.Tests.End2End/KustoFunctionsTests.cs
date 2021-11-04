@@ -75,7 +75,7 @@ namespace K2Bridge.Tests.End2End
         public async Task MSearch_WithFunction_ReturnsExpectedResponse()
         {
             var result = await K2Client().MSearch(functionFullName, $"{FLIGHTSDIR}/MSearch_TwoResults_Equivalent.json");
-            var totalHits = result.SelectToken("responses[0].hits.total");
+            var totalHits = result.SelectToken("responses[0].hits.total.value");
             Assert.IsNotNull(totalHits);
             Assert.IsTrue(totalHits.Value<int>() == 2);
             var indexName = result.SelectToken("responses[0].hits.hits[0]._index");
