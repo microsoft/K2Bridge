@@ -127,6 +127,8 @@ namespace K2Bridge.Tests.End2End
             var result = await JsonQuery(request);
             MaskSearchCommon(result, "responses[*].");
 
+            MaskValue(result, "took");
+
             if (!validateHighlight)
             {
                 DeleteValue(result, "responses[*].hits.hits[*].highlight");

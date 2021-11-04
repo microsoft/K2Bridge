@@ -23,6 +23,12 @@ namespace K2Bridge.Models.Response
         public IEnumerable<ResponseElement> Responses => responses;
 
         /// <summary>
+        /// Gets or sets query execution time.
+        /// </summary>
+        [JsonProperty("took")]
+        public int TookMilliseconds { get; set; }
+
+        /// <summary>
         /// Add aggregation to first response.
         /// </summary>
         /// <param name="bucket">The added bucket.</param>
@@ -75,6 +81,7 @@ namespace K2Bridge.Models.Response
         public void AddTook(TimeSpan timeTaken)
         {
             responses[0].TookMilliseconds += timeTaken.Milliseconds;
+            this.TookMilliseconds += timeTaken.Milliseconds;
         }
 
         /// <summary>
