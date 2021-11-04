@@ -17,7 +17,6 @@
       "date_histogram": {
         "field": "timestamp",
         "interval": "1m",
-        "time_zone": "Asia/Tokyo",
         "min_doc_count": 1
       }
     }
