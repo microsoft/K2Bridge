@@ -5,12 +5,14 @@ trigger:
     include:
     - master
     - development
+    - dev-vnext
 
 pr:
   branches:
     include:
     - master
     - development
+    - dev-vnext
   paths:
     exclude:
     - '*.md'
