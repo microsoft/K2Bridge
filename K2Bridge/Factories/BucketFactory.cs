@@ -23,16 +23,32 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
+            // fix column names
             var timestamp = row[(int)DateHistogramBucketColumnNames.Timestamp];
-            var count = row[(int)DateHistogramBucketColumnNames.Count];
+            var count = row["count_"];
             var dateBucket = (DateTime)timestamp;
 
-            return new DateHistogramBucket
+            var dhb = new DateHistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
+                Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<long>>(),
             };
+
+            var clmns = row.Table.Columns;
+            foreach (DataColumn clmn in clmns)
+            {
+                // todo: fix
+                if (clmn.ColumnName == "count_" || clmns.IndexOf(clmn) == (int)DateHistogramBucketColumnNames.Timestamp)
+                {
+                    continue;
+                }
+
+                dhb.Aggs[clmn.ColumnName.Substring(1)] = new System.Collections.Generic.List<long>() { Convert.ToInt64(row[clmn.ColumnName]) };
+            }
+
+            return dhb;
         }
     }
 }

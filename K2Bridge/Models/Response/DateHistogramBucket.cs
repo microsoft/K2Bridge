@@ -4,11 +4,14 @@
 
 namespace K2Bridge.Models.Response
 {
+    using System.Collections.Generic;
+    using K2Bridge.JsonConverters;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Date histogram bucket response.
     /// </summary>
+    [JsonConverter(typeof(SubAggsConverter))]
     public class DateHistogramBucket : IBucket
     {
         /// <summary>
@@ -30,5 +33,11 @@ namespace K2Bridge.Models.Response
         /// </summary>
         [JsonProperty("key_as_string")]
         public string KeyAsString { get; set; }
+
+        /// <summary>
+        /// Gets or Sets fdsfd.
+        /// </summary>
+        [JsonIgnore]
+        public Dictionary<string, List<long>> Aggs { get; set; }
     }
 }

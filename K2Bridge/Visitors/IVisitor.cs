@@ -80,6 +80,12 @@ namespace K2Bridge.Visitors
         void Visit(CardinalityAggregation cardinalityAggregation);
 
         /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="maxAggregation">The Cardinality Aggregations to visit.</param>
+        void Visit(MaxAggregation maxAggregation);
+
+        /// <summary>
         /// Accepts a query string clause, parses the phrase to a lucene query, and builds a Kusto query based on the lucene query.
         /// </summary>
         /// <param name="queryStringClause">The query string clause.</param>

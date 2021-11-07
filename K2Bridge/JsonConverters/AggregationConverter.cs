@@ -24,10 +24,14 @@ namespace K2Bridge.JsonConverters
         {
             var jo = JObject.Load(reader);
 
+            var path = reader.Path.Split(".");
+            var parent = path[path.Length - 1];
+
             var obj = new Aggregation
             {
                 PrimaryAggregation = jo.ToObject<LeafAggregation>(serializer),
             };
+            obj.Parent = parent;
 
             var aggsObject = jo["aggs"];
             if (aggsObject != null)
@@ -40,6 +44,11 @@ namespace K2Bridge.JsonConverters
                 obj.SubAggregations = new Dictionary<string, Aggregation>();
             }
 
+            // todo: fix if statement
+            if (obj.PrimaryAggregation != null)
+            {
+                obj.PrimaryAggregation.Parent = obj.Parent;
+            }
             return obj;
         }
     }

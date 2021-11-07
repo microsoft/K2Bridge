@@ -15,6 +15,16 @@ namespace K2Bridge.Models.Request.Aggregations
     [JsonConverter(typeof(LeafAggregationConverter))]
     internal abstract class LeafAggregation : KustoQLBase, IVisitable
     {
+        /// <summary>
+        /// Gets or Sets Parent aaa.
+        /// </summary>
+        public string Parent { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the rename part of the query, e.g. _3=avg_CounterValue.
+        /// </summary>
+        public string FieldRenameQuery { get; set; }
+
         /// <inheritdoc/>
         public abstract void Accept(IVisitor visitor);
     }

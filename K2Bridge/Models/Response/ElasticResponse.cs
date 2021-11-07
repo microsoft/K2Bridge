@@ -23,10 +23,18 @@ namespace K2Bridge.Models.Response
         public IEnumerable<ResponseElement> Responses => responses;
 
         /// <summary>
+        /// Add parent to the main agg
+        /// </summary>
+        public void AddParentToAgg(string parent)
+        {
+            responses[0].Aggregations.Parent = parent;
+        }
+
+        /// <summary>
         /// Add aggregation to first response.
         /// </summary>
         /// <param name="bucket">The added bucket.</param>
-        public void AddAggregation(IBucket bucket)
+        public void AddBucketToAggregation(IBucket bucket)
         {
             // TODO: support more than one response
             responses[0].Aggregations.Collection.AddBucket(bucket);

@@ -167,11 +167,13 @@ namespace K2Bridge.KustoDAL
             {
                 Logger.LogTrace("Parsing aggregations");
 
+                response.AddParentToAgg(parsedKustoResponse[AggregationTableName].TableData.Columns[0].ColumnName.Substring(1));
+
                 // read aggregations
                 foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                 {
                     var bucket = BucketFactory.CreateFromDataRow(row);
-                    response.AddAggregation(bucket);
+                    response.AddBucketToAggregation(bucket);
                 }
             }
             else

@@ -66,6 +66,19 @@ namespace K2Bridge.Visitors
                         queryStringBuilder.Append($"{aggregation.KustoQL} ");
                     }
 
+                    StringBuilder renameStr = new StringBuilder();
+                    foreach (var (_, aggregation) in elasticSearchDSL.Aggregations)
+                    {
+                        renameStr.Append(aggregation.FieldRenameQuery);
+                    }
+
+                    var s = renameStr.ToString();
+                    if (!string.IsNullOrEmpty(s))
+                    {
+                        s = s.Trim()[1..] + " ";
+                    }
+
+                    queryStringBuilder.Append("| project-rename " + s);
                     queryStringBuilder.Append("| as aggs);");
                 }
 

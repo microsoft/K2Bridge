@@ -25,6 +25,9 @@ namespace K2Bridge.JsonConverters
             var jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
+            var path = reader.Path.Split(".");
+            var parent = path[path.Length - 1];
+
             LeafAggregation leafAggregation = null;
             switch (first.Name)
             {
@@ -39,6 +42,15 @@ namespace K2Bridge.JsonConverters
                 case "cardinality":
                     leafAggregation = first.Value.ToObject<CardinalityAggregation>(serializer);
                     break;
+
+                case "max":
+                    leafAggregation = first.Value.ToObject<MaxAggregation>(serializer);
+                    break;
+            }
+
+            if (leafAggregation != null)
+            {
+                leafAggregation.Parent = parent;
             }
 
             return leafAggregation;
