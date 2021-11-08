@@ -48,7 +48,7 @@ echo $kusto_scope
 # Create Data Explorer Database
 az kusto database create --cluster-name $ADX_CLUSTER_NAME --database-name $ADX_DB_NAME --resource-group $RESOURCE_GROUP_NAME --read-write-database soft-delete-period=P365D hot-cache-period=P31D location=$RESOURCE_GROUP_LOCATION
 
-# Create Service Pincipal
+# Create Service Principal
 secrets=$(az ad sp create-for-rbac --name $SERVICE_PRINCIPAL_NAME --role Contributor --scopes $RESOURCE_GROUP_SCOPE)
 SERVICE_PRINCIPAL_FQN="aadapp=$(echo $secrets | jq -r '.appId');$(echo $secrets | jq -r '.tenant')"
 SERVICE_PRINCIPAL_DISPLAYNAME=$(echo $secrets | jq '.displayName')
