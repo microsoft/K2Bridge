@@ -5,6 +5,7 @@
 namespace K2Bridge.KustoDAL
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Threading.Tasks;
     using K2Bridge.Factories;
@@ -81,49 +82,9 @@ namespace K2Bridge.KustoDAL
         /// </summary>
         /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
         /// <returns>A list of Indexes matching the given name pattern.</returns>
-        public async Task<IndexListResponseElement> GetIndexListAsync(string indexName)
+        public async Task<IEnumerable<IDataRecord>> GetTablesAndFunctions(string indexName)
         {
-            var response = new IndexListResponseElement();
-            try
-            {
-                Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
-                var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.DefaultDatabaseName);
-                string readTablesCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
-
-                using IDataReader kustoTables = await Kusto.ExecuteControlCommandAsync(readTablesCommand, RequestContext);
-                if (kustoTables != null)
-                {
-                    MapIndexList(kustoTables, response);
-                }
-
-                Logger.LogDebug("Listing functions matching '{@indexName}'", indexName);
-                var defaultDb = Kusto.DefaultDatabaseName;
-                string readFunctionsCommand = $".show {KustoQLOperators.Functions} | {KustoQLOperators.Where} Parameters == '()' | {KustoQLOperators.Distinct} Name | {KustoQLOperators.Search} Name: '{tableName}' | {KustoQLOperators.Project} strcat(\"{defaultDb}\", \"{KustoDatabaseTableNames.Separator}\", Name)";
-
-                using IDataReader kustoFunctions = await Kusto.ExecuteControlCommandAsync(readFunctionsCommand, RequestContext);
-                if (kustoFunctions != null)
-                {
-                    MapIndexList(kustoFunctions, response);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error while executing GetIndexList.");
-                throw;
-            }
-
-            return response;
-        }
-
-        /// <summary>
-        /// Executes a query to Kusto for Index List.
-        /// Searches for all tables and all functions that match the index name pattern.
-        /// </summary>
-        /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
-        /// <returns>A list of Indexes matching the given name pattern.</returns>
-        public async Task<ResolveIndexResponse> ResolveIndexAsync(string indexName)
-        {
-            var response = new ResolveIndexResponse();
+            var tablesAndFunctions = new List<IDataRecord>();
             try
             {
                 Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
@@ -135,11 +96,68 @@ namespace K2Bridge.KustoDAL
                 {
                     while (kustoTables.Read())
                     {
-                        Logger.LogDebug(string.Format("{0}", kustoTables[0]));
-                        var index = new ResolveIndexResponseIndex() { Name = (string)kustoTables[0] };
-                        response.AddIndex(index);
+                        tablesAndFunctions.Add(kustoTables);
                     }
                 }
+
+                Logger.LogDebug("Listing functions matching '{@indexName}'", indexName);
+                var defaultDb = Kusto.DefaultDatabaseName;
+                string readFunctionsCommand = $".show {KustoQLOperators.Functions} | {KustoQLOperators.Where} Parameters == '()' | {KustoQLOperators.Distinct} Name | {KustoQLOperators.Search} Name: '{tableName}' | {KustoQLOperators.Project} strcat(\"{defaultDb}\", \"{KustoDatabaseTableNames.Separator}\", Name)";
+
+                using IDataReader kustoFunctions = await Kusto.ExecuteControlCommandAsync(readFunctionsCommand, RequestContext);
+                if (kustoFunctions != null)
+                {
+                    while (kustoFunctions.Read())
+                    {
+                        tablesAndFunctions.Add(kustoFunctions);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while executing GetTablesAndFunctions.");
+                throw;
+            }
+
+            return tablesAndFunctions;
+        }
+
+        /// <summary>
+        /// Executes a query to Kusto for Index List.
+        /// Searches for all tables and all functions that match the index name pattern.
+        /// </summary>
+        /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
+        /// <returns>A list of Indexes matching the given name pattern.</returns>
+        public async Task<IndexListResponseElement> GetIndexListAsync(string indexName)
+        {
+            var response = new IndexListResponseElement();
+            try
+            {
+                var tablesAndFunctions = await GetTablesAndFunctions(indexName);
+                MapIndexList(tablesAndFunctions, response);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while executing GetIndexList.");
+                throw;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Executes a query to Kusto for Resolve Index.
+        /// Searches for all tables and all functions that match the index name pattern.
+        /// </summary>
+        /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
+        /// <returns>A list of Indexes matching the given name pattern.</returns>
+        public async Task<ResolveIndexResponse> ResolveIndexAsync(string indexName)
+        {
+            var response = new ResolveIndexResponse();
+            try
+            {
+                var tablesAndFunctions = await GetTablesAndFunctions(indexName);
+                MapResolveIndexList(tablesAndFunctions, response);
             }
             catch (Exception ex)
             {
@@ -166,14 +184,25 @@ namespace K2Bridge.KustoDAL
             }
         }
 
-        private void MapIndexList(IDataReader kustoResults, IndexListResponseElement response)
+        private void MapIndexList(IEnumerable<IDataRecord> kustoResults, IndexListResponseElement response)
         {
-            while (kustoResults.Read())
+            foreach (var result in kustoResults)
             {
-                var termBucket = TermBucketFactory.CreateFromDataRecord(kustoResults);
+                var termBucket = TermBucketFactory.CreateFromDataRecord(result);
                 response.Aggregations.IndexCollection.AddBucket(termBucket);
 
                 Logger.LogDebug("Found table/function: {@termBucket}", termBucket);
+            }
+        }
+
+        private void MapResolveIndexList(IEnumerable<IDataRecord> kustoResults, ResolveIndexResponse response)
+        {
+            foreach (var result in kustoResults)
+            {
+                var index = new ResolveIndexResponseIndex() { Name = result.GetString(0) };
+                response.AddIndex(index);
+
+                Logger.LogDebug("Found table/function: {@index}", index);
             }
         }
     }
