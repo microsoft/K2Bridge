@@ -28,5 +28,20 @@ namespace K2Bridge.Factories
                 Key = Convert.ToString(key),
             };
         }
+
+        /// <summary>
+        /// Creates a <see cref="TermBucket"/>.
+        /// </summary>
+        /// <param name="key">A key.</param>
+        /// <returns>TermBucket.</returns>
+        public static TermBucket CreateFromKey(string key)
+        {
+            Ensure.IsNotNull(key, nameof(key));
+
+            return new TermBucket
+            {
+                Key = key,
+            };
+        }
     }
 }

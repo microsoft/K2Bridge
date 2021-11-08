@@ -82,9 +82,9 @@ namespace K2Bridge.KustoDAL
         /// </summary>
         /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
         /// <returns>A list of Indexes matching the given name pattern.</returns>
-        public async Task<IEnumerable<IDataRecord>> GetTablesAndFunctions(string indexName)
+        public async Task<IEnumerable<string>> GetTablesAndFunctions(string indexName)
         {
-            var tablesAndFunctions = new List<IDataRecord>();
+            var tablesAndFunctions = new List<string>();
             try
             {
                 Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
@@ -96,7 +96,7 @@ namespace K2Bridge.KustoDAL
                 {
                     while (kustoTables.Read())
                     {
-                        tablesAndFunctions.Add(kustoTables);
+                        tablesAndFunctions.Add(Convert.ToString(kustoTables[0]));
                     }
                 }
 
@@ -109,7 +109,7 @@ namespace K2Bridge.KustoDAL
                 {
                     while (kustoFunctions.Read())
                     {
-                        tablesAndFunctions.Add(kustoFunctions);
+                        tablesAndFunctions.Add(Convert.ToString(kustoFunctions[0]));
                     }
                 }
             }
@@ -184,22 +184,22 @@ namespace K2Bridge.KustoDAL
             }
         }
 
-        private void MapIndexList(IEnumerable<IDataRecord> kustoResults, IndexListResponseElement response)
+        private void MapIndexList(IEnumerable<string> kustoResults, IndexListResponseElement response)
         {
             foreach (var result in kustoResults)
             {
-                var termBucket = TermBucketFactory.CreateFromDataRecord(result);
+                var termBucket = TermBucketFactory.CreateFromKey(result);
                 response.Aggregations.IndexCollection.AddBucket(termBucket);
 
                 Logger.LogDebug("Found table/function: {@termBucket}", termBucket);
             }
         }
 
-        private void MapResolveIndexList(IEnumerable<IDataRecord> kustoResults, ResolveIndexResponse response)
+        private void MapResolveIndexList(IEnumerable<string> kustoResults, ResolveIndexResponse response)
         {
             foreach (var result in kustoResults)
             {
-                var index = new ResolveIndexResponseIndex() { Name = result.GetString(0) };
+                var index = new ResolveIndexResponseIndex() { Name = result };
                 response.AddIndex(index);
 
                 Logger.LogDebug("Found table/function: {@index}", index);
