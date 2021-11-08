@@ -153,7 +153,7 @@ Open a web browser and targets http://localhost:9200/. Similar json must be retu
 }
 ```
 
-### 2. Start K2bridge 
+### 2. Start K2Bridge 
 
 Start K2Bridge with appropriate settings (as explained in *K2Bridge - Application Settings* section)
 
