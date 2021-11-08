@@ -57,6 +57,13 @@ SERVICE_PRINCIPAL_DISPLAYNAME=$(echo $secrets | jq '.displayName')
 sleep 60
 az kusto database add-principal --cluster-name $ADX_CLUSTER_NAME --database-name $ADX_DB_NAME --resource-group $RESOURCE_GROUP_NAME --value name=$SERVICE_PRINCIPAL_DISPLAYNAME fqn=$SERVICE_PRINCIPAL_FQN role="Viewer" type="App"
 
+# Environment variables needed to run end-to-end tests
+echo "export K2BRIDGE_URL=http://localhost:8080" >> ~/.bashrc 
+echo "export ELASTICSEARCH_URL=http://localhost:9200" >> ~/.bashrc 
+echo "export KUSTO_URI=https://$ADX_CLUSTER_NAME.$RESOURCE_GROUP_LOCATION.kusto.windows.net" >> ~/.bashrc 
+echo "export KUSTO_DB=$ADX_DB_NAME" >> ~/.bashrc 
+
+# Variables needed to populate appsettings.development.json
 echo "Use following settings/secrets in appsettings.development.json:"
 
 echo "aadClientId: $(tput setaf 2)$(echo $secrets | jq -r '.appId')$(tput setaf 7)"
