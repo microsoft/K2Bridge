@@ -18,6 +18,7 @@ namespace K2Bridge.Controllers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
 
     /// <summary>
     /// Handles requests for business data from Kusto.
@@ -231,7 +232,8 @@ namespace K2Bridge.Controllers
             // Since by default we ignore this, adding a log to see if it does happen.
             if (logger.IsEnabled(LogLevel.Warning))
             {
-                var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out var encodingData);
+                StringValues encodingData = string.Empty;
+                var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out encodingData);
                 if (hasEncodingHeader ?? false)
                 {
                     logger.LogWarning("Unsupported encoding was requested: {encodingData}", encodingData);
