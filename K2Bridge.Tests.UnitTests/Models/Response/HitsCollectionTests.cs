@@ -17,7 +17,7 @@ namespace UnitTests.K2Bridge.Models.Response
 
             hitsCollection.AddToTotal(17);
 
-            Assert.AreEqual(17, hitsCollection.Total);
+            Assert.AreEqual(17, hitsCollection.Total.Value);
         }
 
         [Test]

@@ -77,6 +77,9 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {
+                    ""indices"": [
+                      ""testIndexName""
+                    ],
                     ""fields"": {
                       ""mybool"": {
                         ""boolean"": {
@@ -180,6 +183,9 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {
+                    ""indices"": [
+                      ""testIndexName""
+                    ],
                     ""fields"": {
                       ""myint"": {
                         ""integer"": {
