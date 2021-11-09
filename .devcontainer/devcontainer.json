@@ -1,0 +1,22 @@
+{
+    "name": "K2Bridge dev environment",
+    "build": {
+        "dockerfile": "Dockerfile",
+    },
+    "extensions": [
+        "hashicorp.terraform",
+        "ms-vscode.azurecli",
+        "ms-dotnettools.csharp"
+    ],
+    "forwardPorts": [5601, 8080, 9200],
+    "settings": {
+        "editor.formatOnSave": true,
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+            "bash": {
+                "path": "/bin/bash",
+                "icon": "terminal-bash"
+            },
+        }
+    }
+}
