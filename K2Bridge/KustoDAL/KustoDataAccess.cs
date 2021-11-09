@@ -161,17 +161,6 @@ namespace K2Bridge.KustoDAL
             }
         }
 
-        private void MapIndexList(IEnumerable<string> kustoResults, IndexListResponseElement response)
-        {
-            foreach (var result in kustoResults)
-            {
-                var termBucket = TermBucketFactory.CreateFromKey(result);
-                response.Aggregations.IndexCollection.AddBucket(termBucket);
-
-                Logger.LogDebug("Found table/function: {@termBucket}", termBucket);
-            }
-        }
-
         private void MapResolveIndexList(IEnumerable<string> kustoResults, ResolveIndexResponse response)
         {
             foreach (var result in kustoResults)
