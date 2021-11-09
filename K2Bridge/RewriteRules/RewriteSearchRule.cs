@@ -22,7 +22,7 @@ namespace K2Bridge.RewriteRules
         /// We ignore /.kibana/* routs as it's internal for Kibana.
         /// </summary>
         /// <param name="context">The context object which holds the request path.</param>
-        public async void ApplyRule(RewriteContext context)
+        public void ApplyRule(RewriteContext context)
         {
             if (context.HttpContext.Request.Path.Value.Contains("_search", System.StringComparison.OrdinalIgnoreCase)
                 && !context.HttpContext.Request.Path.Value.Contains(".kibana", System.StringComparison.OrdinalIgnoreCase))
