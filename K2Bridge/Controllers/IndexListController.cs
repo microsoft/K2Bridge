@@ -11,9 +11,7 @@ namespace K2Bridge.Controllers
 
     /// <summary>
     /// Handles Index List requests.
-    /// The original request produced by Kibana is in the format of:
-    /// POST /*/_search?ignore_unavailable=true HTTP/1.1.
-    /// In addition, for Kibana 7:
+    /// The original request produced by Kibana 7 is in the format of:
     /// GET /_resolve/index/* HTTP/1.1.
     /// </summary>
     public class IndexListController : ControllerBase

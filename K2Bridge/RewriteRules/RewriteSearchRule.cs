@@ -18,10 +18,7 @@ namespace K2Bridge.RewriteRules
         /// <summary>
         /// Apply this rule on the given context object, i.e. add trailing slashes
         /// if needed at the end of the request path.
-        /// In this case all requests containing _search in the path are directed
-        /// to the IndexListController.
-        /// Requests to /_resolve/index are also sent to IndexListController
-        /// (for Kibana 7).
+        /// Requests to /_resolve/index are sent to IndexListController.
         /// We ignore /.kibana/* routs as it's internal for Kibana.
         /// </summary>
         /// <param name="context">The context object which holds the request path.</param>
