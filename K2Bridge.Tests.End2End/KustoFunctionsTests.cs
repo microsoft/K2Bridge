@@ -30,6 +30,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("SearchAsync (IndexList) returns functions")]
+        [Ignore("TODO: replace with _resolve/index test")]
         public async Task Search_WithFunction_ReturnsResponseWithFunctions()
         {
             var indexList = await K2Client().Search();

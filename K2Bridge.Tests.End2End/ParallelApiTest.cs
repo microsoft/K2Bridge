@@ -164,6 +164,7 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_search index list Kibana query")]
+        [Ignore("TODO: replace with _resolve/index test")]
         public void CompareElasticKusto_WhenSearch_ResponsesAreEquivalent()
         {
             var es = ESClient().Search();
