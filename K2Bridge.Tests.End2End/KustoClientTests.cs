@@ -59,7 +59,7 @@ namespace K2Bridge.Tests.End2End
         public async Task MSearch_All_ReturnsAllHitsAsExpected()
         {
             var result = await K2Client().MSearch(TypesIndex, $"{TypesDir}/MSearch_All_InTimeRange.json");
-            var totalHits = result.SelectToken("responses[0].hits.total");
+            var totalHits = result.SelectToken("responses[0].hits.total.value");
             Assert.IsNotNull(totalHits);
             Assert.IsTrue(totalHits.Value<int>() == 1);
 
@@ -91,6 +91,9 @@ namespace K2Bridge.Tests.End2End
         {
             var fieldCaps = await K2Client().FieldCaps(typesIndexFullName);
             var expected = JObject.Parse(@"{
+              ""indices"": [
+                ""types_index""
+              ],
               ""fields"": {
                 ""Boolean"": {
                   ""boolean"": {

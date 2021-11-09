@@ -127,6 +127,8 @@ namespace K2Bridge.Tests.End2End
             var result = await JsonQuery(request);
             MaskSearchCommon(result, "responses[*].");
 
+            MaskValue(result, "took");
+
             if (!validateHighlight)
             {
                 DeleteValue(result, "responses[*].hits.hits[*].highlight");
@@ -163,7 +165,10 @@ namespace K2Bridge.Tests.End2End
 
             // TODO: K2Bridge always returns 0 for total
             // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            MaskValue(result, "hits.total");
+            MaskValue(result, "hits.total.value");
+
+            // TODO: K2Bridge always returns eq for relation
+            MaskValue(result, "hits.total.relation");
 
             // TODO: K2Bridge returns null
             // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467

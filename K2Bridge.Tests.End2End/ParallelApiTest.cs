@@ -208,7 +208,7 @@ namespace K2Bridge.Tests.End2End
         {
             var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight);
             var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight);
-            var t = es.Result.SelectToken("responses[0].hits.total");
+            var t = es.Result.SelectToken("responses[0].hits.total.value");
             Assert.IsTrue(t.Value<int>() >= minResults);
             AssertJsonIdentical(k2.Result, es.Result);
         }
