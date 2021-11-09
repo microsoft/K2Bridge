@@ -201,7 +201,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         }
 
         [Test]
-        public async Task GetIndexList_WithValidIndex_ReturnIndexList()
+        public async Task ResolveIndex_WithValidIndex_ReturnIndexList()
         {
             using IDataReader stubIndexReader = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
@@ -213,7 +213,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
-            var indexResponse = await kusto.GetIndexListAsync("testIndex");
+            var indexResponse = await kusto.ResolveIndexAsync("testIndex");
 
             mockQueryExecutor.Verify(exec => exec.ExecuteControlCommandAsync(
                 ".show databases schema"
@@ -224,14 +224,14 @@ namespace UnitTests.K2Bridge.KustoDAL
                 + " |  project strcat(DatabaseName, \":\", TableName)", It.IsAny<RequestContext>()));
 
             Assert.IsNotNull(indexResponse);
-            var itr = indexResponse.Aggregations.IndexCollection.Buckets.GetEnumerator();
+            var itr = indexResponse.Indices.GetEnumerator();
             itr.MoveNext();
-            Assert.AreEqual(((TermBucket)itr.Current).Key, "somevalue1");
+            Assert.AreEqual(itr.Current.Name, "somevalue1");
             Assert.False(itr.MoveNext());
         }
 
         [Test]
-        public async Task GetIndexList_WithValidFunction_ReturnIndexList()
+        public async Task ResolveIndex_WithValidFunction_ReturnIndexList()
         {
             using IDataReader stubIndexReader = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
@@ -243,7 +243,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                 It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
-            var indexResponse = await kusto.GetIndexListAsync("testIndex");
+            var indexResponse = await kusto.ResolveIndexAsync("testIndex");
 
             mockQueryExecutor.Verify(exec => exec.ExecuteControlCommandAsync(
                 ".show functions"
@@ -253,14 +253,14 @@ namespace UnitTests.K2Bridge.KustoDAL
                 + " | project strcat(\"\", \":\", Name)", It.IsAny<RequestContext>()));
 
             Assert.IsNotNull(indexResponse);
-            var itr = indexResponse.Aggregations.IndexCollection.Buckets.GetEnumerator();
+            var itr = indexResponse.Indices.GetEnumerator();
             itr.MoveNext();
-            Assert.AreEqual(((TermBucket)itr.Current).Key, "somevalue1");
+            Assert.AreEqual(itr.Current.Name, "somevalue1");
             Assert.False(itr.MoveNext());
         }
 
         [Test]
-        public async Task GetIndexList_ValidIndexAndValidFunction_ReturnBoth()
+        public async Task ResolveIndex_ValidIndexAndValidFunction_ReturnBoth()
         {
             using IDataReader stubIndexReader1 = new DataReaderMock(
                 new List<Dictionary<string, object>>() {
@@ -282,19 +282,19 @@ namespace UnitTests.K2Bridge.KustoDAL
                 .Returns(Task.FromResult(stubIndexReader2));
 
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
-            var indexResponse = await kusto.GetIndexListAsync("testIndex");
+            var indexResponse = await kusto.ResolveIndexAsync("testIndex");
 
             Assert.IsNotNull(indexResponse);
-            var itr = indexResponse.Aggregations.IndexCollection.Buckets.GetEnumerator();
+            var itr = indexResponse.Indices.GetEnumerator();
             Assert.True(itr.MoveNext());
-            Assert.AreEqual(((TermBucket)itr.Current).Key, "myTable");
+            Assert.AreEqual(itr.Current.Name, "myTable");
             Assert.True(itr.MoveNext());
-            Assert.AreEqual(((TermBucket)itr.Current).Key, "myFunction");
+            Assert.AreEqual(itr.Current.Name, "myFunction");
             Assert.False(itr.MoveNext());
         }
 
         [TestCaseSource(nameof(IndexNames))]
-        public async Task GetIndexList_WithValidInput_ReadsQueryExecutorValidDatabase(string indexName, string databaseName, string tableName)
+        public async Task ResolveIndex_WithValidInput_ReadsQueryExecutorValidDatabase(string indexName, string databaseName, string tableName)
         {
             var mockQueryExecutor = new Mock<IQueryExecutor>();
             var mockDetails = new Mock<IConnectionDetails>();
@@ -310,10 +310,10 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, StringComparison.OrdinalIgnoreCase)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
-            var indexResponse = await kusto.GetIndexListAsync(indexName);
+            var indexResponse = await kusto.ResolveIndexAsync(indexName);
 
             Assert.IsNotNull(indexResponse, $"null response for indexname {indexName}");
-            var itr = indexResponse.Aggregations.IndexCollection.Buckets.GetEnumerator();
+            var itr = indexResponse.Indices.GetEnumerator();
             itr.MoveNext();
             Assert.NotNull(itr.Current, $"failed to provide valid search term with database name {databaseName} and table name {tableName} from indexname {indexName}. expected: {searchString}");
         }

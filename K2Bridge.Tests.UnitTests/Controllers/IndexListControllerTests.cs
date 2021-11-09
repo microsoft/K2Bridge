@@ -18,19 +18,6 @@ namespace UnitTests.K2Bridge.Controllers
     public class IndexListControllerTests
     {
         [Test]
-        public async Task IndexListController_IndexWithValidInput_ReturnsOk()
-        {
-            // Arrange
-            var ctr = GetController();
-
-            // Act
-            var result = await ctr.Process("testIndexName");
-
-            // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
         public async Task IndexListController_ResolveWithValidInput_ReturnsOk()
         {
             // Arrange
@@ -50,7 +37,6 @@ namespace UnitTests.K2Bridge.Controllers
             response.AddField(new FieldCapabilityElement { Name = "testFieldName" });
             var responseTask = Task.FromResult(response);
             mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
-            mockDAL.Setup(kusto => kusto.GetIndexListAsync(It.IsNotNull<string>())).Returns(Task.FromResult(new IndexListResponseElement() { }));
             mockDAL.Setup(kusto => kusto.ResolveIndexAsync(It.IsNotNull<string>())).Returns(Task.FromResult(new ResolveIndexResponse() { }));
             var mockLogger = new Mock<ILogger<IndexListController>>();
 

@@ -123,29 +123,6 @@ namespace K2Bridge.KustoDAL
         }
 
         /// <summary>
-        /// Executes a query to Kusto for Index List.
-        /// Searches for all tables and all functions that match the index name pattern.
-        /// </summary>
-        /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
-        /// <returns>A list of Indexes matching the given name pattern.</returns>
-        public async Task<IndexListResponseElement> GetIndexListAsync(string indexName)
-        {
-            var response = new IndexListResponseElement();
-            try
-            {
-                var tablesAndFunctions = await GetTablesAndFunctions(indexName);
-                MapIndexList(tablesAndFunctions, response);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error while executing GetIndexList.");
-                throw;
-            }
-
-            return response;
-        }
-
-        /// <summary>
         /// Executes a query to Kusto for Resolve Index.
         /// Searches for all tables and all functions that match the index name pattern.
         /// </summary>

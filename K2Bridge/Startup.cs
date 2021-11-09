@@ -155,7 +155,6 @@ namespace K2Bridge
 
                 // Special treatment for certains requests that are intentionally not marked with the [ApiController] attribute.
                 endpoints.MapControllerRoute("fieldcaps", "FieldCapability/Process/{indexName?}", defaults: new { controller = "FieldCapability", action = "Process" });
-                endpoints.MapControllerRoute("indexlist", "IndexList/Process/{indexName?}", defaults: new { controller = "IndexList", action = "Process" });
                 endpoints.MapControllerRoute("resolveindex", "IndexList/Resolve/{indexName?}", defaults: new { controller = "IndexList", action = "Resolve" });
                 endpoints.MapFallbackToController("Passthrough", "Metadata");
 

@@ -30,42 +30,7 @@ namespace K2Bridge.RewriteRules
             if (context.HttpContext.Request.Path.Value.Contains("_search", System.StringComparison.OrdinalIgnoreCase)
                 && !context.HttpContext.Request.Path.Value.Contains(".kibana", System.StringComparison.OrdinalIgnoreCase))
             {
-                // enable buffering to read the body stream multiple times.
-                context.HttpContext.Request.EnableBuffering();
-
-                using var reader = new StreamReader(
-                    context.HttpContext.Request.Body,
-                    encoding: Encoding.UTF8,
-                    detectEncodingFromByteOrderMarks: false,
-                    bufferSize: 8 * 1024,
-                    leaveOpen: true);
-
-                var body = await reader.ReadToEndAsync();
-
-                // Reset the request body stream position so the next middleware can read it
-                context.HttpContext.Request.Body.Position = 0;
-
-                // Although it doesn't make sense for a search query to have an empty body, we let it pass here and fail it later own when the body is analyzed.
-                if (string.IsNullOrEmpty(body))
-                {
-                    // This is a regular search (documents) request
-                    context.HttpContext.Request.Path = $"/Query/SingleSearch/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
-                    return;
-                }
-
-                JObject jo = JObject.Parse(body);
-                var aggsIndices = jo.SelectToken("aggs.indices.terms.field");
-
-                if (aggsIndices != null)
-                {
-                    // This is a request for the index list
-                    context.HttpContext.Request.Path = $"/IndexList/Process/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
-                }
-                else
-                {
-                    // This is a regular search (documents) request
-                    context.HttpContext.Request.Path = $"/Query/SingleSearch/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
-                }
+                context.HttpContext.Request.Path = $"/Query/SingleSearch/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
             }
             else if (context.HttpContext.Request.Path.Value.Contains("_resolve/index", System.StringComparison.OrdinalIgnoreCase))
             {

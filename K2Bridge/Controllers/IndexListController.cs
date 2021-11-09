@@ -34,19 +34,6 @@ namespace K2Bridge.Controllers
         private ILogger Logger { get; set; }
 
         /// <summary>
-        /// Process the request.
-        /// </summary>
-        /// <param name="indexName">The index to process.</param>
-        /// <returns>The table list in the Kusto database.</returns>
-        [Produces("application/json")]
-        public async Task<IActionResult> Process(string indexName)
-        {
-            var response = await KustoDataAccess.GetIndexListAsync(indexName);
-
-            return Ok(response);
-        }
-
-        /// <summary>
         /// Resolve the index.
         /// </summary>
         /// <param name="indexName">The index pattern to process.</param>
