@@ -1,9 +1,7 @@
 FROM mcr.microsoft.com/vscode/devcontainers/dotnet:6.0-focal
 
-ARG BUILD_ELASTIC_STACK_VERSION="7.16.2"
-ARG BUILD_KIBANA_VERSION="7.10.2"
+ARG BUILD_ELASTIC_STACK_VERSION="6.8.20"
 ARG BUILD_TERRAFORM_VERSION="1.0.9"
-ARG BUILD_MITMPROXY_VERSION="7.0.4"
 
 # Update & Install Open JDK
 RUN apt-get update && apt-get upgrade -y && apt-get install -y default-jre
