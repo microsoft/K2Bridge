@@ -23,13 +23,26 @@ namespace K2Bridge.Visitors
             if (!string.IsNullOrEmpty(dateHistogramAggregation.Interval))
             {
                 var period = dateHistogramAggregation.Interval[^1];
-                dateHistogramAggregation.KustoQL += period switch
+                if (dateHistogramAggregation.Interval.Contains("week", System.StringComparison.OrdinalIgnoreCase))
                 {
-                    'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
-                    'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
-                    'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
-                    _ => $"bin({dateHistogramAggregation.FieldName}, {dateHistogramAggregation.Interval})",
-                };
+                    dateHistogramAggregation.KustoQL += $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})";
+                } else if (dateHistogramAggregation.Interval.Contains("month", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    dateHistogramAggregation.KustoQL += $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})";
+                } else if (dateHistogramAggregation.Interval.Contains("year", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    dateHistogramAggregation.KustoQL += $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})";
+                }
+                else
+                {
+                    dateHistogramAggregation.KustoQL += period switch
+                    {
+                        'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
+                        'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
+                        'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
+                        _ => $"bin({dateHistogramAggregation.FieldName}, {dateHistogramAggregation.Interval})",
+                    };
+                }
             }
             else
             {
