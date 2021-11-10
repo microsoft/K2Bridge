@@ -16,11 +16,12 @@ The following packages are installed on top of this base image.
 | terraform | 1.0.9 |
 | azure-cli | latest |
 | helm | latest |
+| mitmproxy | 7.0.4 |
 | dotnet-sdk-3.1 | latest |
 | dotnet-sdk-5.0 | latest |
 | default-jre | latest |
-| elasticsearch-oss| 6.8.20 |
-| kibana-oss | 6.8.20 |
+| elasticsearch-oss| 7.10.2 |
+| kibana-oss | 7.10.2 |
 
 Elasticsearch and Kibana are available at `/home/vscode`; and dev container will start using vscode non-root user. For reference, you cannot start elasticsearch using root user, an exception will occur.
 
@@ -31,34 +32,33 @@ Elasticsearch and Kibana are available at `/home/vscode`; and dev container will
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
 vscode ➜ ~ $ ls
-elasticsearch-6.8.20  kibana-6.8.20-linux-x86_64
-vscode ➜ ~ $ cd elasticsearch-6.8.20/
-vscode ➜ ~/elasticsearch-6.8.20 $ ./bin/elasticsearch
+elasticsearch-7.10.2  kibana-7.10.2-linux-x86_64
+vscode ➜ ~ $ cd elasticsearch-7.10.2/
+vscode ➜ ~/elasticsearch-7.10.2 $ ./bin/elasticsearch
 
 [...]
-[2021-11-05T13:52:23,448][INFO ][o.e.h.n.Netty4HttpServerTransport] [Aj2lFRl] publish_address {127.0.0.1:9200}, bound_addresses {127.0.0.1:9200}
-[2021-11-05T13:52:23,449][INFO ][o.e.n.Node               ] [Aj2lFRl] started
-[2021-11-05T13:52:23,728][INFO ][o.e.g.GatewayService     ] [Aj2lFRl] recovered [1] indices into cluster_state
-[2021-11-05T13:52:24,100][INFO ][o.e.c.r.a.AllocationService] [Aj2lFRl] Cluster health status changed from [RED] to [GREEN] (reason: [shards started [[.kibana_1][0]] ...]).
+[2021-11-10T10:29:41,395][INFO ][o.e.h.AbstractHttpServerTransport] [9f911f701eba] publish_address {127.0.0.1:9200}, bound_addresses {127.0.0.1:9200}
+[2021-11-10T10:29:41,397][INFO ][o.e.n.Node               ] [9f911f701eba] started
+[2021-11-10T10:29:41,444][INFO ][o.e.g.GatewayService     ] [9f911f701eba] recovered [0] indices into cluster_state
 ```
 
 Open a web browser and targets http://localhost:9200/. Similar json must be returned.
 
 ```json
 {
-  "name" : "Aj2lFRl",
+  "name" : "9f911f701eba",
   "cluster_name" : "elasticsearch",
-  "cluster_uuid" : "RqGRp20aRlO2b7DTkPjmDg",
+  "cluster_uuid" : "IfhhAPkOT8m_zfIkUfHtWg",
   "version" : {
-    "number" : "6.8.20",
+    "number" : "7.10.2",
     "build_flavor" : "oss",
     "build_type" : "tar",
-    "build_hash" : "c859302",
-    "build_date" : "2021-10-07T22:00:24.085009Z",
+    "build_hash" : "747e1cc71def077253878a59143c1f785afa92b9",
+    "build_date" : "2021-01-13T00:42:12.435326Z",
     "build_snapshot" : false,
-    "lucene_version" : "7.7.3",
-    "minimum_wire_compatibility_version" : "5.6.0",
-    "minimum_index_compatibility_version" : "5.0.0"
+    "lucene_version" : "8.7.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
   },
   "tagline" : "You Know, for Search"
 }
@@ -72,18 +72,19 @@ Then start Kibana.
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
 vscode ➜ ~ $ ls
-elasticsearch-6.8.20  kibana-6.8.20-linux-x86_64
-vscode ➜ ~ $ cd kibana-6.8.20-linux-x86_64/
-vscode ➜ ~/kibana-6.8.20-linux-x86_64 $ ./bin/kibana
-  log   [14:03:45.726] [info][status][plugin:kibana@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.773] [info][status][plugin:elasticsearch@6.8.20] Status changed from uninitialized to yellow - Waiting for Elasticsearch
-  log   [14:03:45.780] [info][status][plugin:console@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.797] [info][status][plugin:interpreter@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.813] [info][status][plugin:metrics@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.832] [info][status][plugin:tile_map@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.977] [info][status][plugin:timelion@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:46.042] [info][status][plugin:elasticsearch@6.8.20] Status changed from yellow to green - Ready
-  log   [14:03:46.159] [info][listening] Server running at http://localhost:5601
+elasticsearch-7.10.2  kibana-7.10.2-linux-x86_64
+vscode ➜ ~ $ cd kibana-7.10.2-linux-x86_64/
+vscode ➜ ~/kibana-7.10.2-linux-x86_64 $ ./bin/kibana
+  log   [10:32:16.542] [info][plugins-service] Plugin "visTypeXy" is disabled.
+  log   [10:32:16.711] [info][plugins-system] Setting up [40] plugins: [usageCollection,telemetryCollectionManager,telemetry,kibanaUsageCollection,securityOss,newsfeed,mapsLegacy,kibanaLegacy,share,legacyExport,embeddable,expressions,data,home,console,apmOss,management,indexPatternManagement,advancedSettings,savedObjects,dashboard,visualizations,inputControlVis,visTypeVega,visTypeTimelion,timelion,visTypeTable,visTypeMarkdown,tileMap,regionMap,visualize,esUiShared,charts,visTypeTimeseries,visTypeVislib,visTypeTagcloud,visTypeMetric,discover,savedObjectsManagement,bfetch]
+  log   [10:32:17.005] [info][savedobjects-service] Waiting until all Elasticsearch nodes are compatible with Kibana before starting saved objects migrations...
+  log   [10:32:17.061] [info][savedobjects-service] Starting saved objects migrations
+  log   [10:32:17.101] [info][savedobjects-service] Creating index .kibana_1.
+  log   [10:32:18.047] [info][savedobjects-service] Pointing alias .kibana to .kibana_1.
+  log   [10:32:18.162] [info][savedobjects-service] Finished in 1071ms.
+  log   [10:32:18.179] [info][plugins-system] Starting [40] plugins: [usageCollection,telemetryCollectionManager,telemetry,kibanaUsageCollection,securityOss,newsfeed,mapsLegacy,kibanaLegacy,share,legacyExport,embeddable,expressions,data,home,console,apmOss,management,indexPatternManagement,advancedSettings,savedObjects,dashboard,visualizations,inputControlVis,visTypeVega,visTypeTimelion,timelion,visTypeTable,visTypeMarkdown,tileMap,regionMap,visualize,esUiShared,charts,visTypeTimeseries,visTypeVislib,visTypeTagcloud,visTypeMetric,discover,savedObjectsManagement,bfetch]
+  log   [10:32:18.793] [info][listening] Server running at http://localhost:5601
+  log   [10:32:18.851] [info][server][Kibana][http] http server running at http://localhost:5601
 ```
 
 Open a web browser and targets http://localhost:5601/ to access the Kibana UI.
@@ -96,8 +97,8 @@ Under Kibana's '*config*' directory, edit the *kibana.yml* file.
 
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
-vscode ➜ ~ $ cd kibana-6.8.20-linux-x86_64/
-vscode ➜ ~/kibana-6.8.20-linux-x86_64 $ code ./config/kibana.yml
+vscode ➜ ~ $ cd kibana-7.10.2-linux-x86_64/
+vscode ➜ ~/kibana-7.10.2-linux-x86_64 $ code ./config/kibana.yml 
 ```
 
 And add the following line. Note that this assumes that the bridge will listen on port 8080. All requests will be forwarded to bridge. 
