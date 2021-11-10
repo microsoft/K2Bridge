@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Models.Response.Metadata
 {
+    using System.Collections.Generic;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -16,5 +17,13 @@ namespace K2Bridge.Models.Response.Metadata
         /// </summary>
         [JsonProperty("name")]
         public string Name { get; set; }
+
+        /// <summary>
+        /// Hard coded attributes for indices.
+        /// </summary>
+        [JsonProperty("attributes")]
+        public List<string> Attributes { get; } = new List<string>() {
+            "open",
+        };
     }
 }

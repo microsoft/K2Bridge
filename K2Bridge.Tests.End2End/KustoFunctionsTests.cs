@@ -29,12 +29,11 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("SearchAsync (IndexList) returns functions")]
-        [Ignore("TODO: replace with _resolve/index test")]
+        [Description("/_resolve/index returns functions")]
         public async Task Search_WithFunction_ReturnsResponseWithFunctions()
         {
             var indexList = await K2Client().Search();
-            var match = indexList.SelectToken($"aggregations.indices.buckets[?(@.key == '{functionFullName}')]");
+            var match = indexList.SelectToken($"indices[?(@.name == '{functionFullName}')]");
             Assert.IsNotNull(match);
         }
 

@@ -163,11 +163,10 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("/_search index list Kibana query")]
-        [Ignore("TODO: replace with _resolve/index test")]
+        [Description("/_resolve/index Kibana query")]
         public void CompareElasticKusto_WhenSearch_ResponsesAreEquivalent()
         {
-            var es = ESClient().Search();
+            var es = ESClient().Search($"{INDEX}");
             var k2 = K2Client().Search($"{KustoDatabase()}:{INDEX}");
             AssertJsonIdentical(k2.Result, es.Result);
         }
