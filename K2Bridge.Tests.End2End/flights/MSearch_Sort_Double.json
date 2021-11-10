@@ -9,14 +9,12 @@
       }
     }
   ],
-  "_source": {
-    "excludes": []
-  },
   "aggs": {
     "2": {
       "date_histogram": {
         "field": "timestamp",
-        "interval": "1m",
+        "calendar_interval": "month",
+        "time_zone": "UTC",
         "min_doc_count": 1
       }
     }
@@ -24,19 +22,31 @@
   "stored_fields": [
     "*"
   ],
-  "script_fields": {},
+  "script_fields": {
+    "hour_of_day": {
+      "script": {
+        "source": "doc['timestamp'].value.hourOfDay",
+        "lang": "painless"
+      }
+    }
+  },
   "docvalue_fields": [
     {
       "field": "timestamp",
       "format": "date_time"
     }
   ],
+  "_source": {
+    "excludes": []
+  },
   "query": {
     "bool": {
       "must": [
         {
           "match_all": {}
-        },
+        }
+      ],
+      "filter": [
         {
           "range": {
             "timestamp": {
@@ -47,7 +57,6 @@
           }
         }
       ],
-      "filter": [],
       "should": [],
       "must_not": []
     }
