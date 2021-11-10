@@ -3,6 +3,9 @@
     "build": {
         "dockerfile": "Dockerfile",
     },
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind"
+    ],
     "extensions": [
         "hashicorp.terraform",
         "ms-vscode.azurecli",
