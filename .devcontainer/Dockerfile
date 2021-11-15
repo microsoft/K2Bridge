@@ -33,7 +33,7 @@ RUN dpkg -i packages-microsoft-prod.deb
 RUN rm packages-microsoft-prod.deb
 
 RUN apt-get update && \
-    apt-get install -y dotnet-sdk-3.1 dotnet-sdk-5.0
+    apt-get install -y dotnet-sdk-5.0 dotnet-sdk-6.0
 
 # Set current working directory to /home/vscode
 USER vscode
