@@ -18,7 +18,6 @@ namespace K2Bridge.RewriteRules
         /// <summary>
         /// Apply this rule on the given context object, i.e. add trailing slashes
         /// if needed at the end of the request path.
-        /// Requests to /_resolve/index are sent to IndexListController.
         /// We ignore /.kibana/* routs as it's internal for Kibana.
         /// </summary>
         /// <param name="context">The context object which holds the request path.</param>
@@ -29,23 +28,12 @@ namespace K2Bridge.RewriteRules
             {
                 context.HttpContext.Request.Path = $"/Query/SingleSearch/{GetIndexNameFromPath(context.HttpContext.Request.Path)}";
             }
-            else if (context.HttpContext.Request.Path.Value.Contains("_resolve/index", System.StringComparison.OrdinalIgnoreCase))
-            {
-                // Resolve index query from Kibana 7
-                context.HttpContext.Request.Path = $"/IndexList/Resolve/{GetIndexNameFromResolvePath(context.HttpContext.Request.Path)}";
-            }
         }
 
         private string GetIndexNameFromPath(PathString pathString)
         {
             var segments = pathString.ToString().Split('/', System.StringSplitOptions.RemoveEmptyEntries);
             return segments[0];
-        }
-
-        private string GetIndexNameFromResolvePath(PathString pathString)
-        {
-            var segments = pathString.ToString().Split('/', System.StringSplitOptions.RemoveEmptyEntries);
-            return segments[2];
         }
     }
 }

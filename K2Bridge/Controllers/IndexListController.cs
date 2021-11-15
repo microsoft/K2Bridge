@@ -6,8 +6,10 @@ namespace K2Bridge.Controllers
 {
     using System.Threading.Tasks;
     using K2Bridge.KustoDAL;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using K2Bridge.Models.Response.Metadata;
 
     /// <summary>
     /// Handles Index List requests.
@@ -36,7 +38,9 @@ namespace K2Bridge.Controllers
         /// </summary>
         /// <param name="indexName">The index pattern to process.</param>
         /// <returns>The table list in the Kusto database.</returns>
+        [HttpGet("_resolve/index/{indexName}")]
         [Produces("application/json")]
+        [ProducesResponseType(typeof(ResolveIndexResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> Resolve(string indexName)
         {
             var response = await KustoDataAccess.ResolveIndexAsync(indexName);
