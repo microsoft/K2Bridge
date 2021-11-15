@@ -42,34 +42,34 @@ namespace K2Bridge.Tests.End2End
         public async Task FieldCaps_WithFunction_ReturnsResponseWithFunctions()
         {
             var fieldCaps = await K2Client().FieldCaps(functionFullName);
-            var expected = JObject.Parse(@"{
+            var expected = JObject.Parse($@"{{
               ""indices"": [
-                ""fn_countries_and_airports""
+                ""{functionFullName.Split(':')[1]}""
               ],
-              ""fields"": {
-                ""OriginCountry"": {
-                  ""keyword"": {
+              ""fields"": {{
+                ""OriginCountry"": {{
+                  ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""keyword""
-                  }
-                },
-                ""Origin"": {
-                  ""keyword"": {
+                  }}
+                }},
+                ""Origin"": {{
+                  ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""keyword""
-                  }
-                },
-                ""timestamp"": {
-                  ""date"": {
+                  }}
+                }},
+                ""timestamp"": {{
+                  ""date"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""date""
-                  }
-                }
-              }
-            }");
+                  }}
+                }}
+              }}
+            }}");
             fieldCaps.Should().BeEquivalentTo(expected);
         }
 

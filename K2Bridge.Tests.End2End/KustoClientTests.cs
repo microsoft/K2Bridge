@@ -90,83 +90,83 @@ namespace K2Bridge.Tests.End2End
         public async Task FieldCaps_WithAllTypes_ReturnsTypesConvertedToESTypes()
         {
             var fieldCaps = await K2Client().FieldCaps(typesIndexFullName);
-            var expected = JObject.Parse(@"{
+            var expected = JObject.Parse($@"{{
               ""indices"": [
-                ""types_index""
+                ""{typesIndexFullName.Split(':')[1]}""
               ],
-              ""fields"": {
-                ""Boolean"": {
-                  ""boolean"": {
+              ""fields"": {{
+                ""Boolean"": {{
+                  ""boolean"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""boolean""
-                  }
-                },
-                ""DateTime"": {
-                  ""date"": {
+                  }}
+                }},
+                ""DateTime"": {{
+                  ""date"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""date""
-                  }
-                },
-                ""Guid"": {
-                  ""string"": {
+                  }}
+                }},
+                ""Guid"": {{
+                  ""string"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""string""
-                  }
-                },
-                ""Int32"": {
-                  ""integer"": {
+                  }}
+                }},
+                ""Int32"": {{
+                  ""integer"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""integer""
-                  }
-                },
-                ""Int64"": {
-                  ""long"": {
+                  }}
+                }},
+                ""Int64"": {{
+                  ""long"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""long""
-                  }
-                },
-                ""Double"": {
-                  ""double"": {
+                  }}
+                }},
+                ""Double"": {{
+                  ""double"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""double""
-                  }
-                },
-                ""String"": {
-                  ""keyword"": {
+                  }}
+                }},
+                ""String"": {{
+                  ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""keyword""
-                  }
-                },
-                ""TimeSpan"": {
-                  ""string"": {
+                  }}
+                }},
+                ""TimeSpan"": {{
+                  ""string"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""string""
-                  }
-                },
-                ""SqlDecimal"": {
-                  ""double"": {
+                  }}
+                }},
+                ""SqlDecimal"": {{
+                  ""double"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""double""
-                  }
-                },
-                ""Dynamic"": {
-                  ""object"": {
+                  }}
+                }},
+                ""Dynamic"": {{
+                  ""object"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""object""
-                  }
-                },
-              }
-            }");
+                  }}
+                }},
+              }}
+            }}");
             fieldCaps.Should().BeEquivalentTo(expected);
         }
 
