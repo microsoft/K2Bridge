@@ -1,6 +1,4 @@
-# Development with Visual Studio Code
-
-## Development Container
+# Development container for Visual Studio Code
 
 This repo provides a container that can be used directly for local development. If you never used a development container, we suggest reading first the following documentation for system requirements and installation steps.
 
@@ -42,7 +40,7 @@ vscode ➜ ~/elasticsearch-7.10.2 $ ./bin/elasticsearch
 [2021-11-10T10:29:41,444][INFO ][o.e.g.GatewayService     ] [9f911f701eba] recovered [0] indices into cluster_state
 ```
 
-Open a web browser and targets http://localhost:9200/. Similar json must be returned.
+Open a web browser and target http://localhost:9200/. Similar json must be returned.
 
 ```json
 {
@@ -87,7 +85,7 @@ vscode ➜ ~/kibana-7.10.2-linux-x86_64 $ ./bin/kibana
   log   [10:32:18.851] [info][server][Kibana][http] http server running at http://localhost:5601
 ```
 
-Open a web browser and targets http://localhost:5601/ to access the Kibana UI.
+Open a web browser and target http://localhost:5601/ to access the Kibana UI.
 
 ### Important
 
@@ -110,6 +108,4 @@ elasticsearch.hosts: ["http://localhost:8080"]
 
 ## What's next !?
 
-Check the [development](./development.md) instructions to configure correctly K2Bridge application settings. 
-
-
+Check the [development](./development.md) instructions to configure correctly K2Bridge application settings.
