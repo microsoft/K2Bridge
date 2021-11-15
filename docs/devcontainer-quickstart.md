@@ -15,7 +15,7 @@ The following packages are installed on top of this base image.
 | azure-cli | latest |
 | helm | latest |
 | mitmproxy | 7.0.4 |
-| dotnet-sdk-3.1 | latest |
+| dotnet-sdk-6.0 | latest |
 | dotnet-sdk-5.0 | latest |
 | default-jre | latest |
 | elasticsearch-oss| 7.10.2 |
