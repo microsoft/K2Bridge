@@ -16,7 +16,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 ""2"": {
                     ""date_histogram"": {
                         ""field"": ""timestamp"",
-                        ""interval"": ""1m"",
+                        ""fixed_interval"": ""1m"",
                         ""time_zone"": ""Asia/Jerusalem"",
                         ""min_doc_count"": 1
                     }

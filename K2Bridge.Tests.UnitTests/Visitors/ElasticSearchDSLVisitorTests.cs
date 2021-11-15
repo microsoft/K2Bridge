@@ -166,7 +166,7 @@ namespace UnitTests.K2Bridge.Visitors
                 {
                     ""date_histogram"": {
                         ""field"": ""timestamp"",
-                        ""interval"": ""3h"",
+                        ""fixed_interval"": ""3h"",
                         ""time_zone"": ""Asia/Jerusalem"",
                         ""min_doc_count"": 1
                     }

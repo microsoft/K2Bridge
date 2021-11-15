@@ -23,10 +23,14 @@ namespace K2Bridge.JsonConverters
         {
             var jo = JObject.Load(reader);
 
+            var fixedInterval = jo["fixed_interval"];
+            var calendarInterval = jo["calendar_interval"];
+            var interval =
+                fixedInterval != null ? (string)fixedInterval : (string)calendarInterval;
             var obj = new DateHistogramAggregation
             {
                 FieldName = (string)jo["field"],
-                Interval = (string)jo["interval"],
+                Interval = interval,
             };
 
             return obj;
