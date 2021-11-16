@@ -235,11 +235,8 @@ namespace K2Bridge.Tests.End2End
             {
                 if (tokens[index].Value.Equals(indexName))
                 {
-                    if (indexName.Contains(':', StringComparison.Ordinal))
-                    {
-                        var tableName = indexName.Split(':')[1];
-                        tokens[index].Value = tableName;
-                    }
+                    var tableName = indexName.Split(':')[1];
+                    tokens[index].Value = tableName;
                 }
                 else
                 {
