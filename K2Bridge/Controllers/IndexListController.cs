@@ -6,10 +6,10 @@ namespace K2Bridge.Controllers
 {
     using System.Threading.Tasks;
     using K2Bridge.KustoDAL;
+    using K2Bridge.Models.Response.Metadata;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using K2Bridge.Models.Response.Metadata;
 
     /// <summary>
     /// Handles Index List requests.
