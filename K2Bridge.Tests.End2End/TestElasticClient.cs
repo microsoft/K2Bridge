@@ -137,6 +137,9 @@ namespace K2Bridge.Tests.End2End
             // backend query isn't something we want to compare since it's unique to K2
             DeleteValue(result, "responses[*]._backendQuery");
 
+            // Ignore fields.hour_of_day (script_fields are currently no supported)
+            DeleteValue(result, "responses[*].hits.hits[*].fields.hour_of_day");
+
             return result;
         }
 
