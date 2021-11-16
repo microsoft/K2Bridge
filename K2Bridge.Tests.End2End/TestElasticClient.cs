@@ -120,7 +120,7 @@ namespace K2Bridge.Tests.End2End
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "_msearch");
             var payload = new StringBuilder();
-            payload.AppendLine($"{{\"index\":\"{indexName}\"}}");
+            payload.AppendLine(FormattableString.Invariant($"{{\"index\":\"{indexName}\"}}"));
             payload.AppendLine(query.ToString(Formatting.None));
             request.Content = new StringContent(payload.ToString());
             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-ndjson");

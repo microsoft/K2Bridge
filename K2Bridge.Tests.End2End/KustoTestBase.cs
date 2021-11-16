@@ -7,7 +7,7 @@ namespace K2Bridge.Tests.End2End
     using System;
     using System.Diagnostics;
     using System.IO;
-    using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using Kusto.Data;
     using NUnit.Framework;
@@ -118,12 +118,29 @@ namespace K2Bridge.Tests.End2End
             var token = Environment.GetEnvironmentVariable("AAD_TOKEN") ?? GetAADToken(kustoUri);
 
             kusto = new KustoConnectionStringBuilder(kustoUri, kustoDatabase)
-               .WithAadApplicationTokenAuthentication(token);
+                .WithAadApplicationTokenAuthentication(token);
 
             if (!File.Exists("flights.json.gz"))
             {
-                using var wc = new WebClient();
-                wc.DownloadFile("https://raw.githubusercontent.com/elastic/kibana/v6.8.5/src/server/sample_data/data_sets/flights/flights.json.gz", "flights.json.gz");
+                using var hc = new HttpClient();
+                var response =
+                    await hc.GetAsync(new Uri(
+                        "https://raw.githubusercontent.com/elastic/kibana/v6.8.5/src/server/sample_data/data_sets/flights/flights.json.gz"));
+                if (response.IsSuccessStatusCode)
+                {
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    {
+                        var fi = new FileInfo("flights.json.gz");
+                        using (var fs = fi.OpenWrite())
+                        {
+                            await stream.CopyToAsync(fs);
+                        }
+                    }
+                }
+                else
+                {
+                    throw new FileNotFoundException();
+                }
             }
 
             await PopulateBothBackends($"{FLIGHTSDIR}/structure.json", "flights.json.gz");
