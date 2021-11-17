@@ -5,6 +5,7 @@
 namespace K2Bridge.KustoDAL
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Threading.Tasks;
     using K2Bridge.Factories;
@@ -55,6 +56,8 @@ namespace K2Bridge.KustoDAL
                 using IDataReader kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, RequestContext);
                 MapFieldCaps(kustoResults, response);
 
+                response.AddIndex(tableName);
+
                 if (response.Fields.Count > 0)
                 {
                     return response;
@@ -81,9 +84,9 @@ namespace K2Bridge.KustoDAL
         /// </summary>
         /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
         /// <returns>A list of Indexes matching the given name pattern.</returns>
-        public async Task<IndexListResponseElement> GetIndexListAsync(string indexName)
+        public async Task<IEnumerable<string>> GetTablesAndFunctions(string indexName)
         {
-            var response = new IndexListResponseElement();
+            var tablesAndFunctions = new List<string>();
             try
             {
                 Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
@@ -93,7 +96,10 @@ namespace K2Bridge.KustoDAL
                 using IDataReader kustoTables = await Kusto.ExecuteControlCommandAsync(readTablesCommand, RequestContext);
                 if (kustoTables != null)
                 {
-                    MapIndexList(kustoTables, response);
+                    while (kustoTables.Read())
+                    {
+                        tablesAndFunctions.Add(Convert.ToString(kustoTables[0]));
+                    }
                 }
 
                 Logger.LogDebug("Listing functions matching '{@indexName}'", indexName);
@@ -103,12 +109,38 @@ namespace K2Bridge.KustoDAL
                 using IDataReader kustoFunctions = await Kusto.ExecuteControlCommandAsync(readFunctionsCommand, RequestContext);
                 if (kustoFunctions != null)
                 {
-                    MapIndexList(kustoFunctions, response);
+                    while (kustoFunctions.Read())
+                    {
+                        tablesAndFunctions.Add(Convert.ToString(kustoFunctions[0]));
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error while executing GetIndexList.");
+                Logger.LogError(ex, "Error while executing GetTablesAndFunctions.");
+                throw;
+            }
+
+            return tablesAndFunctions;
+        }
+
+        /// <summary>
+        /// Executes a query to Kusto for Resolve Index.
+        /// Searches for all tables and all functions that match the index name pattern.
+        /// </summary>
+        /// <param name="indexName">Index name pattern, e.g. "*", "orders*", "orders".</param>
+        /// <returns>A list of Indexes matching the given name pattern.</returns>
+        public async Task<ResolveIndexResponse> ResolveIndexAsync(string indexName)
+        {
+            var response = new ResolveIndexResponse();
+            try
+            {
+                var tablesAndFunctions = await GetTablesAndFunctions(indexName);
+                MapResolveIndexList(tablesAndFunctions, response);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error while executing ResolveIndexAsync.");
                 throw;
             }
 
@@ -131,14 +163,14 @@ namespace K2Bridge.KustoDAL
             }
         }
 
-        private void MapIndexList(IDataReader kustoResults, IndexListResponseElement response)
+        private void MapResolveIndexList(IEnumerable<string> kustoResults, ResolveIndexResponse response)
         {
-            while (kustoResults.Read())
+            foreach (var result in kustoResults)
             {
-                var termBucket = TermBucketFactory.CreateFromDataRecord(kustoResults);
-                response.Aggregations.IndexCollection.AddBucket(termBucket);
+                var index = new ResolveIndexResponseIndex() { Name = result };
+                response.AddIndex(index);
 
-                Logger.LogDebug("Found table/function: {@termBucket}", termBucket);
+                Logger.LogDebug("Found table/function: {@index}", index);
             }
         }
     }

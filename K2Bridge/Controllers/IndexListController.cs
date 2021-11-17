@@ -6,13 +6,15 @@ namespace K2Bridge.Controllers
 {
     using System.Threading.Tasks;
     using K2Bridge.KustoDAL;
+    using K2Bridge.Models.Response.Metadata;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Handles Index List requests.
-    /// The original request produced by Kibana is in the format of:
-    /// POST /*/_search?ignore_unavailable=true HTTP/1.1.
+    /// The original request produced by Kibana 7 is in the format of:
+    /// GET /_resolve/index/* HTTP/1.1.
     /// </summary>
     public class IndexListController : ControllerBase
     {
@@ -32,14 +34,16 @@ namespace K2Bridge.Controllers
         private ILogger Logger { get; set; }
 
         /// <summary>
-        /// Process the request.
+        /// Resolve the index.
         /// </summary>
-        /// <param name="indexName">The index to process.</param>
+        /// <param name="indexName">The index pattern to process.</param>
         /// <returns>The table list in the Kusto database.</returns>
+        [HttpGet("_resolve/index/{indexName}")]
         [Produces("application/json")]
-        public async Task<IActionResult> Process(string indexName)
+        [ProducesResponseType(typeof(ResolveIndexResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Resolve(string indexName)
         {
-            var response = await KustoDataAccess.GetIndexListAsync(indexName);
+            var response = await KustoDataAccess.ResolveIndexAsync(indexName);
 
             return Ok(response);
         }

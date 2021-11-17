@@ -23,7 +23,6 @@ namespace K2Bridge.Models.Request.Aggregations
         /// <summary>
         /// Gets or sets the date aggregation interval.
         /// </summary>
-        [JsonProperty("interval")]
         public string Interval { get; set; }
 
         /// <inheritdoc/>
