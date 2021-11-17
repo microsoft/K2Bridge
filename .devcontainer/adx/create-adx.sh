@@ -40,7 +40,7 @@ RESOURCE_GROUP_SCOPE=$(az group create --location $RESOURCE_GROUP_LOCATION --res
 
 # Create Data Explorer Cluster
 az extension add -n kusto
-echo "Please be patient. Long running operation (10 minutes)."
+echo "$(tput setaf 2)[1/8] Creating Data Explorer Cluster. Please be patient. Long running operation (10 minutes).$(tput setaf 7)"
 az kusto cluster create \
     --cluster-name $ADX_CLUSTER_NAME \
     --sku name="Dev(No SLA)_Standard_D11_v2" tier="Basic" capacity=1 \
@@ -50,6 +50,7 @@ az kusto cluster create \
     --type="None"
 
 # Create Data Explorer Database
+echo "$(tput setaf 2)[2/8] Creating Data Explorer Database.$(tput setaf 7)"
 az kusto database create \
     --cluster-name $ADX_CLUSTER_NAME \
     --database-name $ADX_DB_NAME \
@@ -57,14 +58,17 @@ az kusto database create \
     --read-write-database soft-delete-period=P365D hot-cache-period=P31D location=$RESOURCE_GROUP_LOCATION
 
 # Create Service Principal
+echo "$(tput setaf 2)[3/8] Creating Service Principal.$(tput setaf 7)"
 SECRETS=$(az ad sp create-for-rbac --name $SERVICE_PRINCIPAL_NAME --role Contributor --scopes $RESOURCE_GROUP_SCOPE)
 SERVICE_PRINCIPAL_FQN="aadapp=$(echo $SECRETS | jq -r '.appId');$(echo $SECRETS | jq -r '.tenant')"
 SERVICE_PRINCIPAL_DISPLAYNAME=$(echo $SECRETS | jq '.displayName')
 
 # Wait Service Principal propagation
+echo "$(tput setaf 2)[4/8] Wait 60 seconds until Service Principal is propagated.$(tput setaf 7)"
 sleep 60
 
 # Assign Service Principal to database permissions
+echo "$(tput setaf 2)[5/8] Assigning database permissions.$(tput setaf 7)"
 az kusto database add-principal \
     --cluster-name $ADX_CLUSTER_NAME \
     --database-name $ADX_DB_NAME \
@@ -72,6 +76,7 @@ az kusto database add-principal \
     --value name=$SERVICE_PRINCIPAL_DISPLAYNAME fqn=$SERVICE_PRINCIPAL_FQN role="Viewer" type="App"
 
 # Create Storage Account
+echo "$(tput setaf 2)[6/8] Creating Storage Account.$(tput setaf 7)"
 az storage account create \
     --name $STORAGE_ACCOUNT_NAME \
     --location $RESOURCE_GROUP_LOCATION \
@@ -86,7 +91,8 @@ az storage container create --name $STORAGE_CONTAINER_NAME
 EXPIRY=$(date -u -d '1 hour' '+%Y-%m-%dT%H:%MZ')
 SAS=$(az storage container generate-sas --name $STORAGE_CONTAINER_NAME --permissions lr --expiry $EXPIRY --https-only -o tsv)
 
-# Create Table
+# Create Azure Data Explorer Table
+echo "$(tput setaf 2)[7/8] Creating Azure Data Explorer Table.$(tput setaf 7)"
 az storage blob upload --container-name $STORAGE_CONTAINER_NAME --file table.kql
 
 az kusto script create \
@@ -99,6 +105,7 @@ az kusto script create \
     --force-update-tag $(cat /proc/sys/kernel/random/uuid)
 
 # Ingest sample data
+echo "$(tput setaf 2)[8/8] Ingesting Sample Data.$(tput setaf 7)"
 DATA_FILE_NAME=data.json.gz
 curl https://raw.githubusercontent.com/elastic/kibana/v6.8.5/src/server/sample_data/data_sets/flights/flights.json.gz --output $DATA_FILE_NAME
 
@@ -115,7 +122,7 @@ echo "export KUSTO_URI=https://$ADX_CLUSTER_NAME.$RESOURCE_GROUP_LOCATION.kusto.
 echo "export KUSTO_DB=$ADX_DB_NAME" >> ~/.bashrc 
 
 # Variables needed to populate appsettings.development.json
-echo "Use following settings/secrets in appsettings.development.json:"
+echo -e "$(tput setaf 2)\nUse following settings/secrets in appsettings.development.json:$(tput setaf 7)"
 
 echo "aadClientId: $(tput setaf 2)$(echo $SECRETS | jq -r '.appId')$(tput setaf 7)"
 echo "aadClientSecret: $(tput setaf 2)$(echo $SECRETS | jq -r '.password')$(tput setaf 7)"
