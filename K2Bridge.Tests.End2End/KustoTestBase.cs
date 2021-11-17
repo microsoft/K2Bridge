@@ -130,30 +130,6 @@ namespace K2Bridge.Tests.End2End
         }
 
         /// <summary>
-        /// Download a remote file.
-        /// </summary>
-        /// <param name="url">the URL of the remote file</param>
-        /// <param name="fileName">The file to be created</param>
-        /// <exception cref="FileNotFoundException"></exception>
-        private static async Task DownloadFile(string url, string fileName)
-        {
-            using var hc = new HttpClient();
-            var response =
-                await hc.GetAsync(new Uri(url));
-            if (response.IsSuccessStatusCode)
-            {
-                await using var stream = await response.Content.ReadAsStreamAsync();
-                var fi = new FileInfo(fileName);
-                await using var fs = fi.OpenWrite();
-                await stream.CopyToAsync(fs);
-            }
-            else
-            {
-                throw new FileNotFoundException();
-            }
-        }
-
-        /// <summary>
         ///  Name of the Kusto database to populate with test data.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the setup phase.</returns>
@@ -234,6 +210,30 @@ namespace K2Bridge.Tests.End2End
         {
             var bridgeUri = Environment.GetEnvironmentVariable("K2BRIDGE_URL") ?? "http://localhost:8080";
             return await TestElasticClient.Create(bridgeUri, $"{prefix}-k2.json");
+        }
+
+        /// <summary>
+        /// Download a remote file.
+        /// </summary>
+        /// <param name="url">the URL of the remote file</param>
+        /// <param name="fileName">The file to be created</param>
+        /// <exception cref="FileNotFoundException"></exception>
+        private static async Task DownloadFile(string url, string fileName)
+        {
+            using var hc = new HttpClient();
+            var response =
+                await hc.GetAsync(new Uri(url));
+            if (response.IsSuccessStatusCode)
+            {
+                await using var stream = await response.Content.ReadAsStreamAsync();
+                var fi = new FileInfo(fileName);
+                await using var fs = fi.OpenWrite();
+                await stream.CopyToAsync(fs);
+            }
+            else
+            {
+                throw new FileNotFoundException();
+            }
         }
     }
 }
