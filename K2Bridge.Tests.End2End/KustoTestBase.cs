@@ -120,30 +120,37 @@ namespace K2Bridge.Tests.End2End
             kusto = new KustoConnectionStringBuilder(kustoUri, kustoDatabase)
                 .WithAadApplicationTokenAuthentication(token);
 
-            if (!File.Exists("flights.json.gz"))
+            const string fileName = "flights.json.gz";
+            if (!File.Exists(fileName))
             {
-                using var hc = new HttpClient();
-                var response =
-                    await hc.GetAsync(new Uri(
-                        "https://raw.githubusercontent.com/elastic/kibana/v6.8.5/src/server/sample_data/data_sets/flights/flights.json.gz"));
-                if (response.IsSuccessStatusCode)
-                {
-                    using (var stream = await response.Content.ReadAsStreamAsync())
-                    {
-                        var fi = new FileInfo("flights.json.gz");
-                        using (var fs = fi.OpenWrite())
-                        {
-                            await stream.CopyToAsync(fs);
-                        }
-                    }
-                }
-                else
-                {
-                    throw new FileNotFoundException();
-                }
+                await DownloadFile("https://raw.githubusercontent.com/elastic/kibana/v6.8.5/src/server/sample_data/data_sets/flights/flights.json.gz", fileName);
             }
 
-            await PopulateBothBackends($"{FLIGHTSDIR}/structure.json", "flights.json.gz");
+            await PopulateBothBackends($"{FLIGHTSDIR}/structure.json", fileName);
+        }
+
+        /// <summary>
+        /// Download a remote file.
+        /// </summary>
+        /// <param name="url">the URL of the remote file</param>
+        /// <param name="fileName">The file to be created</param>
+        /// <exception cref="FileNotFoundException"></exception>
+        private static async Task DownloadFile(string url, string fileName)
+        {
+            using var hc = new HttpClient();
+            var response =
+                await hc.GetAsync(new Uri(url));
+            if (response.IsSuccessStatusCode)
+            {
+                await using var stream = await response.Content.ReadAsStreamAsync();
+                var fi = new FileInfo(fileName);
+                await using var fs = fi.OpenWrite();
+                await stream.CopyToAsync(fs);
+            }
+            else
+            {
+                throw new FileNotFoundException();
+            }
         }
 
         /// <summary>
