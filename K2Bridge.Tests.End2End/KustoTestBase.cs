@@ -221,8 +221,7 @@ namespace K2Bridge.Tests.End2End
         private static async Task DownloadFile(string url, string fileName)
         {
             using var hc = new HttpClient();
-            var response =
-                await hc.GetAsync(new Uri(url));
+            var response = await hc.GetAsync(new Uri(url));
             if (response.IsSuccessStatusCode)
             {
                 await using var stream = await response.Content.ReadAsStreamAsync();
