@@ -20,29 +20,24 @@ namespace K2Bridge.Visitors
 
             dateHistogramAggregation.KustoQL =
                 $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldName} = ";
-            if (!string.IsNullOrEmpty(dateHistogramAggregation.Interval))
+            var interval = dateHistogramAggregation.Interval;
+            if (!string.IsNullOrEmpty(interval))
             {
-                var period = dateHistogramAggregation.Interval[^1];
-                if (dateHistogramAggregation.Interval.Contains("week", System.StringComparison.OrdinalIgnoreCase))
+                // https://www.elastic.co/guide/en/elasticsearch/reference/master/search-aggregations-bucket-datehistogram-aggregation.html#calendar_and_fixed_intervals
+                // The interval value can get its value from two options: calendar_interval or fixed_interval.
+                // If its calendar_interval, it can contain complete words like 'year', 'month' etc, so we need to check for that explicitly.
+                // We also check if its a known character, if not, just use the value in the bin as-is.
+                var period = interval[^1];
+                dateHistogramAggregation.KustoQL += period switch
                 {
-                    dateHistogramAggregation.KustoQL += $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})";
-                } else if (dateHistogramAggregation.Interval.Contains("month", System.StringComparison.OrdinalIgnoreCase))
-                {
-                    dateHistogramAggregation.KustoQL += $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})";
-                } else if (dateHistogramAggregation.Interval.Contains("year", System.StringComparison.OrdinalIgnoreCase))
-                {
-                    dateHistogramAggregation.KustoQL += $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})";
-                }
-                else
-                {
-                    dateHistogramAggregation.KustoQL += period switch
-                    {
-                        'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
-                        'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
-                        'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
-                        _ => $"bin({dateHistogramAggregation.FieldName}, {dateHistogramAggregation.Interval})",
-                    };
-                }
+                    'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
+                    'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
+                    'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
+                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
+                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
+                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
+                    _ => $"bin({dateHistogramAggregation.FieldName}, {dateHistogramAggregation.Interval})",
+                };
             }
             else
             {
