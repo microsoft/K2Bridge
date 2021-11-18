@@ -18,7 +18,7 @@ namespace K2Bridge.Models.Response
         /// Gets the Total.
         /// </summary>
         [JsonProperty("total")]
-        public long Total { get; private set; }
+        public Total Total { get; private set; } = new Total();
 
         /// <summary>
         /// Gets or sets MaxScore.
@@ -50,7 +50,7 @@ namespace K2Bridge.Models.Response
         /// <param name="docCount">int representing doc count.</param>
         public void AddToTotal(int docCount)
         {
-            Total += docCount;
+            Total.Value += docCount;
         }
     }
 }

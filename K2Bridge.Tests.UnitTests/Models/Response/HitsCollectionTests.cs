@@ -17,7 +17,7 @@ namespace UnitTests.K2Bridge.Models.Response
 
             hitsCollection.AddToTotal(17);
 
-            Assert.AreEqual(17, hitsCollection.Total);
+            Assert.AreEqual(17, hitsCollection.Total.Value);
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace UnitTests.K2Bridge.Models.Response
             hitsCollection.AddToTotal(int.MaxValue);
             hitsCollection.AddToTotal(int.MaxValue);
 
-            Assert.That(hitsCollection.Total > int.MaxValue);
+            Assert.That(hitsCollection.Total.Value > int.MaxValue);
         }
     }
 }

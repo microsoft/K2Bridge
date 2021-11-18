@@ -37,7 +37,6 @@ namespace UnitTests.K2Bridge.RewriteRules
         };
 
         private static readonly object[] RewriteSearchPath = {
-            new TestCaseData("/myindex/_search", SearchBodyForIndicies).Returns("/IndexList/Process/myindex").SetName("RewriteSearchRule_IndiciesSearch_RerouteToIndexList"),
             new TestCaseData("/.kibana/_search", SearchBodyForIndicies).Returns("/.kibana/_search").SetName("RewriteSearchRule_KibanaInternal_NotChanged"),
             new TestCaseData("/myindex/notsearch", SearchBodyForIndicies).Returns("/myindex/notsearch").SetName("RewriteSearchRule_OtherInput_NotChanged"),
             new TestCaseData("/myindex/_search", "{}").Returns("/Query/SingleSearch/myindex").SetName("RewriteSearchRule_SearchEmptyJsonBody_RerouteToSearch"),

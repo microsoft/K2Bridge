@@ -313,7 +313,7 @@ stages:
         helm upgrade --install elasticsearchqa elastic/elasticsearch \
           --wait --timeout 45m \
           --set image=docker.elastic.co/elasticsearch/elasticsearch-oss \
-          --set imageTag=6.8.5 \
+          --set imageTag=7.10.2 \
           --set clusterName=elasticsearchqa \
           --set replicas=1 \
           --set persistence.enabled=false \
