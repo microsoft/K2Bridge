@@ -12,7 +12,7 @@ namespace K2Bridge.Models.Response
     /// </summary>
     public class BucketsCollection
     {
-        private readonly List<IBucket> buckets = new();
+        private readonly List<IBucket> buckets = new ();
 
         /// <summary>
         /// Gets all buckets.

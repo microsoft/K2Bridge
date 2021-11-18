@@ -26,8 +26,7 @@ namespace K2Bridge.Visitors
         /// A list of strings that when found, means the search term is a Lucene term.
         /// </summary>
         private static readonly List<string> SpecialStrings =
-            new()
-            { " ", "AND", "OR", "NOT", "\"", ":", "(", ")", "[", "]", "{", "}", "*", "&&", "+", "-", "|", "?", "\\", "^", "~" };
+            new () { " ", "AND", "OR", "NOT", "\"", ":", "(", ")", "[", "]", "{", "}", "*", "&&", "+", "-", "|", "?", "\\", "^", "~" };
 
         /// <inheritdoc/>
         public void Visit(QueryStringClause queryStringClause)

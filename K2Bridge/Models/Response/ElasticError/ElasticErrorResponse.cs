@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Response.ElasticError
     /// </summary>
     public class ElasticErrorResponse
     {
-        private readonly List<ErrorResponseElement> responses = new();
+        private readonly List<ErrorResponseElement> responses = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElasticErrorResponse"/> class.

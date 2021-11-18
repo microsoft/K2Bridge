@@ -27,7 +27,7 @@ namespace K2Bridge.KustoDAL
         private readonly bool isHighlight = false;
 
         // Lucene analyzer.
-        private readonly Lazy<Analyzer> analyzer = new(() => new WordAnalyzer());
+        private readonly Lazy<Analyzer> analyzer = new (() => new WordAnalyzer());
 
         // Highlighters computed for this query.
         private readonly Lazy<IDictionary<string, Highlighter>> highlighters;

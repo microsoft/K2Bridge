@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Response
     /// </summary>
     public class ElasticResponse
     {
-        private readonly List<ResponseElement> responses = new() { new ResponseElement() };
+        private readonly List<ResponseElement> responses = new () { new ResponseElement() };
 
         /// <summary>
         /// Gets responses.
