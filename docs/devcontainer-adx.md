@@ -16,6 +16,7 @@ Following steps are performed by this script:
 - [x] Ingest sample data
 - [x] Add environment variables to .bashrc (will be used by end-to-end tests)
 
+Note: This script requires jq; this library is installed by default on the dev container. 
 
 ### Login with Azure CLI
 ```bash
@@ -34,22 +35,24 @@ vscode ➜ /workspaces/K2Bridge (feature/script-adx-install ✗) $ az account sh
 vscode ➜ /workspaces/K2Bridge (feature/script-adx-install ✗) $ cd ./.devcontainer/adx
 ```
 
-### Execute create-adx.sh with a unique name.
-This unique name will be used in resource group, cluster and service principal names. If needed, you can change default naming convention directly in create-adx.sh.
+### Execute create-adx.sh with a unique name and location.
+The unique name will be used in resource group, cluster and service principal names. If needed, you can change default naming convention directly in create-adx.sh.
 
 - RESOURCE_GROUP_NAME="rg-k2-$unique-dev"
 - ADX_CLUSTER_NAME="adxk2$unique"
 - ADX_DB_NAME="devdatabase"
 - SERVICE_PRINCIPAL_NAME="sp-k2-$unique"
 
+For location, values can be listed with `az account list-location`. Only location name with no space is valid (for instance westeurope or eastus). 
+
 ```bash
-vscode ➜ /workspaces/K2Bridge/.devcontainer/adx (feature/script-adx-install ✗) $ bash create-adx.sh -u <uniquename>
+vscode ➜ /workspaces/K2Bridge/.devcontainer/adx (feature/script-adx-install ✗) $ bash create-adx.sh -u <uniquename> -l <location>
 [...]
 Use following settings/secrets in appsettings.development.json:
 aadClientId: 00000000-0000-0000-0000-000000000000
 aadClientSecret: tuUuUuUuU-JXx~x~xxxxxxxxxxxJ00000_
 aadTenantId: 00000000-0000-0000-0000-000000000000
-adxClusterUrl: https://adxk2<uniquename>.westeurope.kusto.windows.net
+adxClusterUrl: https://adxk2<uniquename>.<location>.kusto.windows.net
 adxDefaultDatabaseName: dev
 ```
 
