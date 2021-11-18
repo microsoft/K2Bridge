@@ -25,14 +25,14 @@ namespace K2Bridge.KustoDAL
         /// </summary>
         private static readonly Dictionary<Type, Func<object, object>> Converters = new ()
         {
-            { typeof(sbyte), (value) => value is DBNull || value == null ? null : (bool?)((sbyte)value != 0) },
-            { typeof(SqlDecimal), (value) => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble() },
-            { typeof(Guid), (value) => value is DBNull || value == null ? null : ((Guid)value).ToString() },
-            { typeof(TimeSpan), (value) => value is DBNull || value == null ? null : XmlConvert.ToString((TimeSpan)value) },
+            [typeof(sbyte)] = value => value is DBNull or null ? null : (bool?)((sbyte)value != 0),
+            [typeof(SqlDecimal)] = value => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble(),
+            [typeof(Guid)] = value => value is DBNull or null ? null : ((Guid)value).ToString(),
+            [typeof(TimeSpan)] = value => value is DBNull or null ? null : XmlConvert.ToString((TimeSpan)value),
 
             // Elasticsearch returns timestamp fields in UTC in ISO-8601 but without Timezone.
             // Use a String type to control serialization to mimic this behavior.
-            { typeof(DateTime), (value) => value is DBNull ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") },
+            [typeof(DateTime)] = value => value is DBNull ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF"),
         };
 
         private static readonly Random Random = new ();
