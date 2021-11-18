@@ -23,18 +23,18 @@ namespace K2Bridge.Models.Response
         public IEnumerable<ResponseElement> Responses => responses;
 
         /// <summary>
+        /// Gets or sets query execution time.
+        /// </summary>
+        [JsonProperty("took")]
+        public int TookMilliseconds { get; set; }
+
+        /// <summary>
         /// Add parent to the main agg
         /// </summary>
         public void AddParentToAgg(string parent)
         {
             responses[0].Aggregations.Parent = parent;
         }
-
-        /// <summary>
-        /// Gets or sets query execution time.
-        /// </summary>
-        [JsonProperty("took")]
-        public int TookMilliseconds { get; set; }
 
         /// <summary>
         /// Add aggregation to first response.
