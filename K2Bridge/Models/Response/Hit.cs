@@ -23,7 +23,7 @@ namespace K2Bridge.Models.Response
         public string Index { get; set; }
 
         /// <summary>
-        /// Gets or sets hit type.
+        /// Gets hit type.
         /// </summary>
         [JsonProperty("_type")]
         public string Type { get; } = TYPE;
@@ -47,7 +47,7 @@ namespace K2Bridge.Models.Response
         public object Score { get; set; }
 
         /// <summary>
-        /// Gets or sets the source.
+        /// Gets the source.
         /// </summary>
         [JsonProperty("_source")]
         public JObject Source { get; } = new JObject();

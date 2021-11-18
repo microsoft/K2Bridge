@@ -27,7 +27,7 @@ namespace K2Bridge.KustoDAL
         private readonly bool isHighlight = false;
 
         // Lucene analyzer.
-        private readonly Lazy<Analyzer> analyzer = new Lazy<Analyzer>(() => new WordAnalyzer());
+        private readonly Lazy<Analyzer> analyzer = new(() => new WordAnalyzer());
 
         // Highlighters computed for this query.
         private readonly Lazy<IDictionary<string, Highlighter>> highlighters;
@@ -88,7 +88,7 @@ namespace K2Bridge.KustoDAL
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Failure getting highlighted value for {columnName}.");
+                logger.LogError(e, "Failure getting highlighted value for {columnName}.", columnName);
                 return null;
             }
         }
@@ -165,7 +165,7 @@ namespace K2Bridge.KustoDAL
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Failure creating highlighters for {value}");
+                logger.LogError(e, "Failure creating highlighters for {value}", value);
                 return null;
             }
         }

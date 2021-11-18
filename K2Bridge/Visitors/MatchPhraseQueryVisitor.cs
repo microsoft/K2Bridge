@@ -15,8 +15,8 @@ namespace K2Bridge.Visitors
     {
         // The following regexes look for the '?' or '*' chars which are
         // not followed by an escape character
-        private static readonly Regex SingleCharPattern = new Regex(@"(?<!\\)\?");
-        private static readonly Regex MultiCharPattern = new Regex(@"(?<!\\)\*");
+        private static readonly Regex SingleCharPattern = new(@"(?<!\\)\?");
+        private static readonly Regex MultiCharPattern = new(@"(?<!\\)\*");
 
         /// <inheritdoc/>
         public void Visit(MatchPhraseClause matchPhraseClause)

@@ -149,7 +149,6 @@ namespace K2Bridge.KustoDAL
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="reader">Kusto IDataReader response.</param>
         /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
-        /// <param name="isSingleDoc">Indicates whether this was a single document query.</param>
         /// <returns>ElasticResponse object.</returns>
         private ElasticResponse ReadResponse(
                 QueryData query,

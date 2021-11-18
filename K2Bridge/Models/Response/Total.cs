@@ -19,7 +19,7 @@ namespace K2Bridge.Models.Response
         public const string Relation = "eq";
 
         /// <summary>
-        /// Gets the value.
+        /// Gets or sets the value.
         /// </summary>
         [JsonProperty("value")]
         public long Value { get; set; }

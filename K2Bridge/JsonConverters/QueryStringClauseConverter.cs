@@ -31,7 +31,7 @@ namespace K2Bridge.JsonConverters
             var obj = new QueryStringClause
             {
                 Phrase = (string)jt.First["query"],
-                Wildcard = (wildcard != null) ? (bool)wildcard : false,
+                Wildcard = (wildcard != null) && (bool)wildcard,
                 Default = (defaultWildcard != null) ? (string)defaultWildcard : "*",
             };
 

@@ -12,7 +12,7 @@ namespace K2Bridge.Models.Response
     /// </summary>
     public class HitsCollection
     {
-        private readonly List<Hit> hits = new List<Hit>();
+        private readonly List<Hit> hits = new();
 
         /// <summary>
         /// Gets the Total.
