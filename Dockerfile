@@ -1,7 +1,7 @@
 # Multi-stage Docker build, test and package
 # Based on https://github.com/dotnet/dotnet-docker/blob/master/samples/dotnetapp/dotnet-docker-unit-testing.md
 
-ARG DOTNET_VERSION=5.0
+ARG DOTNET_VERSION=6.0
 
 # STAGE: Base build and test
 FROM mcr.microsoft.com/dotnet/sdk:$DOTNET_VERSION AS build
