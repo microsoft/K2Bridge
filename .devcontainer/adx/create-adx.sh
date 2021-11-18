@@ -117,7 +117,7 @@ DATA_FILE_NAME=data.json.gz
 curl https://raw.githubusercontent.com/elastic/kibana/v6.8.5/src/server/sample_data/data_sets/flights/flights.json.gz --output $DATA_FILE_NAME
 
 KUSTO_URL=https://$ADX_CLUSTER_NAME.$LOCATION.kusto.windows.net
-TOKEN=$(az account get-access-token --scope "$KUSTO_URL/.default" -o tsv | cut -f1)
+TOKEN=$(az account get-access-token --scope "$KUSTO_URL/.default" --query accessToken -o tsv)
 
 curl -X POST "$KUSTO_URL/v1/rest/ingest/$ADX_DB_NAME/kibana_data_flights?streamFormat=json" --header "Authorization: Bearer $TOKEN" --header "Content-Encoding: gzip" --header "Content-Type: multipart/form-data" --data-binary "@$DATA_FILE_NAME"
 rm $DATA_FILE_NAME
@@ -129,10 +129,12 @@ echo "export KUSTO_URI=https://$ADX_CLUSTER_NAME.$LOCATION.kusto.windows.net" >>
 echo "export KUSTO_DB=$ADX_DB_NAME" >> ~/.bashrc 
 
 # Variables needed to populate appsettings.development.json
-echo -e "$(tput setaf 2)\nUse following settings/secrets in appsettings.development.json:$(tput setaf 7)"
+echo -e "$(tput setaf 2)\n\nUse following settings/secrets in appsettings.development.json:$(tput setaf 7)"
 
 echo "aadClientId: $(tput setaf 2)$(echo $SECRETS | jq -r '.appId')$(tput setaf 7)"
 echo "aadClientSecret: $(tput setaf 2)$(echo $SECRETS | jq -r '.password')$(tput setaf 7)"
 echo "aadTenantId: $(tput setaf 2)$(echo $SECRETS | jq -r '.tenant')$(tput setaf 7)"
 echo "adxClusterUrl: $(tput setaf 2)https://$ADX_CLUSTER_NAME.$LOCATION.kusto.windows.net$(tput setaf 7)"
 echo "adxDefaultDatabaseName: $(tput setaf 2)$ADX_DB_NAME$(tput setaf 7)"
+
+
