@@ -47,7 +47,6 @@ namespace K2Bridge.JsonConverters
 
             foreach (var agg in aggs.Keys)
             {
-
                 writer.WritePropertyName(agg);
 
                 writer.WriteStartObject();
@@ -64,7 +63,6 @@ namespace K2Bridge.JsonConverters
                 }
 
                 writer.WriteEndObject();
-
             }
 
             writer.WriteEndObject();

@@ -47,7 +47,6 @@ namespace K2Bridge.Visitors
             // todatetime is redundent but we'll keep it for now
             dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {dateHistogramAggregation.FieldName} asc";
             dateHistogramAggregation.FieldRenameQuery = "_" + dateHistogramAggregation.Parent + "=" + dateHistogramAggregation.FieldName;
-
         }
     }
 }

@@ -36,7 +36,6 @@ namespace K2Bridge.JsonConverters
             writer.WriteStartObject();
             writer.WritePropertyName(aggs.Parent);
 
-
             serializer.Serialize(writer, aggs.Collection);
 
             writer.WriteEndObject();

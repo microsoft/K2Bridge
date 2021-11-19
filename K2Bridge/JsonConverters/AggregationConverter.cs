@@ -49,6 +49,7 @@ namespace K2Bridge.JsonConverters
             {
                 obj.PrimaryAggregation.Parent = obj.Parent;
             }
+
             return obj;
         }
     }
