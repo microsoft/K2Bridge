@@ -62,7 +62,6 @@ namespace K2Bridge.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(ElasticResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(HttpResponseMessageResult), StatusCodes.Status200OK)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "An uncommon behavior.")]
         public async Task<IActionResult> MultiSearchAsync(
             [FromServices] RequestContext requestContext)
         {

@@ -19,7 +19,7 @@ namespace K2Bridge.Models.Response.Metadata
         public string Name { get; set; }
 
         /// <summary>
-        /// Hard coded attributes for indices.
+        /// Gets hard coded attributes for indices.
         /// </summary>
         [JsonProperty("attributes")]
         public List<string> Attributes { get; } = new List<string>() {

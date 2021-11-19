@@ -23,19 +23,19 @@ namespace K2Bridge.KustoDAL
         /// <summary>
         /// Type converter function used to get values from column.
         /// </summary>
-        private static readonly Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>
+        private static readonly Dictionary<Type, Func<object, object>> Converters = new ()
         {
-            { typeof(sbyte), (value) => value is DBNull || value == null ? null : (bool?)((sbyte)value != 0) },
-            { typeof(SqlDecimal), (value) => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble() },
-            { typeof(Guid), (value) => value is DBNull || value == null ? null : ((Guid)value).ToString() },
-            { typeof(TimeSpan), (value) => value is DBNull || value == null ? null : XmlConvert.ToString((TimeSpan)value) },
+            [typeof(sbyte)] = value => value is DBNull or null ? null : (bool?)((sbyte)value != 0),
+            [typeof(SqlDecimal)] = value => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble(),
+            [typeof(Guid)] = value => value is DBNull or null ? null : ((Guid)value).ToString(),
+            [typeof(TimeSpan)] = value => value is DBNull or null ? null : XmlConvert.ToString((TimeSpan)value),
 
             // Elasticsearch returns timestamp fields in UTC in ISO-8601 but without Timezone.
             // Use a String type to control serialization to mimic this behavior.
-            { typeof(DateTime), (value) => value is DBNull ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") },
+            [typeof(DateTime)] = value => value is DBNull ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF"),
         };
 
-        private static readonly Random Random = new Random();
+        private static readonly Random Random = new ();
 
         /// <summary>
         /// Parses a kusto datatable to hits.
@@ -106,9 +106,9 @@ namespace K2Bridge.KustoDAL
                     continue;
                 }
 
-                if (value is DateTime)
+                if (value is DateTime time)
                 {
-                    value = TimeUtils.ToEpochMilliseconds((DateTime)value);
+                    value = TimeUtils.ToEpochMilliseconds(time);
                 }
 
                 hit.Sort.Add(value);
