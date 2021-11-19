@@ -52,6 +52,7 @@ namespace K2Bridge
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception,
         /// or a null reference(Nothing in Visual Basic) if no inner exception is specified.</param>
+        /// <param name="phaseName">The logical phase where the exception originated from.</param>
         protected K2Exception(string message, Exception innerException, string phaseName)
             : base(message, innerException)
         {

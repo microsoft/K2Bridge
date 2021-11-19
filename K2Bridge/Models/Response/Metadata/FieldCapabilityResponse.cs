@@ -12,8 +12,8 @@ namespace K2Bridge.Models.Response.Metadata
     /// </summary>
     public class FieldCapabilityResponse
     {
-        private readonly Dictionary<string, FieldCapabilityElement> fields = new Dictionary<string, FieldCapabilityElement>();
-        private readonly List<string> indices = new List<string>();
+        private readonly Dictionary<string, FieldCapabilityElement> fields = new ();
+        private readonly List<string> indices = new ();
 
         /// <summary>
         /// Gets all fields.
@@ -23,7 +23,7 @@ namespace K2Bridge.Models.Response.Metadata
         public IDictionary<string, FieldCapabilityElement> Fields => fields;
 
         /// <summary>
-        /// Indices.
+        /// Gets indices.
         /// </summary>
         /// <returns>List of indices.</returns>
         [JsonProperty("indices")]
@@ -46,7 +46,7 @@ namespace K2Bridge.Models.Response.Metadata
         /// <summary>
         /// Add index to response.
         /// </summary>
-        /// <param name="fieldCapabilityElement">Index name.</param>
+        /// <param name="indexName">Index name.</param>
         public void AddIndex(string indexName)
         {
             indices.Add(indexName);

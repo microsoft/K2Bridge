@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Response.ElasticError
     /// </summary>
     public class ElasticErrorResponse
     {
-        private readonly List<ErrorResponseElement> responses = new List<ErrorResponseElement>();
+        private readonly List<ErrorResponseElement> responses = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ElasticErrorResponse"/> class.
@@ -47,7 +47,7 @@ namespace K2Bridge.Models.Response.ElasticError
         /// <param name="type">Specific error type.</param>
         /// <param name="reason">Specific reason for error.</param>
         /// <param name="indexName">Index name where error happend.</param>
-        /// <returns>The instance of ElasticErrorResponse</returns>
+        /// <returns>The instance of ElasticErrorResponse.</returns>
         public ElasticErrorResponse WithRootCause(string type, string reason, string indexName)
         {
             AddRootCause(type, reason, indexName);

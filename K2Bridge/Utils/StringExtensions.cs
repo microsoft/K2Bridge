@@ -7,7 +7,7 @@ namespace K2Bridge.Utils
     using System;
 
     /// <summary>
-    /// String extensions methods
+    /// String extensions methods.
     /// </summary>
     public static class StringExtensions
     {

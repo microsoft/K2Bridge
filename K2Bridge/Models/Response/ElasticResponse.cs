@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Response
     /// </summary>
     public class ElasticResponse
     {
-        private readonly List<ResponseElement> responses = new List<ResponseElement> { new ResponseElement() };
+        private readonly List<ResponseElement> responses = new () { new ResponseElement() };
 
         /// <summary>
         /// Gets responses.
@@ -89,7 +89,7 @@ namespace K2Bridge.Models.Response
         public void AddTook(TimeSpan timeTaken)
         {
             responses[0].TookMilliseconds += timeTaken.Milliseconds;
-            this.TookMilliseconds += timeTaken.Milliseconds;
+            TookMilliseconds += timeTaken.Milliseconds;
         }
 
         /// <summary>

@@ -11,11 +11,11 @@ namespace K2Bridge.Models.Response.ElasticError
     /// Error Element class.
     /// Note this implementation requires further refactoring by adding the failed_shards section.
     /// This would be where stack trace information could be provided to the user.
-    /// https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1761
+    /// https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1761.
     /// </summary>
     public class ErrorElement
     {
-        private readonly List<RootCause> rootCauses = new List<RootCause>();
+        private readonly List<RootCause> rootCauses = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorElement"/> class.
