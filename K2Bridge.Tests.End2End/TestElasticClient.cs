@@ -127,6 +127,8 @@ namespace K2Bridge.Tests.End2End
             var result = await JsonQuery(request);
             MaskSearchCommon(result, "responses[*].");
 
+            MaskValue(result, "took");
+
             if (!validateHighlight)
             {
                 DeleteValue(result, "responses[*].hits.hits[*].highlight");
@@ -135,11 +137,14 @@ namespace K2Bridge.Tests.End2End
             // backend query isn't something we want to compare since it's unique to K2
             DeleteValue(result, "responses[*]._backendQuery");
 
+            // Ignore fields.hour_of_day (script_fields are currently no supported)
+            DeleteValue(result, "responses[*].hits.hits[*].fields.hour_of_day");
+
             return result;
         }
 
         /// <summary>
-        /// API operation for wildcard index search (hitting the IndexList endpoint).
+        /// API operation for resolving indices (hitting the IndexList endpoint).
         /// </summary>
         /// <param name="optionalIndexToKeep">Optional input with index name to keep.
         /// if this is not null, all other index names will be removed and it will be
@@ -147,39 +152,16 @@ namespace K2Bridge.Tests.End2End
         /// <returns><c>JToken</c> with parsed response.</returns>
         public async Task<JToken> Search(string optionalIndexToKeep = null)
         {
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/*/_search/")
-            {
-                Content = new StringContent("{\"size\":0,\"aggs\":{\"indices\":{\"terms\":{\"field\":\"_index\",\"size\":200}}}}"),
-            };
-            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/_resolve/index/*");
 
             var result = await JsonQuery(request);
 
-            MaskSearchCommon(result, string.Empty);
+            DeleteValue(result, $"aliases");
+            DeleteValue(result, $"data_streams");
 
-            // TODO: K2Bridge always returns 0 for doc_count
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            MaskValue(result, "aggregations.indices.buckets[*].doc_count");
-
-            // TODO: K2Bridge always returns 0 for total
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            MaskValue(result, "hits.total");
-
-            // TODO: K2Bridge returns null
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            MaskValue(result, "hits.max_score");
-
-            // TODO: K2Bridge returns extra status field
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            DeleteValue(result, "status");
-
-            // TODO: K2Bridge does not return these two fields
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            DeleteValue(result, "aggregations.indices.doc_count_error_upper_bound");
-            DeleteValue(result, "aggregations.indices.sum_other_doc_count");
             if (!string.IsNullOrEmpty(optionalIndexToKeep))
             {
-                NormalizeIndexNamesForIndexList(result, "aggregations.indices.buckets[*].key", optionalIndexToKeep);
+                NormalizeIndexNamesForIndexList(result, "indices[*].name", optionalIndexToKeep);
             }
 
             return result;

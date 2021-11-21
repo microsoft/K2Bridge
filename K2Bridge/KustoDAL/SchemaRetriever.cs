@@ -53,7 +53,7 @@ namespace K2Bridge.KustoDAL
 
             if (response == null)
             {
-                var msg = "Failed getting table schema for " + IndexName;
+                var msg = $"Failed getting table schema for {IndexName}";
                 Logger.LogError(msg);
                 throw new Exception(msg);
             }

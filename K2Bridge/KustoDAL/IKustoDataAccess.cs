@@ -20,10 +20,10 @@ namespace K2Bridge.KustoDAL
         Task<FieldCapabilityResponse> GetFieldCapsAsync(string indexName);
 
         /// <summary>
-        /// Executes a query to Kusto for Index List.
+        /// Resolves index name.
         /// </summary>
         /// <param name="indexName">Index name.</param>
         /// <returns>A list of Indexes.</returns>
-        Task<IndexListResponseElement> GetIndexListAsync(string indexName);
+        Task<ResolveIndexResponse> ResolveIndexAsync(string indexName);
     }
 }

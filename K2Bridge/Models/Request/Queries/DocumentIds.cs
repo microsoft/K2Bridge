@@ -8,7 +8,7 @@ namespace K2Bridge.Models.Request.Queries
     using Newtonsoft.Json;
 
     /// <summary>
-    /// A ViewSingleDocument query for a single doc id (represented by the _id column)
+    /// A ViewSingleDocument query for a single doc id (represented by the _id column).
     /// </summary>
     internal class DocumentIds : KustoQLBase, IVisitable
     {

@@ -72,10 +72,12 @@ namespace K2Bridge.Controllers
             var httpClient = clientFactory.CreateClient(ElasticMetadataClientName);
 
             // update the target host of the request
-            var builder = new UriBuilder(message.RequestUri);
-            builder.Scheme = httpClient.BaseAddress.Scheme;
-            builder.Host = httpClient.BaseAddress.Host;
-            builder.Port = httpClient.BaseAddress.Port;
+            var builder = new UriBuilder(message.RequestUri)
+            {
+                Scheme = httpClient.BaseAddress.Scheme,
+                Host = httpClient.BaseAddress.Host,
+                Port = httpClient.BaseAddress.Port,
+            };
             message.RequestUri = builder.Uri;
 
             message.Headers.Clear();

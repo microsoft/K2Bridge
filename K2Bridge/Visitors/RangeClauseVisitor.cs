@@ -13,7 +13,6 @@ namespace K2Bridge.Visitors
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         /// <inheritdoc/>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Resource are not available in this version.")]
         public void Visit(RangeClause rangeClause)
         {
             Ensure.IsNotNull(rangeClause, nameof(rangeClause));

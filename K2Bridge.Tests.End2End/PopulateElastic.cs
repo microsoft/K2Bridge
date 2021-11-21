@@ -58,7 +58,7 @@ namespace K2Bridge.Tests.End2End
             }
 
             // Create Elasticsearch index and define mappings
-            using var request = new HttpRequestMessage(HttpMethod.Put, indexName)
+            using var request = new HttpRequestMessage(HttpMethod.Put, indexName + "?include_type_name=true")
             {
                 Content = new StringContent(structureJson),
             };

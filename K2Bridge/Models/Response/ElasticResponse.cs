@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Response
     /// </summary>
     public class ElasticResponse
     {
-        private readonly List<ResponseElement> responses = new List<ResponseElement> { new ResponseElement() };
+        private readonly List<ResponseElement> responses = new () { new ResponseElement() };
 
         /// <summary>
         /// Gets responses.
@@ -21,6 +21,12 @@ namespace K2Bridge.Models.Response
         /// </summary>
         [JsonProperty("responses")]
         public IEnumerable<ResponseElement> Responses => responses;
+
+        /// <summary>
+        /// Gets or sets query execution time.
+        /// </summary>
+        [JsonProperty("took")]
+        public int TookMilliseconds { get; set; }
 
         /// <summary>
         /// Add aggregation to first response.
@@ -75,6 +81,7 @@ namespace K2Bridge.Models.Response
         public void AddTook(TimeSpan timeTaken)
         {
             responses[0].TookMilliseconds += timeTaken.Milliseconds;
+            TookMilliseconds += timeTaken.Milliseconds;
         }
 
         /// <summary>

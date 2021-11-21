@@ -18,7 +18,6 @@ namespace K2Bridge.Factories
         /// <param name="config">Config.</param>
         /// <returns>MetadataConnectionDetails.</returns>
         internal static MetadataConnectionDetails MakeFromConfiguration(IConfigurationRoot config) =>
-            new MetadataConnectionDetails(
-                config["metadataElasticAddress"]);
+            new (config["metadataElasticAddress"]);
     }
 }
