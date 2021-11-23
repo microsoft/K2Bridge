@@ -103,7 +103,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         }
 
         [TestCase(ExpectedResult =
-            "{\"responses\":[{\"aggregations\":{\"2\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":{\"relation\":\"eq\",\"value\":0},\"max_score\":null,\"hits\":[]},\"status\":200}],\"took\":0}")]
+            "{\"responses\":[{\"aggregations\":{\"\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":{\"relation\":\"eq\",\"value\":0},\"max_score\":null,\"hits\":[]},\"status\":200}],\"took\":0}")]
         public string ElasticResponseConstructor_OnValidInput_CreatesValidResponse()
         {
             var defaultResponse = new ElasticResponse();

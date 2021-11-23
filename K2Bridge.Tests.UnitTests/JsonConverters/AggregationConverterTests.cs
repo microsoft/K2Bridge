@@ -55,11 +55,14 @@ namespace UnitTests.K2Bridge.JsonConverters
 
         private static readonly Aggregation ExpectedValidDateHistogramAggregation = new Aggregation()
         {
+            Parent = string.Empty,
             PrimaryAggregation = null,
             SubAggregations = new Dictionary<string, Aggregation>
                 {
                     { "2", new Aggregation() {
+                        Parent = "2",
                         PrimaryAggregation = new DateHistogramAggregation {
+                            Parent = "2",
                             FieldName = "timestamp",
                             Interval = "1m",
                             Metric = "count()",
@@ -72,11 +75,14 @@ namespace UnitTests.K2Bridge.JsonConverters
 
         private static readonly Aggregation ExpectedValidCardinalityAggregation = new Aggregation()
         {
+            Parent = string.Empty,
             PrimaryAggregation = null,
             SubAggregations = new Dictionary<string, Aggregation>
                 {
                     { "2", new Aggregation() {
+                        Parent = "2",
                         PrimaryAggregation = new CardinalityAggregation {
+                            Parent = "2",
                             FieldName = "metric",
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),
@@ -87,11 +93,14 @@ namespace UnitTests.K2Bridge.JsonConverters
 
         private static readonly Aggregation ExpectedValidAvgAggregation = new Aggregation()
         {
+            Parent = string.Empty,
             PrimaryAggregation = null,
             SubAggregations = new Dictionary<string, Aggregation>
                 {
                     { "2", new Aggregation() {
+                        Parent = "2",
                         PrimaryAggregation = new AvgAggregation {
+                            Parent = "2",
                             FieldName = "grade",
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),
@@ -102,11 +111,14 @@ namespace UnitTests.K2Bridge.JsonConverters
 
         private static readonly Aggregation ExpectedNoFieldsAvgAggregation = new Aggregation()
         {
+            Parent = string.Empty,
             PrimaryAggregation = null,
             SubAggregations = new Dictionary<string, Aggregation>
                 {
                     { "2", new Aggregation() {
+                        Parent = "2",
                         PrimaryAggregation = new AvgAggregation {
+                            Parent = "2",
                             FieldName = null,
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),
@@ -117,10 +129,12 @@ namespace UnitTests.K2Bridge.JsonConverters
 
         private static readonly Aggregation ExpectedNoAggAggregation = new Aggregation()
         {
+            Parent = string.Empty,
             PrimaryAggregation = null,
             SubAggregations = new Dictionary<string, Aggregation>
                 {
                     { "2", new Aggregation() {
+                        Parent = "2",
                         PrimaryAggregation = null,
                         SubAggregations = new Dictionary<string, Aggregation>(),
                         }
