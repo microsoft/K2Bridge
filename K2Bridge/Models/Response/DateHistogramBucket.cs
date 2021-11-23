@@ -38,6 +38,6 @@ namespace K2Bridge.Models.Response
         /// Gets or Sets fdsfd.
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, List<long>> Aggs { get; set; }
+        public Dictionary<string, List<double>> Aggs { get; set; }
     }
 }

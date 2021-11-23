@@ -33,7 +33,7 @@ namespace K2Bridge.Factories
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
-                Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<long>>(),
+                Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
             };
 
             var clmns = row.Table.Columns;
@@ -45,7 +45,7 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                dhb.Aggs[clmn.ColumnName.Substring(1)] = new System.Collections.Generic.List<long>() { Convert.ToInt64(row[clmn.ColumnName]) };
+                dhb.Aggs[clmn.ColumnName.Substring(1)] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
             }
 
             return dhb;
