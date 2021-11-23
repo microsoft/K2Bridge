@@ -371,31 +371,31 @@ stages:
         failTaskOnFailedTests: true
         testRunTitle: 'E2E Tests'
 
-- stage: cleanup_integration_tests
-  displayName: Cleanup Tests
-  dependsOn: integration_tests
-  # Do not delete AKS namespace:
-  # - if pipeline was canceled or failed before a Kubernetes namespace was generated
-  # - if deploying on master branch
-  # - if namespace was manually set with RUN_SET_NAMESPACE
-  condition: and(always(), not(variables['RUN_SET_NAMESPACE']))
-  jobs:
+# - stage: cleanup_integration_tests
+#   displayName: Cleanup Tests
+#   dependsOn: integration_tests
+#   Do not delete AKS namespace:
+#    - if pipeline was canceled or failed before a Kubernetes namespace was generated
+#    - if deploying on master branch
+#    - if namespace was manually set with RUN_SET_NAMESPACE
+#   condition: and(always(), not(variables['RUN_SET_NAMESPACE']))
+#   jobs:
 
-  - job: Cleanup
-    steps:
+#   - job: Cleanup
+#     steps:
 
-    - template: infrastructure/setup-k8s-clients-template.yml
+#     - template: infrastructure/setup-k8s-clients-template.yml
 
-    - task: AzureCLI@1
-      displayName: Delete AKS namespace and Kusto database
-      condition: and(variables['KUBERNETES_NAMESPACE'], not(eq(variables['KUBERNETES_NAMESPACE'], 'master')))
-      inputs:
-        azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
-        scriptLocation: inlineScript
-        inlineScript: |
-          set -eux  # fail on error
-          kubectl delete namespace "$KUBERNETES_NAMESPACE"
-          az kusto database delete -g "$(RESOURCE_GROUP)" --cluster-name "$(KUSTO_NAME)" -n "$(KUSTO_DB)" -y
+#     - task: AzureCLI@1
+#       displayName: Delete AKS namespace and Kusto database
+#       condition: and(variables['KUBERNETES_NAMESPACE'], not(eq(variables['KUBERNETES_NAMESPACE'], 'master')))
+#       inputs:
+#         azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
+#         scriptLocation: inlineScript
+#         inlineScript: |
+#           set -eux  # fail on error
+#           kubectl delete namespace "$KUBERNETES_NAMESPACE"
+#           az kusto database delete -g "$(RESOURCE_GROUP)" --cluster-name "$(KUSTO_NAME)" -n "$(KUSTO_DB)" -y
 
 - stage: release
   displayName: Release Artifacts
