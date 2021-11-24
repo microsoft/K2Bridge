@@ -1,14 +1,11 @@
 {
-    "_source": {
-        "excludes": []
-    },
     "aggs": {
         "2": {
             "date_histogram": {
-                "calendar_interval": "1d",
                 "field": "timestamp",
-                "min_doc_count": 1,
-                "time_zone": "UTC"
+                "calendar_interval": "1d",
+                "time_zone": "UTC",
+                "min_doc_count": 1
             },
             "aggs": {
                 "3": {
@@ -24,14 +21,23 @@
             }
         }
     },
+    "size": 0,
+    "stored_fields": [
+        "*"
+    ],
+    "script_fields": {},
     "docvalue_fields": [
         {
             "field": "timestamp",
             "format": "date_time"
         }
     ],
+    "_source": {
+        "excludes": []
+    },
     "query": {
         "bool": {
+            "must": [],
             "filter": [
                 {
                     "match_all": {}
@@ -39,21 +45,15 @@
                 {
                     "range": {
                         "timestamp": {
-                            "format": "strict_date_optional_time",
                             "gte": "2018-02-01T11:00:00.000Z",
-                            "lte": "2018-02-10T11:00:00.000Z"
+                            "lte": "2018-02-10T11:00:00.000Z",
+                            "format": "strict_date_optional_time"
                         }
                     }
                 }
             ],
-            "must": [],
-            "must_not": [],
-            "should": []
+            "should": [],
+            "must_not": []
         }
-    },
-    "script_fields": {},
-    "size": 0,
-    "stored_fields": [
-        "*"
-    ]
+    }
 }
