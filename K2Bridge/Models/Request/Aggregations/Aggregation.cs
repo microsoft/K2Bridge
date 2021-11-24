@@ -26,16 +26,6 @@ namespace K2Bridge.Models.Request.Aggregations
         /// </summary>
         public Dictionary<string, Aggregation> SubAggregations { get; set; }
 
-        /// <summary>
-        /// Gets or Sets Parent aaa.
-        /// </summary>
-        public string Parent { get; set; }
-
-        /// <summary>
-        /// Gets or Sets the rename part of the query, e.g. _3=avg_CounterValue.
-        /// </summary>
-        public string FieldRenameQuery { get; set; }
-
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)
         {

@@ -31,23 +31,21 @@ namespace K2Bridge.JsonConverters
             {
                 PrimaryAggregation = jo.ToObject<LeafAggregation>(serializer),
             };
-            obj.Parent = parent;
 
-            var aggsObject = jo["aggs"];
-            if (aggsObject != null)
+            if (obj.PrimaryAggregation != null)
+            {
+                obj.PrimaryAggregation.FieldAlias = $"_{parent}";
+            }
+
+            var aggs = jo["aggs"];
+            if (aggs != null)
             {
                 obj.SubAggregations =
-                    aggsObject.ToObject<Dictionary<string, Aggregation>>(serializer);
+                    aggs.ToObject<Dictionary<string, Aggregation>>(serializer);
             }
             else
             {
                 obj.SubAggregations = new Dictionary<string, Aggregation>();
-            }
-
-            // todo: fix if statement
-            if (obj.PrimaryAggregation != null)
-            {
-                obj.PrimaryAggregation.Parent = obj.Parent;
             }
 
             return obj;

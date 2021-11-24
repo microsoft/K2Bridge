@@ -162,15 +162,19 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void Visit_WhenHasAggregations_KustoQLShouldContainAggs()
         {
-            var agg = JsonConvert.DeserializeObject<Aggregation>(@"
-                {
-                    ""date_histogram"": {
-                        ""field"": ""timestamp"",
-                        ""fixed_interval"": ""3h"",
-                        ""time_zone"": ""Asia/Jerusalem"",
-                        ""min_doc_count"": 1
+            string dateHistogramAggregation = @"
+                {""aggs"": { 
+                    ""2"": {
+                        ""date_histogram"": {
+                            ""field"": ""timestamp"",
+                            ""fixed_interval"": ""1m"",
+                            ""time_zone"": ""Asia/Jerusalem"",
+                            ""min_doc_count"": 1
+                        }
                     }
-                }");
+                }}";
+
+            var aggs = JsonConvert.DeserializeObject<Aggregation>(dateHistogramAggregation);
 
             var dsl = new ElasticSearchDSL
             {
@@ -179,12 +183,12 @@ namespace UnitTests.K2Bridge.Visitors
                     Bool = new BoolQuery(),
                 },
                 IndexName = "someindex",
-                Aggregations = new Dictionary<string, Aggregation>() { { "2", agg } },
+                Aggregations = aggs.SubAggregations,
             };
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.True(dsl.KustoQL.Contains("_data | summarize count() by timestamp = bin(timestamp, 3h)\n", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("_data | summarize count() by _2 = bin(timestamp, 1m)\n", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
