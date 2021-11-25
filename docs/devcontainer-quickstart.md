@@ -109,3 +109,5 @@ elasticsearch.hosts: ["http://localhost:8080"]
 ## What's next !?
 
 Check the [development](./development.md) instructions to configure correctly K2Bridge application settings.
+
+If you need a running instance of Azure Data Explorer, please read [this documentation](./devcontainer-adx.md).
