@@ -74,7 +74,7 @@ You need to be able to connect to your cluster from your machine.
         The command output will suggest a helm command to run to deploy Kibana, similar to:
 
         ```sh
-        helm install kibana elastic/kibana -n k2bridge --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.5 --set elasticsearchHosts=http://k2bridge:8080
+        helm install kibana elastic/kibana -n k2bridge --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=7.10.2 --set elasticsearchHosts=http://k2bridge:8080
         ```
 
 1. Configure index-patterns  
