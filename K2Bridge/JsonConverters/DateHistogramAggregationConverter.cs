@@ -5,6 +5,7 @@
 namespace K2Bridge.JsonConverters
 {
     using System;
+    using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Request.Aggregations;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -27,6 +28,7 @@ namespace K2Bridge.JsonConverters
             var calendarInterval = jo["calendar_interval"];
             var interval =
                 fixedInterval != null ? (string)fixedInterval : (string)calendarInterval;
+
             var obj = new DateHistogramAggregation
             {
                 FieldName = (string)jo["field"],
