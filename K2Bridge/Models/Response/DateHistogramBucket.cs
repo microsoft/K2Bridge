@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Response
     /// <summary>
     /// Date histogram bucket response.
     /// </summary>
-    [JsonConverter(typeof(SubAggsConverter))]
+    [JsonConverter(typeof(BucketAggsConverter))]
     public class DateHistogramBucket : IBucket
     {
         /// <summary>
@@ -35,7 +35,7 @@ namespace K2Bridge.Models.Response
         public string KeyAsString { get; set; }
 
         /// <summary>
-        /// Gets or Sets fdsfd.
+        /// Gets or Sets aggegations dictionary.
         /// </summary>
         [JsonIgnore]
         public Dictionary<string, List<double>> Aggs { get; set; }
