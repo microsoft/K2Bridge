@@ -6,6 +6,7 @@ namespace K2Bridge.JsonConverters
 {
     using System;
     using System.Collections.Generic;
+    using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Request.Aggregations;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -23,6 +24,7 @@ namespace K2Bridge.JsonConverters
             JsonSerializer serializer)
         {
             var jo = JObject.Load(reader);
+            var aggs = jo["aggs"];
 
             var path = reader.Path.Split(".");
             var parent = path[path.Length - 1];
@@ -32,12 +34,11 @@ namespace K2Bridge.JsonConverters
                 PrimaryAggregation = jo.ToObject<LeafAggregation>(serializer),
             };
 
-            if (obj.PrimaryAggregation != null)
+            if (obj.PrimaryAggregation != null && !string.IsNullOrWhiteSpace(parent))
             {
                 obj.PrimaryAggregation.FieldAlias = $"_{parent}";
             }
 
-            var aggs = jo["aggs"];
             if (aggs != null)
             {
                 obj.SubAggregations =
