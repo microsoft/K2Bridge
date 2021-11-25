@@ -10,16 +10,16 @@ namespace K2Bridge.Models.Response
     /// <summary>
     /// Aggregations response.
     /// </summary>
-    [JsonConverter(typeof(ResponseAggregationsConverter))]
+    [JsonConverter(typeof(AggregationsConverter))]
     public class Aggregations
     {
         /// <summary>
-        /// Gets or sets aggregation value.
+        /// Gets or sets buckets collection.
         /// </summary>
         public BucketsCollection Collection { get; set; } = new BucketsCollection();
 
         /// <summary>
-        /// Gets or Sets sa.
+        /// Gets or sets parent value.
         /// </summary>
         public string Parent { get; set; }
     }
