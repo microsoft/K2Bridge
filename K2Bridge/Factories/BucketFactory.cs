@@ -23,9 +23,8 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            // fix column names
             var timestamp = row[(int)DateHistogramBucketColumnNames.Timestamp];
-            var count = row["count_"];
+            var count = row[DateHistogramBucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
             var dhb = new DateHistogramBucket
@@ -40,7 +39,7 @@ namespace K2Bridge.Factories
             foreach (DataColumn clmn in clmns)
             {
                 // todo: fix
-                if (clmn.ColumnName == "count_" || clmns.IndexOf(clmn) == (int)DateHistogramBucketColumnNames.Timestamp)
+                if (clmn.ColumnName == DateHistogramBucketColumnNames.Count || clmns.IndexOf(clmn) == (int)DateHistogramBucketColumnNames.Timestamp)
                 {
                     continue;
                 }
