@@ -5,24 +5,15 @@
 namespace K2Bridge.JsonConverters
 {
     using System;
+    using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response.Metadata;
     using Newtonsoft.Json;
 
-    internal class FieldCapabilityElementConverter : JsonConverter
+    internal class FieldCapabilityElementConverter : WriteOnlyJsonConverter
     {
         private const string IsAggregatablePropetryName = "aggregatable";
         private const string IsSearchablePropetryName = "searchable";
         private const string TypePropetryName = "type";
-
-        public override bool CanConvert(Type objectType)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

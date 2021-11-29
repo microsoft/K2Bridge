@@ -17,11 +17,11 @@ namespace UnitTests.K2Bridge.Models.Response
         {
             // Arrange
             DataTable table = new DataTable();
-            table.Columns.Add("Timestamp", typeof(DateTime)).DateTimeMode = DataSetDateTime.Utc;
-            table.Columns.Add("Count", typeof(int));
+            table.Columns.Add("timestamp", typeof(DateTime)).DateTimeMode = DataSetDateTime.Utc;
+            table.Columns.Add("count_", typeof(int));
             DataRow row = table.NewRow();
-            row["Timestamp"] = new DateTime(2017, 1, 2, 13, 4, 5, 60, DateTimeKind.Utc);
-            row["Count"] = 234;
+            row["timestamp"] = new DateTime(2017, 1, 2, 13, 4, 5, 60, DateTimeKind.Utc);
+            row["count_"] = 234;
 
             // Act
             var bucket = BucketFactory.CreateFromDataRow(row);

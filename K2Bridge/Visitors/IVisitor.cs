@@ -70,7 +70,7 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
-        /// <param name="avgAggregation">The Metric Aggregations to visit.</param>
+        /// <param name="avgAggregation">The Average Aggregations to visit.</param>
         void Visit(AvgAggregation avgAggregation);
 
         /// <summary>
@@ -78,6 +78,12 @@ namespace K2Bridge.Visitors
         /// </summary>
         /// <param name="cardinalityAggregation">The Cardinality Aggregations to visit.</param>
         void Visit(CardinalityAggregation cardinalityAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="maxAggregation">The Max Aggregations to visit.</param>
+        void Visit(MaxAggregation maxAggregation);
 
         /// <summary>
         /// Accepts a query string clause, parses the phrase to a lucene query, and builds a Kusto query based on the lucene query.

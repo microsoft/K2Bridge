@@ -61,6 +61,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                     { "2", new Aggregation() {
                         PrimaryAggregation = new DateHistogramAggregation {
                             FieldName = "timestamp",
+                            FieldAlias = "_2",
                             Interval = "1m",
                             Metric = "count()",
                             },
@@ -77,6 +78,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 {
                     { "2", new Aggregation() {
                         PrimaryAggregation = new CardinalityAggregation {
+                            FieldAlias = "_2",
                             FieldName = "metric",
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),
@@ -92,6 +94,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 {
                     { "2", new Aggregation() {
                         PrimaryAggregation = new AvgAggregation {
+                            FieldAlias = "_2",
                             FieldName = "grade",
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),
@@ -107,6 +110,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 {
                     { "2", new Aggregation() {
                         PrimaryAggregation = new AvgAggregation {
+                            FieldAlias = "_2",
                             FieldName = null,
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),

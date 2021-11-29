@@ -11,13 +11,14 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class DateHistogramAggregationVisitorTests
     {
-        [TestCase(ExpectedResult = "wibble by wobble = wobble\n| order by wobble asc")]
+        [TestCase(ExpectedResult = "wibble by _alias = wobble\n| order by _alias asc")]
         public string DateHistogramVisit_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new DateHistogramAggregation()
             {
                 Metric = "wibble",
                 FieldName = "wobble",
+                FieldAlias = "_alias",
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
@@ -26,13 +27,13 @@ namespace UnitTests.K2Bridge.Visitors
             return histogramAggregation.KustoQL;
         }
 
-        [TestCase("w", ExpectedResult = "wibble by wobble = startofweek(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
-        [TestCase("week", ExpectedResult = "wibble by wobble = startofweek(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
-        [TestCase("y", ExpectedResult = "wibble by wobble = startofyear(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
-        [TestCase("year", ExpectedResult = "wibble by wobble = startofyear(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
-        [TestCase("M", ExpectedResult = "wibble by wobble = startofmonth(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
-        [TestCase("month", ExpectedResult = "wibble by wobble = startofmonth(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
-        [TestCase("z", ExpectedResult = "wibble by wobble = bin(wobble, z)\n| order by wobble asc")]
+        [TestCase("w", ExpectedResult = "wibble by _alias = startofweek(wobble)\n| order by _alias asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("week", ExpectedResult = "wibble by _alias = startofweek(wobble)\n| order by _alias asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("y", ExpectedResult = "wibble by _alias = startofyear(wobble)\n| order by _alias asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("year", ExpectedResult = "wibble by _alias = startofyear(wobble)\n| order by _alias asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("M", ExpectedResult = "wibble by _alias = startofmonth(wobble)\n| order by _alias asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("month", ExpectedResult = "wibble by _alias = startofmonth(wobble)\n| order by _alias asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("z", ExpectedResult = "wibble by _alias = bin(wobble, z)\n| order by _alias asc")]
         public string DateHistogramVisit_WithAggregation_ReturnsValidResponse(string interval)
         {
             var histogramAggregation = new DateHistogramAggregation()
@@ -40,6 +41,7 @@ namespace UnitTests.K2Bridge.Visitors
                 Metric = "wibble",
                 FieldName = "wobble",
                 Interval = interval,
+                FieldAlias = "_alias",
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
