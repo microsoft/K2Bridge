@@ -104,6 +104,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         // TODO: An empty elastic response should probably not contains any aggregations.
         // And here there is no key for the aggregations dictionary. This is not a valid json.
+        // https://dev.azure.com/CSECodeHub/476026%20-%20K2Bridge%20OSS%20-%20Visualization%20Capabilities/_workitems/edit/15049
         [TestCase(ExpectedResult =
             "{\"responses\":[{\"aggregations\":{\"\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":{\"relation\":\"eq\",\"value\":0},\"max_score\":null,\"hits\":[]},\"status\":200}],\"took\":0}")]
         public string ElasticResponseConstructor_OnValidInput_CreatesValidResponse()

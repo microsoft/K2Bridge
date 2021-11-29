@@ -25,6 +25,7 @@ namespace K2Bridge.Factories
 
             // TODO: timestamp is always the first row (probably named _2), and count will be named _count
             // we currently mix index and column names, need to check if we can enhance this logic
+            // https://dev.azure.com/CSECodeHub/476026%20-%20K2Bridge%20OSS%20-%20Visualization%20Capabilities/_workitems/edit/15050
             var timestamp = row[(int)DateHistogramBucketColumnNames.Timestamp];
             var count = row[DateHistogramBucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
