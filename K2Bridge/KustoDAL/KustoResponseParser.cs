@@ -168,6 +168,7 @@ namespace K2Bridge.KustoDAL
 
                 // Convert the first column name (all columns names are prefixed by _, must be removed when building the response)
                 var parent = parsedKustoResponse[AggregationTableName].TableData.Columns[0].ColumnName.Substring(1);
+
                 // Add parent name to aggregations
                 response.AddParentToAgg(parent);
 
