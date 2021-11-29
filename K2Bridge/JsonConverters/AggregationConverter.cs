@@ -27,7 +27,7 @@ namespace K2Bridge.JsonConverters
             var aggs = jo["aggs"];
 
             var path = reader.Path.Split(".");
-            var parent = path[path.Length - 1];
+            var parent = path[^1];
 
             var obj = new Aggregation
             {
