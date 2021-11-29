@@ -175,8 +175,22 @@ namespace K2Bridge.KustoDAL
                 // Read aggregations
                 foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                 {
-                    var bucket = BucketFactory.CreateFromDataRow(row);
-                    response.AddBucketToAggregation(bucket);
+                    IBucket bucket = null;
+
+                    switch (query.PrimaryAggregation)
+                    {
+                        case nameof(Models.Request.Aggregations.TermsAggregation):
+                            bucket = BucketFactory.CreateTermsBucketFromDataRow(row);
+                            break;
+                        case nameof(Models.Request.Aggregations.DateHistogramAggregation):
+                            bucket = BucketFactory.CreateDateHistogramBucketFromDataRow(row);
+                            break;
+                    }
+
+                    if (bucket != null)
+                    {
+                        response.AddBucketToAggregation(bucket);
+                    }
                 }
             }
             else

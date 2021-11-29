@@ -19,7 +19,7 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>
         /// <returns>A new DateHistogramBucket.</returns>
-        public static DateHistogramBucket CreateFromDataRow(DataRow row)
+        public static DateHistogramBucket CreateDateHistogramBucketFromDataRow(DataRow row)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -50,6 +50,39 @@ namespace K2Bridge.Factories
             }
 
             return dhb;
+        }
+
+        /// <summary>
+        /// Create a new <see cref="TermsBucket" from a given <see cref="DataRow"/>/>.
+        /// </summary>
+        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <returns>A new TermsBucket.</returns>
+        public static TermsBucket CreateTermsBucketFromDataRow(DataRow row)
+        {
+            Ensure.IsNotNull(row, nameof(row));
+
+            var key = row[(int)DateHistogramBucketColumnNames.Timestamp];
+            var count = row[DateHistogramBucketColumnNames.Count];
+
+            var tb = new TermsBucket
+            {
+                DocCount = Convert.ToInt32(count),
+                Key = Convert.ToString(key),
+                Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
+            };
+
+            var clmns = row.Table.Columns;
+            foreach (DataColumn clmn in clmns)
+            {
+                if (clmn.ColumnName == DateHistogramBucketColumnNames.Count || clmns.IndexOf(clmn) == (int)DateHistogramBucketColumnNames.Timestamp)
+                {
+                    continue;
+                }
+
+                tb.Aggs[clmn.ColumnName.Substring(1)] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+            }
+
+            return tb;
         }
     }
 }
