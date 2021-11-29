@@ -166,9 +166,12 @@ namespace K2Bridge.KustoDAL
             {
                 Logger.LogTrace("Parsing aggregations");
 
-                response.AddParentToAgg(parsedKustoResponse[AggregationTableName].TableData.Columns[0].ColumnName.Substring(1));
+                // Convert the first column name (all columns names are prefixed by _, must be removed when building the response)
+                var parent = parsedKustoResponse[AggregationTableName].TableData.Columns[0].ColumnName.Substring(1);
+                // Add parent name to aggregations
+                response.AddParentToAgg(parent);
 
-                // read aggregations
+                // Read aggregations
                 foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                 {
                     var bucket = BucketFactory.CreateFromDataRow(row);
@@ -182,7 +185,7 @@ namespace K2Bridge.KustoDAL
                 response.AddToTotal(1);
             }
 
-            // read hits
+            // Read hits
             Logger.LogDebug("Reading Hits using QueryData: {@query}", query.ToSensitiveData());
             var hits = ReadHits(parsedKustoResponse, query);
             response.AddHits(hits);

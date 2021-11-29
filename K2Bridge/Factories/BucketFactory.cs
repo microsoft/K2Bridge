@@ -23,6 +23,8 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
+            // TODO: timestamp is always the first row (probably named _2), and count will be named _count
+            // we currently mix index and column names, need to check if we can enhance this logic 
             var timestamp = row[(int)DateHistogramBucketColumnNames.Timestamp];
             var count = row[DateHistogramBucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
@@ -38,7 +40,6 @@ namespace K2Bridge.Factories
             var clmns = row.Table.Columns;
             foreach (DataColumn clmn in clmns)
             {
-                // todo: fix
                 if (clmn.ColumnName == DateHistogramBucketColumnNames.Count || clmns.IndexOf(clmn) == (int)DateHistogramBucketColumnNames.Timestamp)
                 {
                     continue;
