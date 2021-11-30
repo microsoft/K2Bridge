@@ -172,23 +172,24 @@ namespace K2Bridge.KustoDAL
                 // Add parent name to aggregations
                 response.AddParentToAgg(parent);
 
-                // Read aggregations
-                foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
+                // Determine how to create the buckets based on the aggregation type
+                Func<DataRow, IBucket> createBucketFromDataRow = null;
+                switch (query.PrimaryAggregation)
                 {
-                    IBucket bucket = null;
+                    case nameof(Models.Request.Aggregations.TermsAggregation):
+                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateTermsBucketFromDataRow(row);
+                        break;
+                    case nameof(Models.Request.Aggregations.DateHistogramAggregation):
+                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateDateHistogramBucketFromDataRow(row);
+                        break;
+                }
 
-                    switch (query.PrimaryAggregation)
+                // Read aggregations
+                if (createBucketFromDataRow != null)
+                {
+                    foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                     {
-                        case nameof(Models.Request.Aggregations.TermsAggregation):
-                            bucket = BucketFactory.CreateTermsBucketFromDataRow(row);
-                            break;
-                        case nameof(Models.Request.Aggregations.DateHistogramAggregation):
-                            bucket = BucketFactory.CreateDateHistogramBucketFromDataRow(row);
-                            break;
-                    }
-
-                    if (bucket != null)
-                    {
+                        IBucket bucket = createBucketFromDataRow(row);
                         response.AddBucketToAggregation(bucket);
                     }
                 }
