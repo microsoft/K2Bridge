@@ -18,12 +18,12 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Metric, nameof(TermsAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.FieldName, nameof(TermsAggregation.FieldName));
 
-            termsAggregation.KustoQL = $"{termsAggregation.Metric} by {termsAggregation.FieldAlias} = {termsAggregation.FieldName}";
+            termsAggregation.KustoQL = $"{termsAggregation.Metric} by ['{termsAggregation.FieldAlias}'] = {termsAggregation.FieldName}";
 
             if (termsAggregation.SortFieldName == "_key")
             {
                 // Alphabetical order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {termsAggregation.FieldAlias} {termsAggregation.SortOrder}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{termsAggregation.FieldAlias}'] {termsAggregation.SortOrder}";
             }
             else if (termsAggregation.SortFieldName == "_count")
             {
@@ -33,7 +33,7 @@ namespace K2Bridge.Visitors
             else
             {
                 // Custom order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} _{termsAggregation.SortFieldName} {termsAggregation.SortOrder}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['_{termsAggregation.SortFieldName}'] {termsAggregation.SortOrder}";
             }
 
             termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}";
