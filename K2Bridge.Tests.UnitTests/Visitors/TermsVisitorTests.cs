@@ -13,6 +13,7 @@ namespace UnitTests.K2Bridge.Visitors
     {
         [TestCase("_count", ExpectedResult = "wibble by _alias = wobble\n| order by count_ desc\n| limit 10", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
         [TestCase("_key", ExpectedResult = "wibble by _alias = wobble\n| order by _alias desc\n| limit 10", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
+        [TestCase("1", ExpectedResult = "wibble by _alias = wobble\n| order by _1 desc\n| limit 10", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_ReturnsValidResponse(string sortFieldName)
         {
             var termsAggregation = new TermsAggregation()

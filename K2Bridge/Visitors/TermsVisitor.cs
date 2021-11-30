@@ -32,7 +32,8 @@ namespace K2Bridge.Visitors
             }
             else
             {
-                // Unsupported sort order -- let Elasticsearch use its default
+                // Custom order
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} _{termsAggregation.SortFieldName} {termsAggregation.SortOrder}";
             }
 
             termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}";
