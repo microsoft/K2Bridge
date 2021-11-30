@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Response
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Date histogram bucket response.
+    /// Terms bucket response.
     /// </summary>
     [JsonConverter(typeof(TermsBucketAggsConverter))]
     public class TermsBucket : IBucket
