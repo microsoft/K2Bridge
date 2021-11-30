@@ -26,8 +26,8 @@ namespace K2Bridge.Factories
             // TODO: timestamp is always the first row (probably named _2), and count will be named _count
             // we currently mix index and column names, need to check if we can enhance this logic
             // workitem 15050
-            var timestamp = row[(int)DateHistogramBucketColumnNames.Timestamp];
-            var count = row[DateHistogramBucketColumnNames.Count];
+            var timestamp = row[(int)BucketColumnNames.Timestamp];
+            var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
             var dhb = new DateHistogramBucket
@@ -41,7 +41,7 @@ namespace K2Bridge.Factories
             var clmns = row.Table.Columns;
             foreach (DataColumn clmn in clmns)
             {
-                if (clmn.ColumnName == DateHistogramBucketColumnNames.Count || clmns.IndexOf(clmn) == (int)DateHistogramBucketColumnNames.Timestamp)
+                if (clmn.ColumnName == BucketColumnNames.Count || clmns.IndexOf(clmn) == (int)BucketColumnNames.Timestamp)
                 {
                     continue;
                 }
@@ -61,8 +61,8 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var key = row[(int)DateHistogramBucketColumnNames.Timestamp];
-            var count = row[DateHistogramBucketColumnNames.Count];
+            var key = row[(int)BucketColumnNames.Timestamp];
+            var count = row[BucketColumnNames.Count];
 
             var tb = new TermsBucket
             {
@@ -74,7 +74,7 @@ namespace K2Bridge.Factories
             var clmns = row.Table.Columns;
             foreach (DataColumn clmn in clmns)
             {
-                if (clmn.ColumnName == DateHistogramBucketColumnNames.Count || clmns.IndexOf(clmn) == (int)DateHistogramBucketColumnNames.Timestamp)
+                if (clmn.ColumnName == BucketColumnNames.Count || clmns.IndexOf(clmn) == (int)BucketColumnNames.Timestamp)
                 {
                     continue;
                 }
