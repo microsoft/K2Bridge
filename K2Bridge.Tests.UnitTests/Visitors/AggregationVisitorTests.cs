@@ -87,7 +87,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_A=sum(fieldA)")]
+        [TestCase(ExpectedResult = "['_A']=sum(fieldA)")]
         public string AggregationVisit_WithSumAgg_ReturnsSumPrimary()
         {
             var aggregateClause = new Aggregation()
@@ -101,7 +101,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_B=sum(fieldB), _A=sum(fieldA)")]
+        [TestCase(ExpectedResult = "['_B']=sum(fieldB), ['_A']=sum(fieldA)")]
         public string AggregationVisit_WithSubSumAgg_ReturnsSumAggregates()
         {
             var aggregateClause = new Aggregation()

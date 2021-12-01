@@ -46,7 +46,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(sumAggregation, nameof(sumAggregation));
             EnsureClause.StringIsNotNullOrEmpty(sumAggregation.FieldName, sumAggregation.FieldName, ExceptionMessage);
 
-            sumAggregation.KustoQL = $"{sumAggregation.FieldAlias}={KustoQLOperators.Sum}({sumAggregation.FieldName})";
+            sumAggregation.KustoQL = $"['{sumAggregation.FieldAlias}']={KustoQLOperators.Sum}({sumAggregation.FieldName})";
         }
     }
 }
