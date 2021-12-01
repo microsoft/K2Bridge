@@ -229,20 +229,20 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var column1 = new DataColumn("timestamp", Type.GetType("System.DateTime"));
 
-            var column2 = new DataColumn("count");
+            var column2 = new DataColumn("count_");
 
             resTable.Columns.Add(column1);
             resTable.Columns.Add(column2);
 
             var row1 = resTable.NewRow();
             row1["timestamp"] = DateTime.Now;
-            row1["count"] = 1;
+            row1["count_"] = 1;
 
             resTable.Rows.Add(row1);
 
             var row2 = resTable.NewRow();
             row2["timestamp"] = DateTime.Now;
-            row2["count"] = 2;
+            row2["count_"] = 2;
 
             resTable.Rows.Add(row2);
 

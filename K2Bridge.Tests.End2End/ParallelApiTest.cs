@@ -198,6 +198,13 @@ namespace K2Bridge.Tests.End2End
             AssertJsonIdentical(k2.Result, es.Result);
         }
 
+        [Test]
+        [Description("/_msearch visualization query with date histogram and two metrics (count + max)")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramTwoMetrics_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_TwoMetrics.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);

@@ -19,7 +19,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.FieldName, nameof(dateHistogramAggregation.FieldName));
 
             dateHistogramAggregation.KustoQL =
-                $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldName} = ";
+                $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldAlias} = ";
             var interval = dateHistogramAggregation.Interval;
             if (!string.IsNullOrEmpty(interval))
             {
@@ -45,7 +45,7 @@ namespace K2Bridge.Visitors
             }
 
             // todatetime is redundent but we'll keep it for now
-            dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {dateHistogramAggregation.FieldName} asc";
+            dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {dateHistogramAggregation.FieldAlias} asc";
         }
     }
 }

@@ -29,7 +29,6 @@ namespace K2Bridge.Visitors
                 foreach (var (_, subAgg) in aggregation.SubAggregations)
                 {
                     subAgg.Accept(this);
-
                     aggregation.KustoQL += $"{subAgg.KustoQL}, "; // this won't work when 2+ bucket aggregations are used!
                 }
             }

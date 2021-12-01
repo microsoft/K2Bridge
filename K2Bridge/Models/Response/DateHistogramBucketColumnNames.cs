@@ -7,16 +7,16 @@ namespace K2Bridge.Models.Response
     /// <summary>
     /// ColumnNames.
     /// </summary>
-    internal enum DateHistogramBucketColumnNames
+    internal class DateHistogramBucketColumnNames
     {
         /// <summary>
         /// Timestamp.
         /// </summary>
-        Timestamp = 0,
+        public static int Timestamp => 0;
 
         /// <summary>
         /// Count.
         /// </summary>
-        Count = 1,
+        public static string Count => "count_";
     }
 }

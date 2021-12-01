@@ -5,22 +5,19 @@
 namespace K2Bridge.Models.Request.Aggregations
 {
     using K2Bridge.JsonConverters;
-    using K2Bridge.Models.Request;
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Leaf Aggregation to visit.
+    /// A single-value metrics aggregation that computes the max of numeric values that are extracted from the aggregated documents.
     /// </summary>
-    [JsonConverter(typeof(LeafAggregationConverter))]
-    internal abstract class LeafAggregation : KustoQLBase, IVisitable
+    [JsonConverter(typeof(AggregationFieldConverter))]
+    internal class MaxAggregation : MetricAggregation
     {
-        /// <summary>
-        /// Gets or Sets field alias.
-        /// </summary>
-        public string FieldAlias { get; set; }
-
         /// <inheritdoc/>
-        public abstract void Accept(IVisitor visitor);
+        public override void Accept(IVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

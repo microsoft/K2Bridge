@@ -5,6 +5,7 @@
 namespace K2Bridge.JsonConverters
 {
     using System;
+    using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Request.Aggregations;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -38,6 +39,10 @@ namespace K2Bridge.JsonConverters
 
                 case "cardinality":
                     leafAggregation = first.Value.ToObject<CardinalityAggregation>(serializer);
+                    break;
+
+                case "max":
+                    leafAggregation = first.Value.ToObject<MaxAggregation>(serializer);
                     break;
             }
 

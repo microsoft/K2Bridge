@@ -23,16 +23,33 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
+            // TODO: timestamp is always the first row (probably named _2), and count will be named _count
+            // we currently mix index and column names, need to check if we can enhance this logic
+            // workitem 15050
             var timestamp = row[(int)DateHistogramBucketColumnNames.Timestamp];
-            var count = row[(int)DateHistogramBucketColumnNames.Count];
+            var count = row[DateHistogramBucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
-            return new DateHistogramBucket
+            var dhb = new DateHistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
+                Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
             };
+
+            var clmns = row.Table.Columns;
+            foreach (DataColumn clmn in clmns)
+            {
+                if (clmn.ColumnName == DateHistogramBucketColumnNames.Count || clmns.IndexOf(clmn) == (int)DateHistogramBucketColumnNames.Timestamp)
+                {
+                    continue;
+                }
+
+                dhb.Aggs[clmn.ColumnName.Substring(1)] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+            }
+
+            return dhb;
         }
     }
 }
