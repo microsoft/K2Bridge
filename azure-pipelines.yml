@@ -351,7 +351,7 @@ stages:
           kubectl run --restart=Never \
             --image=$(ACR_NAME).azurecr.io/k2bridge-test:$SEMANTIC_VERSION \
             --env=K2BRIDGE_URL=http://k2bridge:8080 \
-            --env=ELASTICSEARCH_URL=http://elasticsearchqa-"$KUBERNETES_NAMESPACE":9200 \
+            --env=ELASTICSEARCH_URL=http://elasticsearchqa-master:9200 \
             --env=KUSTO_URI=$KUSTO_URI \
             --env=KUSTO_DB=$(KUSTO_DB) \
             --env=AAD_TOKEN=$AAD_TOKEN \
