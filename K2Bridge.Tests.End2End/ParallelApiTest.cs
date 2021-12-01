@@ -199,10 +199,10 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("/_msearch visualization query with date histogram and two metrics (count + max)")]
-        public void CompareElasticKusto_WhenMSearchVizDateHistogramTwoMetrics_ResponsesAreEquivalent()
+        [Description("/_msearch visualization query with date histogram and aggregation metrics")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramMetrics_ResponsesAreEquivalent()
         {
-            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_TwoMetrics.json");
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Metrics.json");
         }
 
         private static void AssertJsonIdentical(JToken k2, JToken es)
