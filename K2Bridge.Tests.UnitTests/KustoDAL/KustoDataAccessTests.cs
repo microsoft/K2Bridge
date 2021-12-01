@@ -20,7 +20,8 @@ namespace UnitTests.K2Bridge.KustoDAL
 
     public class KustoDataAccessTests
     {
-        private static readonly object[] IndexNames = {
+        private static readonly object[] IndexNames =
+        {
             new string[] { "databaseName:tableName", "databaseName", "tableName" },
             new string[] { "*", "*", "*" },
             new string[] { "tableName", string.Empty, "tableName" },
@@ -51,12 +52,14 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task GetFieldCaps_WithValidIndex_ReturnFieldCaps()
         {
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
+                new Dictionary<string, object>
+                {
                     { "ColumnName", name },
                     { "ColumnType", type },
                 };
 
-            var testData = new List<Dictionary<string, object>>() {
+            var testData = new List<Dictionary<string, object>>()
+            {
                 column("mybool", "System.SByte"),
                 column("myint", "System.Int32"),
                 column("mylong", "System.Int64"),
@@ -71,6 +74,17 @@ namespace UnitTests.K2Bridge.KustoDAL
             using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(testReader));
+
+            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>()
+            {
+                new Dictionary<string, object>()
+                {
+                    { "result", JToken.Parse(@"{""a"": ""int"", ""b"": ""string"", ""c"": {""d"": {""e"": ""string""}}}") },
+                },
+            });
+
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.Is<QueryData>(q => q.QueryCommandText.Contains("mydynamic")), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
 
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var response = await kusto.GetFieldCapsAsync("testIndexName");
@@ -130,6 +144,27 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""type"": ""object""
                         }
                       },
+                      ""mydynamic.a"": {
+                        ""integer"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""integer""
+                        }
+                      },
+                      ""mydynamic.b"": {
+                        ""keyword"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""keyword""
+                        }
+                      },
+                      ""mydynamic.c.d.e"": {
+                        ""keyword"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""keyword""
+                        }
+                      },
                       ""myguid"": {
                         ""string"": {
                           ""aggregatable"": true,
@@ -160,12 +195,14 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task GetFieldCaps_WithValidFunction_ReturnFieldCaps()
         {
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
+                new Dictionary<string, object>
+                {
                     { "ColumnName", name },
                     { "ColumnType", type },
                 };
 
-            var testData = new List<Dictionary<string, object>>() {
+            var testData = new List<Dictionary<string, object>>()
+            {
                 column("myint", "System.Int32"),
                 column("mystring", "System.String"),
             };
@@ -178,8 +215,8 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             mockQueryExecutor.Verify(exec => exec.ExecuteQueryAsync(
                 It.Is<QueryData>(d =>
-                d.IndexName == "testIndexName"
-                && d.QueryCommandText == "testIndexName | getschema | project ColumnName, ColumnType=DataType"), It.IsAny<RequestContext>()));
+                    d.IndexName == "testIndexName"
+                    && d.QueryCommandText == "testIndexName | getschema | project ColumnName, ColumnType=DataType"), It.IsAny<RequestContext>()));
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {
@@ -210,13 +247,15 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task ResolveIndex_WithValidIndex_ReturnIndexList()
         {
             using IDataReader stubIndexReader = new DataReaderMock(
-                new List<Dictionary<string, object>>() {
-                    new Dictionary<string, object> {
+                new List<Dictionary<string, object>>()
+                {
+                    new Dictionary<string, object>
+                    {
                         { "1", "somevalue1" },
                     },
                 });
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-            It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
+                    It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync("testIndex");
@@ -240,13 +279,15 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task ResolveIndex_WithValidFunction_ReturnIndexList()
         {
             using IDataReader stubIndexReader = new DataReaderMock(
-                new List<Dictionary<string, object>>() {
-                    new Dictionary<string, object> {
+                new List<Dictionary<string, object>>()
+                {
+                    new Dictionary<string, object>
+                    {
                         { "1", "somevalue1" },
                     },
                 });
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
+                    It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync("testIndex");
@@ -269,22 +310,26 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task ResolveIndex_ValidIndexAndValidFunction_ReturnBoth()
         {
             using IDataReader stubIndexReader1 = new DataReaderMock(
-                new List<Dictionary<string, object>>() {
-                    new Dictionary<string, object> {
+                new List<Dictionary<string, object>>()
+                {
+                    new Dictionary<string, object>
+                    {
                         { "1", "myTable" },
                     },
                 });
             using IDataReader stubIndexReader2 = new DataReaderMock(
-                new List<Dictionary<string, object>>() {
-                    new Dictionary<string, object> {
+                new List<Dictionary<string, object>>()
+                {
+                    new Dictionary<string, object>
+                    {
                         { "1", "myFunction" },
                     },
                 });
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
+                    It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader1));
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
+                    It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader2));
 
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
@@ -308,8 +353,10 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.SetupGet(x => x.DefaultDatabaseName).Returns(mockDetails.Object.DefaultDatabaseName);
             var searchString = $"search TableName: '{tableName}' | search DatabaseName: '{databaseName}' |";
             using IDataReader stubIndexReader = new DataReaderMock(
-                new List<Dictionary<string, object>>() {
-                    new Dictionary<string, object> {
+                new List<Dictionary<string, object>>()
+                {
+                    new Dictionary<string, object>
+                    {
                         { "1", "somevalue1" },
                     },
                 });
