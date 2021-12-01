@@ -35,21 +35,27 @@ namespace UnitTests.K2Bridge.JsonConverters
         private const string AvgAggregation = @"
             {""aggs"": { 
                 ""2"": {
-                    ""avg"" : { ""field"" : ""grade"" } 
+                    ""avg"" : { 
+                        ""field"" : ""metric"" 
+                    } 
                 }
             }}";
 
-        private const string AvgEmptyFieldsAggregation = @"
-        {""aggs"": { 
-            ""2"": {
-                ""avg"" : { ""nofield"" : ""grade"" } 
-            }
-        }}";
+        private const string SumAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""sum"" : {
+                        ""field"" : ""metric"" 
+                    } 
+                }
+            }}";
 
         private const string NoAggAggregation = @"
         {""aggs"": { 
             ""2"": {
-                ""noagg"" : { ""field"" : ""grade"" } 
+                ""noagg"" : { 
+                    ""field"" : ""metric"" 
+                    } 
             }
         }}";
 
@@ -95,7 +101,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                     { "2", new Aggregation() {
                         PrimaryAggregation = new AvgAggregation {
                             FieldAlias = "_2",
-                            FieldName = "grade",
+                            FieldName = "metric",
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),
                         }
@@ -103,15 +109,15 @@ namespace UnitTests.K2Bridge.JsonConverters
                 },
         };
 
-        private static readonly Aggregation ExpectedNoFieldsAvgAggregation = new Aggregation()
+        private static readonly Aggregation ExpectedValidSumAggregation = new Aggregation()
         {
             PrimaryAggregation = null,
             SubAggregations = new Dictionary<string, Aggregation>
                 {
                     { "2", new Aggregation() {
-                        PrimaryAggregation = new AvgAggregation {
+                        PrimaryAggregation = new SumAggregation {
                             FieldAlias = "_2",
-                            FieldName = null,
+                            FieldName = "metric",
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),
                         }
@@ -136,7 +142,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(DateHistogramAggregation, ExpectedValidDateHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidDateHistogram_DeserializedCorrectly"),
             new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
             new TestCaseData(AvgAggregation, ExpectedValidAvgAggregation).SetName("JsonDeserializeObject_WithAggregationValidAvg_DeserializedCorrectly"),
-            new TestCaseData(AvgEmptyFieldsAggregation, ExpectedNoFieldsAvgAggregation).SetName("JsonDeserializeObject_WithAggregationNoFieldsAvg_DeserializedCorrectly"),
+            new TestCaseData(SumAggregation, ExpectedValidSumAggregation).SetName("JsonDeserializeObject_WithAggregationValidSum_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
 
