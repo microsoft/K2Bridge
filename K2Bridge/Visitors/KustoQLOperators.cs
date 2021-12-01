@@ -18,6 +18,7 @@ namespace K2Bridge.Visitors
         /// visitors.
         /// </summary>
 #pragma warning disable SA1600 // Elements should be documented
+        public const string Count = "count";
         public const string And = "and";
         public const string Or = "or";
         public const string Not = "not";
@@ -47,6 +48,11 @@ namespace K2Bridge.Visitors
         public const string HasPrefix = "hasprefix";
         public const string MatchRegex = "matches regex";
         public const string GetSchema = "getschema";
+        public const string BuildSchema = "buildschema";
+        public const string ToScalar = "toscalar";
+        public const string ToInt = "toint";
+        public const string Floor = "floor";
+        public const string Sample = "sample";
         public const string Equal = "==";
         public const string CommandSeparator = "\n| ";
 #pragma warning restore SA1600 // Elements should be documented

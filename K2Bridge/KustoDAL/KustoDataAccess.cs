@@ -14,6 +14,7 @@ namespace K2Bridge.KustoDAL
     using K2Bridge.Utils;
     using K2Bridge.Visitors;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// DAL for Kusto.
@@ -26,11 +27,13 @@ namespace K2Bridge.KustoDAL
         /// <param name="kustoClient">Query Executor.</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <param name="logger">A logger.</param>
-        public KustoDataAccess(IQueryExecutor kustoClient, RequestContext requestContext, ILogger<KustoDataAccess> logger)
+        /// <param name="dynamicSamplePercentage">Percentage of table to sample when building a dynamic field. When empty, queries the entire table.</param>
+        public KustoDataAccess(IQueryExecutor kustoClient, RequestContext requestContext, ILogger<KustoDataAccess> logger, double? dynamicSamplePercentage = null)
         {
             Kusto = kustoClient;
             RequestContext = requestContext;
             Logger = logger;
+            DynamicSamplePercentage = dynamicSamplePercentage;
         }
 
         private IQueryExecutor Kusto { get; set; }
@@ -38,6 +41,8 @@ namespace K2Bridge.KustoDAL
         private RequestContext RequestContext { get; set; }
 
         private ILogger Logger { get; set; }
+
+        private double? DynamicSamplePercentage { get; }
 
         /// <summary>
         /// Executes a query to Kusto for Fields Caps.
@@ -54,7 +59,7 @@ namespace K2Bridge.KustoDAL
                 string kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=='{tableName}' {KustoQLOperators.And} DatabaseName=='{databaseName}' {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
 
                 using IDataReader kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, RequestContext);
-                MapFieldCaps(kustoResults, response);
+                await MapFieldCaps(kustoResults, response, tableName);
 
                 response.AddIndex(tableName);
 
@@ -67,7 +72,7 @@ namespace K2Bridge.KustoDAL
                 string functionQuery = $"{tableName} | {KustoQLOperators.GetSchema} | project ColumnName, ColumnType=DataType";
                 var functionQueryData = new QueryData(functionQuery, tableName, null, null);
                 var (timeTaken, reader) = await Kusto.ExecuteQueryAsync(functionQueryData, RequestContext);
-                MapFieldCaps(reader, response);
+                await MapFieldCaps(reader, response, tableName);
             }
             catch (Exception ex)
             {
@@ -147,11 +152,17 @@ namespace K2Bridge.KustoDAL
             return response;
         }
 
-        private void MapFieldCaps(IDataReader kustoResults, FieldCapabilityResponse response)
+        private async Task MapFieldCaps(IDataReader kustoResults, FieldCapabilityResponse response, string tableName)
         {
             while (kustoResults.Read())
             {
                 var fieldCapabilityElement = FieldCapabilityElementFactory.CreateFromDataRecord(kustoResults);
+
+                if (fieldCapabilityElement.Type == "object")
+                {
+                    await HandleDynamicField(response, tableName, fieldCapabilityElement);
+                }
+
                 if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
                 {
                     Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
@@ -161,6 +172,66 @@ namespace K2Bridge.KustoDAL
 
                 Logger.LogDebug("Found field: {@fieldCapabilityElement}", fieldCapabilityElement);
             }
+        }
+
+        private async Task HandleDynamicField(FieldCapabilityResponse response, string tableName, FieldCapabilityElement fieldCapabilityElement)
+        {
+            var query = DynamicSamplePercentage.HasValue ?
+                $@"{KustoQLOperators.Let} percentage = {DynamicSamplePercentage} / 100.0;
+{KustoQLOperators.Let} table_count = {KustoQLOperators.ToScalar}({tableName} | {KustoQLOperators.Count});
+{tableName} | {KustoQLOperators.Sample} {KustoQLOperators.ToInt}({KustoQLOperators.Floor}(table_count * percentage, 1)) | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})" :
+                $"{tableName} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
+            var (_, result) = await Kusto.ExecuteQueryAsync(new QueryData(query, tableName), RequestContext);
+            result.Read();
+            var jsonResult = result[0];
+            var stack = new Stack<(string, JObject)>();
+
+            switch (jsonResult)
+            {
+                case JArray arr:
+                    response.AddField(FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(fieldCapabilityElement.Name, CombineValues(arr)));
+                    break;
+                case JObject obj:
+                    stack.Push((fieldCapabilityElement.Name, obj));
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unexpected type {jsonResult.GetType()}");
+            }
+
+            while (stack.Count > 0)
+            {
+                var (path, jsonObject) = stack.Pop();
+                foreach (var property in jsonObject.Properties())
+                {
+                    var newPath = path + "." + property.Name;
+                    if (property.Value.Type != JTokenType.Object)
+                    {
+                        response.AddField(FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(newPath, CombineValues(property.Value)));
+                        continue;
+                    }
+
+                    var indexer = property.Value["`indexer`"];
+                    switch (indexer)
+                    {
+                        case null:
+                            stack.Push((newPath, (JObject)property.Value));
+                            break;
+                        case JObject j:
+                            stack.Push((newPath, j));
+                            break;
+                        default:
+                            response.AddField(FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(
+                                newPath,
+                                CombineValues(indexer)));
+                            break;
+                    }
+                }
+            }
+        }
+
+        private string CombineValues(JToken property)
+        {
+            return property is JArray ? "string" : property.ToString();
         }
 
         private void MapResolveIndexList(IEnumerable<string> kustoResults, ResolveIndexResponse response)
