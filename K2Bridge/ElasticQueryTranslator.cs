@@ -83,7 +83,7 @@ namespace K2Bridge
                                 elasticSearchDsl.HighlightText.Add("*", queryStringClause.Phrase);
                                 break;
                             case MatchPhraseClause matchPhraseClause:
-                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
+                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase.ToString()); // TODO - fix this when highlighting is fixed
                                 break;
                         }
                     }

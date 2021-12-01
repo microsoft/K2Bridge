@@ -23,7 +23,7 @@ namespace K2Bridge.Models.Request.Queries
         /// <summary>
         /// Gets or sets the matching phrase.
         /// </summary>
-        public string Phrase { get; set; }
+        public object Phrase { get; set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)
