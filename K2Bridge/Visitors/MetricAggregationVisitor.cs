@@ -39,5 +39,14 @@ namespace K2Bridge.Visitors
 
             maxAggregation.KustoQL = $"{maxAggregation.FieldAlias}={KustoQLOperators.Max}({maxAggregation.FieldName})";
         }
+
+        /// <inheritdoc/>
+        public void Visit(SumAggregation sumAggregation)
+        {
+            Ensure.IsNotNull(sumAggregation, nameof(sumAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(sumAggregation.FieldName, sumAggregation.FieldName, ExceptionMessage);
+
+            sumAggregation.KustoQL = $"{sumAggregation.FieldAlias}={KustoQLOperators.Sum}({sumAggregation.FieldName})";
+        }
     }
 }

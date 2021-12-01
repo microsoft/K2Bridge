@@ -86,6 +86,12 @@ namespace K2Bridge.Visitors
         void Visit(MaxAggregation maxAggregation);
 
         /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="sumAggregation">The Sum Aggregations to visit.</param>
+        void Visit(SumAggregation sumAggregation);
+
+        /// <summary>
         /// Accepts a query string clause, parses the phrase to a lucene query, and builds a Kusto query based on the lucene query.
         /// </summary>
         /// <param name="queryStringClause">The query string clause.</param>
