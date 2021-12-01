@@ -5,6 +5,7 @@
 namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Response;
 
     /// <content>
     /// A visitor for the <see cref="TermsAggregation"/> element.
@@ -28,7 +29,7 @@ namespace K2Bridge.Visitors
             else if (termsAggregation.SortFieldName == "_count")
             {
                 // Count order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} count_ {termsAggregation.SortOrder}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.SortOrder}";
             }
             else
             {
