@@ -32,6 +32,7 @@ namespace K2Bridge.Visitors
                 var parsedPhrase = matchPhraseClause.Phrase switch
                 {
                     DateTime dt => $"{KustoQLOperators.ToDateTime}(\"{dt.ToUniversalTime():o}\")",
+                    uint or int or short or ushort or long or ulong or float or double => matchPhraseClause.Phrase,
                     object o => $"\"{matchPhraseClause.Phrase.ToString().EscapeSlashes()}\"",
                 };
 

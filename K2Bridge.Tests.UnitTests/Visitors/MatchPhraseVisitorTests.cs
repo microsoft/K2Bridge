@@ -20,7 +20,7 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(matchPhraseClause);
         }
 
-        [TestCase(ExpectedResult = "MyField == \"3\"")]
+        [TestCase(ExpectedResult = "MyField == 3")]
         public string MatchPhraseVisit_WithValidIntClause_ReturnsEquals()
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", 3);
@@ -28,7 +28,7 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(matchPhraseClause);
         }
 
-        [TestCase(ExpectedResult = "MyField == \"3.5\"")]
+        [TestCase(ExpectedResult = "MyField == 3.5")]
         public string MatchPhraseVisit_WithValidDoubleClause_ReturnsEquals()
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", 3.5);
