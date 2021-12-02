@@ -9,6 +9,7 @@ namespace UnitTests.K2Bridge.KustoDAL
     using System.Linq;
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
+    using global::K2Bridge.Models.Request.Aggregations;
     using global::K2Bridge.Telemetry;
     using Kusto.Data;
     using Kusto.Data.Data;
@@ -143,7 +144,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index");
+            var query = new QueryData("query", "index", primaryAggregation: nameof(DateHistogramAggregation));
 
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
