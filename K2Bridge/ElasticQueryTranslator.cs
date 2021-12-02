@@ -108,7 +108,7 @@ namespace K2Bridge
                 string primaryAggregation = null;
                 if (elasticSearchDsl.Aggregations != null && elasticSearchDsl.Aggregations.Count > 0)
                 {
-                    primaryAggregation = elasticSearchDsl.Aggregations.ToList().ElementAt(0).Value.PrimaryAggregation.GetType().ToString().Split('.')[^1];
+                    primaryAggregation = elasticSearchDsl.Aggregations.First().Value.PrimaryAggregation.GetType().ToString().Split('.')[^1];
                 }
 
                 // Use the visitor and build the KustoQL string from the esDSL object
