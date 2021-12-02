@@ -44,6 +44,10 @@ namespace K2Bridge.JsonConverters
                 case "max":
                     leafAggregation = first.Value.ToObject<MaxAggregation>(serializer);
                     break;
+
+                case "min":
+                    leafAggregation = first.Value.ToObject<MinAggregation>(serializer);
+                    break;
             }
 
             return leafAggregation;
