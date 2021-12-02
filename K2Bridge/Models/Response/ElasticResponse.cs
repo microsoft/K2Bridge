@@ -45,11 +45,8 @@ namespace K2Bridge.Models.Response
             // TODO: support more than one response
             responses[0].Aggregations.Collection.AddBucket(bucket);
 
-            // if bucket is DateHistogramBucket, we need to add DocCount to HitsCollection.Total
-            if (bucket is DateHistogramBucket)
-            {
-                responses[0].Hits.AddToTotal(bucket.DocCount);
-            }
+            // Add DocCount to HitsCollection.Total
+            responses[0].Hits.AddToTotal(bucket.DocCount);
         }
 
         /// <summary>
