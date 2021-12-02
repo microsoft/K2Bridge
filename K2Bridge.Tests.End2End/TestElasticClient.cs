@@ -134,11 +134,20 @@ namespace K2Bridge.Tests.End2End
                 DeleteValue(result, "responses[*].hits.hits[*].highlight");
             }
 
-            // backend query isn't something we want to compare since it's unique to K2
+            // Backend query isn't something we want to compare since it's unique to K2
             DeleteValue(result, "responses[*]._backendQuery");
 
             // Ignore fields.hour_of_day (script_fields are currently no supported)
             DeleteValue(result, "responses[*].hits.hits[*].fields.hour_of_day");
+
+            // Ignore these fields in aggregation buckets
+            DeleteValue(result, "responses[*].aggregations.*.doc_count_error_upper_bound");
+            DeleteValue(result, "responses[*].aggregations.*.sum_other_doc_count");
+
+            // Normalize all float metric values with fixed number of decimal
+            // TODO: Need to update NormalizeMetricValues for bucket returning values instead of value
+            // workitem 15247
+            NormalizeMetricValues(result, "responses[*].aggregations..buckets..value");
 
             return result;
         }
@@ -286,6 +295,25 @@ namespace K2Bridge.Tests.End2End
                 var originalTimestamp = (DateTime)v.Value;
                 var normalizedTimestamp = TimeZoneInfo.ConvertTimeToUtc(originalTimestamp);
                 v.Value = normalizedTimestamp.ToString("o", CultureInfo.InvariantCulture);
+            }
+        }
+
+        // <summary>
+        /// Normalize metric values with fixed number of decimals.
+        /// </summary>
+        /// <param name="parent">JSON element at which to start search.</param>
+        /// <param name="jsonPath">JSONPath search pattern for metric values to normalize.</param>
+        private static void NormalizeMetricValues(JToken parent, string jsonPath)
+        {
+            var tokens = parent.SelectTokens(jsonPath);
+            foreach (JValue v in tokens)
+            {
+                if (v.Type == JTokenType.Float)
+                {
+                    var originalMetricValue = (double)v.Value;
+                    var normalizedMetricValue = originalMetricValue.ToString("F6", CultureInfo.InvariantCulture);
+                    v.Value = normalizedMetricValue;
+                }
             }
         }
 
