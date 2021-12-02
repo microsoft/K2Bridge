@@ -141,6 +141,8 @@ namespace K2Bridge.Tests.End2End
             DeleteValue(result, "responses[*].hits.hits[*].fields.hour_of_day");
 
             // Normalize all float metric values with fixed number of decimal
+            // TODO: Need to update NormalizeMetricValues for bucket returning values instead of value
+            // workitem 15247
             NormalizeMetricValues(result, "responses[*].aggregations..buckets..value");
 
             return result;
