@@ -22,6 +22,11 @@
                     "sum": {
                         "field": "DistanceKilometers"
                     }
+                },
+                "6": {
+                    "min": {
+                        "field": "DistanceKilometers"
+                    }
                 }
             }
         }
