@@ -24,7 +24,7 @@ namespace UnitTests.K2Bridge.Models.Response
             row["count_"] = 234;
 
             // Act
-            var bucket = BucketFactory.CreateFromDataRow(row);
+            var bucket = BucketFactory.CreateDateHistogramBucketFromDataRow(row);
 
             // Assert
             Assert.AreEqual("2017-01-02T13:04:05.060Z", bucket.KeyAsString);

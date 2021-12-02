@@ -140,6 +140,10 @@ namespace K2Bridge.Tests.End2End
             // Ignore fields.hour_of_day (script_fields are currently no supported)
             DeleteValue(result, "responses[*].hits.hits[*].fields.hour_of_day");
 
+            // Ignore these fields in aggregation buckets
+            DeleteValue(result, "responses[*].aggregations.*.doc_count_error_upper_bound");
+            DeleteValue(result, "responses[*].aggregations.*.sum_other_doc_count");
+
             // Normalize all float metric values with fixed number of decimal
             // TODO: Need to update NormalizeMetricValues for bucket returning values instead of value
             // workitem 15247

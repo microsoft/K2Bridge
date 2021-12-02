@@ -23,7 +23,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_A=avg(fieldA)")]
+        [TestCase(ExpectedResult = "['_A']=avg(fieldA)")]
         public string AggregationVisit_WithAvgAgg_ReturnsAvgPrimary()
         {
             var aggregateClause = new Aggregation()
@@ -37,7 +37,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_B=avg(fieldB), _A=avg(fieldA)")]
+        [TestCase(ExpectedResult = "['_B']=avg(fieldB), ['_A']=avg(fieldA)")]
         public string AggregationVisit_WithSubAvgAgg_ReturnsAvgAggregates()
         {
             var aggregateClause = new Aggregation()
@@ -55,7 +55,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_A=dcount(fieldA)")]
+        [TestCase(ExpectedResult = "['_A']=dcount(fieldA)")]
         public string AggregationVisit_WithCardinalityAgg_ReturnsDCount()
         {
             var aggregateClause = new Aggregation()
@@ -69,7 +69,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_B=dcount(fieldB), _A=dcount(fieldA)")]
+        [TestCase(ExpectedResult = "['_B']=dcount(fieldB), ['_A']=dcount(fieldA)")]
         public string AggregationVisit_WithSubCardinalityAggs_ReturnsDCounts()
         {
             var aggregateClause = new Aggregation()

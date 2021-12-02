@@ -205,6 +205,20 @@ namespace K2Bridge.Tests.End2End
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Metrics.json");
         }
 
+        [Test]
+        [Description("/_msearch visualization query with terms and sort by count")]
+        public void CompareElasticKusto_WhenMSearchVizTermsOrderCount_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Terms_OrderCount.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with terms and sort by custom metric")]
+        public void CompareElasticKusto_WhenMSearchVizTermsOrderCustom_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Terms_OrderCustom.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);
