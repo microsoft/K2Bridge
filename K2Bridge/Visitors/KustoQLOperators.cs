@@ -35,6 +35,7 @@ namespace K2Bridge.Visitors
         public const string Min = "min";
         public const string Max = "max";
         public const string Sum = "sum";
+        public const string Percentile = "percentile";
         public const string IsNotNull = "isnotnull";
         public const string StartOfWeek = "startofweek";
         public const string StartOfMonth = "startofmonth";

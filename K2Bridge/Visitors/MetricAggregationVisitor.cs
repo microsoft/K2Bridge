@@ -57,5 +57,22 @@ namespace K2Bridge.Visitors
 
             sumAggregation.KustoQL = $"['{sumAggregation.Key}']={KustoQLOperators.Sum}({sumAggregation.Field})";
         }
+
+        /// <inheritdoc/>
+        public void Visit(PercentileAggregation percentileAggregation)
+        {
+            Ensure.IsNotNull(percentileAggregation, nameof(percentileAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(percentileAggregation.FieldName, percentileAggregation.FieldName, ExceptionMessage);
+
+            /// Median is Percentile(fieldName, 50)
+            percentileAggregation.KustoQL = string.Empty;
+
+            foreach (double percent in percentileAggregation.Percents)
+            {
+                percentileAggregation.KustoQL += $"['{percentileAggregation.FieldAlias}%{string.Format("{0:0.0}", percent)}']={KustoQLOperators.Percentile}({percentileAggregation.FieldName}, {percentileAggregation.Percents[0]}),";
+            }
+
+            percentileAggregation.KustoQL = percentileAggregation.KustoQL.TrimEnd(',');
+        }
     }
 }

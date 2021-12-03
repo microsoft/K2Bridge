@@ -4,11 +4,11 @@
 
 namespace K2Bridge.JsonConverters
 {
+    using System.Linq;
+    using System;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response;
-    using System.Linq;
     using Newtonsoft.Json;
-    using System;
 
     /// <summary>
     /// A converter able to serialize Bucket aggregations to Elasticsearh response json format.

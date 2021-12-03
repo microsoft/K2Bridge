@@ -182,5 +182,37 @@ namespace UnitTests.K2Bridge.Visitors
 
             return aggregateClause.KustoQL;
         }
+
+        [TestCase(ExpectedResult = "['_A%50.0']=percentile(fieldA, 50)")]
+        public string AggregationVisit_WithPercentileAgg_ReturnsPercentilePrimary()
+        {
+            var aggregateClause = new Aggregation()
+            {
+                PrimaryAggregation = new PercentileAggregation() { FieldName = "fieldA", FieldAlias = "_A", Percents = new double[] { 50 } },
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
+
+        [TestCase(ExpectedResult = "['_B%50.0']=percentile(fieldB, 50), ['_A%50.0']=percentile(fieldA, 50)")]
+        public string AggregationVisit_WithSubPercentileAgg_ReturnsPercentileAggregates()
+        {
+            var aggregateClause = new Aggregation()
+            {
+                PrimaryAggregation = new PercentileAggregation() { FieldName = "fieldA", FieldAlias = "_A", Percents = new double[] { 50 } },
+                SubAggregations = new Dictionary<string, Aggregation>
+                {
+                    { "sub", new Aggregation() { PrimaryAggregation = new PercentileAggregation { FieldName = "fieldB", FieldAlias = "_B", Percents = new double[] { 50 } } } },
+                },
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
     }
 }

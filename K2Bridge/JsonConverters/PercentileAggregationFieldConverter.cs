@@ -28,6 +28,11 @@ namespace K2Bridge.JsonConverters
             obj.FieldName = (string)jo["field"];
             obj.Percents = jo["percents"].ToObject<double[]>();
 
+            if (jo["keyed"] != null)
+            {
+                obj.Keyed = (bool)jo["keyed"];
+            }
+
             return obj;
         }
     }

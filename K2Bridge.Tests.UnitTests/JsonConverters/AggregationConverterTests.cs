@@ -90,6 +90,18 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string PercentileAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""percentiles"": {
+                        ""field"": ""metric"",
+                        ""percents"": [
+                            50
+                        ]
+                    }
+                }
+            }}";
+
         private const string NoAggAggregation = @"
             {""aggs"": { 
                 ""2"": {
@@ -267,6 +279,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(MinAggregation, ExpectedValidMinAggregation).SetName("JsonDeserializeObject_WithAggregationValidMin_DeserializedCorrectly"),
             new TestCaseData(MaxAggregation, ExpectedValidMaxAggregation).SetName("JsonDeserializeObject_WithAggregationValidMax_DeserializedCorrectly"),
             new TestCaseData(SumAggregation, ExpectedValidSumAggregation).SetName("JsonDeserializeObject_WithAggregationValidSum_DeserializedCorrectly"),
+            new TestCaseData(SumAggregation, ExpectedValidPercentileAggregation).SetName("JsonDeserializeObject_WithAggregationValidPercentile_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
 
