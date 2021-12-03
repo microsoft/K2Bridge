@@ -6,7 +6,9 @@ namespace K2Bridge.JsonConverters
 {
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response;
+    using System.Linq;
     using Newtonsoft.Json;
+    using System;
 
     /// <summary>
     /// A converter able to serialize Bucket aggregations to Elasticsearh response json format.
@@ -36,13 +38,22 @@ namespace K2Bridge.JsonConverters
                 if (aggs[agg].Count > 1)
                 {
                     writer.WritePropertyName("values");
-                    serializer.Serialize(writer, aggs[agg]);
+                    serializer.Serialize(writer, aggs[agg].ToDictionary(item => Convert.ToDouble(item.Key), item => Convert.ToDouble(item.Value)).ToList());
                 }
                 else
                 {
-                    writer.WritePropertyName("value");
-                    var item = aggs[agg][0];
-                    serializer.Serialize(writer, item);
+                    var item = aggs[agg].First();
+
+                    if ("value".Equals(item.Key))
+                    {
+                        writer.WritePropertyName("value");
+                        serializer.Serialize(writer, item.Value);
+                    }
+                    else
+                    {
+                        writer.WritePropertyName("values");
+                        serializer.Serialize(writer, aggs[agg]);
+                    }
                 }
 
                 writer.WriteEndObject();

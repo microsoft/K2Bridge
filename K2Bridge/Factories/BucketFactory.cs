@@ -5,7 +5,9 @@
 namespace K2Bridge.Factories
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
+    using System.Text.RegularExpressions;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
 
@@ -35,7 +37,7 @@ namespace K2Bridge.Factories
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
-                Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
+                Aggs = new Dictionary<string, Dictionary<string, dynamic>>(),
             };
 
             var clmns = row.Table.Columns;
@@ -46,7 +48,31 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                dhb.Aggs[clmn.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+                // Step 1: create new Regex.
+                Regex regex = new Regex(@"^_(\d+)%*(100\.00|[0-9]?[0-9]\.[0-9]{1})$");
+
+                // Step 2: call Match on Regex instance.
+                Match match = regex.Match(clmn.ColumnName);
+
+                if (match.Success)
+                {
+                    var percentile = match.Groups[2].Value;
+
+                    if (!dhb.Aggs.ContainsKey(match.Groups[1].Value))
+                    {
+                        dhb.Aggs[match.Groups[1].Value] = new Dictionary<string, dynamic>();
+                    }
+
+                    dhb.Aggs[match.Groups[1].Value].Add(percentile, Convert.ToDouble(row[clmn.ColumnName]));
+                }
+                else
+                {
+                    dhb.Aggs[clmn.ColumnName.Substring(1)] = new Dictionary<string, dynamic>() {
+                        { "value", Convert.ToDouble(row[clmn.ColumnName]) },
+                    };
+
+                    // new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+                }
             }
 
             return dhb;
