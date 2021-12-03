@@ -58,7 +58,7 @@ namespace K2Bridge.Visitors
                 // Aggregations
                 if (elasticSearchDSL.Aggregations?.Count > 0)
                 {
-                    queryStringBuilder.Append('\n').Append($"(_data | {KustoQLOperators.Summarize} ");
+                    queryStringBuilder.Append('\n').Append($"(_data");
 
                     foreach (var (_, aggregation) in elasticSearchDSL.Aggregations)
                     {

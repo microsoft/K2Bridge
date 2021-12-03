@@ -188,7 +188,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.True(dsl.KustoQL.Contains("_data | summarize count() by _2 = bin(timestamp, 1m)\n", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("_data\n| summarize count() by _2 = bin(timestamp, 1m)\n", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]

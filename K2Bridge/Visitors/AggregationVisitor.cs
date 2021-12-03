@@ -23,9 +23,25 @@ namespace K2Bridge.Visitors
 
             aggregation.PrimaryAggregation.Accept(this);
 
+            if (aggregation.PrimaryAggregation.GetType().Name == typeof(RangeAggregation).Name)
+            {
+                // The range aggregation might have a KustoQL stanza to insert before the summarize
+                if (!string.IsNullOrEmpty(aggregation.PrimaryAggregation.KustoQLPreSummarize))
+                {
+                    aggregation.KustoQL += aggregation.PrimaryAggregation.KustoQLPreSummarize;
+                }
+            }
+
             // TODO: do something with the sub aggregations to KQL
             if (aggregation.SubAggregations != null)
             {
+                // If we have any sub-aggregations (metrics), insert the summarize now
+                if (aggregation.PrimaryAggregation.GetType().BaseType.Name == typeof(BucketAggregation).Name)
+                {
+                    aggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Summarize} ";
+                }
+
+                // Process sub-aggregations
                 foreach (var (_, subAgg) in aggregation.SubAggregations)
                 {
                     subAgg.Accept(this);

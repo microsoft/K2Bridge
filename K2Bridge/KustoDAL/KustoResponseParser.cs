@@ -176,6 +176,9 @@ namespace K2Bridge.KustoDAL
                 Func<DataRow, IBucket> createBucketFromDataRow = null;
                 switch (query.PrimaryAggregation)
                 {
+                    case nameof(Models.Request.Aggregations.RangeAggregation):
+                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateRangeBucketFromDataRow(row);
+                        break;
                     case nameof(Models.Request.Aggregations.TermsAggregation):
                         createBucketFromDataRow = (DataRow row) => BucketFactory.CreateTermsBucketFromDataRow(row);
                         break;
@@ -190,7 +193,10 @@ namespace K2Bridge.KustoDAL
                     foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                     {
                         IBucket bucket = createBucketFromDataRow(row);
-                        response.AddBucketToAggregation(bucket);
+                        if (bucket != null)
+                        {
+                            response.AddBucketToAggregation(bucket);
+                        }
                     }
                 }
             }
