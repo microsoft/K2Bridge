@@ -10,102 +10,151 @@ namespace UnitTests.K2Bridge.Visitors
     using global::K2Bridge.Visitors;
     using NUnit.Framework;
 
+    public enum RangeType
+    {
+        Wildcard,
+        Open,
+        Closed,
+    }
+
     [TestFixture]
     public class RangeClauseVisitorTests
     {
         // Numeric RangeClause Query Tests
-        [TestCase(
-            ExpectedResult = "MyField >= 0 and MyField < 10",
-            TestName="Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse")]
-        public string TestValidRangeClauseVisitNumberBetweenTwoInts()
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Open, ExpectedResult = "MyField < 10", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
+        [TestCase(RangeType.Wildcard, RangeType.Closed, ExpectedResult = "MyField <= 10", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
+        [TestCase(RangeType.Open, RangeType.Wildcard, ExpectedResult = "MyField > 0", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
+        [TestCase(RangeType.Open, RangeType.Open, ExpectedResult = "MyField > 0 and MyField < 10", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinOpenAndMaxOpen")]
+        [TestCase(RangeType.Open, RangeType.Closed, ExpectedResult = "MyField > 0 and MyField <= 10", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinOpenAndMaxClosed")]
+        [TestCase(RangeType.Closed, RangeType.Wildcard, ExpectedResult = "MyField >= 0", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinClosedAndMaxWildcard")]
+        [TestCase(RangeType.Closed, RangeType.Open, ExpectedResult = "MyField >= 0 and MyField < 10", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinClosedAndMaxOpen")]
+        [TestCase(RangeType.Closed, RangeType.Closed, ExpectedResult = "MyField >= 0 and MyField <= 10", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinClosedAndMaxClosed")]
+        public string TestValidRangeClauseVisitNumberBetweenTwoInts(RangeType minRange, RangeType maxRange)
         {
-            return RangeClauseToKQL(CreateRangeClause("0", "10"));
+            return RangeClauseToKQL(CreateRangeClause("0", "10", minRange, maxRange));
         }
 
-        [TestCase(
-            ExpectedResult = "MyField >= 0 and MyField < 10.10",
-            TestName="Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse")]
-        public string TestValidRangeClauseVisitNumberBetweenIntAndDecimal()
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Open, ExpectedResult = "MyField < 10.10", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
+        [TestCase(RangeType.Wildcard, RangeType.Closed, ExpectedResult = "MyField <= 10.10", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
+        [TestCase(RangeType.Open, RangeType.Wildcard, ExpectedResult = "MyField > 0", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
+        [TestCase(RangeType.Open, RangeType.Open, ExpectedResult = "MyField > 0 and MyField < 10.10", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinOpenAndMaxOpen")]
+        [TestCase(RangeType.Open, RangeType.Closed, ExpectedResult = "MyField > 0 and MyField <= 10.10", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinOpenAndMaxClosed")]
+        [TestCase(RangeType.Closed, RangeType.Wildcard, ExpectedResult = "MyField >= 0", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinClosedAndMaxWildcard")]
+        [TestCase(RangeType.Closed, RangeType.Open, ExpectedResult = "MyField >= 0 and MyField < 10.10", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinClosedAndMaxOpen")]
+        [TestCase(RangeType.Closed, RangeType.Closed, ExpectedResult = "MyField >= 0 and MyField <= 10.10", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinClosedAndMaxClosed")]
+        public string TestValidRangeClauseVisitNumberBetweenIntAndDecimal(RangeType minRange, RangeType maxRange)
         {
-            return RangeClauseToKQL(CreateRangeClause("0", "10.10"));
+            return RangeClauseToKQL(CreateRangeClause("0", "10.10", minRange, maxRange));
         }
 
-        [TestCase(
-            ExpectedResult = "MyField >= 10.10 and MyField < 20.20",
-            TestName="Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse")]
-        public string TestValidRangeClauseVisitNumberBetweenTwoDecimalss()
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Open, ExpectedResult = "MyField < 20.20", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
+        [TestCase(RangeType.Wildcard, RangeType.Closed, ExpectedResult = "MyField <= 20.20", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
+        [TestCase(RangeType.Open, RangeType.Wildcard, ExpectedResult = "MyField > 10.10", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
+        [TestCase(RangeType.Open, RangeType.Open, ExpectedResult = "MyField > 10.10 and MyField < 20.20", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinOpenAndMaxOpen")]
+        [TestCase(RangeType.Open, RangeType.Closed, ExpectedResult = "MyField > 10.10 and MyField <= 20.20", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinOpenAndMaxClosed")]
+        [TestCase(RangeType.Closed, RangeType.Wildcard, ExpectedResult = "MyField >= 10.10", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinClosedAndMaxWildcard")]
+        [TestCase(RangeType.Closed, RangeType.Open, ExpectedResult = "MyField >= 10.10 and MyField < 20.20", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinClosedAndMaxOpen")]
+        [TestCase(RangeType.Closed, RangeType.Closed, ExpectedResult = "MyField >= 10.10 and MyField <= 20.20", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinClosedAndMaxClosed")]
+        public string TestValidRangeClauseVisitNumberBetweenTwoDecimals(RangeType minRange, RangeType maxRange)
         {
-            return RangeClauseToKQL(CreateRangeClause("10.10", "20.20"));
+            return RangeClauseToKQL(CreateRangeClause("10.10", "20.20", minRange, maxRange));
         }
 
         // Time RangeClause Query Tests
-        [TestCase(
-            ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(0) and MyField <= unixtime_milliseconds_todatetime(10)",
-            TestName="Visit_WithValidRangeBetweenInts_ReturnsValidResponse")]
-        public string TestValidTimeRangeClauseVisitNumberBetweenTwoInts()
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Open, ExpectedResult = "MyField < unixtime_milliseconds_todatetime(10)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
+        [TestCase(RangeType.Wildcard, RangeType.Closed, ExpectedResult = "MyField <= unixtime_milliseconds_todatetime(10)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
+        [TestCase(RangeType.Open, RangeType.Wildcard, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(0)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
+        [TestCase(RangeType.Open, RangeType.Open, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(0) and MyField < unixtime_milliseconds_todatetime(10)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinOpenAndMaxOpen")]
+        [TestCase(RangeType.Open, RangeType.Closed, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(0) and MyField <= unixtime_milliseconds_todatetime(10)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinOpenAndMaxClosed")]
+        [TestCase(RangeType.Closed, RangeType.Wildcard, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(0)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinClosedAndMaxWildcard")]
+        [TestCase(RangeType.Closed, RangeType.Open, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(0) and MyField < unixtime_milliseconds_todatetime(10)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinClosedAndMaxOpen")]
+        [TestCase(RangeType.Closed, RangeType.Closed, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(0) and MyField <= unixtime_milliseconds_todatetime(10)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinClosedAndMaxClosed")]
+        public string TestValidTimeRangeClauseVisitNumberBetweenTwoInts(RangeType minRange, RangeType maxRange)
         {
-            return RangeClauseToKQL(CreateTimeRangeClause("0", "10"));
+            return RangeClauseToKQL(CreateTimeRangeClause("0", "10", minRange, maxRange));
         }
 
-        [TestCase(
-            ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(0) and MyField <= unixtime_milliseconds_todatetime(10.10)",
-            TestName="Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse")]
-        public string TestValidTimeRangeClauseVisitNumberBetweenIntAndDecimal()
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Open, ExpectedResult = "MyField < unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
+        [TestCase(RangeType.Wildcard, RangeType.Closed, ExpectedResult = "MyField <= unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
+        [TestCase(RangeType.Open, RangeType.Wildcard, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(0)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
+        [TestCase(RangeType.Open, RangeType.Open, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(0) and MyField < unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinOpenAndMaxOpen")]
+        [TestCase(RangeType.Open, RangeType.Closed, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(0) and MyField <= unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinOpenAndMaxClosed")]
+        [TestCase(RangeType.Closed, RangeType.Wildcard, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(0)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinClosedAndMaxWildcard")]
+        [TestCase(RangeType.Closed, RangeType.Open, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(0) and MyField < unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinClosedAndMaxOpen")]
+        [TestCase(RangeType.Closed, RangeType.Closed, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(0) and MyField <= unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinClosedAndMaxClosed")]
+        public string TestValidTimeRangeClauseVisitNumberBetweenIntAndDecimal(RangeType minRange, RangeType maxRange)
         {
-            return RangeClauseToKQL(CreateTimeRangeClause("0", "10.10"));
+            return RangeClauseToKQL(CreateTimeRangeClause("0", "10.10", minRange, maxRange));
         }
 
-        [TestCase(
-            ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(10.10) and MyField <= unixtime_milliseconds_todatetime(20.20)",
-            TestName="Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse")]
-        public string TestValidTimeRangeClauseVisitNumberBetweenTwoDecimalss()
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Open, ExpectedResult = "MyField < unixtime_milliseconds_todatetime(20.20)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
+        [TestCase(RangeType.Wildcard, RangeType.Closed, ExpectedResult = "MyField <= unixtime_milliseconds_todatetime(20.20)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
+        [TestCase(RangeType.Open, RangeType.Wildcard, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
+        [TestCase(RangeType.Open, RangeType.Open, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(10.10) and MyField < unixtime_milliseconds_todatetime(20.20)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinOpenAndMaxOpen")]
+        [TestCase(RangeType.Open, RangeType.Closed, ExpectedResult = "MyField > unixtime_milliseconds_todatetime(10.10) and MyField <= unixtime_milliseconds_todatetime(20.20)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinOpenAndMaxClosed")]
+        [TestCase(RangeType.Closed, RangeType.Wildcard, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinClosedAndMaxWildcard")]
+        [TestCase(RangeType.Closed, RangeType.Open, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(10.10) and MyField < unixtime_milliseconds_todatetime(20.20)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinClosedAndMaxOpen")]
+        [TestCase(RangeType.Closed, RangeType.Closed, ExpectedResult = "MyField >= unixtime_milliseconds_todatetime(10.10) and MyField <= unixtime_milliseconds_todatetime(20.20)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinClosedAndMaxClosed")]
+        public string TestValidTimeRangeClauseVisitNumberBetweenTwoDecimals(RangeType minRange, RangeType maxRange)
         {
-            return RangeClauseToKQL(CreateTimeRangeClause("10.10", "20.20"));
+            return RangeClauseToKQL(CreateTimeRangeClause("10.10", "20.20", minRange, maxRange));
         }
 
-        [TestCase(
-            ExpectedResult = "MyField >= todatetime(\"2020-01-01 00:00\") and MyField < todatetime(\"2020-02-22 10:00\")",
-            TestName = "Visit_ValidDateRange_ReturnsValidResponse")]
-        public string TestValidDateRange_ReturnsValidResponse()
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Open, ExpectedResult = "MyField < todatetime(\"2020-02-22T10:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
+        [TestCase(RangeType.Wildcard, RangeType.Closed, ExpectedResult = "MyField <= todatetime(\"2020-02-22T10:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
+        [TestCase(RangeType.Open, RangeType.Wildcard, ExpectedResult = "MyField > todatetime(\"2020-01-01T00:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
+        [TestCase(RangeType.Open, RangeType.Open, ExpectedResult = "MyField > todatetime(\"2020-01-01T00:00:00.0000000\") and MyField < todatetime(\"2020-02-22T10:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinOpenAndMaxOpen")]
+        [TestCase(RangeType.Open, RangeType.Closed, ExpectedResult = "MyField > todatetime(\"2020-01-01T00:00:00.0000000\") and MyField <= todatetime(\"2020-02-22T10:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinOpenAndMaxClosed")]
+        [TestCase(RangeType.Closed, RangeType.Wildcard, ExpectedResult = "MyField >= todatetime(\"2020-01-01T00:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinClosedAndMaxWildcard")]
+        [TestCase(RangeType.Closed, RangeType.Open, ExpectedResult = "MyField >= todatetime(\"2020-01-01T00:00:00.0000000\") and MyField < todatetime(\"2020-02-22T10:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinClosedAndMaxOpen")]
+        [TestCase(RangeType.Closed, RangeType.Closed, ExpectedResult = "MyField >= todatetime(\"2020-01-01T00:00:00.0000000\") and MyField <= todatetime(\"2020-02-22T10:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinClosedAndMaxClosed")]
+        public string TestValidDateRange_ReturnsValidResponse(RangeType minRange, RangeType maxRange)
         {
-            return DateRangeClauseToKQL(CreateDateRangeClause("2020-01-01 00:00", "2020-02-22 10:00"));
+            return DateRangeClauseToKQL(CreateDateRangeClause("2020-01-01 00:00", "2020-02-22 10:00", minRange, maxRange));
         }
 
-        private static RangeClause CreateRangeClause(string min, string max)
+        private static RangeClause CreateRangeClause(string min, string max, RangeType minRange, RangeType maxRange)
         {
             return new RangeClause()
             {
                 FieldName = "MyField",
-                GTEValue = min,
-                GTValue = null,
-                LTEValue = null,
-                LTValue = max,
+                GTEValue = minRange == RangeType.Wildcard ? "*" : (minRange == RangeType.Closed ? min : null),
+                GTValue = minRange == RangeType.Open ? min : null,
+                LTEValue = maxRange == RangeType.Wildcard ? "*" : (maxRange == RangeType.Closed ? max : null),
+                LTValue = maxRange == RangeType.Open ? max : null,
                 Format = null,
             };
         }
 
-        private static RangeClause CreateTimeRangeClause(string min, string max)
+        private static RangeClause CreateTimeRangeClause(string min, string max, RangeType minRange, RangeType maxRange)
         {
             return new RangeClause()
             {
                 FieldName = "MyField",
-                GTEValue = min,
-                GTValue = null,
-                LTEValue = max,
-                LTValue = null,
+                GTEValue = minRange == RangeType.Wildcard ? "*" : (minRange == RangeType.Closed ? min : null),
+                GTValue = minRange == RangeType.Open ? min : null,
+                LTEValue = maxRange == RangeType.Wildcard ? "*" : (maxRange == RangeType.Closed ? max : null),
+                LTValue = maxRange == RangeType.Open ? max : null,
                 Format = "epoch_millis",
             };
         }
 
-        private static RangeClause CreateDateRangeClause(string min, string max)
+        private static RangeClause CreateDateRangeClause(string min, string max, RangeType minRange, RangeType maxRange)
         {
             return new RangeClause()
             {
                 FieldName = "MyField",
-                GTEValue = min,
-                GTValue = null,
-                LTEValue = null,
-                LTValue = max,
+                GTEValue = minRange == RangeType.Wildcard ? "*" : (minRange == RangeType.Closed ? min : null),
+                GTValue = minRange == RangeType.Open ? min : null,
+                LTEValue = maxRange == RangeType.Wildcard ? "*" : (maxRange == RangeType.Closed ? max : null),
+                LTValue = maxRange == RangeType.Open ? max : null,
                 Format = null,
             };
         }

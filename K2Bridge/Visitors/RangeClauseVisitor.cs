@@ -39,7 +39,7 @@ namespace K2Bridge.Visitors
                             FillKqlQuery(rangeClause);
                             break;
                         case ClauseFieldType.Date:
-                            FillKqlQuery(rangeClause, s => $"{KustoQLOperators.ToDateTime}(\"{DateTime.Parse(s).ToUniversalTime():o}\")");
+                            FillKqlQuery(rangeClause, s => $"{KustoQLOperators.ToDateTime}(\"{DateTime.Parse(s):o}\")");
                             break;
                         case ClauseFieldType.Text:
                             throw new NotSupportedException("Text Range is not supported.");
@@ -74,17 +74,15 @@ namespace K2Bridge.Visitors
                 _ => throw new Exception("Invalid range clause."),
             };
 
-            var gtQuery = gtOperator != null ? $"{rangeClause.FieldName} {gtOperator} {gtValue}" : string.Empty;
-            var ltQuery = ltOperator != null ? $"{rangeClause.FieldName} {ltOperator} {ltValue}" : string.Empty;
-#pragma warning disable SA1122 // Empty strings must be constants
+            var gtQuery = gtOperator != null ? $"{rangeClause.FieldName} {gtOperator} {gtValue}" : null;
+            var ltQuery = ltOperator != null ? $"{rangeClause.FieldName} {ltOperator} {ltValue}" : null;
             rangeClause.KustoQL = (gtQuery, ltQuery) switch
             {
-                ("", "") => string.Empty,
-                ("", _) => ltQuery,
-                (_, "") => gtQuery,
+                (null, null) => string.Empty,
+                (null, _) => ltQuery,
+                (_, null) => gtQuery,
                 (_, _) => $"{gtQuery} {KustoQLOperators.And} {ltQuery}",
             };
-#pragma warning restore SA1122
         }
     }
 }
