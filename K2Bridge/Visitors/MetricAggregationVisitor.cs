@@ -19,7 +19,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(avgAggregation, nameof(avgAggregation));
             EnsureClause.StringIsNotNullOrEmpty(avgAggregation.FieldName, avgAggregation.FieldName, ExceptionMessage);
 
-            avgAggregation.KustoQL = $"{avgAggregation.FieldAlias}={KustoQLOperators.Avg}({avgAggregation.FieldName})";
+            avgAggregation.KustoQL = $"['{avgAggregation.FieldAlias}']={KustoQLOperators.Avg}({avgAggregation.FieldName})";
         }
 
         /// <inheritdoc/>
@@ -28,7 +28,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(cardinalityAggregation, nameof(cardinalityAggregation));
             EnsureClause.StringIsNotNullOrEmpty(cardinalityAggregation.FieldName, cardinalityAggregation.FieldName, ExceptionMessage);
 
-            cardinalityAggregation.KustoQL = $"{cardinalityAggregation.FieldAlias}={KustoQLOperators.DCount}({cardinalityAggregation.FieldName})";
+            cardinalityAggregation.KustoQL = $"['{cardinalityAggregation.FieldAlias}']={KustoQLOperators.DCount}({cardinalityAggregation.FieldName})";
         }
 
         /// <inheritdoc/>
@@ -37,7 +37,16 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(maxAggregation, nameof(maxAggregation));
             EnsureClause.StringIsNotNullOrEmpty(maxAggregation.FieldName, maxAggregation.FieldName, ExceptionMessage);
 
-            maxAggregation.KustoQL = $"{maxAggregation.FieldAlias}={KustoQLOperators.Max}({maxAggregation.FieldName})";
+            maxAggregation.KustoQL = $"['{maxAggregation.FieldAlias}']={KustoQLOperators.Max}({maxAggregation.FieldName})";
+        }
+
+        /// <inheritdoc/>
+        public void Visit(SumAggregation sumAggregation)
+        {
+            Ensure.IsNotNull(sumAggregation, nameof(sumAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(sumAggregation.FieldName, sumAggregation.FieldName, ExceptionMessage);
+
+            sumAggregation.KustoQL = $"['{sumAggregation.FieldAlias}']={KustoQLOperators.Sum}({sumAggregation.FieldName})";
         }
     }
 }

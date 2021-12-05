@@ -11,7 +11,7 @@ namespace K2Bridge.JsonConverters
     /// <summary>
     /// A converter able to serialize Bucket aggregations to Elasticsearh response json format.
     /// </summary>
-    internal class BucketAggsConverter : WriteOnlyJsonConverter
+    internal class DateHistogramBucketAggsConverter : WriteOnlyJsonConverter
     {
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
