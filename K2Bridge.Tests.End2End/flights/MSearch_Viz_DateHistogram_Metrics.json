@@ -9,12 +9,17 @@
             },
             "aggs": {
                 "3": {
-                    "max": {
-                        "field": "AvgTicketPrice"
+                    "avg": {
+                        "field": "DistanceKilometers"
                     }
                 },
                 "4": {
                     "max": {
+                        "field": "DistanceKilometers"
+                    }
+                },
+                "5": {
+                    "sum": {
                         "field": "DistanceKilometers"
                     }
                 }
