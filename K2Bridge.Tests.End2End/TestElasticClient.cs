@@ -198,6 +198,12 @@ namespace K2Bridge.Tests.End2End
                 {
                     removes.Add(field.Key);
                 }
+
+                // Remove auto-generated fields from the dynamic type
+                if (field.Key.StartsWith("Location.", StringComparison.OrdinalIgnoreCase))
+                {
+                    removes.Add(field.Key);
+                }
             }
 
             removes.ForEach(f => fields.Remove(f));

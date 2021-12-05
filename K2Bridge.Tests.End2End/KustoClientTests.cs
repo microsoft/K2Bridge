@@ -165,6 +165,20 @@ namespace K2Bridge.Tests.End2End
                     ""type"": ""object""
                   }}
                 }},
+                ""Dynamic.a"": {{
+                  ""long"": {{
+                    ""aggregatable"": true,
+                    ""searchable"": true,
+                    ""type"": ""long""
+                  }}
+                }},
+                ""Dynamic.b"": {{
+                  ""keyword"": {{
+                    ""aggregatable"": true,
+                    ""searchable"": true,
+                    ""type"": ""keyword""
+                  }}
+                }},
               }}
             }}");
             fieldCaps.Should().BeEquivalentTo(expected);
