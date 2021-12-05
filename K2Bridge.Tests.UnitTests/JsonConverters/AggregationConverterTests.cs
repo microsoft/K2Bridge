@@ -23,6 +23,19 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string TermsAggregation = @"
+            {""aggs"": {
+                ""2"": {
+                    ""terms"": {
+                        ""field"": ""DestCountry"",
+                        ""order"": {
+                            ""_count"": ""desc""
+                        },
+                        ""size"": 10
+                    }
+                }
+            }}";
+
         private const string CardinalityAggregation = @"
             {""aggs"": { 
                 ""2"": {
@@ -35,21 +48,36 @@ namespace UnitTests.K2Bridge.JsonConverters
         private const string AvgAggregation = @"
             {""aggs"": { 
                 ""2"": {
-                    ""avg"" : { ""field"" : ""grade"" } 
+                    ""avg"" : { 
+                        ""field"" : ""metric"" 
+                    } 
                 }
             }}";
 
         private const string AvgEmptyFieldsAggregation = @"
-        {""aggs"": { 
-            ""2"": {
-                ""avg"" : { ""nofield"" : ""grade"" } 
-            }
-        }}";
+            {""aggs"": { 
+                ""2"": {
+                    ""avg"" : { 
+                        ""nofield"" : ""metric"" 
+                    } 
+                }
+            }}";
+
+        private const string SumAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""sum"" : {
+                        ""field"" : ""metric"" 
+                    } 
+                }
+            }}";
 
         private const string NoAggAggregation = @"
         {""aggs"": { 
             ""2"": {
-                ""noagg"" : { ""field"" : ""grade"" } 
+                ""noagg"" : { 
+                    ""field"" : ""metric"" 
+                    } 
             }
         }}";
 
@@ -69,6 +97,26 @@ namespace UnitTests.K2Bridge.JsonConverters
                         }
                     },
                 },
+        };
+
+        private static readonly Aggregation ExpectedValidTermsAggregation = new Aggregation()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new Dictionary<string, Aggregation>
+            {
+                {
+                    "2", new Aggregation() {
+                        PrimaryAggregation = new TermsAggregation {
+                            FieldName = "DestCountry",
+                            FieldAlias = "_2",
+                            Metric = "count()",
+                            SortFieldName = "_count",
+                            SortOrder = "desc",
+                        },
+                        SubAggregations = new Dictionary<string, Aggregation>(),
+                    }
+                },
+            },
         };
 
         private static readonly Aggregation ExpectedValidCardinalityAggregation = new Aggregation()
@@ -95,7 +143,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                     { "2", new Aggregation() {
                         PrimaryAggregation = new AvgAggregation {
                             FieldAlias = "_2",
-                            FieldName = "grade",
+                            FieldName = "metric",
                             },
                         SubAggregations = new Dictionary<string, Aggregation>(),
                         }
@@ -119,6 +167,22 @@ namespace UnitTests.K2Bridge.JsonConverters
                 },
         };
 
+        private static readonly Aggregation ExpectedValidSumAggregation = new Aggregation()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new Dictionary<string, Aggregation>
+                {
+                    { "2", new Aggregation() {
+                        PrimaryAggregation = new SumAggregation {
+                            FieldAlias = "_2",
+                            FieldName = "metric",
+                            },
+                        SubAggregations = new Dictionary<string, Aggregation>(),
+                        }
+                    },
+                },
+        };
+
         private static readonly Aggregation ExpectedNoAggAggregation = new Aggregation()
         {
             PrimaryAggregation = null,
@@ -134,9 +198,11 @@ namespace UnitTests.K2Bridge.JsonConverters
 
         private static readonly object[] AggregationTestCases = {
             new TestCaseData(DateHistogramAggregation, ExpectedValidDateHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidDateHistogram_DeserializedCorrectly"),
+            new TestCaseData(TermsAggregation, ExpectedValidTermsAggregation).SetName("JsonDeserializeObject_WithAggregationValidTerms_DeserializedCorrectly"),
             new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
             new TestCaseData(AvgAggregation, ExpectedValidAvgAggregation).SetName("JsonDeserializeObject_WithAggregationValidAvg_DeserializedCorrectly"),
             new TestCaseData(AvgEmptyFieldsAggregation, ExpectedNoFieldsAvgAggregation).SetName("JsonDeserializeObject_WithAggregationNoFieldsAvg_DeserializedCorrectly"),
+            new TestCaseData(SumAggregation, ExpectedValidSumAggregation).SetName("JsonDeserializeObject_WithAggregationValidSum_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
 

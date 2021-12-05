@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -9,10 +9,10 @@ namespace K2Bridge.Models.Response
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Date histogram bucket response.
+    /// Terms bucket response.
     /// </summary>
-    [JsonConverter(typeof(DateHistogramBucketAggsConverter))]
-    public class DateHistogramBucket : IBucket
+    [JsonConverter(typeof(TermsBucketAggsConverter))]
+    public class TermsBucket : IBucket
     {
         /// <summary>
         /// Gets or sets document count.
@@ -21,18 +21,11 @@ namespace K2Bridge.Models.Response
         public int DocCount { get; set; }
 
         /// <summary>
-        /// Gets or sets the timestamp bucket key.
-        /// This key is a 64 bit number representing a timestamp in milliseconds-since-the-epoch .
+        /// Gets or sets the bucket key.
+        /// This key is a string containing the term.
         /// </summary>
         [JsonProperty("key")]
-        public long Key { get; set; }
-
-        /// <summary>
-        /// Gets or sets the timestamp bucket key.
-        /// The key here is represented as a date string.
-        /// </summary>
-        [JsonProperty("key_as_string")]
-        public string KeyAsString { get; set; }
+        public string Key { get; set; }
 
         /// <summary>
         /// Gets or Sets aggegations dictionary.

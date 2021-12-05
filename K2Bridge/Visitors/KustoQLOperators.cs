@@ -33,6 +33,7 @@ namespace K2Bridge.Visitors
         public const string DCount = "dcount";
         public const string Avg = "avg";
         public const string Max = "max";
+        public const string Sum = "sum";
         public const string IsNotNull = "isnotnull";
         public const string StartOfWeek = "startofweek";
         public const string StartOfMonth = "startofmonth";

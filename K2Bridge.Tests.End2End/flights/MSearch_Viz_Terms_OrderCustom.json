@@ -1,19 +1,15 @@
 {
     "aggs": {
         "2": {
-            "date_histogram": {
-                "field": "timestamp",
-                "calendar_interval": "1d",
-                "time_zone": "UTC",
-                "min_doc_count": 1
+            "terms": {
+                "field": "Carrier",
+                "order": {
+                    "2-orderAgg": "desc"
+                },
+                "size": 5
             },
             "aggs": {
-                "3": {
-                    "max": {
-                        "field": "AvgTicketPrice"
-                    }
-                },
-                "4": {
+                "2-orderAgg": {
                     "max": {
                         "field": "DistanceKilometers"
                     }

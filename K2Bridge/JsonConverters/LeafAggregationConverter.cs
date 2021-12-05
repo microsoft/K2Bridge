@@ -33,6 +33,10 @@ namespace K2Bridge.JsonConverters
                     leafAggregation = first.Value.ToObject<DateHistogramAggregation>(serializer);
                     break;
 
+                case "terms":
+                    leafAggregation = first.Value.ToObject<TermsAggregation>(serializer);
+                    break;
+
                 case "avg":
                     leafAggregation = first.Value.ToObject<AvgAggregation>(serializer);
                     break;
@@ -43,6 +47,10 @@ namespace K2Bridge.JsonConverters
 
                 case "max":
                     leafAggregation = first.Value.ToObject<MaxAggregation>(serializer);
+                    break;
+
+                case "sum":
+                    leafAggregation = first.Value.ToObject<SumAggregation>(serializer);
                     break;
             }
 
