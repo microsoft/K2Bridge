@@ -12,7 +12,7 @@ namespace K2Bridge.Models.Response
     /// Terms bucket response.
     /// </summary>
     [JsonConverter(typeof(RangeBucketAggsConverter))]
-    public class RangeBucket : IBucket
+    public class RangeBucket : IKeyedBucket
     {
         /// <summary>
         /// Gets or sets document count.

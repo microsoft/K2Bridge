@@ -25,7 +25,7 @@ namespace K2Bridge.JsonConverters
             writer.WritePropertyName("doc_count");
             serializer.Serialize(writer, buck.DocCount);
             writer.WritePropertyName("key");
-            serializer.Serialize(writer, Convert.ToInt64(buck.Key));
+            serializer.Serialize(writer, buck.Key);
             writer.WritePropertyName("key_as_string");
             serializer.Serialize(writer, buck.KeyAsString);
 

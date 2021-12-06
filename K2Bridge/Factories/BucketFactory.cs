@@ -34,7 +34,7 @@ namespace K2Bridge.Factories
             var dhb = new DateHistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
-                Key = TimeUtils.ToEpochMilliseconds(dateBucket).ToString(),
+                Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
                 Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
             };

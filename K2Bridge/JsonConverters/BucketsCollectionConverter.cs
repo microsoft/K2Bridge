@@ -28,12 +28,13 @@ namespace K2Bridge.JsonConverters
 
                 foreach (var bucket in buckets.Buckets)
                 {
-                    writer.WritePropertyName(bucket.Key);
+                    var keyedBucket = bucket as IKeyedBucket;
+                    writer.WritePropertyName(keyedBucket.Key);
 
                     // Do not output the key in the bucket itself
-                    bucket.Key = null;
+                    keyedBucket.Key = null;
 
-                    serializer.Serialize(writer, bucket);
+                    serializer.Serialize(writer, keyedBucket);
                 }
 
                 writer.WriteEndObject();

@@ -20,7 +20,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         private static readonly DateHistogramBucket ValidTermsBucket = new DateHistogramBucket()
         {
             DocCount = 502,
-            Key = "42",
+            Key = 42,
             KeyAsString = "foo",
             Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
         };

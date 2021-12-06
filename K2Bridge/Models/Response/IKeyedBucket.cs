@@ -9,11 +9,12 @@ namespace K2Bridge.Models.Response
     /// <summary>
     /// An interface for a bucket class.
     /// </summary>
-    public interface IBucket
+    public interface IKeyedBucket : IBucket
     {
         /// <summary>
-        /// Gets or sets documents count.
+        /// Gets or sets the bucket key.
         /// </summary>
-        int DocCount { get; set; }
+        [JsonProperty("key")]
+        public string Key { get; set; }
     }
 }
