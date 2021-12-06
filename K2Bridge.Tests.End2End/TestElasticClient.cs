@@ -188,22 +188,26 @@ namespace K2Bridge.Tests.End2End
 
             // Use generic Elasticsearch type for geo_point
             var dynamicObjects = ReplaceType(result, "geo_point", "object", false);
+            Console.WriteLine("dynamic objects - " + string.Join(", ", dynamicObjects.Select(x => x.Name)));
 
             // Remove extra fields returned by Elasticsearch (prefixed by _)
             JObject fields = (JObject)result.SelectToken($"$.fields");
             var removes = new List<string>();
-            foreach (var field in fields)
+
+            foreach (var (fieldName, _) in fields)
             {
-                if (field.Key.StartsWith("_", StringComparison.OrdinalIgnoreCase))
+                Console.WriteLine("Field -  " + fieldName);
+
+                if (fieldName.StartsWith("_", StringComparison.OrdinalIgnoreCase))
                 {
-                    removes.Add(field.Key);
+                    removes.Add(fieldName);
                 }
 
                 // Kusto now generates new fields for every dynamic object automatically.
                 // Elastic does not do that, so we need to remove the generated fields.
-                if (dynamicObjects.Any(d => field.Key.StartsWith(d.Name, StringComparison.OrdinalIgnoreCase)))
+                if (dynamicObjects.Any(d => fieldName.StartsWith(d.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    removes.Add(field.Key);
+                    removes.Add(fieldName);
                 }
             }
 
