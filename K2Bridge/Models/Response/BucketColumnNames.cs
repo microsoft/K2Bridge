@@ -7,7 +7,7 @@ namespace K2Bridge.Models.Response
     /// <summary>
     /// ColumnNames.
     /// </summary>
-    internal class DateHistogramBucketColumnNames
+    internal class BucketColumnNames
     {
         /// <summary>
         /// Timestamp.

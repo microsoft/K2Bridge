@@ -104,6 +104,13 @@ namespace K2Bridge
                 docValueFields = new List<string>();
                 elasticSearchDsl.DocValueFields?.ForEach(item => docValueFields.Add(item.Field));
 
+                // We currently only support a single primary aggregation, so we take the first element from the dictionary and retrieve its type name
+                string primaryAggregation = null;
+                if (elasticSearchDsl.Aggregations != null && elasticSearchDsl.Aggregations.Count > 0)
+                {
+                    primaryAggregation = elasticSearchDsl.Aggregations.First().Value.PrimaryAggregation.GetType().Name;
+                }
+
                 // Use the visitor and build the KustoQL string from the esDSL object
                 elasticSearchDsl.Accept(visitor);
 
@@ -112,7 +119,8 @@ namespace K2Bridge
                     elasticSearchDsl.IndexName,
                     sortFields,
                     docValueFields,
-                    elasticSearchDsl.HighlightText);
+                    elasticSearchDsl.HighlightText,
+                    primaryAggregation);
 
                 if (elasticSearchDsl.Highlight != null)
                 {
