@@ -178,6 +178,7 @@ namespace K2Bridge.KustoDAL
                 {
                     case nameof(Models.Request.Aggregations.RangeAggregation):
                         createBucketFromDataRow = (DataRow row) => BucketFactory.CreateRangeBucketFromDataRow(row);
+                        response.SetAggregationKeyed(true);
                         break;
                     case nameof(Models.Request.Aggregations.TermsAggregation):
                         createBucketFromDataRow = (DataRow row) => BucketFactory.CreateTermsBucketFromDataRow(row);

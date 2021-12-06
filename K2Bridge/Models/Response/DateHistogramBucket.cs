@@ -25,7 +25,7 @@ namespace K2Bridge.Models.Response
         /// This key is a 64 bit number representing a timestamp in milliseconds-since-the-epoch .
         /// </summary>
         [JsonProperty("key")]
-        public long Key { get; set; }
+        public string Key { get; set; }
 
         /// <summary>
         /// Gets or sets the timestamp bucket key.

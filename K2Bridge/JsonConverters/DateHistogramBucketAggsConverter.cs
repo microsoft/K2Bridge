@@ -4,6 +4,7 @@
 
 namespace K2Bridge.JsonConverters
 {
+    using System;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response;
     using Newtonsoft.Json;
@@ -24,7 +25,7 @@ namespace K2Bridge.JsonConverters
             writer.WritePropertyName("doc_count");
             serializer.Serialize(writer, buck.DocCount);
             writer.WritePropertyName("key");
-            serializer.Serialize(writer, buck.Key);
+            serializer.Serialize(writer, Convert.ToInt64(buck.Key));
             writer.WritePropertyName("key_as_string");
             serializer.Serialize(writer, buck.KeyAsString);
 

@@ -5,14 +5,16 @@
 namespace K2Bridge.Models.Response
 {
     using System.Collections.Generic;
+    using K2Bridge.JsonConverters;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Buckets response.
     /// </summary>
+    [JsonConverter(typeof(BucketsCollectionConverter))]
     public class BucketsCollection
     {
-        private readonly List<IBucket> buckets = new ();
+        private readonly List<IBucket> buckets = new();
 
         /// <summary>
         /// Gets all buckets.
@@ -22,6 +24,11 @@ namespace K2Bridge.Models.Response
         {
             get { return buckets; }
         }
+
+        /// <summary>
+        /// Gets or sets the keyed flag.
+        /// </summary>
+        public bool Keyed { get; set; } = false;
 
         /// <summary>
         /// Add bucket to buckets response.

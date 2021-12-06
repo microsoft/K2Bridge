@@ -36,8 +36,11 @@ namespace K2Bridge.JsonConverters
                 serializer.Serialize(writer, buck.To);
             }
 
-            writer.WritePropertyName("key");
-            serializer.Serialize(writer, buck.Key);
+            if (buck.Key is not null)
+            {
+                writer.WritePropertyName("key");
+                serializer.Serialize(writer, buck.Key);
+            }
 
             foreach (var agg in aggs.Keys)
             {

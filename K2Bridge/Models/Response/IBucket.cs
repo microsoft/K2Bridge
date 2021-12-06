@@ -4,6 +4,8 @@
 
 namespace K2Bridge.Models.Response
 {
+    using Newtonsoft.Json;
+
     /// <summary>
     /// An interface for a bucket class.
     /// </summary>
@@ -13,5 +15,11 @@ namespace K2Bridge.Models.Response
         /// Gets or sets documents count.
         /// </summary>
         int DocCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the bucket key.
+        /// </summary>
+        [JsonProperty("key")]
+        public string Key { get; set; }
     }
 }

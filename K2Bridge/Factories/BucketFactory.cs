@@ -34,7 +34,7 @@ namespace K2Bridge.Factories
             var dhb = new DateHistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
-                Key = TimeUtils.ToEpochMilliseconds(dateBucket),
+                Key = TimeUtils.ToEpochMilliseconds(dateBucket).ToString(),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
                 Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
             };
@@ -110,7 +110,13 @@ namespace K2Bridge.Factories
             double? to = string.IsNullOrEmpty(splitRange[1]) ? null : Convert.ToDouble(splitRange[1]);
 
             // Assemble the key
-            string key = from?.ToString("F1", CultureInfo.InvariantCulture) + "-" + to?.ToString("F1", CultureInfo.InvariantCulture);
+            string key = (from, to) switch
+            {
+                (null, null) => "*-*",
+                (_, null) => $"{from}-*",
+                (null, _) => $"*-{to}",
+                (_, _) => $"{from}-{to}",
+            };
 
             var rb = new RangeBucket
             {

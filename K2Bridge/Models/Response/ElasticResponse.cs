@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Response
     /// </summary>
     public class ElasticResponse
     {
-        private readonly List<ResponseElement> responses = new () { new ResponseElement() };
+        private readonly List<ResponseElement> responses = new() { new ResponseElement() };
 
         /// <summary>
         /// Gets responses.
@@ -47,6 +47,16 @@ namespace K2Bridge.Models.Response
 
             // Add DocCount to HitsCollection.Total
             responses[0].Hits.AddToTotal(bucket.DocCount);
+        }
+
+        /// <summary>
+        /// Set aggregation keyed flag on first response.
+        /// </summary>
+        /// <param name="isKeyed">The added bucket.</param>
+        public void SetAggregationKeyed(bool keyed)
+        {
+            // TODO: support more than one response
+            responses[0].Aggregations.Collection.Keyed = keyed;
         }
 
         /// <summary>
