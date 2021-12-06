@@ -39,7 +39,7 @@ namespace K2Bridge.Models.Request
         /// Gets or sets the query aggregations value.
         /// </summary>
         [JsonProperty("aggs")]
-        public Dictionary<string, Aggregation> Aggregations { get; set; }
+        public AggregationDictionary Aggregations { get; set; }
 
         /// <summary>
         /// Gets or sets the doc value field.
