@@ -160,6 +160,20 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""type"": ""keyword""
                         }
                       },
+                      ""mydynamic.c"": {
+                        ""object"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""object""
+                        }
+                      },
+                      ""mydynamic.c.d"": {
+                        ""object"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""object""
+                        }
+                      },
                       ""mydynamic.c.d.e"": {
                         ""keyword"": {
                           ""aggregatable"": true,
@@ -208,69 +222,119 @@ namespace UnitTests.K2Bridge.KustoDAL
             var testData = new List<Dictionary<string, object>>()
             {
                 column("myint", "System.Int32"),
-                column("mydynamic", "System.Object"),
+                column("nested_dynamic", "System.Object"),
+                column("dynamic_top_level_string", "System.Object"),
+                column("dynamic_top_level_indexer", "System.Object"),
+                column("dynamic_top_level_array", "System.Object"),
             };
             using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(testReader));
 
-            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>()
-            {
-                new Dictionary<string, object>()
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>()))
+                .Returns((QueryData query, RequestContext context) =>
                 {
-                    { "result", JToken.Parse("{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}") },
-                },
-            });
+                    string response;
+                    if (query.QueryCommandText.Contains("nested_dynamic"))
+                    {
+                        response = "{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}";
+                    } else if (query.QueryCommandText.Contains("dynamic_top_level_string"))
+                    {
+                        response = "\"string\"";
+                    }
+                    else if (query.QueryCommandText.Contains("dynamic_top_level_indexer"))
+                    {
+                        response = "{\"`indexer`\": \"int\"}";
+                    }
+                    else
+                    {
+                        response = "[\"int\", \"string\"]";
+                    }
 
-            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.Is<QueryData>(q => q.QueryCommandText.Contains("mydynamic")), It.IsAny<RequestContext>()))
-                .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
+                    IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>()
+                    {
+                        new Dictionary<string, object>()
+                        {
+                            { "result", JToken.Parse(response) },
+                        },
+                    });
+
+                    return Task.FromResult((TimeSpan.Zero, dynamicResultReader));
+                });
 
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var response = await kusto.GetFieldCapsAsync("testIndexName");
 
-            JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
-                  {
-                    ""indices"": [
-                      ""testIndexName""
-                    ],
-                    ""fields"": {
-                      ""myint"": {
-                        ""integer"": {
-                          ""aggregatable"": true,
-                          ""searchable"": true,
-                          ""type"": ""integer""
-                        }
-                      },
-                      ""mydynamic"": {
-                        ""object"": {
-                          ""aggregatable"": true,
-                          ""searchable"": true,
-                          ""type"": ""object""
-                        }
-                      },
-                      ""mydynamic.a"": {
-                        ""keyword"": {
-                          ""aggregatable"": true,
-                          ""searchable"": true,
-                          ""type"": ""keyword""
-                        }
-                      },
-                      ""mydynamic.b"": {
-                        ""integer"": {
-                          ""aggregatable"": true,
-                          ""searchable"": true,
-                          ""type"": ""integer""
-                        }
-                      },
-                      ""mydynamic.c.d"": {
-                        ""keyword"": {
-                          ""aggregatable"": true,
-                          ""searchable"": true,
-                          ""type"": ""keyword""
+            JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"{
+                      ""indices"": [
+                        ""testIndexName""
+                      ],
+                      ""fields"": {
+                        ""myint"": {
+                          ""integer"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""integer""
+                          }
+                        },
+                        ""nested_dynamic"": {
+                          ""object"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""object""
+                          }
+                        },
+                        ""nested_dynamic.a"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        },
+                        ""nested_dynamic.b"": {
+                          ""integer"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""integer""
+                          }
+                        },
+                        ""nested_dynamic.c"": {
+                          ""object"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""object""
+                          }
+                        },
+                        ""nested_dynamic.c.d"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        },
+                        ""dynamic_top_level_string"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        },
+                        ""dynamic_top_level_indexer"": {
+                          ""integer"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""integer""
+                          }
+                        },
+                        ""dynamic_top_level_array"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
                         }
                       }
                     }
-                  }
                   "));
         }
 
