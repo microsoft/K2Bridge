@@ -53,83 +53,88 @@ namespace UnitTests.K2Bridge.JsonConverters
             }
         }}";
 
-        private static readonly Aggregation ExpectedValidDateHistogramAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedValidDateHistogramAggregation = new AggregationContainer()
         {
-            PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            Primary = null,
+            Aggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new DateHistogramAggregation {
-                            FieldName = "timestamp",
-                            FieldAlias = "_2",
-                            Interval = "1m",
-                            Metric = "count()",
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    Primary = new DateHistogramAggregation
+                    {
+                        Field = "timestamp",
+                        Key = "2",
+                        FixedInterval = "1m",
+                        TimeZone = "Asia/Jerusalem",
+                        MinimumDocumentCount = 1,
                     },
+                    Aggregations = null,
                 },
+            },
         };
 
-        private static readonly Aggregation ExpectedValidCardinalityAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new AggregationContainer()
         {
-            PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            Primary = null,
+            Aggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new CardinalityAggregation {
-                            FieldAlias = "_2",
-                            FieldName = "metric",
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    Primary = new CardinalityAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
                     },
+                    Aggregations = null,
                 },
+            },
         };
 
-        private static readonly Aggregation ExpectedValidAvgAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedValidAvgAggregation = new AggregationContainer()
         {
-            PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            Primary = null,
+            Aggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new AvgAggregation {
-                            FieldAlias = "_2",
-                            FieldName = "grade",
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    Primary = new AverageAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
                     },
+                    Aggregations = null,
                 },
+            },
         };
 
-        private static readonly Aggregation ExpectedNoFieldsAvgAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedNoFieldsAvgAggregation = new AggregationContainer()
         {
-            PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            Primary = null,
+            Aggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new AvgAggregation {
-                            FieldAlias = "_2",
-                            FieldName = null,
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    Primary = new AverageAggregation
+                    {
+                        Field = null,
+                        Key = "2",
                     },
+                    Aggregations = null,
                 },
+            },
         };
 
-        private static readonly Aggregation ExpectedNoAggAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedNoAggAggregation = new AggregationContainer()
         {
-            PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            Primary = null,
+            Aggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = null,
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
-                    },
+                    Primary = null,
+                    Aggregations = null,
                 },
+            },
         };
 
         private static readonly object[] AggregationTestCases = {
@@ -143,7 +148,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         [TestCaseSource(nameof(AggregationTestCases))]
         public void TestAggregationConverter(string queryString, object expected)
         {
-            queryString.AssertJsonString((Aggregation)expected);
+            queryString.AssertJsonString((AggregationContainer)expected);
         }
     }
 }

@@ -150,7 +150,7 @@ namespace UnitTests.K2Bridge.Visitors
                     Bool = new BoolQuery(),
                 },
                 IndexName = "someindex",
-                Aggregations = new Dictionary<string, Aggregation>(),
+                Aggregations = new AggregationDictionary(),
             };
 
             CreateVisitorAndVisit(dsl);
@@ -174,7 +174,7 @@ namespace UnitTests.K2Bridge.Visitors
                     }
                 }}";
 
-            var aggs = JsonConvert.DeserializeObject<Aggregation>(dateHistogramAggregation);
+            var aggs = JsonConvert.DeserializeObject<AggregationContainer>(dateHistogramAggregation);
 
             var dsl = new ElasticSearchDSL
             {
@@ -183,7 +183,7 @@ namespace UnitTests.K2Bridge.Visitors
                     Bool = new BoolQuery(),
                 },
                 IndexName = "someindex",
-                Aggregations = aggs.SubAggregations,
+                Aggregations = aggs.Aggregations,
             };
 
             CreateVisitorAndVisit(dsl);

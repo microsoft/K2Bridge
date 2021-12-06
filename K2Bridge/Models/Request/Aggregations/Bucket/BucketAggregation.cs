@@ -4,12 +4,8 @@
 
 namespace K2Bridge.Models.Request.Aggregations
 {
-    using K2Bridge.Visitors;
-
-    internal abstract class Aggregation : KustoQLBase, IVisitable
+    internal abstract class BucketAggregation : Aggregation
     {
-        public string Key { get; set; }
-
-        public abstract void Accept(IVisitor visitor);
+        public string Metric => "count()";
     }
 }

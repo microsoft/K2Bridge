@@ -15,7 +15,7 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(ExpectedResult = null)]
         public string AggregationVisit_WithEmptyAgg_ReturnsNoPrimary()
         {
-            var aggregateClause = new Aggregation();
+            var aggregateClause = new AggregationContainer();
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(aggregateClause);
@@ -23,12 +23,12 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_A=avg(fieldA)")]
+        [TestCase(ExpectedResult = "A=avg(fieldA)")]
         public string AggregationVisit_WithAvgAgg_ReturnsAvgPrimary()
         {
-            var aggregateClause = new Aggregation()
+            var aggregateClause = new AggregationContainer()
             {
-                PrimaryAggregation = new AvgAggregation() { FieldName = "fieldA", FieldAlias = "_A" },
+                Primary = new AverageAggregation() { Field = "fieldA", Key = "A" },
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
@@ -37,15 +37,15 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_B=avg(fieldB), _A=avg(fieldA)")]
+        [TestCase(ExpectedResult = "B=avg(fieldB), A=avg(fieldA)")]
         public string AggregationVisit_WithSubAvgAgg_ReturnsAvgAggregates()
         {
-            var aggregateClause = new Aggregation()
+            var aggregateClause = new AggregationContainer()
             {
-                PrimaryAggregation = new AvgAggregation() { FieldName = "fieldA", FieldAlias = "_A" },
-                SubAggregations = new Dictionary<string, Aggregation>
+                Primary = new AverageAggregation() { Field = "fieldA", Key = "A" },
+                Aggregations = new AggregationDictionary
                 {
-                    { "sub", new Aggregation() { PrimaryAggregation = new AvgAggregation { FieldName = "fieldB", FieldAlias = "_B" } } },
+                    { "sub", new AggregationContainer() { Primary = new AverageAggregation { Field = "fieldB", Key = "B" } } },
                 },
             };
 
@@ -55,12 +55,12 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_A=dcount(fieldA)")]
+        [TestCase(ExpectedResult = "A=dcount(fieldA)")]
         public string AggregationVisit_WithCardinalityAgg_ReturnsDCount()
         {
-            var aggregateClause = new Aggregation()
+            var aggregateClause = new AggregationContainer()
             {
-                PrimaryAggregation = new CardinalityAggregation() { FieldName = "fieldA", FieldAlias = "_A" },
+                Primary = new CardinalityAggregation() { Field = "fieldA", Key = "A" },
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
@@ -69,15 +69,15 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_B=dcount(fieldB), _A=dcount(fieldA)")]
+        [TestCase(ExpectedResult = "B=dcount(fieldB), A=dcount(fieldA)")]
         public string AggregationVisit_WithSubCardinalityAggs_ReturnsDCounts()
         {
-            var aggregateClause = new Aggregation()
+            var aggregateClause = new AggregationContainer()
             {
-                PrimaryAggregation = new CardinalityAggregation() { FieldName = "fieldA", FieldAlias = "_A" },
-                SubAggregations = new Dictionary<string, Aggregation>
+                Primary = new CardinalityAggregation() { Field = "fieldA", Key = "A" },
+                Aggregations = new AggregationDictionary
                 {
-                    { "sub", new Aggregation() { PrimaryAggregation = new CardinalityAggregation { FieldName = "fieldB", FieldAlias = "_B" } } },
+                    { "sub", new AggregationContainer() { Primary = new CardinalityAggregation { Field = "fieldB", Key = "B" } } },
                 },
             };
 

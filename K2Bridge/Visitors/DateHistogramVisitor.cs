@@ -16,11 +16,13 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(dateHistogramAggregation, nameof(dateHistogramAggregation));
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Metric, nameof(dateHistogramAggregation.Metric));
-            EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.FieldName, nameof(dateHistogramAggregation.FieldName));
+            EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Field, nameof(dateHistogramAggregation.Field));
 
             dateHistogramAggregation.KustoQL =
-                $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.FieldAlias} = ";
-            var interval = dateHistogramAggregation.Interval;
+                $"{dateHistogramAggregation.Metric} by {dateHistogramAggregation.Key} = ";
+
+            var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
+
             if (!string.IsNullOrEmpty(interval))
             {
                 // https://www.elastic.co/guide/en/elasticsearch/reference/master/search-aggregations-bucket-datehistogram-aggregation.html#calendar_and_fixed_intervals
@@ -30,22 +32,22 @@ namespace K2Bridge.Visitors
                 var period = interval[^1];
                 dateHistogramAggregation.KustoQL += period switch
                 {
-                    'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
-                    'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
-                    'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
-                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.FieldName})",
-                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.FieldName})",
-                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.FieldName})",
-                    _ => $"bin({dateHistogramAggregation.FieldName}, {dateHistogramAggregation.Interval})",
+                    'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.Field})",
+                    'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.Field})",
+                    'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.Field})",
+                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.Key})",
+                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.Key})",
+                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.Key})",
+                    _ => $"bin({dateHistogramAggregation.Field}, {interval})",
                 };
             }
             else
             {
-                dateHistogramAggregation.KustoQL += dateHistogramAggregation.FieldName;
+                dateHistogramAggregation.KustoQL += dateHistogramAggregation.Field;
             }
 
             // todatetime is redundent but we'll keep it for now
-            dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {dateHistogramAggregation.FieldAlias} asc";
+            dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {dateHistogramAggregation.Key} asc";
         }
     }
 }
