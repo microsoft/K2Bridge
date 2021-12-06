@@ -28,9 +28,12 @@ namespace K2Bridge.Visitors
             // foo > 0 and foo < 800, "0-800"
             foreach (var range in rangeAggregation.Ranges)
             {
+                var bucketName = string.Empty;
+
                 if (range.From != null)
                 {
                     rangeAggregation.KustoQLPreSummarize += $"{rangeAggregation.FieldName} >= {range.From}";
+                    bucketName += range.From.ToString();
                 }
 
                 if (range.From != null && range.To != null)
@@ -38,12 +41,15 @@ namespace K2Bridge.Visitors
                     rangeAggregation.KustoQLPreSummarize += " and ";
                 }
 
+                bucketName += "-";
+
                 if (range.To != null)
                 {
                     rangeAggregation.KustoQLPreSummarize += $"{rangeAggregation.FieldName} < {range.To}";
+                    bucketName += range.To.ToString();
                 }
 
-                rangeAggregation.KustoQLPreSummarize += $", '{(range.From != null ? range.From.ToString() : string.Empty)}-{(range.To != null ? range.To.ToString() : string.Empty)}', ";
+                rangeAggregation.KustoQLPreSummarize += $", '{bucketName}', ";
             }
 
             // End of case() function, with default bucket
