@@ -194,66 +194,47 @@ namespace K2Bridge.KustoDAL
             var (_, result) = await Kusto.ExecuteQueryAsync(new QueryData(query, tableName), RequestContext);
             result.Read();
             var jsonResult = result[0];
-            var stack = new Stack<(string, JObject)>();
-
-            FieldCapabilityElement initialField;
-            switch (jsonResult)
-            {
-                case JArray arr:
-                    initialField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(fieldCapabilityElement.Name, CombineValues(arr));
-                    break;
-                case JObject obj:
-                    initialField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(fieldCapabilityElement.Name, "dynamic");
-                    stack.Push((fieldCapabilityElement.Name, obj));
-                    break;
-                case JValue v:
-                    initialField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(fieldCapabilityElement.Name, CombineValues(v));
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unexpected type {jsonResult.GetType()}");
-            }
-
-            response.AddField(initialField);
-            Logger.LogDebug("Found dynamic field: {@initialField}", initialField);
+            var stack = new Stack<(string, JToken)>();
+            stack.Push((fieldCapabilityElement.Name, (JToken)jsonResult));
 
             while (stack.Count > 0)
             {
-                var (path, jsonObject) = stack.Pop();
-                foreach (var property in jsonObject.Properties())
+                var (name, jsonObject) = stack.Pop();
+                /* The special name `indexer` indicates that the field is an array.
+                    * In kibana, there is no difference between an array field and a normal field (for example, any int field can contain a single int value or an array of int values).
+                    */
+                const string specialArrayKey = "`indexer`";
+                switch (jsonObject)
                 {
-                    var newPath = path + "." + property.Name;
-                    if (property.Value.Type != JTokenType.Object)
-                    {
-                        var newField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(newPath, CombineValues(property.Value));
-                        response.AddField(newField);
-                        Logger.LogDebug("Added dynamic subfield for {@initialField} - {@newField} ", initialField, newField);
+                    case JValue v:
+                        AddSingleDynamicField(response, name, v);
+                        break;
+                    case JArray arr:
+                        AddSingleDynamicField(response, name, arr);
+                        break;
+                    case JObject obj when obj[specialArrayKey] != null:
+                        AddSingleDynamicField(response, name, obj[specialArrayKey]);
+                        break;
+                    case JObject obj:
+                        AddSingleDynamicField(response, name, "dynamic");
+                        foreach (var property in obj.Properties())
+                        {
+                            stack.Push((name + "." + property.Name, property.Value));
+                        }
 
-                        continue;
-                    }
+                        break;
 
-                    /* The special name `indexer` indicates that the field is an array.
-                     * In kibana, there is no difference between an array field and a normal field (for example, any int field can contain a single int value or an array of int values).
-                     * So we test for the field, if it's null we continue parsing the object, and if it's not we parse the inner fields.
-                     */
-                    var indexer = property.Value["`indexer`"];
-                    switch (indexer)
-                    {
-                        case null:
-                            stack.Push((newPath, (JObject)property.Value));
-                            break;
-                        case JObject j:
-                            stack.Push((newPath, j));
-                            break;
-                        default:
-                            var newField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(
-                                newPath,
-                                CombineValues(indexer));
-                            response.AddField(newField);
-                            Logger.LogDebug("Added dynamic array subfield for {@initialField} - {@newField} ", initialField, newField);
-                            break;
-                    }
+                    default:
+                        throw new InvalidOperationException($"Unexpected type {jsonResult.GetType()}");
                 }
             }
+        }
+
+        private void AddSingleDynamicField(FieldCapabilityResponse response, string name, JToken type)
+        {
+            var newField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(name, CombineValues(type));
+            Logger.LogDebug("Added dynamic field @{newField} ", newField);
+            response.AddField(newField);
         }
 
         private string CombineValues(JToken property)
