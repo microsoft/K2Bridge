@@ -12,7 +12,7 @@ namespace K2Bridge.JsonConverters
     using Newtonsoft.Json.Linq;
 
     /// <summary>
-    /// A converter able to deserialize the aggs element in an Elasticsearch query to <see cref="Aggregation"/>.
+    /// A converter able to deserialize the aggregation element in an Elasticsearch query to <see cref="AggregationContainer"/>.
     /// </summary>
     internal class AggregationContainerConverter : ReadOnlyJsonConverter
     {
