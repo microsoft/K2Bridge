@@ -174,6 +174,16 @@ namespace K2Bridge.KustoDAL
             }
         }
 
+        /// <summary>
+        /// Searches through the dynamic fields in kusto, parses their inner types and adds them to the response.
+        /// To do this, we run a `buildschema` query to kusto, which aggregates the rows of the dynamic columns,
+        /// and returns the inferred schema as a JSON object.
+        /// By default we run this query on all of the rows in the table, but using the `dynamicSamplePercentage` configuration settings we will sample a percentage of the rows.
+        /// </summary>
+        /// <param name="response">Response containing the field caps.</param>
+        /// <param name="tableName">Name of the kusto table containing the dynamic field.</param>
+        /// <param name="fieldCapabilityElement">The dynamic field itself.</param>
+        /// <exception cref="InvalidOperationException">When parsing the json response yields an unexpected type.</exception>
         private async Task HandleDynamicField(FieldCapabilityResponse response, string tableName, FieldCapabilityElement fieldCapabilityElement)
         {
             var query = DynamicSamplePercentage.HasValue ?
@@ -210,6 +220,10 @@ namespace K2Bridge.KustoDAL
                         continue;
                     }
 
+                    /* The special name `indexer` indicates that the field is an array.
+                     * In kibana, there is no difference between an array field and a normal field (for example, any int field can contain a single int value or an array of int values).
+                     * So we test for the field, if it's null we continue parsing the object, and if it's not we parse the inner fields.
+                     */
                     var indexer = property.Value["`indexer`"];
                     switch (indexer)
                     {

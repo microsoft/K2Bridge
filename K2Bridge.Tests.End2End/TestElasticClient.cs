@@ -187,7 +187,7 @@ namespace K2Bridge.Tests.End2End
             var result = await JsonQuery(request);
 
             // Use generic Elasticsearch type for geo_point
-            ReplaceType(result, "geo_point", "object", false);
+            var dynamicObjects = ReplaceType(result, "geo_point", "object", false);
 
             // Remove extra fields returned by Elasticsearch (prefixed by _)
             JObject fields = (JObject)result.SelectToken($"$.fields");
@@ -199,8 +199,9 @@ namespace K2Bridge.Tests.End2End
                     removes.Add(field.Key);
                 }
 
-                // Remove auto-generated fields from the dynamic type
-                if (field.Key.StartsWith("Location.", StringComparison.OrdinalIgnoreCase))
+                // Kusto now generates new fields for every dynamic object automatically.
+                // Elastic does not do that, so we need to remove the generated fields.
+                if (dynamicObjects.Any(d => field.Key.StartsWith(d.Name, StringComparison.OrdinalIgnoreCase)))
                 {
                     removes.Add(field.Key);
                 }
@@ -331,8 +332,10 @@ namespace K2Bridge.Tests.End2End
         /// <param name="srcType">Source type to be replaced.</param>
         /// <param name="dstType">Destination type to be introduced.</param>
         /// <param name="setAggregatable">If true, sets type to aggregatable.</param>
-        private static void ReplaceType(JToken parent, string srcType, string dstType, bool setAggregatable)
+        /// <returns>List of the changed objects.</returns>
+        private static List<JProperty> ReplaceType(JToken parent, string srcType, string dstType, bool setAggregatable)
         {
+            var changedFields = new List<JProperty>();
             foreach (JObject v in parent.SelectTokens($"$.fields.*.{srcType}"))
             {
                 var ancestor = (JObject)v.Parent.Parent;
@@ -343,7 +346,11 @@ namespace K2Bridge.Tests.End2End
                 {
                     ((JValue)ancestor[dstType]["aggregatable"]).Value = true;
                 }
+
+                changedFields.Add((JProperty)ancestor.Parent);
             }
+
+            return changedFields;
         }
 
         /// <summary>
@@ -364,7 +371,7 @@ namespace K2Bridge.Tests.End2End
             }
 
             var settings = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None }
-;
+                ;
             _ = JsonConvert.DeserializeObject<JToken>(responseData, settings); // data
             var actual = JToken.Parse(responseData);
             return actual;
