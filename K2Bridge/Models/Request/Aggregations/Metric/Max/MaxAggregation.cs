@@ -9,10 +9,9 @@ namespace K2Bridge.Models.Request.Aggregations
     using Newtonsoft.Json;
 
     /// <summary>
-    /// A single-value metrics aggregation that calculates an approximate count of distinct values.
+    /// A single-value metrics aggregation that computes the max of numeric values that are extracted from the aggregated documents.
     /// </summary>
-    [JsonConverter(typeof(AggregationFieldConverter))]
-    internal class CardinalityAggregation : MetricAggregation
+    internal class MaxAggregation : MetricAggregation
     {
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)
