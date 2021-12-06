@@ -34,7 +34,7 @@ namespace K2Bridge.Visitors
             else
             {
                 // Custom order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['_{termsAggregation.Order.Field}'] {termsAggregation.Order.Sort}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{termsAggregation.Order.Field}'] {termsAggregation.Order.Sort}";
             }
 
             termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}";
