@@ -12,28 +12,28 @@ namespace K2Bridge.Visitors
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
         /// <inheritdoc/>
-        public void Visit(Aggregation aggregation)
+        public void Visit(AggregationContainer aggregationContainer)
         {
-            Ensure.IsNotNull(aggregation, nameof(aggregation));
+            Ensure.IsNotNull(aggregationContainer, nameof(aggregationContainer));
 
-            if (aggregation.PrimaryAggregation == null)
+            if (aggregationContainer.PrimaryAggregation == null)
             {
                 return;
             }
 
-            aggregation.PrimaryAggregation.Accept(this);
+            aggregationContainer.PrimaryAggregation.Accept(this);
 
             // TODO: do something with the sub aggregations to KQL
-            if (aggregation.SubAggregations != null)
+            if (aggregationContainer.SubAggregations != null)
             {
-                foreach (var (_, subAgg) in aggregation.SubAggregations)
+                foreach (var (_, subAgg) in aggregationContainer.SubAggregations)
                 {
                     subAgg.Accept(this);
-                    aggregation.KustoQL += $"{subAgg.KustoQL}, "; // this won't work when 2+ bucket aggregations are used!
+                    aggregationContainer.KustoQL += $"{subAgg.KustoQL}, "; // this won't work when 2+ bucket aggregations are used!
                 }
             }
 
-            aggregation.KustoQL += aggregation.PrimaryAggregation.KustoQL;
+            aggregationContainer.KustoQL += aggregationContainer.PrimaryAggregation.KustoQL;
         }
     }
 }

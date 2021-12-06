@@ -17,24 +17,24 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(termsAggregation, nameof(TermsAggregation));
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Metric, nameof(TermsAggregation.Metric));
-            EnsureClause.StringIsNotNullOrEmpty(termsAggregation.FieldName, nameof(TermsAggregation.FieldName));
+            EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Field, nameof(TermsAggregation.Field));
 
-            termsAggregation.KustoQL = $"{termsAggregation.Metric} by ['{termsAggregation.FieldAlias}'] = {termsAggregation.FieldName}";
+            termsAggregation.KustoQL = $"{termsAggregation.Metric} by ['{termsAggregation.Key}'] = {termsAggregation.Field}";
 
-            if (termsAggregation.SortFieldName == "_key")
+            if (termsAggregation.Order.Field == "_key")
             {
                 // Alphabetical order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{termsAggregation.FieldAlias}'] {termsAggregation.SortOrder}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{termsAggregation.Key}'] {termsAggregation.Order.Sort}";
             }
-            else if (termsAggregation.SortFieldName == "_count")
+            else if (termsAggregation.Order.Field == "_count")
             {
                 // Count order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.SortOrder}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.Order.Sort}";
             }
             else
             {
                 // Custom order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['_{termsAggregation.SortFieldName}'] {termsAggregation.SortOrder}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['_{termsAggregation.Order.Field}'] {termsAggregation.Order.Sort}";
             }
 
             termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}";
