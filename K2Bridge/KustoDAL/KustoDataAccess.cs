@@ -162,15 +162,15 @@ namespace K2Bridge.KustoDAL
                 {
                     await HandleDynamicField(response, tableName, fieldCapabilityElement);
                 }
-
-                if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
+                else
                 {
-                    Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
+                    if (string.IsNullOrEmpty(fieldCapabilityElement.Type))
+                    {
+                        Logger.LogWarning("Field: {@fieldCapabilityElement} doesn't have a type.", fieldCapabilityElement);
+                    }
+
+                    response.AddField(fieldCapabilityElement);
                 }
-
-                response.AddField(fieldCapabilityElement);
-
-                Logger.LogDebug("Found field: {@fieldCapabilityElement}", fieldCapabilityElement);
             }
         }
 
@@ -196,17 +196,25 @@ namespace K2Bridge.KustoDAL
             var jsonResult = result[0];
             var stack = new Stack<(string, JObject)>();
 
+            FieldCapabilityElement initialField;
             switch (jsonResult)
             {
                 case JArray arr:
-                    response.AddField(FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(fieldCapabilityElement.Name, CombineValues(arr)));
+                    initialField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(fieldCapabilityElement.Name, CombineValues(arr));
                     break;
                 case JObject obj:
+                    initialField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(fieldCapabilityElement.Name, "dynamic");
                     stack.Push((fieldCapabilityElement.Name, obj));
+                    break;
+                case JValue v:
+                    initialField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(fieldCapabilityElement.Name, CombineValues(v));
                     break;
                 default:
                     throw new InvalidOperationException($"Unexpected type {jsonResult.GetType()}");
             }
+
+            response.AddField(initialField);
+            Logger.LogDebug("Found dynamic field: {@initialField}", initialField);
 
             while (stack.Count > 0)
             {
@@ -216,7 +224,10 @@ namespace K2Bridge.KustoDAL
                     var newPath = path + "." + property.Name;
                     if (property.Value.Type != JTokenType.Object)
                     {
-                        response.AddField(FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(newPath, CombineValues(property.Value)));
+                        var newField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(newPath, CombineValues(property.Value));
+                        response.AddField(newField);
+                        Logger.LogDebug("Added dynamic subfield for {@initialField} - {@newField} ", initialField, newField);
+
                         continue;
                     }
 
@@ -234,9 +245,11 @@ namespace K2Bridge.KustoDAL
                             stack.Push((newPath, j));
                             break;
                         default:
-                            response.AddField(FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(
+                            var newField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(
                                 newPath,
-                                CombineValues(indexer)));
+                                CombineValues(indexer));
+                            response.AddField(newField);
+                            Logger.LogDebug("Added dynamic array subfield for {@initialField} - {@newField} ", initialField, newField);
                             break;
                     }
                 }
