@@ -63,6 +63,16 @@ namespace K2Bridge.Visitors
                     foreach (var (_, aggregation) in elasticSearchDSL.Aggregations)
                     {
                         aggregation.Accept(this);
+
+                        // Insert pre-summarize operator statement
+                        if (!string.IsNullOrEmpty(aggregation.PrimaryAggregation.KustoQLPreSummarize))
+                        {
+                            queryStringBuilder.Append(aggregation.PrimaryAggregation.KustoQLPreSummarize);
+                        }
+
+                        // Insert summarize operator
+                        queryStringBuilder.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Summarize} ");
+
                         queryStringBuilder.Append($"{aggregation.KustoQL} ");
                     }
 
