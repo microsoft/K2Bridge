@@ -12,24 +12,17 @@ namespace K2Bridge.Models.Request.Aggregations
     /// Bucket aggregation that creates one bucket per unique value in the designated field.
     // Default values are taken from Elasticserch API documentation.
     /// </summary>
-    [JsonConverter(typeof(TermsAggregationConverter))]
     internal class TermsAggregation : BucketAggregation
     {
         /// <summary>
         /// Gets or sets the field to aggregate.
         /// </summary>
         [JsonProperty("field")]
-        public string FieldName { get; set; }
+        public string Field { get; set; }
 
-        /// <summary>
-        /// Gets or sets the field name used to sort buckets.
-        /// </summary>
-        public string SortFieldName { get; set; } = "count_";
-
-        /// <summary>
-        /// Gets or sets the ordering of the results.
-        /// </summary>
-        public string SortOrder { get; set; } = "desc";
+        [JsonProperty("order")]
+        [JsonConverter(typeof(TermsOrderConverter))]
+        public TermsOrder Order { get; set; }
 
         /// <summary>
         /// Gets or sets the number of buckets to return.
