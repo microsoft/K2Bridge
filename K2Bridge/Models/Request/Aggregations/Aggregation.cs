@@ -10,7 +10,7 @@ namespace K2Bridge.Models.Request.Aggregations
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Descibes base aggregation class to visit.
+    /// Describes base aggregation class to visit.
     /// </summary>
     internal abstract class Aggregation : KustoQLBase, IVisitable
     {
