@@ -4,10 +4,11 @@
 
 namespace K2Bridge.Models.Request.Aggregations
 {
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
 
+    /// <summary>
+    /// Decribes aggregation dictionary element in an Elasticsearch query.
+    /// </summary>
     internal class AggregationDictionary : Dictionary<string, AggregationContainer>
     {
     }
