@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Request.Aggregations
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Decribes aggregation container element in an Elasticsearch query.
+    /// Describes aggregation container element in an Elasticsearch query.
     /// </summary>
     [JsonConverter(typeof(AggregationContainerConverter))]
     internal class AggregationContainer : KustoQLBase, IVisitable
