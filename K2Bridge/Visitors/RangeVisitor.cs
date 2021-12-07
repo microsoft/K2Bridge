@@ -17,8 +17,8 @@ namespace K2Bridge.Visitors
         public void Visit(RangeAggregation rangeAggregation)
         {
             Ensure.IsNotNull(rangeAggregation, nameof(TermsAggregation));
-            EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Metric, nameof(TermsAggregation.Metric));
-            EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.FieldName, nameof(TermsAggregation.FieldName));
+            EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Metric, nameof(RangeAggregation.Metric));
+            EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.FieldName, nameof(RangeAggregation.FieldName));
 
             // KustoQL case expression
             // case(
@@ -46,7 +46,7 @@ namespace K2Bridge.Visitors
             caseExpression += $"'{BucketColumnNames.RangeDefaultBucket}')";
 
             // KustoQL commands that go after the summarize
-            rangeAggregation.KustoQL = $"{rangeAggregation.Metric} by ['{rangeAggregation.FieldAlias}'] = {caseExpression}";
+            rangeAggregation.KustoQL = $"{rangeAggregation.Metric} by ['{rangeAggregation.Key}'] = {caseExpression}";
         }
     }
 }

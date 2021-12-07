@@ -135,7 +135,7 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                rb.Aggs[clmn.ColumnName.Substring(1)] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+                rb.Aggs[clmn.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
             }
 
             return rb;

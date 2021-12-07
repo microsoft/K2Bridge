@@ -23,7 +23,7 @@ namespace UnitTests.K2Bridge.Visitors
             {
                 Metric = "wibble",
                 FieldName = "dayOfWeek",
-                FieldAlias = "_alias",
+                Key = "_alias",
                 Ranges = new List<RangeAggregationExpression>() {
                     new RangeAggregationExpression { From = from1, To = to1 },
                     new RangeAggregationExpression { From = from2, To = to2 },
