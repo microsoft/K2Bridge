@@ -30,8 +30,8 @@ namespace K2Bridge.JsonConverters
 
             if (property != null)
             {
-                obj.Field = property.Name;
-                obj.Sort = property.Value.ToString();
+                obj.SortField = property.Name;
+                obj.SortOrder = property.Value.ToString();
             }
 
             return obj;

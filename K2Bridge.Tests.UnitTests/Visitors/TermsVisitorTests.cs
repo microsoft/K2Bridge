@@ -23,8 +23,8 @@ namespace UnitTests.K2Bridge.Visitors
                 Size = 10,
                 Order = new TermsOrder()
                 {
-                    Field = sortFieldName,
-                    Sort = "desc",
+                    SortField = sortFieldName,
+                    SortOrder = "desc",
                 },
             };
 

@@ -9,11 +9,11 @@ namespace K2Bridge.Models.Request.Aggregations
         /// <summary>
         /// Gets or sets the field name used to sort buckets.
         /// </summary>
-        public string Field { get; set; } = "count_";
+        public string SortField { get; set; } = "count_";
 
         /// <summary>
         /// Gets or sets the ordering of the results.
         /// </summary>
-        public string Sort { get; set; } = "desc";
+        public string SortOrder { get; set; } = "desc";
     }
 }

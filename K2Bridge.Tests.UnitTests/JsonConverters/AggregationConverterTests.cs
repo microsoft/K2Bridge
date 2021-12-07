@@ -114,8 +114,8 @@ namespace UnitTests.K2Bridge.JsonConverters
                         Key = "2",
                         Order = new TermsOrder
                         {
-                            Field = "_count",
-                            Sort = "desc",
+                            SortField = "_count",
+                            SortOrder = "desc",
                         },
                     },
                     SubAggregations = new AggregationDictionary(),
