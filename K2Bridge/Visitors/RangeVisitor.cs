@@ -28,28 +28,17 @@ namespace K2Bridge.Visitors
             // foo > 0 and foo < 800, "0-800"
             foreach (var range in rangeAggregation.Ranges)
             {
-                var bucketName = string.Empty;
-
-                if (range.From != null)
+                var rangeClause = new Models.Request.Queries.RangeClause()
                 {
-                    caseExpression += $"{rangeAggregation.FieldName} >= {range.From}";
-                    bucketName += range.From.ToString();
-                }
+                    FieldName = rangeAggregation.FieldName,
+                    GTEValue = range.From.HasValue ? range.From.ToString() : "*",
+                    LTValue = range.To.HasValue ? range.To.ToString() : "*",
+                };
+                rangeClause.Accept(this);
 
-                if (range.From != null && range.To != null)
-                {
-                    caseExpression += " and ";
-                }
+                var bucketName = $"{range.From}-{range.To}";
 
-                bucketName += "-";
-
-                if (range.To != null)
-                {
-                    caseExpression += $"{rangeAggregation.FieldName} < {range.To}";
-                    bucketName += range.To.ToString();
-                }
-
-                caseExpression += $", '{bucketName}', ";
+                caseExpression += $"{rangeClause.KustoQL}, '{bucketName}', ";
             }
 
             // End of case() function, with default bucket
