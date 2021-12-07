@@ -4,8 +4,6 @@
 
 namespace K2Bridge.Models.Response
 {
-    using Newtonsoft.Json;
-
     /// <summary>
     /// An interface for a bucket class.
     /// </summary>

@@ -23,10 +23,5 @@ namespace K2Bridge.Models.Response
         /// Name of the default bucket for values that don't match any range.
         /// </summary>
         public static string RangeDefaultBucket => "default_bucket";
-
-        /// <summary>
-        /// Name of the internal bucket name for range aggregations.
-        /// </summary>
-        public static string RangeBucketName => "range_bucket_name";
     }
 }

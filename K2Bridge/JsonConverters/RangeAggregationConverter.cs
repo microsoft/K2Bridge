@@ -12,7 +12,7 @@ namespace K2Bridge.JsonConverters
     using Newtonsoft.Json.Linq;
 
     /// <summary>
-    /// A converter able to deserialize the date_histogram element in an Elasticsearch query to <see cref="TermsAggregation"/>.
+    /// A converter able to deserialize the range element in an Elasticsearch query to <see cref="RangeAggregation"/>.
     /// </summary>
     internal class RangeAggregationConverter : ReadOnlyJsonConverter
     {

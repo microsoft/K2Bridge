@@ -9,8 +9,7 @@ namespace K2Bridge.Models.Request.Aggregations
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Bucket aggregation that creates one bucket per unique value in the designated field.
-    // Default values are taken from Elasticserch API documentation.
+    /// Range expression for aggregation.
     /// </summary>
     internal class RangeAggregationExpression
     {
