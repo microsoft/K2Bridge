@@ -87,6 +87,38 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
+        [TestCase(ExpectedResult = "['A']=min(fieldA)")]
+        public string AggregationVisit_WithMinAgg_ReturnsMinPrimary()
+        {
+            var aggregateClause = new AggregationContainer()
+            {
+                PrimaryAggregation = new MinAggregation() { Field = "fieldA", Key = "A" },
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
+
+        [TestCase(ExpectedResult = "['B']=min(fieldB), ['A']=min(fieldA)")]
+        public string AggregationVisit_WithSubMinAgg_ReturnsMinAggregates()
+        {
+            var aggregateClause = new AggregationContainer()
+            {
+                PrimaryAggregation = new MinAggregation() { Field = "fieldA", Key = "A" },
+                SubAggregations = new AggregationDictionary
+                {
+                    { "sub", new AggregationContainer() { PrimaryAggregation = new MinAggregation { Field = "fieldB", Key = "B" } } },
+                },
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
+
         [TestCase(ExpectedResult = "['A']=sum(fieldA)")]
         public string AggregationVisit_WithSumAgg_ReturnsSumPrimary()
         {

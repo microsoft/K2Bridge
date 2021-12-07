@@ -63,6 +63,15 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string MinAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""min"" : {
+                        ""field"" : ""metric"" 
+                    } 
+                }
+            }}";
+
         private const string SumAggregation = @"
             {""aggs"": { 
                 ""2"": {
@@ -176,6 +185,23 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
+        private static readonly AggregationContainer ExpectedValidMinAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new MinAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
         private static readonly AggregationContainer ExpectedValidSumAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
@@ -212,6 +238,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
             new TestCaseData(AvgAggregation, ExpectedValidAvgAggregation).SetName("JsonDeserializeObject_WithAggregationValidAvg_DeserializedCorrectly"),
             new TestCaseData(AvgEmptyFieldsAggregation, ExpectedNoFieldsAvgAggregation).SetName("JsonDeserializeObject_WithAggregationNoFieldsAvg_DeserializedCorrectly"),
+            new TestCaseData(MinAggregation, ExpectedValidMinAggregation).SetName("JsonDeserializeObject_WithAggregationValidMin_DeserializedCorrectly"),
             new TestCaseData(SumAggregation, ExpectedValidSumAggregation).SetName("JsonDeserializeObject_WithAggregationValidSum_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
