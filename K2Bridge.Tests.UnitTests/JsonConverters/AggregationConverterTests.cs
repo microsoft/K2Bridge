@@ -112,10 +112,28 @@ namespace UnitTests.K2Bridge.JsonConverters
                     {
                         Field = "DestCountry",
                         Key = "2",
-                        Order = new TermsOrder {
+                        Order = new TermsOrder
+                        {
                             Field = "_count",
                             Sort = "desc",
                         },
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
+        private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new CardinalityAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
                     },
                     SubAggregations = new AggregationDictionary(),
                 },
@@ -156,23 +174,6 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new AggregationContainer()
-        {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
-            {
-                ["2"] = new AggregationContainer
-                {
-                    PrimaryAggregation = new CardinalityAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
-                },
-            },
-        };
-
         private static readonly AggregationContainer ExpectedValidSumAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
@@ -206,9 +207,9 @@ namespace UnitTests.K2Bridge.JsonConverters
         private static readonly object[] AggregationTestCases = {
             new TestCaseData(DateHistogramAggregation, ExpectedValidDateHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidDateHistogram_DeserializedCorrectly"),
             new TestCaseData(TermsAggregation, ExpectedValidTermsAggregation).SetName("JsonDeserializeObject_WithAggregationValidTerms_DeserializedCorrectly"),
+            new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
             new TestCaseData(AvgAggregation, ExpectedValidAvgAggregation).SetName("JsonDeserializeObject_WithAggregationValidAvg_DeserializedCorrectly"),
             new TestCaseData(AvgEmptyFieldsAggregation, ExpectedNoFieldsAvgAggregation).SetName("JsonDeserializeObject_WithAggregationNoFieldsAvg_DeserializedCorrectly"),
-            new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
             new TestCaseData(SumAggregation, ExpectedValidSumAggregation).SetName("JsonDeserializeObject_WithAggregationValidSum_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
