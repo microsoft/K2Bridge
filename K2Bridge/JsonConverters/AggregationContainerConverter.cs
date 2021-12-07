@@ -26,7 +26,7 @@ namespace K2Bridge.JsonConverters
             var jo = JObject.Load(reader);
 
             var obj = new AggregationContainer();
-            var primary = jo.Children<JProperty>().Where(x => x.Name != "aggs").FirstOrDefault();
+            var primary = jo.Children<JProperty>().FirstOrDefault(x => x.Name != "aggs");
 
             obj.PrimaryAggregation = GetPrimaryAggregation(primary, reader, serializer);
             obj.SubAggregations = jo["aggs"]?.ToObject<AggregationDictionary>(serializer) ?? new AggregationDictionary();
@@ -40,32 +40,16 @@ namespace K2Bridge.JsonConverters
 
             if (property != null)
             {
-                switch (property.Name)
+                aggregation = property.Name switch
                 {
-                    case "date_histogram":
-                        aggregation = property.Value.ToObject<DateHistogramAggregation>(serializer);
-                        break;
-
-                    case "terms":
-                        aggregation = property.Value.ToObject<TermsAggregation>(serializer);
-                        break;
-
-                    case "avg":
-                        aggregation = property.Value.ToObject<AverageAggregation>(serializer);
-                        break;
-
-                    case "cardinality":
-                        aggregation = property.Value.ToObject<CardinalityAggregation>(serializer);
-                        break;
-
-                    case "max":
-                        aggregation = property.Value.ToObject<MaxAggregation>(serializer);
-                        break;
-
-                    case "sum":
-                        aggregation = property.Value.ToObject<SumAggregation>(serializer);
-                        break;
-                }
+                    "date_histogram" => property.Value.ToObject<DateHistogramAggregation>(serializer),
+                    "terms" => property.Value.ToObject<TermsAggregation>(serializer),
+                    "avg" => property.Value.ToObject<AverageAggregation>(serializer),
+                    "cardinality" => property.Value.ToObject<CardinalityAggregation>(serializer),
+                    "max" => property.Value.ToObject<MaxAggregation>(serializer),
+                    "sum" => property.Value.ToObject<SumAggregation>(serializer),
+                    _ => aggregation
+                };
             }
 
             var key = reader.Path.Split(".")[^1];
