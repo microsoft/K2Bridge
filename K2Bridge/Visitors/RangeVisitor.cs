@@ -18,7 +18,7 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(rangeAggregation, nameof(TermsAggregation));
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Metric, nameof(RangeAggregation.Metric));
-            EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.FieldName, nameof(RangeAggregation.FieldName));
+            EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Field, nameof(RangeAggregation.Field));
 
             // KustoQL case expression
             // case(
@@ -30,7 +30,7 @@ namespace K2Bridge.Visitors
             {
                 var rangeClause = new Models.Request.Queries.RangeClause()
                 {
-                    FieldName = rangeAggregation.FieldName,
+                    FieldName = rangeAggregation.Field,
                     GTEValue = range.From.HasValue ? range.From.ToString() : "*",
                     LTValue = range.To.HasValue ? range.To.ToString() : "*",
                 };

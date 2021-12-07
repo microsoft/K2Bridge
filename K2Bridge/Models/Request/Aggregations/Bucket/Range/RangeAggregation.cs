@@ -12,14 +12,13 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// Bucket aggregation that creates one bucket per value range of a field.
     /// </summary>
-    [JsonConverter(typeof(RangeAggregationConverter))]
     internal class RangeAggregation : BucketAggregation
     {
         /// <summary>
         /// Gets or sets the field to aggregate.
         /// </summary>
         [JsonProperty("field")]
-        public string FieldName { get; set; }
+        public string Field { get; set; }
 
         /// <summary>
         /// Gets or sets the range expressions.

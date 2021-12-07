@@ -23,6 +23,20 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string RangeAggregation = @"
+            {""aggs"": {
+                ""2"": {
+                    ""range"": {
+                        ""field"": ""DestCountry"",
+                        ""ranges"": [{
+                            ""from"": 0,
+                            ""to"": 100
+                        }],
+                        ""keyed"": true
+                    }
+                }
+            }}";
+
         private const string TermsAggregation = @"
             {""aggs"": {
                 ""2"": {
@@ -134,6 +148,32 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
+        private static readonly AggregationContainer ExpectedValidRangeAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new RangeAggregation
+                    {
+                        Field = "DestCountry",
+                        Key = "2",
+                        Keyed = true,
+                        Ranges = new List<RangeAggregationExpression>() {
+                            new RangeAggregationExpression()
+                            {
+                                From = 0,
+                                To = 100,
+                            },
+                        },
+                        Metric = "count()",
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
         private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
@@ -235,6 +275,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         private static readonly object[] AggregationTestCases = {
             new TestCaseData(DateHistogramAggregation, ExpectedValidDateHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidDateHistogram_DeserializedCorrectly"),
             new TestCaseData(TermsAggregation, ExpectedValidTermsAggregation).SetName("JsonDeserializeObject_WithAggregationValidTerms_DeserializedCorrectly"),
+            new TestCaseData(RangeAggregation, ExpectedValidRangeAggregation).SetName("JsonDeserializeObject_WithAggregationValidRange_DeserializedCorrectly"),
             new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
             new TestCaseData(AvgAggregation, ExpectedValidAvgAggregation).SetName("JsonDeserializeObject_WithAggregationValidAvg_DeserializedCorrectly"),
             new TestCaseData(AvgEmptyFieldsAggregation, ExpectedNoFieldsAvgAggregation).SetName("JsonDeserializeObject_WithAggregationNoFieldsAvg_DeserializedCorrectly"),
