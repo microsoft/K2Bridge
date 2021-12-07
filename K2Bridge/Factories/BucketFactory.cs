@@ -47,7 +47,7 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                dhb.Aggs[clmn.ColumnName.Substring(1)] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+                dhb.Aggs[clmn.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
             }
 
             return dhb;
@@ -80,7 +80,7 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                tb.Aggs[clmn.ColumnName.Substring(1)] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+                tb.Aggs[clmn.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
             }
 
             return tb;

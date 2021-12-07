@@ -4,15 +4,12 @@
 
 namespace K2Bridge.Models.Request.Aggregations
 {
-    using K2Bridge.JsonConverters;
     using K2Bridge.Visitors;
-    using Newtonsoft.Json;
 
     /// <summary>
-    /// A single-value metrics aggregation that computes the average of numeric values that are extracted from the aggregated documents.
+    /// A single-value metrics aggregation that calculates an approximate count of distinct values.
     /// </summary>
-    [JsonConverter(typeof(AggregationFieldConverter))]
-    internal class AvgAggregation : MetricAggregation
+    internal class CardinalityAggregation : MetricAggregation
     {
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)
