@@ -32,6 +32,15 @@ namespace K2Bridge.Visitors
         }
 
         /// <inheritdoc/>
+        public void Visit(MinAggregation minAggregation)
+        {
+            Ensure.IsNotNull(minAggregation, nameof(minAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(minAggregation.FieldName, minAggregation.FieldName, ExceptionMessage);
+
+            minAggregation.KustoQL = $"['{minAggregation.FieldAlias}']={KustoQLOperators.Min}({minAggregation.FieldName})";
+        }
+
+        /// <inheritdoc/>
         public void Visit(MaxAggregation maxAggregation)
         {
             Ensure.IsNotNull(maxAggregation, nameof(maxAggregation));
