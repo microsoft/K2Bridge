@@ -4,9 +4,7 @@
 
 namespace K2Bridge.Models.Request.Aggregations
 {
-    using K2Bridge.JsonConverters;
     using K2Bridge.Visitors;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// A single-value metrics aggregation that calculates an approximate count of distinct values.
