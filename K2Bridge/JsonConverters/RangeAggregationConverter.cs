@@ -28,7 +28,7 @@ namespace K2Bridge.JsonConverters
             var obj = new RangeAggregation
             {
                 FieldName = (string)jo["field"],
-                IsKeyed = jo.ContainsKey("keyed") ? (bool)jo["keyed"] : false,
+                Keyed = jo.ContainsKey("keyed") ? (bool)jo["keyed"] : false,
                 Ranges = new List<RangeAggregationExpression>(),
             };
 

@@ -20,9 +20,9 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Metric, nameof(TermsAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.FieldName, nameof(TermsAggregation.FieldName));
 
-            // KustoQL commands that go before the summarize
-            // | extend bucket_name=case(
-            rangeAggregation.KustoQLPreSummarize = $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Extend} {BucketColumnNames.RangeBucketName}={KustoQLOperators.Case}(";
+            // KustoQL case expression
+            // case(
+            var caseExpression = $"{KustoQLOperators.Case}(";
 
             // case() predicates
             // foo > 0 and foo < 800, "0-800"
@@ -32,32 +32,32 @@ namespace K2Bridge.Visitors
 
                 if (range.From != null)
                 {
-                    rangeAggregation.KustoQLPreSummarize += $"{rangeAggregation.FieldName} >= {range.From}";
+                    caseExpression += $"{rangeAggregation.FieldName} >= {range.From}";
                     bucketName += range.From.ToString();
                 }
 
                 if (range.From != null && range.To != null)
                 {
-                    rangeAggregation.KustoQLPreSummarize += " and ";
+                    caseExpression += " and ";
                 }
 
                 bucketName += "-";
 
                 if (range.To != null)
                 {
-                    rangeAggregation.KustoQLPreSummarize += $"{rangeAggregation.FieldName} < {range.To}";
+                    caseExpression += $"{rangeAggregation.FieldName} < {range.To}";
                     bucketName += range.To.ToString();
                 }
 
-                rangeAggregation.KustoQLPreSummarize += $", '{bucketName}', ";
+                caseExpression += $", '{bucketName}', ";
             }
 
             // End of case() function, with default bucket
             // "default_bucket_name")
-            rangeAggregation.KustoQLPreSummarize += $"'{BucketColumnNames.RangeDefaultBucket}')";
+            caseExpression += $"'{BucketColumnNames.RangeDefaultBucket}')";
 
             // KustoQL commands that go after the summarize
-            rangeAggregation.KustoQL = $"{rangeAggregation.Metric} by ['{rangeAggregation.FieldAlias}'] = {BucketColumnNames.RangeBucketName}";
+            rangeAggregation.KustoQL = $"{rangeAggregation.Metric} by ['{rangeAggregation.FieldAlias}'] = {caseExpression}";
         }
     }
 }

@@ -20,11 +20,6 @@ namespace K2Bridge.Models.Request.Aggregations
         /// </summary>
         public string FieldAlias { get; set; }
 
-        /// <summary>
-        /// Gets or sets the translation of the query that needs to be inserted before 'summarize'.
-        /// </summary>
-        public string KustoQLPreSummarize { get; set; }
-
         /// <inheritdoc/>
         public abstract void Accept(IVisitor visitor);
     }

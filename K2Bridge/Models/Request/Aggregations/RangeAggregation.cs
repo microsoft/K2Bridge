@@ -32,7 +32,7 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets the keyed flag, indicating the bucket should be returned as a hash.
         /// </summary>
         [JsonProperty("keyed")]
-        public bool IsKeyed { get; set; }
+        public bool Keyed { get; set; }
 
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)
