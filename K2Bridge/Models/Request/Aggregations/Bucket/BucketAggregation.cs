@@ -9,6 +9,6 @@ namespace K2Bridge.Models.Request.Aggregations
     /// </summary>
     internal abstract class BucketAggregation : Aggregation
     {
-        public string Metric => "count()";
+        public string Metric { get; set; } = "count()";
     }
 }
