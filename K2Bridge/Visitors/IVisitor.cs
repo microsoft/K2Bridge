@@ -88,14 +88,14 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
-        /// <param name="maxAggregation">The Max Aggregations to visit.</param>
-        void Visit(MaxAggregation maxAggregation);
+        /// <param name="minAggregation">The Min Aggregations to visit.</param>
+        void Visit(MinAggregation minAggregation);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
-        /// <param name="minAggregation">The Min Aggregations to visit.</param>
-        void Visit(MinAggregation minAggregation);
+        /// <param name="maxAggregation">The Max Aggregations to visit.</param>
+        void Visit(MaxAggregation maxAggregation);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
