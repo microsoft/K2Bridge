@@ -45,12 +45,12 @@ namespace K2Bridge.JsonConverters
                     leafAggregation = first.Value.ToObject<CardinalityAggregation>(serializer);
                     break;
 
-                case "max":
-                    leafAggregation = first.Value.ToObject<MaxAggregation>(serializer);
-                    break;
-
                 case "min":
                     leafAggregation = first.Value.ToObject<MinAggregation>(serializer);
+                    break;
+
+                case "max":
+                    leafAggregation = first.Value.ToObject<MaxAggregation>(serializer);
                     break;
 
                 case "sum":
