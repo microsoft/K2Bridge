@@ -265,7 +265,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(AvgAggregation, ExpectedValidAvgAggregation).SetName("JsonDeserializeObject_WithAggregationValidAvg_DeserializedCorrectly"),
             new TestCaseData(AvgEmptyFieldsAggregation, ExpectedNoFieldsAvgAggregation).SetName("JsonDeserializeObject_WithAggregationNoFieldsAvg_DeserializedCorrectly"),
             new TestCaseData(MinAggregation, ExpectedValidMinAggregation).SetName("JsonDeserializeObject_WithAggregationValidMin_DeserializedCorrectly"),
-            new TestCaseData(MinAggregation, ExpectedValidMinAggregation).SetName("JsonDeserializeObject_WithAggregationValidMax_DeserializedCorrectly"),
+            new TestCaseData(MaxAggregation, ExpectedValidMaxAggregation).SetName("JsonDeserializeObject_WithAggregationValidMax_DeserializedCorrectly"),
             new TestCaseData(SumAggregation, ExpectedValidSumAggregation).SetName("JsonDeserializeObject_WithAggregationValidSum_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
