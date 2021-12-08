@@ -10,6 +10,7 @@ namespace K2Bridge.Factories
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
+    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// BucketFactory.
@@ -21,7 +22,7 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>
         /// <returns>A new DateHistogramBucket.</returns>
-        public static DateHistogramBucket CreateDateHistogramBucketFromDataRow(DataRow row)
+        public static DateHistogramBucket CreateDateHistogramBucketFromDataRow(DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -37,7 +38,7 @@ namespace K2Bridge.Factories
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
-                Aggs = new Dictionary<string, Dictionary<string, dynamic>>(),
+                Aggs = new Dictionary<string, Dictionary<string, double>>(),
             };
 
             var clmns = row.Table.Columns;
@@ -48,30 +49,31 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                // Step 1: create new Regex.
-                Regex regex = new Regex(@"^_(\d+)%*(100\.00|[0-9]?[0-9]\.[0-9]{1})$");
+                // Create new Regex to match the ID%PERCENTILE - example: 1%50.0
+                var regex = new Regex(@"^(\d+)%{1}(100\.0|[0-9]?[0-9]\.[0-9]{1})$");
 
-                // Step 2: call Match on Regex instance.
-                Match match = regex.Match(clmn.ColumnName);
+                var match = regex.Match(clmn.ColumnName);
 
                 if (match.Success)
                 {
                     var percentile = match.Groups[2].Value;
+                    logger.LogTrace("Defining the Percentile {percentile}", percentile);
 
                     if (!dhb.Aggs.ContainsKey(match.Groups[1].Value))
                     {
-                        dhb.Aggs[match.Groups[1].Value] = new Dictionary<string, dynamic>();
+                        dhb.Aggs[match.Groups[1].Value] = new Dictionary<string, double>();
                     }
 
                     dhb.Aggs[match.Groups[1].Value].Add(percentile, Convert.ToDouble(row[clmn.ColumnName]));
                 }
                 else
                 {
-                    dhb.Aggs[clmn.ColumnName.Substring(1)] = new Dictionary<string, dynamic>() {
-                        { "value", Convert.ToDouble(row[clmn.ColumnName]) },
-                    };
+                    var columnName = clmn.ColumnName;
+                    logger.LogTrace("Defining the value for {columnName}", columnName);
 
-                    // new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+                    dhb.Aggs[columnName] = new Dictionary<string, double>() {
+                        { "value", Convert.ToDouble(row[columnName]) },
+                    };
                 }
             }
 

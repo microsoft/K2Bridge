@@ -183,12 +183,12 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['_A%50.0']=percentile(fieldA, 50)")]
+        [TestCase(ExpectedResult = "['A%25.0']=percentile(fieldA, 25),['A%50.0']=percentile(fieldA, 50)['A%99.0']=percentile(fieldA, 99)")]
         public string AggregationVisit_WithPercentileAgg_ReturnsPercentilePrimary()
         {
-            var aggregateClause = new Aggregation()
+            var aggregateClause = new AggregationContainer()
             {
-                PrimaryAggregation = new PercentileAggregation() { FieldName = "fieldA", FieldAlias = "_A", Percents = new double[] { 50 } },
+                PrimaryAggregation = new PercentileAggregation() { Field = "fieldA", Key = "A", Percents = new double[] { 50 }, Keyed = false },
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
@@ -197,16 +197,12 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['_B%50.0']=percentile(fieldB, 50), ['_A%50.0']=percentile(fieldA, 50)")]
-        public string AggregationVisit_WithSubPercentileAgg_ReturnsPercentileAggregates()
+        [TestCase(ExpectedResult = "['A%50.0']=percentile(fieldA, 50)")]
+        public string AggregationVisit_WithPercentilesAgg_ReturnsPercentilePrimary()
         {
-            var aggregateClause = new Aggregation()
+            var aggregateClause = new AggregationContainer()
             {
-                PrimaryAggregation = new PercentileAggregation() { FieldName = "fieldA", FieldAlias = "_A", Percents = new double[] { 50 } },
-                SubAggregations = new Dictionary<string, Aggregation>
-                {
-                    { "sub", new Aggregation() { PrimaryAggregation = new PercentileAggregation { FieldName = "fieldB", FieldAlias = "_B", Percents = new double[] { 50 } } } },
-                },
+                PrimaryAggregation = new PercentileAggregation() { Field = "fieldA", Key = "A", Percents = new double[] { 25, 50, 99 }, Keyed = false },
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());

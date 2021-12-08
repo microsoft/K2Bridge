@@ -180,7 +180,7 @@ namespace K2Bridge.KustoDAL
                         createBucketFromDataRow = (DataRow row) => BucketFactory.CreateTermsBucketFromDataRow(row);
                         break;
                     case nameof(Models.Request.Aggregations.DateHistogramAggregation):
-                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateDateHistogramBucketFromDataRow(row);
+                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateDateHistogramBucketFromDataRow(row, Logger);
                         break;
                 }
 

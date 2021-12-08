@@ -38,6 +38,6 @@ namespace K2Bridge.Models.Response
         /// Gets or Sets aggegations dictionary.
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, Dictionary<string, dynamic>> Aggs { get; set; }
+        public Dictionary<string, Dictionary<string, double>> Aggs { get; set; }
     }
 }

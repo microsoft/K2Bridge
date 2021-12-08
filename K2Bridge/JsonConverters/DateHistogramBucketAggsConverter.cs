@@ -5,6 +5,7 @@
 namespace K2Bridge.JsonConverters
 {
     using System.Linq;
+    using System.Globalization;
     using System;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response;
@@ -38,7 +39,8 @@ namespace K2Bridge.JsonConverters
                 if (aggs[agg].Count > 1)
                 {
                     writer.WritePropertyName("values");
-                    serializer.Serialize(writer, aggs[agg].ToDictionary(item => Convert.ToDouble(item.Key), item => Convert.ToDouble(item.Value)).ToList());
+                    serializer.Serialize(writer, aggs[agg].ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value)
+                                                          .ToList());
                 }
                 else
                 {
