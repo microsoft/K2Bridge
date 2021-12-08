@@ -52,7 +52,13 @@
           }
         }
       ],
-      "filter": [],
+      "filter": [
+        {
+          "match_phrase": {
+            "test": 5
+          }
+        }
+      ],
       "should": [],
       "must_not": []
     }
