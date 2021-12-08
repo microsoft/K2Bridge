@@ -50,7 +50,6 @@ namespace K2Bridge.Visitors
         public const string MatchRegex = "matches regex";
         public const string GetSchema = "getschema";
         public const string Equal = "==";
-        public const string Extend = "extend";
         public const string Case = "case";
         public const string CommandSeparator = "\n| ";
 #pragma warning restore SA1600 // Elements should be documented

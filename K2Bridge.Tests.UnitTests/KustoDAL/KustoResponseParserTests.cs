@@ -274,26 +274,26 @@ namespace UnitTests.K2Bridge.KustoDAL
         {
             DataTable resTable = new DataTable();
 
-            var column1 = new DataColumn("_2");
+            var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
 
             resTable.Columns.Add(column1);
             resTable.Columns.Add(column2);
 
             var row1 = resTable.NewRow();
-            row1["_2"] = "-100";
+            row1["2"] = "-100";
             row1["count_"] = 1;
 
             resTable.Rows.Add(row1);
 
             var row2 = resTable.NewRow();
-            row2["_2"] = "100-200";
+            row2["2"] = "100-200";
             row2["count_"] = 2;
 
             resTable.Rows.Add(row2);
 
             var row3 = resTable.NewRow();
-            row3["_2"] = "200-";
+            row3["2"] = "200-";
             row3["count_"] = 3;
 
             resTable.Rows.Add(row3);
