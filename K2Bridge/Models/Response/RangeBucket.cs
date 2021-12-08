@@ -12,14 +12,8 @@ namespace K2Bridge.Models.Response
     /// Terms bucket response.
     /// </summary>
     [JsonConverter(typeof(RangeBucketAggsConverter))]
-    public class RangeBucket : IKeyedBucket
+    public class RangeBucket : Bucket
     {
-        /// <summary>
-        /// Gets or sets document count.
-        /// </summary>
-        [JsonProperty("doc_count")]
-        public int DocCount { get; set; }
-
         /// <summary>
         /// Gets or sets the from value.
         /// </summary>
@@ -31,18 +25,5 @@ namespace K2Bridge.Models.Response
         /// </summary>
         [JsonProperty("to")]
         public double? To { get; set; }
-
-        /// <summary>
-        /// Gets or sets the bucket key.
-        /// This key is a string containing the term.
-        /// </summary>
-        [JsonProperty("key")]
-        public string Key { get; set; }
-
-        /// <summary>
-        /// Gets or Sets aggegations dictionary.
-        /// </summary>
-        [JsonIgnore]
-        public Dictionary<string, List<double>> Aggs { get; set; }
     }
 }

@@ -14,13 +14,13 @@ namespace K2Bridge.Models.Response
     [JsonConverter(typeof(BucketsCollectionConverter))]
     public class BucketsCollection
     {
-        private readonly List<IBucket> buckets = new ();
+        private readonly List<Bucket> buckets = new();
 
         /// <summary>
         /// Gets all buckets.
         /// </summary>
         [JsonProperty("buckets")]
-        public IEnumerable<IBucket> Buckets
+        public IEnumerable<Bucket> Buckets
         {
             get { return buckets; }
         }
@@ -34,7 +34,7 @@ namespace K2Bridge.Models.Response
         /// Add bucket to buckets response.
         /// </summary>
         /// <param name="bucket">Added bucket object.</param>
-        public void AddBucket(IBucket bucket)
+        public void AddBucket(Bucket bucket)
         {
             buckets.Add(bucket);
         }
@@ -43,7 +43,7 @@ namespace K2Bridge.Models.Response
         /// Add multiple buckets to buckets response.
         /// </summary>
         /// <param name="buckets">IEnumerable of bucket objects for addition to response.</param>
-        public void AddBuckets(IEnumerable<IBucket> buckets)
+        public void AddBuckets(IEnumerable<Bucket> buckets)
         {
             this.buckets.AddRange(buckets);
         }

@@ -45,18 +45,18 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Create a new <see cref="TermsBucket" from a given <see cref="DataRow"/>/>.
+        /// Create a new <see cref="Bucket" from a given <see cref="DataRow"/>/>.
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>
-        /// <returns>A new TermsBucket.</returns>
-        public static TermsBucket CreateTermsBucketFromDataRow(DataRow row)
+        /// <returns>A new Bucket.</returns>
+        public static Bucket CreateTermsBucketFromDataRow(DataRow row)
         {
             Ensure.IsNotNull(row, nameof(row));
 
             var key = row[(int)BucketColumnNames.SummarizeByColumn];
             var count = row[BucketColumnNames.Count];
 
-            var tb = new TermsBucket
+            var tb = new Bucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = Convert.ToString(key),
@@ -108,7 +108,7 @@ namespace K2Bridge.Factories
             return rb;
         }
 
-        public static void CreateAggregationColumns(IBucket bucket, DataRow row)
+        public static void CreateAggregationColumns(Bucket bucket, DataRow row)
         {
             var columns = row.Table.Columns;
             foreach (DataColumn column in columns)

@@ -16,7 +16,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             ""key"": ""IT""
         }";
 
-        private static readonly TermsBucket ValidTermsBucket = new TermsBucket()
+        private static readonly Bucket ValidTermsBucket = new Bucket()
         {
             DocCount = 502,
             Key = "IT",
@@ -30,7 +30,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         [TestCaseSource(nameof(FieldCapsTestCases))]
         public void TestTermsBucketAggsConverter(string queryString, object expected)
         {
-            ((TermsBucket)expected).AssertJson(queryString);
+            ((Bucket)expected).AssertJson(queryString);
         }
     }
 }

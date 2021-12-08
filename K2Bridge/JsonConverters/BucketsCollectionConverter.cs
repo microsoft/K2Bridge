@@ -16,7 +16,7 @@ namespace K2Bridge.JsonConverters
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var buckets = value as BucketsCollection;
+            var buckets = (BucketsCollection)value;
 
             writer.WriteStartObject();
             writer.WritePropertyName("buckets");
@@ -28,13 +28,12 @@ namespace K2Bridge.JsonConverters
 
                 foreach (var bucket in buckets.Buckets)
                 {
-                    var keyedBucket = bucket as IKeyedBucket;
-                    writer.WritePropertyName(keyedBucket.Key);
+                    writer.WritePropertyName(bucket.Key);
 
                     // Do not output the key in the bucket itself
-                    keyedBucket.Key = null;
+                    bucket.Key = null;
 
-                    serializer.Serialize(writer, keyedBucket);
+                    serializer.Serialize(writer, bucket);
                 }
 
                 writer.WriteEndObject();

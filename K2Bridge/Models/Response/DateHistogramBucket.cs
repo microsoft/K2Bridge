@@ -12,20 +12,14 @@ namespace K2Bridge.Models.Response
     /// Date histogram bucket response.
     /// </summary>
     [JsonConverter(typeof(DateHistogramBucketAggsConverter))]
-    public class DateHistogramBucket : IBucket
+    public class DateHistogramBucket : Bucket
     {
-        /// <summary>
-        /// Gets or sets document count.
-        /// </summary>
-        [JsonProperty("doc_count")]
-        public int DocCount { get; set; }
-
         /// <summary>
         /// Gets or sets the timestamp bucket key.
         /// This key is a 64 bit number representing a timestamp in milliseconds-since-the-epoch .
         /// </summary>
         [JsonProperty("key")]
-        public long Key { get; set; }
+        public new long Key { get; set; }
 
         /// <summary>
         /// Gets or sets the timestamp bucket key.
@@ -33,11 +27,5 @@ namespace K2Bridge.Models.Response
         /// </summary>
         [JsonProperty("key_as_string")]
         public string KeyAsString { get; set; }
-
-        /// <summary>
-        /// Gets or Sets aggegations dictionary.
-        /// </summary>
-        [JsonIgnore]
-        public Dictionary<string, List<double>> Aggs { get; set; }
     }
 }

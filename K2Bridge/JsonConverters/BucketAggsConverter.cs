@@ -11,12 +11,12 @@ namespace K2Bridge.JsonConverters
     /// <summary>
     /// A converter able to serialize Bucket aggregations to Elasticsearh response json format.
     /// </summary>
-    internal class TermsBucketAggsConverter : BucketAggsJsonConverter
+    internal class BucketAggsConverter : BucketAggsJsonConverter
     {
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var buck = (TermsBucket)value;
+            var buck = (Bucket)value;
             var aggs = buck.Aggs;
 
             writer.WriteStartObject();

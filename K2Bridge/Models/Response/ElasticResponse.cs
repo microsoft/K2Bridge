@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Response
     /// </summary>
     public class ElasticResponse
     {
-        private readonly List<ResponseElement> responses = new () { new ResponseElement() };
+        private readonly List<ResponseElement> responses = new() { new ResponseElement() };
 
         /// <summary>
         /// Gets responses.
@@ -40,7 +40,7 @@ namespace K2Bridge.Models.Response
         /// Add aggregation to first response.
         /// </summary>
         /// <param name="bucket">The added bucket.</param>
-        public void AddBucketToAggregation(IBucket bucket)
+        public void AddBucketToAggregation(Bucket bucket)
         {
             // TODO: support more than one response
             responses[0].Aggregations.Collection.AddBucket(bucket);
@@ -63,7 +63,7 @@ namespace K2Bridge.Models.Response
         /// Retrieve all aggregations.
         /// </summary>
         /// <returns>IEnumerable of all aggregations.</returns>
-        public IEnumerable<IBucket> GetAllAggregations()
+        public IEnumerable<Bucket> GetAllAggregations()
         {
             // TODO: support more than one response
             return responses[0].Aggregations.Collection.Buckets;
