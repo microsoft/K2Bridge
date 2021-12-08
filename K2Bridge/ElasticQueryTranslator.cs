@@ -67,15 +67,9 @@ namespace K2Bridge
                 if (elasticSearchDsl.Query.Bool != null)
                 {
                     Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Must, nameof(elasticSearchDsl.Query.Bool.Must));
+                    Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Filter, nameof(elasticSearchDsl.Query.Bool.Filter));
 
-                    if (elasticSearchDsl.Query.Bool.Filter.Any())
-                    {
-                        // KQL in an experimental search syntax in Kibana that is turned on in version 7 but also available in version 6.
-                        // One can set it with option "search:queryLanguage" to "Lucene". More info: https://www.elastic.co/guide/en/kibana/current/advanced-options.html.
-                        Logger.LogWarning("Query includes a filter element indicating Kibana is working in KQL syntax, which is not supported yet. You should search with Lucene syntax instead.");
-                    }
-
-                    foreach (var element in elasticSearchDsl.Query.Bool.Must)
+                    foreach (var element in elasticSearchDsl.Query.Bool.Must.Concat(elasticSearchDsl.Query.Bool.Filter))
                     {
                         switch (element)
                         {
@@ -83,7 +77,7 @@ namespace K2Bridge
                                 elasticSearchDsl.HighlightText.Add("*", queryStringClause.Phrase);
                                 break;
                             case MatchPhraseClause matchPhraseClause:
-                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase.ToString()); // TODO - fix this when highlighting is fixed
+                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase.ToString());
                                 break;
                         }
                     }
