@@ -21,6 +21,9 @@ namespace UnitTests.K2Bridge.Visitors
 
         private const string INDEX = "{\"index\":\"myIndex\"}";
 
+        private const string MUST_FIELD = "MyTerm";
+        private const string FILTER_FIELD = "test";
+
         private Mock<ILogger<ElasticQueryTranslator>> mockLogger;
         private Mock<IVisitor> mockVisitor;
         private ElasticQueryTranslator elasticQueryTranslator;
@@ -46,8 +49,21 @@ namespace UnitTests.K2Bridge.Visitors
 
             // Should succeed as all arguments are valid. the result is just a simple
             // hard coded mock
-            var querydata = elasticQueryTranslator.TranslateQuery(INDEX, query);
-            return querydata.QueryCommandText;
+            var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
+
+            return queryData.QueryCommandText;
+        }
+
+        [TestCase(ExpectedResult = "some kql from mock visitor")]
+        public string Translate_WithValidInput_ReturnsValidHighlights()
+        {
+            var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
+
+            var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
+            Assert.AreEqual(queryData.HighlightText["*"], MUST_FIELD);
+            Assert.AreEqual(queryData.HighlightText[FILTER_FIELD], "5");
+
+            return queryData.QueryCommandText;
         }
 
         [TestCase]
