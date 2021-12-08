@@ -27,9 +27,9 @@ namespace K2Bridge.Factories
             // TODO: timestamp is always the first column (probably named 2), and count will be named _count
             // we currently mix index and column names, need to check if we can enhance this logic
             // workitem 15050
-            var summarize = row[(int)BucketColumnNames.SummarizeByColumn];
+            var timestamp = row[(int)BucketColumnNames.SummarizeByColumn];
             var count = row[BucketColumnNames.Count];
-            var dateBucket = (DateTime)summarize;
+            var dateBucket = (DateTime)timestamp;
 
             var dhb = new DateHistogramBucket
             {
