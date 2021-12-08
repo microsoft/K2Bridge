@@ -119,6 +119,38 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
+        [TestCase(ExpectedResult = "['A']=max(fieldA)")]
+        public string AggregationVisit_WithMaxAgg_ReturnsMaxPrimary()
+        {
+            var aggregateClause = new AggregationContainer()
+            {
+                PrimaryAggregation = new MaxAggregation() { Field = "fieldA", Key = "A" },
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
+
+        [TestCase(ExpectedResult = "['B']=max(fieldB), ['A']=max(fieldA)")]
+        public string AggregationVisit_WithSubMaxAgg_ReturnsMaxAggregates()
+        {
+            var aggregateClause = new AggregationContainer()
+            {
+                PrimaryAggregation = new MaxAggregation() { Field = "fieldA", Key = "A" },
+                SubAggregations = new AggregationDictionary
+                {
+                    { "sub", new AggregationContainer() { PrimaryAggregation = new MaxAggregation { Field = "fieldB", Key = "B" } } },
+                },
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
+
         [TestCase(ExpectedResult = "['A']=sum(fieldA)")]
         public string AggregationVisit_WithSumAgg_ReturnsSumPrimary()
         {
