@@ -132,6 +132,15 @@ stages:
         summaryFileLocation: 'coverage.cobertura.xml'
         pathToSources: '$(Build.SourcesDirectory)/K2Bridge/'
         failIfCoverageEmpty: true
+    
+    - task: BuildQualityChecks@8
+      displayName: 'Check build quality'
+      inputs:
+        checkCoverage: true # Optional
+        coverageFailOption: fixed # Optional; Valid values: build, fixed
+        coverageType: lines # Optional; Valid values: blocks, lines, branches, custom
+        coverageThreshold: '78.9' # Optional
+        coverageDeltaType: percentage # Optional; Valid values: absolute, percentage
 
     - task: AzureCLI@1
       displayName: Login to ACR
