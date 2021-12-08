@@ -11,12 +11,12 @@ namespace K2Bridge.JsonConverters
     /// <summary>
     /// A converter able to serialize Bucket aggregations to Elasticsearh response json format.
     /// </summary>
-    internal class RangeBucketAggsConverter : WriteOnlyJsonConverter
+    internal class RangeBucketAggsConverter : BucketAggsJsonConverter
     {
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var buck = value as RangeBucket;
+            var buck = (RangeBucket)value;
             var aggs = buck.Aggs;
 
             writer.WriteStartObject();
@@ -42,25 +42,7 @@ namespace K2Bridge.JsonConverters
                 serializer.Serialize(writer, buck.Key);
             }
 
-            foreach (var agg in aggs.Keys)
-            {
-                writer.WritePropertyName(agg);
-
-                writer.WriteStartObject();
-                if (aggs[agg].Count > 1)
-                {
-                    writer.WritePropertyName("values");
-                    serializer.Serialize(writer, aggs[agg]);
-                }
-                else
-                {
-                    writer.WritePropertyName("value");
-                    var item = aggs[agg][0];
-                    serializer.Serialize(writer, item);
-                }
-
-                writer.WriteEndObject();
-            }
+            WriteAggregations(writer, aggs, serializer);
 
             writer.WriteEndObject();
         }

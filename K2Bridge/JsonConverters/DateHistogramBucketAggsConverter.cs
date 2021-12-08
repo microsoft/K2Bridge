@@ -11,12 +11,12 @@ namespace K2Bridge.JsonConverters
     /// <summary>
     /// A converter able to serialize Bucket aggregations to Elasticsearh response json format.
     /// </summary>
-    internal class DateHistogramBucketAggsConverter : WriteOnlyJsonConverter
+    internal class DateHistogramBucketAggsConverter : BucketAggsJsonConverter
     {
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var buck = value as DateHistogramBucket;
+            var buck = (DateHistogramBucket)value;
             var aggs = buck.Aggs;
 
             writer.WriteStartObject();
@@ -28,25 +28,7 @@ namespace K2Bridge.JsonConverters
             writer.WritePropertyName("key_as_string");
             serializer.Serialize(writer, buck.KeyAsString);
 
-            foreach (var agg in aggs.Keys)
-            {
-                writer.WritePropertyName(agg);
-
-                writer.WriteStartObject();
-                if (aggs[agg].Count > 1)
-                {
-                    writer.WritePropertyName("values");
-                    serializer.Serialize(writer, aggs[agg]);
-                }
-                else
-                {
-                    writer.WritePropertyName("value");
-                    var item = aggs[agg][0];
-                    serializer.Serialize(writer, item);
-                }
-
-                writer.WriteEndObject();
-            }
+            WriteAggregations(writer, aggs, serializer);
 
             writer.WriteEndObject();
         }
