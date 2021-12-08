@@ -4,6 +4,8 @@
 
 namespace K2Bridge.Models.Response
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// An interface for a bucket class.
     /// </summary>
@@ -13,5 +15,10 @@ namespace K2Bridge.Models.Response
         /// Gets or sets documents count.
         /// </summary>
         int DocCount { get; set; }
+
+        /// <summary>
+        /// Gets or Sets aggegations dictionary.
+        /// </summary>
+        public Dictionary<string, List<double>> Aggs { get; set; }
     }
 }

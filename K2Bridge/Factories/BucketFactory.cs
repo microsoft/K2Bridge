@@ -27,7 +27,7 @@ namespace K2Bridge.Factories
             // TODO: timestamp is always the first row (probably named _2), and count will be named _count
             // we currently mix index and column names, need to check if we can enhance this logic
             // workitem 15050
-            var timestamp = row[(int)BucketColumnNames.Timestamp];
+            var timestamp = row[(int)BucketColumnNames.SummarizeByColumn];
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
@@ -39,16 +39,7 @@ namespace K2Bridge.Factories
                 Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
             };
 
-            var clmns = row.Table.Columns;
-            foreach (DataColumn clmn in clmns)
-            {
-                if (clmn.ColumnName == BucketColumnNames.Count || clmns.IndexOf(clmn) == (int)BucketColumnNames.Timestamp)
-                {
-                    continue;
-                }
-
-                dhb.Aggs[clmn.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
-            }
+            CreateAggregationColumns(dhb, row);
 
             return dhb;
         }
@@ -62,7 +53,7 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var key = row[(int)BucketColumnNames.Timestamp];
+            var key = row[(int)BucketColumnNames.SummarizeByColumn];
             var count = row[BucketColumnNames.Count];
 
             var tb = new TermsBucket
@@ -72,16 +63,7 @@ namespace K2Bridge.Factories
                 Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
             };
 
-            var clmns = row.Table.Columns;
-            foreach (DataColumn clmn in clmns)
-            {
-                if (clmn.ColumnName == BucketColumnNames.Count || clmns.IndexOf(clmn) == (int)BucketColumnNames.Timestamp)
-                {
-                    continue;
-                }
-
-                tb.Aggs[clmn.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
-            }
+            CreateAggregationColumns(tb, row);
 
             return tb;
         }
@@ -95,7 +77,7 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var range = Convert.ToString(row[(int)BucketColumnNames.Timestamp]);
+            var range = Convert.ToString(row[(int)BucketColumnNames.SummarizeByColumn]);
             var count = row[BucketColumnNames.Count];
 
             // Ignore the row for "other" records, that did not match the ranges
@@ -106,17 +88,11 @@ namespace K2Bridge.Factories
 
             // Parse the range
             string[] splitRange = range.Split('-');
-            double? from = string.IsNullOrEmpty(splitRange[0]) ? null : Convert.ToDouble(splitRange[0]);
-            double? to = string.IsNullOrEmpty(splitRange[1]) ? null : Convert.ToDouble(splitRange[1]);
+            double? from = string.IsNullOrEmpty(splitRange[0]) ? null : double.Parse(splitRange[0]);
+            double? to = string.IsNullOrEmpty(splitRange[1]) ? null : double.Parse(splitRange[1]);
 
             // Assemble the key
-            string key = (from, to) switch
-            {
-                (null, null) => "*-*",
-                (_, null) => $"{from}-*",
-                (null, _) => $"*-{to}",
-                (_, _) => $"{from}-{to}",
-            };
+            string key = $"{from?.ToString() ?? "*"}-{to?.ToString() ?? "*"}";
 
             var rb = new RangeBucket
             {
@@ -127,18 +103,23 @@ namespace K2Bridge.Factories
                 Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
             };
 
-            var clmns = row.Table.Columns;
-            foreach (DataColumn clmn in clmns)
+            CreateAggregationColumns(rb, row);
+
+            return rb;
+        }
+
+        public static void CreateAggregationColumns(IBucket bucket, DataRow row)
+        {
+            var columns = row.Table.Columns;
+            foreach (DataColumn column in columns)
             {
-                if (clmn.ColumnName == BucketColumnNames.Count || clmns.IndexOf(clmn) == (int)BucketColumnNames.Timestamp)
+                if (column.ColumnName == BucketColumnNames.Count || columns.IndexOf(column) == (int)BucketColumnNames.SummarizeByColumn)
                 {
                     continue;
                 }
 
-                rb.Aggs[clmn.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+                bucket.Aggs[column.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[column.ColumnName]) };
             }
-
-            return rb;
         }
     }
 }

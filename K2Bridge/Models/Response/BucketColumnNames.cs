@@ -12,7 +12,7 @@ namespace K2Bridge.Models.Response
         /// <summary>
         /// Timestamp.
         /// </summary>
-        public static int Timestamp => 0;
+        public static int SummarizeByColumn => 0;
 
         /// <summary>
         /// Count.
