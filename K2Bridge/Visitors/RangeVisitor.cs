@@ -36,9 +36,18 @@ namespace K2Bridge.Visitors
                 };
                 rangeClause.Accept(this);
 
-                var bucketName = $"{range.From}-{range.To}";
+                if (string.IsNullOrEmpty(rangeClause.KustoQL))
+                {
+                    // This is then "open" range, -infinity to +infinity
+                    caseExpression += "true, ";
+                }
+                else
+                {
+                    caseExpression += $"{rangeClause.KustoQL}, ";
+                }
 
-                caseExpression += $"{rangeClause.KustoQL}, '{bucketName}', ";
+                var bucketName = $"{range.From}-{range.To}";
+                caseExpression += $"'{bucketName}', ";
             }
 
             // End of case() function, with default bucket

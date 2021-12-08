@@ -36,5 +36,25 @@ namespace UnitTests.K2Bridge.Visitors
 
             return rangeAggregation.KustoQL;
         }
+
+        [Test]
+        public void RangeVisit_WithOpenAggregation_ReturnsValidResponse()
+        {
+            var rangeAggregation = new RangeAggregation()
+            {
+                Metric = "wibble",
+                Field = "dayOfWeek",
+                Key = "key",
+                Ranges = new List<RangeAggregationExpression>() {
+                    new RangeAggregationExpression { From = null, To = null },
+                },
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockNumericSchemaRetriever());
+            VisitorTestsUtils.VisitRootDsl(visitor);
+            visitor.Visit(rangeAggregation);
+
+            Assert.AreEqual("wibble by ['key'] = case(true, '-', 'default_bucket')", rangeAggregation.KustoQL);
+        }
     }
 }

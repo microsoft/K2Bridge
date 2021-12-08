@@ -14,7 +14,7 @@ namespace K2Bridge.Models.Response
     [JsonConverter(typeof(BucketsCollectionConverter))]
     public class BucketsCollection
     {
-        private readonly List<Bucket> buckets = new();
+        private readonly List<Bucket> buckets = new ();
 
         /// <summary>
         /// Gets all buckets.
