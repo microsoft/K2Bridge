@@ -52,9 +52,6 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                // Create new Regex to match the ID%PERCENTILE - example: 1%50.0
-                // var regex = new Regex(@"^(\d+)%{1}(100\.0|[0-9]?[0-9]\.[0-9]{1})$");
-                // var match = regex.Match(clmn.ColumnName);
                 var columnNameInfo = clmn.ColumnName.Split('%');
 
                 if (columnNameInfo.Length > 1)
