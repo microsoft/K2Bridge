@@ -31,8 +31,8 @@ namespace K2Bridge.Visitors
                 var rangeClause = new Models.Request.Queries.RangeClause()
                 {
                     FieldName = rangeAggregation.Field,
-                    GTEValue = range.From.HasValue ? range.From.ToString() : "*",
-                    LTValue = range.To.HasValue ? range.To.ToString() : "*",
+                    GTEValue = range.From?.ToString() ?? "*",
+                    LTValue = range.To?.ToString() ?? "*",
                 };
                 rangeClause.Accept(this);
 
