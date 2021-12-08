@@ -16,30 +16,30 @@ namespace K2Bridge.JsonConverters
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var buck = (RangeBucket)value;
-            var aggs = buck.Aggs;
+            var bucket = (RangeBucket)value;
+            var aggs = bucket.Aggs;
 
             writer.WriteStartObject();
 
             writer.WritePropertyName("doc_count");
-            serializer.Serialize(writer, buck.DocCount);
+            serializer.Serialize(writer, bucket.DocCount);
 
-            if (buck.From is not null)
+            if (bucket.From is not null)
             {
                 writer.WritePropertyName("from");
-                serializer.Serialize(writer, buck.From);
+                serializer.Serialize(writer, bucket.From);
             }
 
-            if (buck.To is not null)
+            if (bucket.To is not null)
             {
                 writer.WritePropertyName("to");
-                serializer.Serialize(writer, buck.To);
+                serializer.Serialize(writer, bucket.To);
             }
 
-            if (buck.Key is not null)
+            if (bucket.Key is not null)
             {
                 writer.WritePropertyName("key");
-                serializer.Serialize(writer, buck.Key);
+                serializer.Serialize(writer, bucket.Key);
             }
 
             WriteAggregations(writer, aggs, serializer);
