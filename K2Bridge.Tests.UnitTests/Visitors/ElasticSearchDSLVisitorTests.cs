@@ -150,7 +150,7 @@ namespace UnitTests.K2Bridge.Visitors
                     Bool = new BoolQuery(),
                 },
                 IndexName = "someindex",
-                Aggregations = new Dictionary<string, Aggregation>(),
+                Aggregations = new AggregationDictionary(),
             };
 
             CreateVisitorAndVisit(dsl);
@@ -174,7 +174,7 @@ namespace UnitTests.K2Bridge.Visitors
                     }
                 }}";
 
-            var aggs = JsonConvert.DeserializeObject<Aggregation>(dateHistogramAggregation);
+            var aggs = JsonConvert.DeserializeObject<AggregationContainer>(dateHistogramAggregation);
 
             var dsl = new ElasticSearchDSL
             {
@@ -188,7 +188,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.True(dsl.KustoQL.Contains("_data | summarize count() by _2 = bin(timestamp, 1m)\n", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("_data | summarize count() by ['2'] = bin(timestamp, 1m)\n", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
