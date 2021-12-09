@@ -39,7 +39,7 @@ namespace K2Bridge.JsonConverters
                 var obj = new MatchPhraseClause
                 {
                     FieldName = first.Name,
-                    Phrase = (string)((JValue)first.First).Value,
+                    Phrase = ((JValue)first.First).Value,
                 };
                 return obj;
             }

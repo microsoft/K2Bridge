@@ -11,42 +11,51 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        private const string ExceptionMessage = "Average FieldName must have a valid value";
+        private const string ExceptionMessage = "Average Field must have a valid value";
 
         /// <inheritdoc/>
-        public void Visit(AvgAggregation avgAggregation)
+        public void Visit(AverageAggregation avgAggregation)
         {
             Ensure.IsNotNull(avgAggregation, nameof(avgAggregation));
-            EnsureClause.StringIsNotNullOrEmpty(avgAggregation.FieldName, avgAggregation.FieldName, ExceptionMessage);
+            EnsureClause.StringIsNotNullOrEmpty(avgAggregation.Field, avgAggregation.Field, ExceptionMessage);
 
-            avgAggregation.KustoQL = $"['{avgAggregation.FieldAlias}']={KustoQLOperators.Avg}({avgAggregation.FieldName})";
+            avgAggregation.KustoQL = $"['{avgAggregation.Key}']={KustoQLOperators.Avg}({avgAggregation.Field})";
         }
 
         /// <inheritdoc/>
         public void Visit(CardinalityAggregation cardinalityAggregation)
         {
             Ensure.IsNotNull(cardinalityAggregation, nameof(cardinalityAggregation));
-            EnsureClause.StringIsNotNullOrEmpty(cardinalityAggregation.FieldName, cardinalityAggregation.FieldName, ExceptionMessage);
+            EnsureClause.StringIsNotNullOrEmpty(cardinalityAggregation.Field, cardinalityAggregation.Field, ExceptionMessage);
 
-            cardinalityAggregation.KustoQL = $"['{cardinalityAggregation.FieldAlias}']={KustoQLOperators.DCount}({cardinalityAggregation.FieldName})";
+            cardinalityAggregation.KustoQL = $"['{cardinalityAggregation.Key}']={KustoQLOperators.DCount}({cardinalityAggregation.Field})";
+        }
+
+        /// <inheritdoc/>
+        public void Visit(MinAggregation minAggregation)
+        {
+            Ensure.IsNotNull(minAggregation, nameof(minAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(minAggregation.Field, minAggregation.Field, ExceptionMessage);
+
+            minAggregation.KustoQL = $"['{minAggregation.Key}']={KustoQLOperators.Min}({minAggregation.Field})";
         }
 
         /// <inheritdoc/>
         public void Visit(MaxAggregation maxAggregation)
         {
             Ensure.IsNotNull(maxAggregation, nameof(maxAggregation));
-            EnsureClause.StringIsNotNullOrEmpty(maxAggregation.FieldName, maxAggregation.FieldName, ExceptionMessage);
+            EnsureClause.StringIsNotNullOrEmpty(maxAggregation.Field, maxAggregation.Field, ExceptionMessage);
 
-            maxAggregation.KustoQL = $"['{maxAggregation.FieldAlias}']={KustoQLOperators.Max}({maxAggregation.FieldName})";
+            maxAggregation.KustoQL = $"['{maxAggregation.Key}']={KustoQLOperators.Max}({maxAggregation.Field})";
         }
 
         /// <inheritdoc/>
         public void Visit(SumAggregation sumAggregation)
         {
             Ensure.IsNotNull(sumAggregation, nameof(sumAggregation));
-            EnsureClause.StringIsNotNullOrEmpty(sumAggregation.FieldName, sumAggregation.FieldName, ExceptionMessage);
+            EnsureClause.StringIsNotNullOrEmpty(sumAggregation.Field, sumAggregation.Field, ExceptionMessage);
 
-            sumAggregation.KustoQL = $"['{sumAggregation.FieldAlias}']={KustoQLOperators.Sum}({sumAggregation.FieldName})";
+            sumAggregation.KustoQL = $"['{sumAggregation.Key}']={KustoQLOperators.Sum}({sumAggregation.Field})";
         }
     }
 }

@@ -58,8 +58,8 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
-        /// <param name="aggregation">The aggregation to visit.</param>
-        void Visit(Aggregation aggregation);
+        /// <param name="aggregationContainer">The aggregation to visit.</param>
+        void Visit(AggregationContainer aggregationContainer);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
@@ -77,13 +77,19 @@ namespace K2Bridge.Visitors
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
         /// <param name="avgAggregation">The Average Aggregations to visit.</param>
-        void Visit(AvgAggregation avgAggregation);
+        void Visit(AverageAggregation avgAggregation);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
         /// <param name="cardinalityAggregation">The Cardinality Aggregations to visit.</param>
         void Visit(CardinalityAggregation cardinalityAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="minAggregation">The Min Aggregations to visit.</param>
+        void Visit(MinAggregation minAggregation);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.

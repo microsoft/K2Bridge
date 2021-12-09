@@ -63,6 +63,24 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string MinAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""min"" : {
+                        ""field"" : ""metric"" 
+                    } 
+                }
+            }}";
+
+        private const string MaxAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""max"" : {
+                        ""field"" : ""metric"" 
+                    } 
+                }
+            }}";
+
         private const string SumAggregation = @"
             {""aggs"": { 
                 ""2"": {
@@ -73,127 +91,171 @@ namespace UnitTests.K2Bridge.JsonConverters
             }}";
 
         private const string NoAggAggregation = @"
-        {""aggs"": { 
-            ""2"": {
-                ""noagg"" : { 
-                    ""field"" : ""metric"" 
-                    } 
-            }
-        }}";
+            {""aggs"": { 
+                ""2"": {
+                    ""noagg"" : { 
+                        ""field"" : ""metric"" 
+                        } 
+                }
+            }}";
 
-        private static readonly Aggregation ExpectedValidDateHistogramAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedValidDateHistogramAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
-                {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new DateHistogramAggregation {
-                            FieldName = "timestamp",
-                            FieldAlias = "_2",
-                            Interval = "1m",
-                            Metric = "count()",
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
-                    },
-                },
-        };
-
-        private static readonly Aggregation ExpectedValidTermsAggregation = new Aggregation()
-        {
-            PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            SubAggregations = new AggregationDictionary
             {
+                ["2"] = new AggregationContainer
                 {
-                    "2", new Aggregation() {
-                        PrimaryAggregation = new TermsAggregation {
-                            FieldName = "DestCountry",
-                            FieldAlias = "_2",
-                            Metric = "count()",
-                            SortFieldName = "_count",
-                            SortOrder = "desc",
-                        },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                    }
+                    PrimaryAggregation = new DateHistogramAggregation
+                    {
+                        Field = "timestamp",
+                        Key = "2",
+                        FixedInterval = "1m",
+                        TimeZone = "Asia/Jerusalem",
+                        MinimumDocumentCount = 1,
+                        Metric = "count()",
+                    },
+                    SubAggregations = new AggregationDictionary(),
                 },
             },
         };
 
-        private static readonly Aggregation ExpectedValidCardinalityAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedValidTermsAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new CardinalityAggregation {
-                            FieldAlias = "_2",
-                            FieldName = "metric",
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    PrimaryAggregation = new TermsAggregation
+                    {
+                        Field = "DestCountry",
+                        Key = "2",
+                        Order = new TermsOrder
+                        {
+                            SortField = "_count",
+                            SortOrder = "desc",
+                        },
+                        Metric = "count()",
                     },
+                    SubAggregations = new AggregationDictionary(),
                 },
+            },
         };
 
-        private static readonly Aggregation ExpectedValidAvgAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new AvgAggregation {
-                            FieldAlias = "_2",
-                            FieldName = "metric",
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    PrimaryAggregation = new CardinalityAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
                     },
+                    SubAggregations = new AggregationDictionary(),
                 },
+            },
         };
 
-        private static readonly Aggregation ExpectedNoFieldsAvgAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedValidAvgAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new AvgAggregation {
-                            FieldAlias = "_2",
-                            FieldName = null,
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    PrimaryAggregation = new AverageAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
                     },
+                    SubAggregations = new AggregationDictionary(),
                 },
+            },
         };
 
-        private static readonly Aggregation ExpectedValidSumAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedNoFieldsAvgAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = new SumAggregation {
-                            FieldAlias = "_2",
-                            FieldName = "metric",
-                            },
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    PrimaryAggregation = new AverageAggregation
+                    {
+                        Field = null,
+                        Key = "2",
                     },
+                    SubAggregations = new AggregationDictionary(),
                 },
+            },
         };
 
-        private static readonly Aggregation ExpectedNoAggAggregation = new Aggregation()
+        private static readonly AggregationContainer ExpectedValidMinAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
-            SubAggregations = new Dictionary<string, Aggregation>
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
                 {
-                    { "2", new Aggregation() {
-                        PrimaryAggregation = null,
-                        SubAggregations = new Dictionary<string, Aggregation>(),
-                        }
+                    PrimaryAggregation = new MinAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
                     },
+                    SubAggregations = new AggregationDictionary(),
                 },
+            },
+        };
+
+        private static readonly AggregationContainer ExpectedValidMaxAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new MaxAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
+        private static readonly AggregationContainer ExpectedValidSumAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new SumAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
+        private static readonly AggregationContainer ExpectedNoAggAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = null,
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
         };
 
         private static readonly object[] AggregationTestCases = {
@@ -202,6 +264,8 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
             new TestCaseData(AvgAggregation, ExpectedValidAvgAggregation).SetName("JsonDeserializeObject_WithAggregationValidAvg_DeserializedCorrectly"),
             new TestCaseData(AvgEmptyFieldsAggregation, ExpectedNoFieldsAvgAggregation).SetName("JsonDeserializeObject_WithAggregationNoFieldsAvg_DeserializedCorrectly"),
+            new TestCaseData(MinAggregation, ExpectedValidMinAggregation).SetName("JsonDeserializeObject_WithAggregationValidMin_DeserializedCorrectly"),
+            new TestCaseData(MaxAggregation, ExpectedValidMaxAggregation).SetName("JsonDeserializeObject_WithAggregationValidMax_DeserializedCorrectly"),
             new TestCaseData(SumAggregation, ExpectedValidSumAggregation).SetName("JsonDeserializeObject_WithAggregationValidSum_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
@@ -209,7 +273,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         [TestCaseSource(nameof(AggregationTestCases))]
         public void TestAggregationConverter(string queryString, object expected)
         {
-            queryString.AssertJsonString((Aggregation)expected);
+            queryString.AssertJsonString((AggregationContainer)expected);
         }
     }
 }

@@ -5,15 +5,16 @@
 namespace K2Bridge.JsonConverters
 {
     using System;
+    using System.Linq;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Request.Aggregations;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
-    /// A converter able to deserialize the date_histogram element in an Elasticsearch query to <see cref="TermsAggregation"/>.
+    /// A converter able to deserialize the order element from TermsAggregation to <see cref="TermsOrder"/>.
     /// </summary>
-    internal class TermsAggregationConverter : ReadOnlyJsonConverter
+    internal class TermsOrderConverter : ReadOnlyJsonConverter
     {
         /// <inheritdoc/>
         public override object ReadJson(
@@ -23,23 +24,14 @@ namespace K2Bridge.JsonConverters
             JsonSerializer serializer)
         {
             var jo = JObject.Load(reader);
+            var property = (JProperty)jo.First;
 
-            var obj = new TermsAggregation
-            {
-                FieldName = (string)jo["field"],
-            };
+            var obj = new TermsOrder();
 
-            int? size = (int)jo["size"];
-            if (size != null)
+            if (property != null)
             {
-                obj.Size = (int)size;
-            }
-
-            var order = jo["order"];
-            if (order != null && order.First != null)
-            {
-                obj.SortFieldName = ((JProperty)order.First).Name;
-                obj.SortOrder = (string)((JProperty)order.First).Value;
+                obj.SortField = property.Name;
+                obj.SortOrder = property.Value.ToString();
             }
 
             return obj;

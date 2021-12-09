@@ -2,28 +2,29 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Queries
+namespace K2Bridge.Models.Request.Aggregations
 {
+    using System.Collections.Generic;
     using K2Bridge.JsonConverters;
     using K2Bridge.Models.Request;
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Match phrase is looking for exact match of a phrase and the field value.
+    /// Describes aggregation container element in an Elasticsearch query.
     /// </summary>
-    [JsonConverter(typeof(MatchPhraseClauseConverter))]
-    internal class MatchPhraseClause : KustoQLBase, IVisitable, ILeafClause
+    [JsonConverter(typeof(AggregationContainerConverter))]
+    internal class AggregationContainer : KustoQLBase, IVisitable
     {
         /// <summary>
-        /// Gets or sets the field to match.
+        /// Gets or sets primary/most relevant aggregation.
         /// </summary>
-        public string FieldName { get; set; }
+        public Aggregation PrimaryAggregation { get; set; }
 
         /// <summary>
-        /// Gets or sets the matching phrase.
+        /// Gets or sets sub aggregations.
         /// </summary>
-        public object Phrase { get; set; }
+        public AggregationDictionary SubAggregations { get; set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

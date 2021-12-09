@@ -32,6 +32,7 @@ namespace K2Bridge.Visitors
         public const string Materialize = "materialize";
         public const string DCount = "dcount";
         public const string Avg = "avg";
+        public const string Min = "min";
         public const string Max = "max";
         public const string Sum = "sum";
         public const string IsNotNull = "isnotnull";

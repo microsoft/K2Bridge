@@ -26,6 +26,9 @@ steps:
     if [ "$(Build.SourceBranch)" = "refs/heads/master" ]; then
       KUBERNETES_NAMESPACE="master"
     fi
+      if [ "$(Build.SourceBranch)" = "refs/heads/dev-vnext" ]; then
+      KUBERNETES_NAMESPACE="dev-vnext"
+    fi
     if [ "$(RUN_SET_NAMESPACE)" != "" ]; then
       KUBERNETES_NAMESPACE="$(RUN_SET_NAMESPACE)"
     fi
