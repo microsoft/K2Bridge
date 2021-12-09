@@ -21,8 +21,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
     public class KustoDataAccessTests
     {
-        private static readonly object[] IndexNames =
-        {
+        private static readonly object[] IndexNames = {
             new string[] { "databaseName:tableName", "databaseName", "tableName" },
             new string[] { "*", "*", "*" },
             new string[] { "tableName", string.Empty, "tableName" },
@@ -53,14 +52,12 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task GetFieldCaps_WithValidIndex_ReturnFieldCaps()
         {
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object>
-                {
+                new Dictionary<string, object> {
                     { "ColumnName", name },
                     { "ColumnType", type },
                 };
 
-            var testData = new List<Dictionary<string, object>>()
-            {
+            var testData = new List<Dictionary<string, object>>() {
                 column("mybool", "System.SByte"),
                 column("myint", "System.Int32"),
                 column("mylong", "System.Int64"),
@@ -76,10 +73,8 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(testReader));
 
-            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>()
-            {
-                new Dictionary<string, object>()
-                {
+            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                new Dictionary<string, object>() {
                     { "result", JToken.Parse(@"{""a"": ""int"", ""b"": ""string"", ""c"": {""d"": {""e"": ""string""}}}") },
                 },
             });
@@ -213,14 +208,12 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task GetFieldCaps_WithDynamicColumnArray_ReturnFieldCaps()
         {
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object>
-                {
+                new Dictionary<string, object> {
                     { "ColumnName", name },
                     { "ColumnType", type },
                 };
 
-            var testData = new List<Dictionary<string, object>>()
-            {
+            var testData = new List<Dictionary<string, object>>() {
                 column("myint", "System.Int32"),
                 column("nested_dynamic", "System.Object"),
                 column("dynamic_top_level_string", "System.Object"),
@@ -238,7 +231,8 @@ namespace UnitTests.K2Bridge.KustoDAL
                     if (query.QueryCommandText.Contains("nested_dynamic"))
                     {
                         response = "{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}";
-                    } else if (query.QueryCommandText.Contains("dynamic_top_level_string"))
+                    }
+                    else if (query.QueryCommandText.Contains("dynamic_top_level_string"))
                     {
                         response = "\"string\"";
                     }
@@ -251,10 +245,8 @@ namespace UnitTests.K2Bridge.KustoDAL
                         response = "[\"int\", \"string\"]";
                     }
 
-                    IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>()
-                    {
-                        new Dictionary<string, object>()
-                        {
+                    IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                        new Dictionary<string, object>() {
                             { "result", JToken.Parse(response) },
                         },
                     });
@@ -343,14 +335,12 @@ namespace UnitTests.K2Bridge.KustoDAL
         {
             const double percentage = 30.5;
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object>
-                {
+                new Dictionary<string, object> {
                     { "ColumnName", name },
                     { "ColumnType", type },
                 };
 
-            var testData = new List<Dictionary<string, object>>()
-            {
+            var testData = new List<Dictionary<string, object>>() {
                 column("myint", "System.Int32"),
                 column("mydynamic", "System.Object"),
             };
@@ -358,10 +348,8 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(testReader));
 
-            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>()
-            {
-                new Dictionary<string, object>()
-                {
+            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                new Dictionary<string, object>() {
                     { "result", JToken.Parse("{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}") },
                 },
             });
@@ -382,14 +370,12 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
         public async Task GetFieldCaps_WithValidFunction_ReturnFieldCaps()
         {
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object>
-                {
+                new Dictionary<string, object> {
                     { "ColumnName", name },
                     { "ColumnType", type },
                 };
 
-            var testData = new List<Dictionary<string, object>>()
-            {
+            var testData = new List<Dictionary<string, object>>() {
                 column("myint", "System.Int32"),
                 column("mystring", "System.String"),
             };
@@ -434,10 +420,8 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
         public async Task ResolveIndex_WithValidIndex_ReturnIndexList()
         {
             using IDataReader stubIndexReader = new DataReaderMock(
-                new List<Dictionary<string, object>>()
-                {
-                    new Dictionary<string, object>
-                    {
+                new List<Dictionary<string, object>>() {
+                    new Dictionary<string, object> {
                         { "1", "somevalue1" },
                     },
                 });
@@ -466,10 +450,8 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
         public async Task ResolveIndex_WithValidFunction_ReturnIndexList()
         {
             using IDataReader stubIndexReader = new DataReaderMock(
-                new List<Dictionary<string, object>>()
-                {
-                    new Dictionary<string, object>
-                    {
+                new List<Dictionary<string, object>>() {
+                    new Dictionary<string, object> {
                         { "1", "somevalue1" },
                     },
                 });
@@ -497,18 +479,14 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
         public async Task ResolveIndex_ValidIndexAndValidFunction_ReturnBoth()
         {
             using IDataReader stubIndexReader1 = new DataReaderMock(
-                new List<Dictionary<string, object>>()
-                {
-                    new Dictionary<string, object>
-                    {
+                new List<Dictionary<string, object>>() {
+                    new Dictionary<string, object> {
                         { "1", "myTable" },
                     },
                 });
             using IDataReader stubIndexReader2 = new DataReaderMock(
-                new List<Dictionary<string, object>>()
-                {
-                    new Dictionary<string, object>
-                    {
+                new List<Dictionary<string, object>>() {
+                    new Dictionary<string, object> {
                         { "1", "myFunction" },
                     },
                 });
@@ -540,10 +518,8 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
             mockQueryExecutor.SetupGet(x => x.DefaultDatabaseName).Returns(mockDetails.Object.DefaultDatabaseName);
             var searchString = $"search TableName: '{tableName}' | search DatabaseName: '{databaseName}' |";
             using IDataReader stubIndexReader = new DataReaderMock(
-                new List<Dictionary<string, object>>()
-                {
-                    new Dictionary<string, object>
-                    {
+                new List<Dictionary<string, object>>() {
+                    new Dictionary<string, object> {
                         { "1", "somevalue1" },
                     },
                 });
