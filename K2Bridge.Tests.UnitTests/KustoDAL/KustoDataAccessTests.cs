@@ -79,6 +79,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                 },
             });
 
+            // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
             var calls = new List<QueryData>();
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
@@ -354,6 +355,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                 },
             });
 
+            // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
             var calls = new List<QueryData>();
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
