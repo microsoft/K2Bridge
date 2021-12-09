@@ -13,10 +13,11 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class RangeAggregationVisitorTests
     {
-        [TestCase(0, 800, 800, 2000, ExpectedResult = "wibble by ['key'] = case(dayOfWeek >= 0 and dayOfWeek < 800, '0-800', dayOfWeek >= 800 and dayOfWeek < 2000, '800-2000', 'default_bucket')")]
-        [TestCase(null, 800, 800, 2000, ExpectedResult = "wibble by ['key'] = case(dayOfWeek < 800, '-800', dayOfWeek >= 800 and dayOfWeek < 2000, '800-2000', 'default_bucket')")]
-        [TestCase(0, 800, 800, null, ExpectedResult = "wibble by ['key'] = case(dayOfWeek >= 0 and dayOfWeek < 800, '0-800', dayOfWeek >= 800, '800-', 'default_bucket')")]
-        [TestCase(null, 800, 800, null, ExpectedResult = "wibble by ['key'] = case(dayOfWeek < 800, '-800', dayOfWeek >= 800, '800-', 'default_bucket')")]
+        [TestCase(0, 800, 800, 2000, ExpectedResult = "union (_data | where dayOfWeek >= 0 and dayOfWeek < 800 | summarize wibble | extend ['key'] = '0-800'), (_data | where dayOfWeek >= 800 and dayOfWeek < 2000 | summarize wibble | extend ['key'] = '800-2000') | project-reorder * asc")]
+        [TestCase(null, 800, 800, 2000, ExpectedResult = "union (_data | where dayOfWeek < 800 | summarize wibble | extend ['key'] = '-800'), (_data | where dayOfWeek >= 800 and dayOfWeek < 2000 | summarize wibble | extend ['key'] = '800-2000') | project-reorder * asc")]
+        [TestCase(0, 800, 800, null, ExpectedResult = "union (_data | where dayOfWeek >= 0 and dayOfWeek < 800 | summarize wibble | extend ['key'] = '0-800'), (_data | where dayOfWeek >= 800 | summarize wibble | extend ['key'] = '800-') | project-reorder * asc")]
+        [TestCase(null, 800, 800, null, ExpectedResult = "union (_data | where dayOfWeek < 800 | summarize wibble | extend ['key'] = '-800'), (_data | where dayOfWeek >= 800 | summarize wibble | extend ['key'] = '800-') | project-reorder * asc")]
+        [TestCase(0, 10000, 2000, 3000, ExpectedResult = "union (_data | where dayOfWeek >= 0 and dayOfWeek < 10000 | summarize wibble | extend ['key'] = '0-10000'), (_data | where dayOfWeek >= 2000 and dayOfWeek < 3000 | summarize wibble | extend ['key'] = '2000-3000') | project-reorder * asc")]
         public string RangeVisit_WithAggregation_ReturnsValidResponse(double? from1, double? to1, double? from2, double? to2)
         {
             var rangeAggregation = new RangeAggregation()
@@ -54,7 +55,7 @@ namespace UnitTests.K2Bridge.Visitors
             VisitorTestsUtils.VisitRootDsl(visitor);
             visitor.Visit(rangeAggregation);
 
-            Assert.AreEqual("wibble by ['key'] = case(true, '-', 'default_bucket')", rangeAggregation.KustoQL);
+            Assert.AreEqual("union (_data | where true | summarize wibble | extend ['key'] = '-') | project-reorder * asc", rangeAggregation.KustoQL);
         }
     }
 }

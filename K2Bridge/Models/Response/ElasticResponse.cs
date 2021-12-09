@@ -109,6 +109,15 @@ namespace K2Bridge.Models.Response
         }
 
         /// <summary>
+        /// Sets the HitsTotal of the first response.
+        /// </summary>
+        /// <param name="count">An int to increment by.</param>
+        public void SetTotal(long count)
+        {
+            responses[0].Hits.SetTotal(count);
+        }
+
+        /// <summary>
         /// Add the translated and executed ADX query.
         /// </summary>
         /// <param name="query">Query string.</param>

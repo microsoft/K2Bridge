@@ -10,5 +10,10 @@ namespace K2Bridge.Models.Request.Aggregations
     internal abstract class BucketAggregation : Aggregation
     {
         public string Metric { get; set; } = "count()";
+
+        /// <summary>
+        /// Gets or sets the translation of the query.
+        /// </summary>
+        public string MetricsKustoQL { get; set; }
     }
 }

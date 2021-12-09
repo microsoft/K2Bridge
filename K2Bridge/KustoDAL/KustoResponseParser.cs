@@ -25,6 +25,7 @@ namespace K2Bridge.KustoDAL
     {
         private const string AggregationTableName = "aggs";
         private const string HitsTableName = "hits";
+        private const string HitsTotalTableName = "hitsTotal";
         private readonly Metrics metricsHistograms;
 
         private readonly bool outputBackendQuery;
@@ -199,6 +200,13 @@ namespace K2Bridge.KustoDAL
                             response.AddBucketToAggregation(bucket);
                         }
                     }
+                }
+
+                // For Range aggregations, the calculated total hits is wrong, so we have an additional column with the expected count
+                if (parsedKustoResponse[HitsTotalTableName] != null)
+                {
+                    // A single row with a single column
+                    response.SetTotal((long)parsedKustoResponse[HitsTotalTableName].TableData.Rows[0][0]);
                 }
             }
             else

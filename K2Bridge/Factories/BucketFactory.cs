@@ -92,8 +92,25 @@ namespace K2Bridge.Factories
             double? to = string.IsNullOrEmpty(splitRange[1]) ? null : double.Parse(splitRange[1]);
 
             // Assemble the key
-            string key = $"{from?.ToString() ?? "*"}-{to?.ToString() ?? "*"}";
+            // An empty limit becomes "*"
+            // An integer limit is suffixed with ".0"
+            string fromKey, toKey;
 
+            fromKey = from?.ToString() switch
+            {
+                null => "*",
+                _ => from % 1 == 0 ? from.ToString() + ".0" : from.ToString(),
+            };
+
+            toKey = to?.ToString() switch
+            {
+                null => "*",
+                _ => to % 1 == 0 ? to.ToString() + ".0" : to.ToString(),
+            };
+
+            string key = $"{fromKey}-{toKey}";
+
+            // Assemble the bucket
             var rb = new RangeBucket
             {
                 DocCount = Convert.ToInt32(count),

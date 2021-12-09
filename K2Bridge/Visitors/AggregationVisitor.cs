@@ -21,19 +21,28 @@ namespace K2Bridge.Visitors
                 return;
             }
 
-            aggregationContainer.PrimaryAggregation.Accept(this);
-
             // TODO: do something with the sub aggregations to KQL
             if (aggregationContainer.SubAggregations != null)
             {
                 foreach (var (_, subAgg) in aggregationContainer.SubAggregations)
                 {
                     subAgg.Accept(this);
-                    aggregationContainer.KustoQL += $"{subAgg.KustoQL}, "; // this won't work when 2+ bucket aggregations are used!
+                    if (aggregationContainer.PrimaryAggregation.GetType().BaseType.Name == "BucketAggregation")
+                    {
+                        // Bucket aggregations are responsible for inserting the metrics expressions in the final query
+                        ((BucketAggregation)aggregationContainer.PrimaryAggregation).MetricsKustoQL += $"{subAgg.KustoQL}, ";
+                    }
+                    else
+                    {
+                        // Metrics aggregations just return their KustoQL
+                        aggregationContainer.KustoQL += $"{subAgg.KustoQL}, "; // this won't work when 2+ bucket aggregations are used!
+                    }
                 }
             }
 
-            aggregationContainer.KustoQL += aggregationContainer.PrimaryAggregation.KustoQL;
+            aggregationContainer.PrimaryAggregation.Accept(this);
+
+            aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
     }
 }

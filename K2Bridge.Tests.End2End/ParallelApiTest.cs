@@ -226,6 +226,13 @@ namespace K2Bridge.Tests.End2End
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Range_Metrics.json");
         }
 
+        [Test]
+        [Description("/_msearch visualization query with overlapping range")]
+        public void CompareElasticKusto_WhenMSearchVizRangeOverlapping_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Range_Overlapping.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);

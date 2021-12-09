@@ -51,6 +51,10 @@ namespace K2Bridge.Visitors
         public const string GetSchema = "getschema";
         public const string Equal = "==";
         public const string Case = "case";
+        public const string Extend = "extend";
+        public const string ProjectReorder = "project-reorder";
+        public const string Union = "union";
+        public const string Count = "count";
         public const string CommandSeparator = "\n| ";
 #pragma warning restore SA1600 // Elements should be documented
     }

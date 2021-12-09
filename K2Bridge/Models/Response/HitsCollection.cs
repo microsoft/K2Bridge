@@ -52,5 +52,14 @@ namespace K2Bridge.Models.Response
         {
             Total.Value += docCount;
         }
+
+        /// <summary>
+        /// Set the HitsCollection.Total.
+        /// </summary>
+        /// <param name="docCount">int representing doc count.</param>
+        public void SetTotal(long docCount)
+        {
+            Total.Value = docCount;
+        }
     }
 }
