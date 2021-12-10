@@ -5,12 +5,15 @@
 namespace K2Bridge.Factories
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
     using System.Data;
+    using System.Globalization;
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// BucketFactory.
@@ -38,7 +41,7 @@ namespace K2Bridge.Factories
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
-                Aggs = new Dictionary<string, Dictionary<string, double>>(),
+                Aggs = new Dictionary<string, Dictionary<string, object>>(),
             };
 
             var clmns = row.Table.Columns;
@@ -50,28 +53,74 @@ namespace K2Bridge.Factories
                 }
 
                 // Create new Regex to match the ID%PERCENTILE - example: 1%50.0
-                var regex = new Regex(@"^(\d+)%{1}(100\.0|[0-9]?[0-9]\.[0-9]{1})$");
+                // var regex = new Regex(@"^(\d+)%{1}(100\.0|[0-9]?[0-9]\.[0-9]{1})$");
+                // var match = regex.Match(clmn.ColumnName);
+                var columnNameInfo = clmn.ColumnName.Split('%');
 
-                var match = regex.Match(clmn.ColumnName);
-
-                if (match.Success)
+                if (columnNameInfo.Length > 1)
                 {
-                    var percentile = match.Groups[2].Value;
-                    logger.LogTrace("Defining the Percentile {percentile}", percentile);
+                    // key%metric%value1%value2%keyed
+                    var key = columnNameInfo[0];
+                    var metric = columnNameInfo[1];
+                    var queryValues = columnNameInfo[2..^1];
+                    var keyed = bool.Parse(columnNameInfo[^1]);
 
-                    if (!dhb.Aggs.ContainsKey(match.Groups[1].Value))
+                    if (metric == "percentile")
                     {
-                        dhb.Aggs[match.Groups[1].Value] = new Dictionary<string, double>();
+
+                        dhb.Aggs[key] = new Dictionary<string, object>();
+                        var returnValues = new Dictionary<string, double>();
+
+                        var percentileValues = (JArray)row[clmn.ColumnName];
+
+                        for (var index = 0; index < queryValues.Length; index++)
+                        {
+                            var name = queryValues[index];
+                            var value = percentileValues[index].ToString();
+                            returnValues.Add(name, double.Parse(value, CultureInfo.InvariantCulture));
+                        }
+
+                        if (keyed)
+                        {
+                            // keyed ====> Dictionary
+                            dhb.Aggs[key].Add("values", returnValues);
+                        }
+                        else
+                        {
+                            // not keyed ====> List(key,value)
+                            dhb.Aggs[key].Add("values", returnValues.ToList());
+                        }
                     }
 
-                    dhb.Aggs[match.Groups[1].Value].Add(percentile, Convert.ToDouble(row[clmn.ColumnName]));
+                    /* ----> var rowss = row[clmn.ColumnName];
+                    // // var percentile = match.Groups[2].Value;
+                    // // logger.LogTrace("Defining the Percentile {percentile}", percentile);
+
+                    // // if (!dhb.Aggs.ContainsKey(match.Groups[1].Value))
+                    // // {
+                    // // dhb.Aggs[match.Groups[1].Value] = new Dictionary<string, double>();
+                    // //}
+
+                    // if (keyed) {
+                    //     // dictionnary
+                    //     dhb.Aggs[key] = new Dictionary<string, double>();
+
+                    //     //foreach
+                    //     foreach(var percentile in columnNameInfo[1..^1]) {
+                    //         dhb.Aggs[key].Add(percentile, )
+                    //     }
+                    // }
+                    // else {
+                    //     // array
+                    // }
+                    // dhb.Aggs[match.Groups[1].Value].Add(percentile, Convert.ToDouble(row[clmn.ColumnName]));*/
                 }
                 else
                 {
                     var columnName = clmn.ColumnName;
                     logger.LogTrace("Defining the value for {columnName}", columnName);
 
-                    dhb.Aggs[columnName] = new Dictionary<string, double>() {
+                    dhb.Aggs[columnName] = new Dictionary<string, object>() {
                         { "value", Convert.ToDouble(row[columnName]) },
                     };
                 }

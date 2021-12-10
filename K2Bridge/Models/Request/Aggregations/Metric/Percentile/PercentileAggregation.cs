@@ -22,7 +22,7 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets field keyed for the Percentile Aggregation.
         /// </summary>
         [JsonProperty("keyed")]
-        public bool? Keyed { get; set; }
+        public bool? Keyed { get; set; } = true;
 
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)

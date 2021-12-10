@@ -4,6 +4,8 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Linq;
+    using System.Text;
     using K2Bridge.Models.Request.Aggregations;
 
     /// <content>
@@ -66,13 +68,13 @@ namespace K2Bridge.Visitors
 
             /// Median is Percentile(fieldName, 50)
             percentileAggregation.KustoQL = string.Empty;
-
+            StringBuilder builder = new StringBuilder();
             foreach (double percent in percentileAggregation.Percents)
             {
-                percentileAggregation.KustoQL += $"['{percentileAggregation.Key}%{percent:0.0}']={KustoQLOperators.Percentile}({percentileAggregation.Field}, {percentileAggregation.Percents[0]}),";
+                builder.Append($"%{percent:0.0}");
             }
 
-            percentileAggregation.KustoQL = percentileAggregation.KustoQL.TrimEnd(',');
+            percentileAggregation.KustoQL += $"['{percentileAggregation.Key}%percentile{builder.ToString()}%{percentileAggregation.Keyed}']={KustoQLOperators.PercentilesArray}({percentileAggregation.Field}, {string.Join(',', percentileAggregation.Percents)})";
         }
     }
 }

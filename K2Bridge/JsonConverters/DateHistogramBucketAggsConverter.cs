@@ -34,33 +34,23 @@ namespace K2Bridge.JsonConverters
             foreach (var agg in aggs.Keys)
             {
                 writer.WritePropertyName(agg);
+                serializer.Serialize(writer, aggs[agg]);
 
-                writer.WriteStartObject();
-                if (aggs[agg].Count > 1)
-                {
-                    writer.WritePropertyName("values");
-                    serializer.Serialize(writer, aggs[agg].ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value)
-                                                          .ToList());
-                }
-                else
-                {
-                    var item = aggs[agg].First();
-
-                    if ("value".Equals(item.Key))
-                    {
-                        writer.WritePropertyName("value");
-                        serializer.Serialize(writer, item.Value);
-                    }
-                    else
-                    {
-                        writer.WritePropertyName("values");
-                        serializer.Serialize(writer, aggs[agg]);
-                    }
-                }
-
-                writer.WriteEndObject();
+                // writer.WriteStartObject();
+                // if (aggs[agg].Count > 1)
+                // {
+                //     writer.WritePropertyName("values");
+                //     serializer.Serialize(writer, aggs[agg].ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value)
+                //                                           .ToList());
+                // }
+                // else
+                // {
+                //     var item = aggs[agg].First();
+                //     writer.WritePropertyName("value");
+                //     serializer.Serialize(writer, item.Value);
+                // }
+                // writer.WriteEndObject();
             }
-
             writer.WriteEndObject();
         }
     }
