@@ -32,6 +32,24 @@ namespace K2Bridge.Factories
             };
         }
 
+        /// <summary>
+        /// wew
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="kustoShorthandType"></param>
+        /// <returns></returns>
+        public static FieldCapabilityElement CreateFromNameAndKustoShorthandType(string name, string kustoShorthandType)
+        {
+            Ensure.IsNotNullOrEmpty(name, nameof(name));
+            Ensure.IsNotNullOrEmpty(kustoShorthandType, nameof(kustoShorthandType));
+
+            return new FieldCapabilityElement
+            {
+                Name = name,
+                Type = ElasticTypeFromKustoShorthandType(kustoShorthandType),
+            };
+        }
+
         private static string ElasticTypeFromKustoType(string type)
         {
             return type switch
@@ -48,6 +66,27 @@ namespace K2Bridge.Factories
                 "System.Guid" => "string",
                 "System.TimeSpan" => "string",
                 "System.Boolean" => "boolean",
+                _ => throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type"),
+            };
+        }
+
+        private static string ElasticTypeFromKustoShorthandType(string type)
+        {
+            return type switch
+            {
+                "int" => "integer",
+                "long" => "long",
+                "double" => "double",
+                "real" => "double",
+                "bool" => "boolean",
+                "boolean" => "boolean",
+                "dynamic" => "object",
+                "string" => "keyword", // Elastic support text and keyword string types. Text is interpreted as something that can't be aggregated, hence we need to choose keyword.
+                "datetime" => "date",
+                "date" => "date",
+                "decimal" => "double",
+                "guid" => "string",
+                "timespan" => "string",
                 _ => throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type"),
             };
         }
