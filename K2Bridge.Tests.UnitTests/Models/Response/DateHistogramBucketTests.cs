@@ -9,6 +9,7 @@ namespace UnitTests.K2Bridge.Models.Response
     using global::K2Bridge.Factories;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using Newtonsoft.Json.Linq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -44,12 +45,12 @@ namespace UnitTests.K2Bridge.Models.Response
             DataTable table = new DataTable();
             table.Columns.Add("timestamp", typeof(DateTime)).DateTimeMode = DataSetDateTime.Utc;
             table.Columns.Add("count_", typeof(int));
-            table.Columns.Add("1%50.0", typeof(double));
+            table.Columns.Add("1%percentile%50.0%True", typeof(JArray));
 
             DataRow row = table.NewRow();
             row["timestamp"] = new DateTime(2017, 1, 2, 13, 4, 5, 60, DateTimeKind.Utc);
             row["count_"] = 234;
-            row["1%50.0"] = 644.54658;
+            row["1%percentile%50.0%True"] = new JArray(644.54658);
 
             // Act
             var logger = Mock.Of<ILogger<dynamic>>();

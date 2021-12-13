@@ -183,7 +183,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%25.0']=percentile(fieldA, 25),['A%50.0']=percentile(fieldA, 50)['A%99.0']=percentile(fieldA, 99)")]
+        [TestCase(ExpectedResult = "['A%percentile%50.0%False']=percentiles_array(fieldA, 50)")]
         public string AggregationVisit_WithPercentileAgg_ReturnsPercentilePrimary()
         {
             var aggregateClause = new AggregationContainer()
@@ -197,7 +197,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%50.0']=percentile(fieldA, 50)")]
+        [TestCase(ExpectedResult = "['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)")]
         public string AggregationVisit_WithPercentilesAgg_ReturnsPercentilePrimary()
         {
             var aggregateClause = new AggregationContainer()

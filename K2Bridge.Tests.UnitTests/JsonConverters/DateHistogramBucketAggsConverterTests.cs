@@ -6,7 +6,6 @@ namespace UnitTests.K2Bridge.JsonConverters
 {
     using System.Collections.Generic;
     using global::K2Bridge.Models.Response;
-    using global::K2Bridge.Models.Response.Metadata;
     using NUnit.Framework;
 
     [TestFixture]
@@ -22,7 +21,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             ""doc_count"": 502,
             ""key"": 42,
             ""key_as_string"": ""foo"",
-            ""aggs"": { ""values"" : {""50.0"": 644.0861} }
+            ""values"" : {""50.0"": 644.0861}
         }";
 
         private static readonly DateHistogramBucket ValidTermsBucket = new DateHistogramBucket()
@@ -30,7 +29,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             DocCount = 502,
             Key = 42,
             KeyAsString = "foo",
-            Aggs = new Dictionary<string, Dictionary<string, double>>(),
+            Aggs = new Dictionary<string, Dictionary<string, object>>(),
         };
 
         private static readonly DateHistogramBucket ValidTermsBucketWithAggs = new DateHistogramBucket()
@@ -38,8 +37,8 @@ namespace UnitTests.K2Bridge.JsonConverters
             DocCount = 502,
             Key = 42,
             KeyAsString = "foo",
-            Aggs = new Dictionary<string, Dictionary<string, double>>() {
-                { "aggs", new Dictionary<string, double> { { "50.0", 644.0861 } } },
+            Aggs = new Dictionary<string, Dictionary<string, object>>() {
+                { "values", new Dictionary<string, object> { { "50.0", 644.0861 } } },
             },
         };
 

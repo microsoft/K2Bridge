@@ -4,9 +4,6 @@
 
 namespace K2Bridge.JsonConverters
 {
-    using System.Linq;
-    using System.Globalization;
-    using System;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response;
     using Newtonsoft.Json;
@@ -35,22 +32,8 @@ namespace K2Bridge.JsonConverters
             {
                 writer.WritePropertyName(agg);
                 serializer.Serialize(writer, aggs[agg]);
-
-                // writer.WriteStartObject();
-                // if (aggs[agg].Count > 1)
-                // {
-                //     writer.WritePropertyName("values");
-                //     serializer.Serialize(writer, aggs[agg].ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value)
-                //                                           .ToList());
-                // }
-                // else
-                // {
-                //     var item = aggs[agg].First();
-                //     writer.WritePropertyName("value");
-                //     serializer.Serialize(writer, item.Value);
-                // }
-                // writer.WriteEndObject();
             }
+
             writer.WriteEndObject();
         }
     }

@@ -9,7 +9,6 @@ namespace K2Bridge.Factories
     using System.Collections.Generic;
     using System.Data;
     using System.Globalization;
-    using System.Text.RegularExpressions;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
@@ -64,7 +63,6 @@ namespace K2Bridge.Factories
 
                     if (metric == "percentile")
                     {
-
                         dhb.Aggs[key] = new Dictionary<string, object>();
                         var returnValues = new Dictionary<string, double>();
 
@@ -88,29 +86,6 @@ namespace K2Bridge.Factories
                             dhb.Aggs[key].Add("values", returnValues.ToList());
                         }
                     }
-
-                    /* ----> var rowss = row[clmn.ColumnName];
-                    // // var percentile = match.Groups[2].Value;
-                    // // logger.LogTrace("Defining the Percentile {percentile}", percentile);
-
-                    // // if (!dhb.Aggs.ContainsKey(match.Groups[1].Value))
-                    // // {
-                    // // dhb.Aggs[match.Groups[1].Value] = new Dictionary<string, double>();
-                    // //}
-
-                    // if (keyed) {
-                    //     // dictionnary
-                    //     dhb.Aggs[key] = new Dictionary<string, double>();
-
-                    //     //foreach
-                    //     foreach(var percentile in columnNameInfo[1..^1]) {
-                    //         dhb.Aggs[key].Add(percentile, )
-                    //     }
-                    // }
-                    // else {
-                    //     // array
-                    // }
-                    // dhb.Aggs[match.Groups[1].Value].Add(percentile, Convert.ToDouble(row[clmn.ColumnName]));*/
                 }
                 else
                 {
