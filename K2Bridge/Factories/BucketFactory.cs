@@ -77,13 +77,13 @@ namespace K2Bridge.Factories
 
                         if (keyed)
                         {
-                            // keyed ====> Dictionary
+                            // keyed ====> Dictionary<string, double>
                             dhb.Aggs[key].Add("values", returnValues);
                         }
                         else
                         {
-                            // not keyed ====> List(key,value)
-                            dhb.Aggs[key].Add("values", returnValues.ToList());
+                            // not keyed ====> List<object(double,double)>
+                            dhb.Aggs[key].Add("values", returnValues.ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value).ToList());
                         }
                     }
                 }
