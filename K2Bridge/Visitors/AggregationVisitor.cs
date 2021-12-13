@@ -28,6 +28,7 @@ namespace K2Bridge.Visitors
                 {
                     // Visit the aggregation
                     subAgg.Accept(this);
+
                     // Bucket aggregations are responsible for inserting the metrics expressions in the final query
                     if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
                     {
