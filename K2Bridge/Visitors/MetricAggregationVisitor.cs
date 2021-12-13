@@ -69,7 +69,7 @@ namespace K2Bridge.Visitors
             /// Median is Percentile(fieldName, 50)
             percentileAggregation.KustoQL = string.Empty;
 
-            var valuesForColumnNames = string.Join('%', percentileAggregation.Percents.ToList().Select(item => string.Format("{0:0.0}", item)));
+            var valuesForColumnNames = string.Join('%', percentileAggregation.Percents.ToList().Select(item => $"{item:0.0}"));
             var valuesForOperator = string.Join(',', percentileAggregation.Percents);
 
             // Example: ['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)']

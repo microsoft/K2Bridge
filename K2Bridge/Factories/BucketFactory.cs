@@ -65,18 +65,21 @@ namespace K2Bridge.Factories
                     // extract the boolean: last item of the pattern elements array
                     var keyed = bool.Parse(columnNameInfo[^1]);
 
-                    if (metric == "percentile")
+                    if (metric != "percentile")
+                    {
+                        continue;
+                    }
+                    else
                     {
                         dhb.Aggs[key] = new Dictionary<string, object>();
                         var returnValues = new Dictionary<string, double>();
 
                         var percentileValues = (JArray)row[clmn.ColumnName];
 
-                        for (var index = 0; index < queryValues.Length; index++)
+                        foreach (var (name, value) in queryValues.Zip(percentileValues))
                         {
-                            var name = queryValues[index];
-                            var value = percentileValues[index].ToString();
-                            returnValues.Add(name, double.Parse(value, CultureInfo.InvariantCulture));
+                            logger.LogTrace("Adding Percentile {name}:{value}", name, value);
+                            returnValues.Add(name, double.Parse(value.ToString(), CultureInfo.InvariantCulture));
                         }
 
                         if (keyed)
@@ -86,7 +89,7 @@ namespace K2Bridge.Factories
                         }
                         else
                         {
-                            // not keyed ====> List<object(double,double)>
+                            // not keyed ====> List<KeyValuePair<double,double>>
                             dhb.Aggs[key].Add("values", returnValues.ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value).ToList());
                         }
                     }
@@ -97,7 +100,7 @@ namespace K2Bridge.Factories
                     logger.LogTrace("Defining the value for {columnName}", columnName);
 
                     dhb.Aggs[columnName] = new Dictionary<string, object>() {
-                        { "value", Convert.ToDouble(row[columnName]) },
+                        { "value", double.Parse(row[columnName].ToString(), CultureInfo.InvariantCulture) },
                     };
                 }
             }
