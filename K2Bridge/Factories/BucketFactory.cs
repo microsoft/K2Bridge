@@ -124,6 +124,8 @@ namespace K2Bridge.Factories
                 Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
             };
 
+            // TODO: refactor the columns handling based on the Percentiles code.
+            // See: workitem 15724
             var clmns = row.Table.Columns;
             foreach (DataColumn clmn in clmns)
             {
