@@ -58,7 +58,9 @@ namespace K2Bridge.Factories
                     // key%metric%value1%value2%keyed
                     var key = columnNameInfo[0];
                     var metric = columnNameInfo[1];
+                    // extract the percentiles values: from the second to the last-1
                     var queryValues = columnNameInfo[2..^1];
+                    // extract the boolean: last item of the pattern elements array
                     var keyed = bool.Parse(columnNameInfo[^1]);
 
                     if (metric == "percentile")
@@ -106,7 +108,7 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>
         /// <returns>A new TermsBucket.</returns>
-        public static TermsBucket CreateTermsBucketFromDataRow(DataRow row)
+        public static TermsBucket CreateTermsBucketFromDataRow(DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -128,7 +130,10 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                tb.Aggs[clmn.ColumnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[clmn.ColumnName]) };
+                var columnName = clmn.ColumnName;
+                logger.LogTrace("Defining the value for {columnName}", columnName);
+
+                tb.Aggs[columnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[columnName]) };
             }
 
             return tb;
