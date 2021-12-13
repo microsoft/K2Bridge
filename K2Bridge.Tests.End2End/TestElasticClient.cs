@@ -180,8 +180,9 @@ namespace K2Bridge.Tests.End2End
         /// API operation for field capabilities search.
         /// </summary>
         /// <param name="indexName">Index name to query.</param>
+        /// <param name="removeDynamicColumns">Remove dynamic columns, used for comparisons where one side doesn't generate dynamic columns.</param>
         /// <returns><c>JToken</c> with parsed response.</returns>
-        public async Task<JToken> FieldCaps(string indexName)
+        public async Task<JToken> FieldCaps(string indexName, bool removeDynamicColumns = true)
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, $"/{indexName}/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false");
             var result = await JsonQuery(request);
@@ -192,11 +193,17 @@ namespace K2Bridge.Tests.End2End
             // Remove extra fields returned by Elasticsearch (prefixed by _)
             JObject fields = (JObject)result.SelectToken($"$.fields");
             var removes = new List<string>();
-            foreach (var field in fields)
+            foreach (var (name, _) in fields)
             {
-                if (field.Key.StartsWith("_", StringComparison.OrdinalIgnoreCase))
+                if (name.StartsWith("_", StringComparison.OrdinalIgnoreCase))
                 {
-                    removes.Add(field.Key);
+                    removes.Add(name);
+                }
+
+                // Remove all dynamic fields, since for this elastic doesn't create them so they shouldn't be compared.
+                if (removeDynamicColumns && name.Contains('.', StringComparison.OrdinalIgnoreCase))
+                {
+                    removes.Add(name);
                 }
             }
 

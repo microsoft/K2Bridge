@@ -89,7 +89,7 @@ namespace K2Bridge.Tests.End2End
         [Description("FieldCaps returns fields for all types as expected")]
         public async Task FieldCaps_WithAllTypes_ReturnsTypesConvertedToESTypes()
         {
-            var fieldCaps = await K2Client().FieldCaps(typesIndexFullName);
+            var fieldCaps = await K2Client().FieldCaps(typesIndexFullName, removeDynamicColumns: false);
             var expected = JObject.Parse($@"{{
               ""indices"": [
                 ""{typesIndexFullName.Split(':')[1]}""
@@ -163,6 +163,20 @@ namespace K2Bridge.Tests.End2End
                     ""aggregatable"": true,
                     ""searchable"": true,
                     ""type"": ""object""
+                  }}
+                }},
+                ""Dynamic.a"": {{
+                  ""long"": {{
+                    ""aggregatable"": true,
+                    ""searchable"": true,
+                    ""type"": ""long""
+                  }}
+                }},
+                ""Dynamic.b"": {{
+                  ""keyword"": {{
+                    ""aggregatable"": true,
+                    ""searchable"": true,
+                    ""type"": ""keyword""
                   }}
                 }},
               }}

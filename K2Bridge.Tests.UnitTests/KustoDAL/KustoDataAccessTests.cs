@@ -8,6 +8,7 @@ namespace UnitTests.K2Bridge.KustoDAL
     using System.Collections.Generic;
     using System.Data;
     using System.Threading.Tasks;
+    using FluentAssertions;
     using FluentAssertions.Json;
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
@@ -72,6 +73,17 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(testReader));
 
+            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                new Dictionary<string, object>() {
+                    { "result", JToken.Parse(@"{""a"": ""int"", ""b"": ""string"", ""c"": {""d"": {""e"": ""string""}}}") },
+                },
+            });
+
+            // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
+            var calls = new List<QueryData>();
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
+
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var response = await kusto.GetFieldCapsAsync("testIndexName");
 
@@ -130,6 +142,41 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""type"": ""object""
                         }
                       },
+                      ""mydynamic.a"": {
+                        ""integer"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""integer""
+                        }
+                      },
+                      ""mydynamic.b"": {
+                        ""keyword"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""keyword""
+                        }
+                      },
+                      ""mydynamic.c"": {
+                        ""object"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""object""
+                        }
+                      },
+                      ""mydynamic.c.d"": {
+                        ""object"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""object""
+                        }
+                      },
+                      ""mydynamic.c.d.e"": {
+                        ""keyword"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""keyword""
+                        }
+                      },
                       ""myguid"": {
                         ""string"": {
                           ""aggregatable"": true,
@@ -154,6 +201,171 @@ namespace UnitTests.K2Bridge.KustoDAL
                     }
                   }
                   "));
+
+            calls[0].QueryCommandText.Should().Be("testIndexName | summarize buildschema(mydynamic)");
+        }
+
+        [Test]
+        public async Task GetFieldCaps_WithDynamicColumnArray_ReturnFieldCaps()
+        {
+            Func<string, string, Dictionary<string, object>> column = (name, type) =>
+                new Dictionary<string, object> {
+                    { "ColumnName", name },
+                    { "ColumnType", type },
+                };
+
+            var testData = new List<Dictionary<string, object>>() {
+                column("myint", "System.Int32"),
+                column("nested_dynamic", "System.Object"),
+                column("dynamic_top_level_string", "System.Object"),
+                column("dynamic_top_level_indexer", "System.Object"),
+                column("dynamic_top_level_array", "System.Object"),
+            };
+            using IDataReader testReader = new DataReaderMock(testData);
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult(testReader));
+
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>()))
+                .Returns((QueryData query, RequestContext context) =>
+                {
+                    string response;
+                    if (query.QueryCommandText.Contains("nested_dynamic"))
+                    {
+                        response = "{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}";
+                    }
+                    else if (query.QueryCommandText.Contains("dynamic_top_level_string"))
+                    {
+                        response = "\"string\"";
+                    }
+                    else if (query.QueryCommandText.Contains("dynamic_top_level_indexer"))
+                    {
+                        response = "{\"`indexer`\": \"int\"}";
+                    }
+                    else
+                    {
+                        response = "[\"int\", \"string\"]";
+                    }
+
+                    IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                        new Dictionary<string, object>() {
+                            { "result", JToken.Parse(response) },
+                        },
+                    });
+
+                    return Task.FromResult((TimeSpan.Zero, dynamicResultReader));
+                });
+
+            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+            var response = await kusto.GetFieldCapsAsync("testIndexName");
+
+            JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"{
+                      ""indices"": [
+                        ""testIndexName""
+                      ],
+                      ""fields"": {
+                        ""myint"": {
+                          ""integer"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""integer""
+                          }
+                        },
+                        ""nested_dynamic"": {
+                          ""object"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""object""
+                          }
+                        },
+                        ""nested_dynamic.a"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        },
+                        ""nested_dynamic.b"": {
+                          ""integer"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""integer""
+                          }
+                        },
+                        ""nested_dynamic.c"": {
+                          ""object"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""object""
+                          }
+                        },
+                        ""nested_dynamic.c.d"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        },
+                        ""dynamic_top_level_string"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        },
+                        ""dynamic_top_level_indexer"": {
+                          ""integer"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""integer""
+                          }
+                        },
+                        ""dynamic_top_level_array"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        }
+                      }
+                    }
+                  "));
+        }
+
+        [Test]
+        public async Task GetFieldCaps_WithPercentage_ReturnCorrectQuery()
+        {
+            const double percentage = 30.5;
+            Func<string, string, Dictionary<string, object>> column = (name, type) =>
+                new Dictionary<string, object> {
+                    { "ColumnName", name },
+                    { "ColumnType", type },
+                };
+
+            var testData = new List<Dictionary<string, object>>() {
+                column("myint", "System.Int32"),
+                column("mydynamic", "System.Object"),
+            };
+            using IDataReader testReader = new DataReaderMock(testData);
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult(testReader));
+
+            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                new Dictionary<string, object>() {
+                    { "result", JToken.Parse("{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}") },
+                },
+            });
+
+            // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
+            var calls = new List<QueryData>();
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
+
+            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, percentage);
+            await kusto.GetFieldCapsAsync("testIndexName");
+
+            calls[0].QueryCommandText.Should().Be(@"let percentage = 30.5 / 100.0;
+let table_count = toscalar(testIndexName | count);
+testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize buildschema(mydynamic)");
         }
 
         [Test]
@@ -178,8 +390,8 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             mockQueryExecutor.Verify(exec => exec.ExecuteQueryAsync(
                 It.Is<QueryData>(d =>
-                d.IndexName == "testIndexName"
-                && d.QueryCommandText == "testIndexName | getschema | project ColumnName, ColumnType=DataType"), It.IsAny<RequestContext>()));
+                    d.IndexName == "testIndexName"
+                    && d.QueryCommandText == "testIndexName | getschema | project ColumnName, ColumnType=DataType"), It.IsAny<RequestContext>()));
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {
@@ -216,7 +428,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                     },
                 });
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-            It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
+                    It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync("testIndex");
@@ -246,7 +458,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                     },
                 });
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
+                    It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync("testIndex");
@@ -281,10 +493,10 @@ namespace UnitTests.K2Bridge.KustoDAL
                     },
                 });
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
+                    It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader1));
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
+                    It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader2));
 
             var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
