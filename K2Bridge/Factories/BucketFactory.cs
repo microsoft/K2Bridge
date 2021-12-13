@@ -58,8 +58,10 @@ namespace K2Bridge.Factories
                     // key%metric%value1%value2%keyed
                     var key = columnNameInfo[0];
                     var metric = columnNameInfo[1];
+
                     // extract the percentiles values: from the second to the last-1
                     var queryValues = columnNameInfo[2..^1];
+
                     // extract the boolean: last item of the pattern elements array
                     var keyed = bool.Parse(columnNameInfo[^1]);
 
