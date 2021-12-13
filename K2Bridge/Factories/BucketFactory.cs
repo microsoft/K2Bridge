@@ -7,6 +7,7 @@ namespace K2Bridge.Factories
     using System;
     using System.Data;
     using System.Globalization;
+    using System.Linq;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
 
@@ -87,26 +88,18 @@ namespace K2Bridge.Factories
             }
 
             // Parse the range
-            string[] splitRange = range.Split('-');
-            double? from = string.IsNullOrEmpty(splitRange[0]) ? null : double.Parse(splitRange[0]);
-            double? to = string.IsNullOrEmpty(splitRange[1]) ? null : double.Parse(splitRange[1]);
+            var splitRange = range
+                            .Split('-')
+                            .Select(s => string.IsNullOrEmpty(s) ? (double?)null : double.Parse(s))
+                            .ToArray();
+            var from = splitRange[0];
+            var to = splitRange[1];
 
             // Assemble the key
             // An empty limit becomes "*"
             // An integer limit is suffixed with ".0"
-            string fromKey, toKey;
-
-            fromKey = from?.ToString() switch
-            {
-                null => "*",
-                _ => from % 1 == 0 ? from.ToString() + ".0" : from.ToString(),
-            };
-
-            toKey = to?.ToString() switch
-            {
-                null => "*",
-                _ => to % 1 == 0 ? to.ToString() + ".0" : to.ToString(),
-            };
+            var fromKey = from?.ToString("0.0##########", CultureInfo.InvariantCulture) ?? "*";
+            var toKey = to?.ToString("0.0##########", CultureInfo.InvariantCulture) ?? "*";
 
             string key = $"{fromKey}-{toKey}";
 

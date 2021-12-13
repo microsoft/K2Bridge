@@ -178,14 +178,14 @@ namespace K2Bridge.KustoDAL
                 switch (query.PrimaryAggregation)
                 {
                     case nameof(Models.Request.Aggregations.RangeAggregation):
-                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateRangeBucketFromDataRow(row);
+                        createBucketFromDataRow = BucketFactory.CreateRangeBucketFromDataRow;
                         response.SetAggregationKeyed(true);
                         break;
                     case nameof(Models.Request.Aggregations.TermsAggregation):
-                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateTermsBucketFromDataRow(row);
+                        createBucketFromDataRow = BucketFactory.CreateTermsBucketFromDataRow;
                         break;
                     case nameof(Models.Request.Aggregations.DateHistogramAggregation):
-                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateDateHistogramBucketFromDataRow(row);
+                        createBucketFromDataRow = BucketFactory.CreateDateHistogramBucketFromDataRow;
                         break;
                 }
 
