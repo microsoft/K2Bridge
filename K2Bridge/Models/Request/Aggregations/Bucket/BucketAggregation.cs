@@ -12,8 +12,8 @@ namespace K2Bridge.Models.Request.Aggregations
         public string Metric { get; set; } = "count()";
 
         /// <summary>
-        /// Gets or sets the translation of the query.
+        /// Gets or sets the metrics part of the query, assembled by the sub aggregations.
         /// </summary>
-        public string MetricsKustoQL { get; set; }
+        public string SubAggregationsKustoQL { get; set; }
     }
 }

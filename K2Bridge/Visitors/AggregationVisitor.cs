@@ -33,7 +33,7 @@ namespace K2Bridge.Visitors
                     if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
                     {
                         // Store the metrics snippet in the bucket aggregation
-                        bucketAggregation.MetricsKustoQL += $"{subAgg.KustoQL}, ";
+                        bucketAggregation.SubAggregationsKustoQL += $"{subAgg.KustoQL}, ";
                     }
                 }
             }

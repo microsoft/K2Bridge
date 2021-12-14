@@ -19,7 +19,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Metric, nameof(TermsAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Field, nameof(TermsAggregation.Field));
 
-            termsAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + termsAggregation.MetricsKustoQL + $"{termsAggregation.Metric} by ['{termsAggregation.Key}'] = {termsAggregation.Field}";
+            termsAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + termsAggregation.SubAggregationsKustoQL + $"{termsAggregation.Metric} by ['{termsAggregation.Key}'] = {termsAggregation.Field}";
 
             if (termsAggregation.Order.SortField == "_key")
             {
