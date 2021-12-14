@@ -26,8 +26,8 @@ namespace UnitTests.K2Bridge.Visitors
                 Field = "dayOfWeek",
                 Key = "key",
                 Ranges = new List<RangeAggregationExpression>() {
-                    new RangeAggregationExpression { From = from1, To = to1 },
-                    new RangeAggregationExpression { From = from2, To = to2 },
+                    new RangeAggregationExpression { Field = "dayOfWeek", From = from1, To = to1 },
+                    new RangeAggregationExpression { Field = "dayOfWeek", From = from2, To = to2 },
                 },
             };
 
@@ -47,7 +47,7 @@ namespace UnitTests.K2Bridge.Visitors
                 Field = "dayOfWeek",
                 Key = "key",
                 Ranges = new List<RangeAggregationExpression>() {
-                    new RangeAggregationExpression { From = null, To = null },
+                    new RangeAggregationExpression { Field = "dayOfWeek", From = null, To = null },
                 },
             };
 

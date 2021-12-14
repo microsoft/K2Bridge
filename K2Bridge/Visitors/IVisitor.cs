@@ -110,6 +110,12 @@ namespace K2Bridge.Visitors
         void Visit(SumAggregation sumAggregation);
 
         /// <summary>
+        /// Accepts a range expression, and builds the Kusto query.
+        /// </summary>
+        /// <param name="rangeAggregationExpression">The range aggregation expression.</param>
+        void Visit(RangeAggregationExpression rangeAggregationExpression);
+
+        /// <summary>
         /// Accepts a query string clause, parses the phrase to a lucene query, and builds a Kusto query based on the lucene query.
         /// </summary>
         /// <param name="queryStringClause">The query string clause.</param>
