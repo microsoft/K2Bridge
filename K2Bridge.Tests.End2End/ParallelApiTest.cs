@@ -219,28 +219,26 @@ namespace K2Bridge.Tests.End2End
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Terms_OrderCustom.json");
         }
 
-        /*
         [Test]
         [Description("/_msearch visualization query with date histogram and percentiles")]
         public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentiles_ResponsesAreEquivalent()
         {
-            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentiles.json");
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentiles.json");
         }
 
         [Test]
         [Description("/_msearch visualization query with date histogram and median")]
         public void CompareElasticKusto_WhenMSearchVizDateHistogramMedian_ResponsesAreEquivalent()
         {
-            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Median.json");
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Median.json");
         }
 
         [Test]
         [Description("/_msearch visualization query with date histogram and median")]
         public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentile_ResponsesAreEquivalent()
         {
-            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentile.json");
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentile.json");
         }
-        */
 
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
@@ -254,6 +252,20 @@ namespace K2Bridge.Tests.End2End
             var t = es.Result.SelectToken("responses[0].hits.total.value");
             Assert.IsTrue(t.Value<int>() >= minResults);
             AssertJsonIdentical(k2.Result, es.Result);
+        }
+
+        private static void AssertJsonApproximate(JToken k2, JToken es)
+        {
+            k2.Should().BeInRange(es * 0.95, es * 1.05);
+        }
+
+        private void ApproximateParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true)
+        {
+            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight);
+            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight);
+            var t = es.Result.SelectToken("responses[0].hits.total.value");
+            Assert.IsTrue(t.Value<int>() >= minResults);
+            AssertJsonApproximate(k2.Result, es.Result);
         }
     }
 }
