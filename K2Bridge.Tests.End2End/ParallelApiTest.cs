@@ -254,18 +254,17 @@ namespace K2Bridge.Tests.End2End
             AssertJsonIdentical(k2.Result, es.Result);
         }
 
-        private static void AssertJsonApproximate(JToken k2, JToken es)
-        {
-            k2.Should().BeInRange(es * 0.95, es * 1.05);
-        }
-
+        // When comparing the Percentiles Payloads, we need to omit the values due to ticket #15795.
         private void ApproximateParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true)
         {
             var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight);
+            TestElasticClient.DeleteValuesToComparePercentiles(es.Result);
             var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight);
+            TestElasticClient.DeleteValuesToComparePercentiles(k2.Result);
+
             var t = es.Result.SelectToken("responses[0].hits.total.value");
             Assert.IsTrue(t.Value<int>() >= minResults);
-            AssertJsonApproximate(k2.Result, es.Result);
+            AssertJsonIdentical(k2.Result, es.Result);
         }
     }
 }
