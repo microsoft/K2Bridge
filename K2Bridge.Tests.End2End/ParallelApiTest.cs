@@ -219,6 +219,7 @@ namespace K2Bridge.Tests.End2End
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Terms_OrderCustom.json");
         }
 
+        /*
         [Test]
         [Description("/_msearch visualization query with date histogram and percentiles")]
         public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentiles_ResponsesAreEquivalent()
@@ -239,6 +240,7 @@ namespace K2Bridge.Tests.End2End
         {
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentile.json");
         }
+        */
 
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
