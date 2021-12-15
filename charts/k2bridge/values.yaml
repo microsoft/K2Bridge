@@ -9,7 +9,7 @@ replicaCount: 2
 
 image:
   repository: mcr.microsoft.com/azuredataexplorer/k2bridge
-  tag: 6.8_latest
+  tag: 7.10_latest
   pullPolicy: Always
 
 settings:
