@@ -5,7 +5,7 @@
 | Replica Count                                   | replicaCount                    |                       2                      |     V    |                                                                     |
 | Private container registry                      | privateRegistry                 |                     NONE                     |     V    | Set the K8S secret to a private ACR                                 |
 | Repository                                      | image.repository                | mcr.microsoft.com/azuredataexplorer/k2bridge |     V    | ACR and image name                                                  |
-| Image tag                                       | image.tag                       |                    latest                    |     V    |                                                                     |
+| Image tag                                       | image.tag                       |                  7.10_latest                  |     V    |                                                                     |
 | Image pull policy                               | image.pullPolicy                |                    Always                    |     V    |                                                                     |
 | K2 listener address                             | settings.bridgeListenerAddress  |              http://k2bridge:80/             |     V    | Leave as default for most use cases                                 |
 | Internal ES instance address                    | settings.metadataElasticAddress |         http://k2bridgees-master:9200        |     V    | Leave as default for most use cases                                 |
