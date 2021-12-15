@@ -26,7 +26,7 @@ name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
 variables:
 - group: K2Bridge CI-CD - dev
 - name: MAJOR_MINOR_VERSION
-  value: "0.3" # ONLY UPDATE THIS
+  value: "0.4" # ONLY UPDATE THIS
 - name: SEMANTIC_VERSION
   value: "$(MAJOR_MINOR_VERSION).$(Build.BuildId)"
 - name: KUSTO_DB
@@ -35,6 +35,8 @@ variables:
   value: false
 - name: TELEMETRY_KEY
   value: "00000000-0000-0000-0000-000000000000"
+- name: k2Tag
+  value: 7.10_latest
 
 pool:
   vmImage: ubuntu-latest
