@@ -104,6 +104,12 @@ namespace K2Bridge.Visitors
         void Visit(SumAggregation sumAggregation);
 
         /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="PercentileAggregation">The Percentile Aggregation to visit.</param>
+        void Visit(PercentileAggregation percentileAggregation);
+
+        /// <summary>
         /// Accepts a query string clause, parses the phrase to a lucene query, and builds a Kusto query based on the lucene query.
         /// </summary>
         /// <param name="queryStringClause">The query string clause.</param>

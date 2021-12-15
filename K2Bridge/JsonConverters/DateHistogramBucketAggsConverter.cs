@@ -31,21 +31,7 @@ namespace K2Bridge.JsonConverters
             foreach (var agg in aggs.Keys)
             {
                 writer.WritePropertyName(agg);
-
-                writer.WriteStartObject();
-                if (aggs[agg].Count > 1)
-                {
-                    writer.WritePropertyName("values");
-                    serializer.Serialize(writer, aggs[agg]);
-                }
-                else
-                {
-                    writer.WritePropertyName("value");
-                    var item = aggs[agg][0];
-                    serializer.Serialize(writer, item);
-                }
-
-                writer.WriteEndObject();
+                serializer.Serialize(writer, aggs[agg]);
             }
 
             writer.WriteEndObject();
