@@ -11,6 +11,9 @@
 # - RUN_CREATE_DEMO_KUSTO: Set to 1 to cause the ADX db creation. this is for
 #   just for the demo ADX db and should be set only once after a deletion of
 #   that DB (which shouldn't normally happen)
+variables:
+  k2Tag: 7.10_latest
+
 stages:
 
 - stage: build
@@ -417,7 +420,7 @@ stages:
     steps:
 
     - task: AzureCLI@1
-      displayName: Tag Docker image as 7.10_latest
+      displayName: Tag Docker image as $(k2Tag)
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -428,11 +431,11 @@ stages:
           docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_NAME.azurecr.io/k2bridge:7.10_latest"
-          docker push "$ACR_NAME.azurecr.io/k2bridge:7.10_latest"
+            "$ACR_NAME.azurecr.io/k2bridge:$k2Tag"
+          docker push "$ACR_NAME.azurecr.io/k2bridge:$k2Tag"
 
     - task: AzureCLI@1
-      displayName: Tag Docker image as 7.10_latest for MCR
+      displayName: Tag Docker image as $(k2Tag) for MCR
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -443,8 +446,8 @@ stages:
           docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:7.10_latest"
-          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:7.10_latest"
+            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$k2Tag"
+          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$k2Tag"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
             "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$SEMANTIC_VERSION"
