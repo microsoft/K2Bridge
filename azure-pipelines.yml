@@ -11,9 +11,6 @@
 # - RUN_CREATE_DEMO_KUSTO: Set to 1 to cause the ADX db creation. this is for
 #   just for the demo ADX db and should be set only once after a deletion of
 #   that DB (which shouldn't normally happen)
-variables:
-  k2Tag: 7.10_latest
-
 stages:
 
 - stage: build
