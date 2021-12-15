@@ -233,6 +233,26 @@ namespace K2Bridge.Tests.End2End
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Range_Overlapping.json");
         }
 
+        [Description("/_msearch visualization query with date histogram and percentiles")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentiles_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentiles.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with date histogram and median")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramMedian_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Median.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with date histogram and median")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentile_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentile.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);
@@ -242,6 +262,19 @@ namespace K2Bridge.Tests.End2End
         {
             var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight);
             var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight);
+            var t = es.Result.SelectToken("responses[0].hits.total.value");
+            Assert.IsTrue(t.Value<int>() >= minResults);
+            AssertJsonIdentical(k2.Result, es.Result);
+        }
+
+        // When comparing the Percentiles Payloads, we need to omit the values due to ticket #15795.
+        private void ApproximateParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true)
+        {
+            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight);
+            TestElasticClient.DeleteValuesToComparePercentiles(es.Result);
+            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight);
+            TestElasticClient.DeleteValuesToComparePercentiles(k2.Result);
+
             var t = es.Result.SelectToken("responses[0].hits.total.value");
             Assert.IsTrue(t.Value<int>() >= minResults);
             AssertJsonIdentical(k2.Result, es.Result);

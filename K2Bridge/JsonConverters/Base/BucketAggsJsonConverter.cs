@@ -13,26 +13,12 @@ namespace K2Bridge.JsonConverters.Base
     /// </summary>
     internal abstract class BucketAggsJsonConverter : WriteOnlyJsonConverter
     {
-        public void WriteAggregations(JsonWriter writer, Dictionary<string, List<double>> aggs, JsonSerializer serializer)
+        public void WriteAggregations(JsonWriter writer, Dictionary<string, Dictionary<string, object>> aggs, JsonSerializer serializer)
         {
             foreach (var agg in aggs.Keys)
             {
                 writer.WritePropertyName(agg);
-
-                writer.WriteStartObject();
-                if (aggs[agg].Count > 1)
-                {
-                    writer.WritePropertyName("values");
-                    serializer.Serialize(writer, aggs[agg]);
-                }
-                else
-                {
-                    writer.WritePropertyName("value");
-                    var item = aggs[agg][0];
-                    serializer.Serialize(writer, item);
-                }
-
-                writer.WriteEndObject();
+                serializer.Serialize(writer, aggs[agg]);
             }
         }
     }

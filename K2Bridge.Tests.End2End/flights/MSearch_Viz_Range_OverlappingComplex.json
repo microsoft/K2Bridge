@@ -1,0 +1,71 @@
+{
+    "aggs": {
+        "2": {
+            "range": {
+                "field": "DistanceKilometers",
+                "ranges": [
+                    {
+                        "from": 0,
+                        "to": 20000
+                    },
+                    {
+                        "from": 5000,
+                        "to": 15000
+                    },
+                    {
+                        "from": 7500,
+                        "to": 12500
+                    }
+                ],
+                "keyed": true
+            },
+            "aggs": {
+                "3": {
+                    "avg": {
+                        "field": "AvgTicketPrice"
+                    }
+                },
+                "4": {
+                    "max": {
+                        "field": "FlightDelayMin"
+                    }
+                }
+            }
+        }
+    },
+    "size": 0,
+    "stored_fields": [
+        "*"
+    ],
+    "script_fields": {},
+    "docvalue_fields": [
+        {
+            "field": "timestamp",
+            "format": "date_time"
+        }
+    ],
+    "_source": {
+        "excludes": []
+    },
+    "query": {
+        "bool": {
+            "must": [],
+            "filter": [
+                {
+                    "match_all": {}
+                },
+                {
+                    "range": {
+                        "timestamp": {
+                            "gte": "2018-02-01T11:00:00.000Z",
+                            "lte": "2018-02-10T11:00:00.000Z",
+                            "format": "strict_date_optional_time"
+                        }
+                    }
+                }
+            ],
+            "should": [],
+            "must_not": []
+        }
+    }
+}

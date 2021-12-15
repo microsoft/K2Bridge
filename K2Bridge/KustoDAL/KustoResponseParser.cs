@@ -174,7 +174,7 @@ namespace K2Bridge.KustoDAL
                 response.AddParentToAgg(parent);
 
                 // Determine how to create the buckets based on the aggregation type
-                Func<DataRow, Bucket> createBucketFromDataRow = null;
+                Func<DataRow, ILogger, Bucket> createBucketFromDataRow = null;
                 switch (query.PrimaryAggregation)
                 {
                     case nameof(Models.Request.Aggregations.RangeAggregation):
@@ -194,7 +194,7 @@ namespace K2Bridge.KustoDAL
                 {
                     foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                     {
-                        Bucket bucket = createBucketFromDataRow(row);
+                        Bucket bucket = createBucketFromDataRow(row, Logger);
                         if (bucket != null)
                         {
                             response.AddBucketToAggregation(bucket);

@@ -104,6 +104,43 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string PercentileAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""percentiles"": {
+                        ""field"": ""metric"",
+                        ""percents"": [
+                            50
+                        ]
+                    }
+                }
+            }}";
+
+        private const string PercentilesAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""percentiles"": {
+                        ""field"": ""metric"",
+                        ""percents"": [
+                            1, 50, 90, 95
+                        ]
+                    }
+                }
+            }}";
+
+        private const string PercentilesKeyedAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""percentiles"": {
+                        ""field"": ""metric"",
+                        ""keyed"": ""true"",
+                        ""percents"": [
+                            1, 50, 90, 95
+                        ]
+                    }
+                }
+            }}";
+
         private const string NoAggAggregation = @"
             {""aggs"": { 
                 ""2"": {
@@ -285,6 +322,61 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
+        private static readonly AggregationContainer ExpectedValidPercentileAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer()
+                {
+                    PrimaryAggregation = new PercentileAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                        Percents = new double[] { 50 },
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
+        private static readonly AggregationContainer ExpectedValidPercentilesAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer()
+                {
+                    PrimaryAggregation = new PercentileAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                        Percents = new double[] { 1, 50, 90, 95 },
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
+        private static readonly AggregationContainer ExpectedValidPercentilesKeyedAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer()
+                {
+                    PrimaryAggregation = new PercentileAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                        Keyed = true,
+                        Percents = new double[] { 1, 50, 90, 95 },
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
         private static readonly AggregationContainer ExpectedNoAggAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
@@ -308,6 +400,9 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(MinAggregation, ExpectedValidMinAggregation).SetName("JsonDeserializeObject_WithAggregationValidMin_DeserializedCorrectly"),
             new TestCaseData(MaxAggregation, ExpectedValidMaxAggregation).SetName("JsonDeserializeObject_WithAggregationValidMax_DeserializedCorrectly"),
             new TestCaseData(SumAggregation, ExpectedValidSumAggregation).SetName("JsonDeserializeObject_WithAggregationValidSum_DeserializedCorrectly"),
+            new TestCaseData(PercentileAggregation, ExpectedValidPercentileAggregation).SetName("JsonDeserializeObject_WithAggregationValidPercentile_DeserializedCorrectly"),
+            new TestCaseData(PercentilesAggregation, ExpectedValidPercentilesAggregation).SetName("JsonDeserializeObject_WithAggregationValidPercentiles_DeserializedCorrectly"),
+            new TestCaseData(PercentilesKeyedAggregation, ExpectedValidPercentilesKeyedAggregation).SetName("JsonDeserializeObject_WithAggregationValidPercentiles_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
 

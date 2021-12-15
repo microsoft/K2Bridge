@@ -4,6 +4,7 @@
 
 namespace UnitTests.K2Bridge.JsonConverters
 {
+    using System.Collections.Generic;
     using global::K2Bridge.Models.Response;
     using NUnit.Framework;
 
@@ -59,7 +60,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 To = to,
                 DocCount = 502,
                 Key = key,
-                Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
+                Aggs = new Dictionary<string, Dictionary<string, object>>(),
             };
 
             ((RangeBucket)validRangeBucket).AssertJson(expectedJSON);

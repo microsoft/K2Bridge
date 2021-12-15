@@ -56,6 +56,32 @@ namespace K2Bridge.Tests.End2End
         }
 
         /// <summary>
+        /// When comparing the Percentiles Payloads, we need to omit the values due to ticket #15795.
+        /// </summary>
+        /// <param name="parent">JSON element at which to start search.</param>
+        public static void DeleteValuesToComparePercentiles(JToken parent)
+        {
+            var tokens = parent.SelectTokens("responses[*].aggregations..buckets..value");
+            foreach (JValue v in tokens)
+            {
+                if (v.Type == JTokenType.String)
+                {
+                    v.Value = "0";
+                }
+            }
+
+            tokens = parent.SelectTokens("responses[*].aggregations..buckets..values");
+            foreach (JToken v in tokens)
+            {
+                // Median percentile KeyValuePair has "50.0" as Key
+                if (v.Type == JTokenType.Object)
+                {
+                    v["50.0"] = 0;
+                }
+            }
+        }
+
+        /// <summary>
         /// Queries the backend and parses the result as JSON.
         /// </summary>
         /// <param name="request">Request to backend.</param>

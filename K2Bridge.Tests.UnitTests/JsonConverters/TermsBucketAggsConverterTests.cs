@@ -4,6 +4,7 @@
 
 namespace UnitTests.K2Bridge.JsonConverters
 {
+    using System.Collections.Generic;
     using global::K2Bridge.Models.Response;
     using global::K2Bridge.Models.Response.Metadata;
     using NUnit.Framework;
@@ -20,7 +21,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         {
             DocCount = 502,
             Key = "IT",
-            Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
+            Aggs = new Dictionary<string, Dictionary<string, object>>(),
         };
 
         private static readonly object[] FieldCapsTestCases = {
