@@ -79,7 +79,7 @@ namespace K2Bridge.Factories
                         foreach (var (name, value) in queryValues.Zip(percentileValues))
                         {
                             logger.LogTrace("Adding Percentile {name}:{value}", name, value);
-                            returnValues.Add(name, double.Parse(value.ToString(), CultureInfo.InvariantCulture));
+                            returnValues.Add(name, value.Value<double>());
                         }
 
                         if (keyed)
