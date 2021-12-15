@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Request.Queries
     /// Find documents based on string query.
     /// </summary>
     [JsonConverter(typeof(QueryStringClauseConverter))]
-    internal class QueryStringClause : KustoQLBase, ILeafClause, IVisitable
+    public class QueryStringClause : KustoQLBase, ILeafClause, IVisitable
     {
         /// <summary>
         /// Query subtype.
@@ -46,27 +46,27 @@ namespace K2Bridge.Models.Request.Queries
         /// These will be initially null when the object is created from a json payload,
         /// and will be populated by the visitor.
         /// </summary>
-        public Subtype? ParsedType { get; set; }
+        public Subtype? ParsedType { get; internal set; }
 
         /// <summary>
         /// Gets or sets field name to query.
         /// </summary>
-        public string ParsedFieldName { get; set; }
+        public string ParsedFieldName { get; internal set; }
 
         /// <summary>
         /// Gets or sets original properties of QueryStringClause.
         /// </summary>
-        public string Phrase { get; set; }
+        public string Phrase { get; internal set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether wildcard exists.
         /// </summary>
-        public bool Wildcard { get; set; }
+        public bool Wildcard { get; internal set; }
 
         /// <summary>
         /// Gets or sets default value.
         /// </summary>
-        public string Default { get; set; }
+        public string Default { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

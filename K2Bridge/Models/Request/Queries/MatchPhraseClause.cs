@@ -13,17 +13,17 @@ namespace K2Bridge.Models.Request.Queries
     /// Match phrase is looking for exact match of a phrase and the field value.
     /// </summary>
     [JsonConverter(typeof(MatchPhraseClauseConverter))]
-    internal class MatchPhraseClause : KustoQLBase, IVisitable, ILeafClause
+    public class MatchPhraseClause : KustoQLBase, IVisitable, ILeafClause
     {
         /// <summary>
         /// Gets or sets the field to match.
         /// </summary>
-        public string FieldName { get; set; }
+        public string FieldName { get; internal set; }
 
         /// <summary>
         /// Gets or sets the matching phrase.
         /// </summary>
-        public object Phrase { get; set; }
+        public object Phrase { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

@@ -11,7 +11,7 @@ namespace K2Bridge.Visitors
     /// <summary>
     /// IVisitor defines all the different visit methods overloads to handle all supported query types.
     /// </summary>
-    internal interface IVisitor
+    public interface IVisitor
     {
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.

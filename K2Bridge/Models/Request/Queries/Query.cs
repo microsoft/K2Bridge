@@ -11,19 +11,19 @@ namespace K2Bridge.Models.Request.Queries
     /// <summary>
     /// Full query to visit.
     /// </summary>
-    internal class Query : KustoQLBase, IVisitable
+    public class Query : KustoQLBase, IVisitable
     {
         /// <summary>
         /// Gets or sets bool query.
         /// </summary>
         [JsonProperty("bool")]
-        public BoolQuery Bool { get; set; }
+        public BoolQuery Bool { get; internal set; }
 
         /// <summary>
         /// Gets or sets the id with which to perform a ViewSingleDocument query.
         /// </summary>
         [JsonProperty("ids")]
-        public DocumentIds Ids { get; set; }
+        public DocumentIds Ids { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

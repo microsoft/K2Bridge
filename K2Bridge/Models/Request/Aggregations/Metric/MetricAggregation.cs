@@ -11,18 +11,18 @@ namespace K2Bridge.Models.Request.Aggregations
     /// that compute metrics based on values extracted from the documents that are being aggregated.
     /// The values are extracted from the fields of the document (using the field data).
     /// </summary>
-    internal abstract class MetricAggregation : Aggregation
+    public abstract class MetricAggregation : Aggregation
     {
         /// <summary>
         /// Gets or sets the field on which to aggregate.
         /// </summary>
         [JsonProperty("field")]
-        public string Field { get; set; }
+        public string Field { get; internal set; }
 
         /// <summary>
         /// Gets or sets the value to use when the aggregation finds a missing value in a document.
         /// </summary>
         [JsonProperty("missing")]
-        public double? Missing { get; set; }
+        public double? Missing { get; internal set; }
     }
 }

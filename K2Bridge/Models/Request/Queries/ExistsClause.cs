@@ -13,12 +13,12 @@ namespace K2Bridge.Models.Request.Queries
     /// Clause to retrieve documents that contain a value in a specified field.
     /// </summary>
     [JsonConverter(typeof(ExistsClauseConverter))]
-    internal class ExistsClause : KustoQLBase, ILeafClause, IVisitable
+    public class ExistsClause : KustoQLBase, ILeafClause, IVisitable
     {
         /// <summary>
         /// Gets or sets the exists FieldName.
         /// </summary>
-        public string FieldName { get; set; }
+        public string FieldName { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

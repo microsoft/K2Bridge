@@ -14,17 +14,17 @@ namespace K2Bridge.Models.Request.Aggregations
     /// Describes aggregation container element in an Elasticsearch query.
     /// </summary>
     [JsonConverter(typeof(AggregationContainerConverter))]
-    internal class AggregationContainer : KustoQLBase, IVisitable
+    public class AggregationContainer : KustoQLBase, IVisitable
     {
         /// <summary>
         /// Gets or sets primary/most relevant aggregation.
         /// </summary>
-        public Aggregation PrimaryAggregation { get; set; }
+        public Aggregation PrimaryAggregation { get; internal set; }
 
         /// <summary>
         /// Gets or sets sub aggregations.
         /// </summary>
-        public AggregationDictionary SubAggregations { get; set; }
+        public AggregationDictionary SubAggregations { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

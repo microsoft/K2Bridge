@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Request
     /// An interface for query class.
     /// </summary>
     [JsonConverter(typeof(IQueryConverter))]
-    internal interface IQuery
+    public interface IQuery
     {
     }
 }

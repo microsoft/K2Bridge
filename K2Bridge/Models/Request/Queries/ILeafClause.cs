@@ -12,8 +12,8 @@ namespace K2Bridge.Models.Request.Queries
     /// Leaf clause to visit.
     /// </summary>
     [JsonConverter(typeof(LeafClauseConverter))]
-    internal interface ILeafClause : IQuery
+    public interface ILeafClause : IQuery
     {
-        string KustoQL { get; set; }
+        string KustoQL { get; internal set; }
     }
 }

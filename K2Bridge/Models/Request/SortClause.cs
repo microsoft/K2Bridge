@@ -12,17 +12,17 @@ namespace K2Bridge.Models.Request
     /// Clause representing the requested order value in query.
     /// </summary>
     [JsonConverter(typeof(SortClauseConverter))]
-    internal class SortClause : KustoQLBase, IVisitable
+    public class SortClause : KustoQLBase, IVisitable
     {
         /// <summary>
         /// Gets or sets the field name to order by.
         /// </summary>
-        public string FieldName { get; set; }
+        public string FieldName { get; internal set; }
 
         /// <summary>
         /// Gets or sets the order value.
         /// </summary>
-        public string Order { get; set; }
+        public string Order { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

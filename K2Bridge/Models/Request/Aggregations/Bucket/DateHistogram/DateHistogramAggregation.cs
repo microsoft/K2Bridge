@@ -4,39 +4,38 @@
 
 namespace K2Bridge.Models.Request.Aggregations
 {
-    using K2Bridge.JsonConverters;
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     /// <summary>
     /// This multi-bucket aggregation is similar to the normal histogram, but it can only be used with date or date range values.
     /// </summary>
-    internal class DateHistogramAggregation : BucketAggregation
+    public class DateHistogramAggregation : BucketAggregation
     {
         /// <summary>
         /// Gets or sets the field to target.
         /// </summary>
         [JsonProperty("field")]
-        public string Field { get; set; }
+        public string Field { get; internal set; }
 
         /// <summary>
         /// Gets or sets the calendar interval to use when bucketing documents.
         /// </summary>
         [JsonProperty("calendar_interval")]
-        public string CalendarInterval { get; set; }
+        public string CalendarInterval { get; internal set; }
 
         /// <summary>
         /// Gets or sets the fixed interval to use when bucketing documents.
         /// </summary>
         [JsonProperty("fixed_interval")]
-        public string FixedInterval { get; set; }
+        public string FixedInterval { get; internal set; }
 
         /// <summary>
         /// Gets or sets the minimum number of documents that a bucket must contain to be returned in the response.
         /// The default is 0 meaning that buckets with no documents will be returned.
         /// </summary>
         [JsonProperty("min_doc_count")]
-        public int? MinimumDocumentCount { get; set; }
+        public int? MinimumDocumentCount { get; internal set; }
 
         /// <summary>
         /// Gets or sets the time zone.
@@ -45,7 +44,7 @@ namespace K2Bridge.Models.Request.Aggregations
         /// or as a timezone id, an identifier used in the TZ database like America/Los_Angeles.
         /// </summary>
         [JsonProperty("time_zone")]
-        public string TimeZone { get; set; }
+        public string TimeZone { get; internal set; }
 
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)

@@ -15,54 +15,54 @@ namespace K2Bridge.Models.Request
     /// the different properties of the elasticsearch query as deserialized from
     /// the json object sent from Kibana. This object will be sent for transformation.
     /// </summary>
-    internal class ElasticSearchDSL : KustoQLBase, IVisitable
+    public class ElasticSearchDSL : KustoQLBase, IVisitable
     {
         /// <summary>
         /// Gets or sets the query object.
         /// </summary>
         [JsonProperty("query")]
-        public Query Query { get; set; }
+        public Query Query { get; internal set; }
 
         /// <summary>
         /// Gets or sets the requested num of documents.
         /// </summary>
         [JsonProperty("size")]
-        public int Size { get; set; }
+        public int Size { get; internal set; }
 
         /// <summary>
         /// Gets or sets the query sorting value.
         /// </summary>
         [JsonProperty("sort")]
-        public List<SortClause> Sort { get; set; }
+        public List<SortClause> Sort { get; internal set; }
 
         /// <summary>
         /// Gets or sets the query aggregations value.
         /// </summary>
         [JsonProperty("aggs")]
-        public AggregationDictionary Aggregations { get; set; }
+        public AggregationDictionary Aggregations { get; internal set; }
 
         /// <summary>
         /// Gets or sets the doc value field.
         /// Which allows to return the doc value representation of a field for each hit.
         /// </summary>
         [JsonProperty("docvalue_fields")]
-        public List<DocValueField> DocValueFields { get; set; }
+        public List<DocValueField> DocValueFields { get; internal set; }
 
         /// <summary>
         /// Gets or sets the query highlight value.
         /// </summary>
         [JsonProperty("highlight")]
-        public Highlight Highlight { get; set; }
+        public Highlight Highlight { get; internal set; }
 
         /// <summary>
         /// Gets or sets the query highlight text value.
         /// </summary>
-        public Dictionary<string, string> HighlightText { get; set; }
+        public Dictionary<string, string> HighlightText { get; internal set; }
 
         /// <summary>
         /// Gets or sets the index name to query.
         /// </summary>
-        public string IndexName { get; set; }
+        public string IndexName { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

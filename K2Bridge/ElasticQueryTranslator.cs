@@ -114,7 +114,8 @@ namespace K2Bridge
                     sortFields,
                     docValueFields,
                     elasticSearchDsl.HighlightText,
-                    primaryAggregation);
+                    primaryAggregation,
+                    elasticSearchDsl.Aggregations);
 
                 if (elasticSearchDsl.Highlight != null)
                 {

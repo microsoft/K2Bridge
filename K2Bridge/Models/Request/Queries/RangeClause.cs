@@ -13,17 +13,17 @@ namespace K2Bridge.Models.Request.Queries
     /// Find documents by field and a range.
     /// </summary>
     [JsonConverter(typeof(RangeClauseConverter))]
-    internal class RangeClause : KustoQLBase, ILeafClause, IVisitable
+    public class RangeClause : KustoQLBase, ILeafClause, IVisitable
     {
         /// <summary>
         /// Gets or sets the field name to query.
         /// </summary>
-        public string FieldName { get; set; }
+        public string FieldName { get; internal set; }
 
         /// <summary>
         /// Gets or sets GTE (greater than or equal to or equal) value.
         /// </summary>
-        public string GTEValue { get; set; }
+        public string GTEValue { get; internal set; }
 
         /// <summary>
         /// Gets or sets GT (greater than) value.
@@ -34,17 +34,17 @@ namespace K2Bridge.Models.Request.Queries
         /// <summary>
         /// Gets or sets LTE (less than or equal) value.
         /// </summary>
-        public string LTEValue { get; set; }
+        public string LTEValue { get; internal set; }
 
         /// <summary>
         /// Gets or sets LT (less than) value.
         /// </summary>
-        public string LTValue { get; set; }
+        public string LTValue { get; internal set; }
 
         /// <summary>
         /// Gets or sets Date format used to convert date values in the query.
         /// </summary>
-        public string Format { get; set; }
+        public string Format { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)

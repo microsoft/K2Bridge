@@ -7,8 +7,8 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// Bucket aggregations calculate metrics by creating buckets of documents.
     /// </summary>
-    internal abstract class BucketAggregation : Aggregation
+    public abstract class BucketAggregation : Aggregation
     {
-        public string Metric { get; set; } = "count()";
+        public string Metric { get; internal set; } = "count()";
     }
 }

@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// Describes aggregation dictionary element in an Elasticsearch query.
     /// </summary>
-    internal class AggregationDictionary : Dictionary<string, AggregationContainer>
+    public class AggregationDictionary : Dictionary<string, AggregationContainer>
     {
     }
 }

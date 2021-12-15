@@ -4,16 +4,16 @@
 
 namespace K2Bridge.Models.Request.Aggregations
 {
-    internal class TermsOrder
+    public class TermsOrder
     {
         /// <summary>
         /// Gets or sets the field name used to sort buckets.
         /// </summary>
-        public string SortField { get; set; } = "count_";
+        public string SortField { get; internal set; } = "count_";
 
         /// <summary>
         /// Gets or sets the ordering of the results.
         /// </summary>
-        public string SortOrder { get; set; } = "desc";
+        public string SortOrder { get; internal set; } = "desc";
     }
 }

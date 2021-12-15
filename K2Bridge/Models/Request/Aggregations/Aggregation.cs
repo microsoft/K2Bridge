@@ -12,9 +12,9 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// Describes base aggregation class to visit.
     /// </summary>
-    internal abstract class Aggregation : KustoQLBase, IVisitable
+    public abstract class Aggregation : KustoQLBase, IVisitable
     {
-        public string Key { get; set; }
+        public string Key { get; internal set; }
 
         /// <inheritdoc/>
         public abstract void Accept(IVisitor visitor);

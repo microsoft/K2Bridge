@@ -7,7 +7,7 @@ namespace K2Bridge.Models.Request
     /// <summary>
     /// A base for all query related object that includes the translated query property.
     /// </summary>
-    internal abstract class KustoQLBase
+    public abstract class KustoQLBase
     {
         /// <summary>
         /// Gets or sets the translation of the query.

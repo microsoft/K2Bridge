@@ -11,33 +11,33 @@ namespace K2Bridge.Models.Request.Queries
     /// <summary>
     /// A query that matches documents by boolean combinations of other queries.
     /// </summary>
-    internal class BoolQuery : KustoQLBase, IVisitable, IQuery
+    public class BoolQuery : KustoQLBase, IVisitable, IQuery
     {
         /// <summary>
         /// Gets or sets Must value in bool query.
         /// </summary>
-        public IEnumerable<IQuery> Must { get; set; }
+        public IEnumerable<IQuery> Must { get; internal set; }
 
         /// <summary>
         /// Gets or sets MustNot value in bool query.
         /// </summary>
-        public IEnumerable<IQuery> MustNot { get; set; }
+        public IEnumerable<IQuery> MustNot { get; internal set; }
 
         /// <summary>
         /// Gets or sets Should value in bool query.
         /// </summary>
-        public IEnumerable<IQuery> Should { get; set; }
+        public IEnumerable<IQuery> Should { get; internal set; }
 
         /// <summary>
         /// Gets or sets ShouldNot value in bool query.
         /// </summary>
-        public IEnumerable<IQuery> ShouldNot { get; set; }
+        public IEnumerable<IQuery> ShouldNot { get; internal set; }
 
         /// <summary>
         /// Gets or sets the expressions for filtering documents.
         /// This applies before other search expressions in the query class (like Must).
         /// </summary>
-        public IEnumerable<IQuery> Filter { get; set; }
+        public IEnumerable<IQuery> Filter { get; internal set; }
 
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)
