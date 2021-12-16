@@ -419,8 +419,8 @@ stages:
           docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_NAME.azurecr.io/k2bridge:$k2Tag"
-          docker push "$ACR_NAME.azurecr.io/k2bridge:$k2Tag"
+            "$ACR_NAME.azurecr.io/k2bridge:$(k2Tag)"
+          docker push "$ACR_NAME.azurecr.io/k2bridge:$(k2Tag)"
 
     - task: AzureCLI@1
       displayName: Tag Docker image as $(k2Tag) for MCR
@@ -434,8 +434,8 @@ stages:
           docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$k2Tag"
-          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$k2Tag"
+            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$(k2Tag)"
+          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$(k2Tag)"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
             "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$SEMANTIC_VERSION"
