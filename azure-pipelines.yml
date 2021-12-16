@@ -413,7 +413,7 @@ stages:
 
   - job: Promote
     displayName: Promote Latest Image
-    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), variables['RUN_FLAG_PROMOTE']))
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), or(eq(variables['Build.SourceBranch'], 'refs/heads/dev-vnext'), variables['RUN_FLAG_PROMOTE']))
     steps:
 
     - task: AzureCLI@1
