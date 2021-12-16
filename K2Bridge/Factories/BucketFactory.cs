@@ -35,8 +35,7 @@ namespace K2Bridge.Factories
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
-            var dhb = new DateHistogramBucket
-            {
+            var dhb = new DateHistogramBucket {
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
@@ -60,8 +59,7 @@ namespace K2Bridge.Factories
             var key = row[(int)BucketColumnNames.SummarizeByColumn];
             var count = row[BucketColumnNames.Count];
 
-            var tb = new Bucket
-            {
+            var tb = new Bucket {
                 DocCount = Convert.ToInt32(count),
                 Key = Convert.ToString(key),
                 Aggs = new Dictionary<string, Dictionary<string, object>>(),
@@ -92,9 +90,9 @@ namespace K2Bridge.Factories
 
             // Parse the range
             var splitRange = range
-                            .Split('-')
-                            .Select(s => string.IsNullOrEmpty(s) ? (double?)null : double.Parse(s))
-                            .ToArray();
+                .Split('-')
+                .Select(s => string.IsNullOrEmpty(s) ? (double?)null : double.Parse(s))
+                .ToArray();
             var from = splitRange[0];
             var to = splitRange[1];
 
@@ -107,8 +105,7 @@ namespace K2Bridge.Factories
             string key = $"{fromKey}-{toKey}";
 
             // Assemble the bucket
-            var rb = new RangeBucket
-            {
+            var rb = new RangeBucket {
                 DocCount = Convert.ToInt32(count),
                 Key = key,
                 From = from,
@@ -181,8 +178,13 @@ namespace K2Bridge.Factories
                     var columnName = column.ColumnName;
                     logger.LogTrace("Defining the value for {columnName}", columnName);
 
+                    if (!double.TryParse(row[columnName]?.ToString() ?? string.Empty, NumberStyles.Number, CultureInfo.InvariantCulture,  out var value))
+                    {
+                        value = 0;
+                    }
+
                     bucket.Aggs[columnName] = new Dictionary<string, object>() {
-                        { "value", double.Parse(row[columnName].ToString(), CultureInfo.InvariantCulture) },
+                        { "value", value },
                     };
                 }
             }

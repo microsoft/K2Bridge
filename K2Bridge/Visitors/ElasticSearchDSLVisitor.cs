@@ -8,6 +8,7 @@ namespace K2Bridge.Visitors
     using System.Text;
     using K2Bridge.KustoDAL;
     using K2Bridge.Models.Request;
+    using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Utils;
 
     /// <summary>
@@ -109,6 +110,26 @@ namespace K2Bridge.Visitors
             }
 
             elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
+        }
+
+        private static bool IsFieldDynamic(Aggregation agg)
+        {
+            return agg.Field.Contains('.');
+        }
+
+        // Dynamic fields need their types to be explcitly specified in the query
+        private string ConvertDynamicToCorrectType(Aggregation agg)
+        {
+            if (!IsFieldDynamic(agg))
+            {
+                return agg.Field;
+            }
+
+            return ClauseFieldTypeProcessor.GetType(schemaRetriever, agg.Field).Result switch {
+                ClauseFieldType.Date => $"{KustoQLOperators.ToDateTime}({agg.Field})",
+                ClauseFieldType.Numeric => $"{KustoQLOperators.ToDouble}({agg.Field})",
+                _ => $"{KustoQLOperators.ToString}({agg.Field})",
+            };
         }
     }
 }

@@ -6,6 +6,7 @@ namespace UnitTests.K2Bridge.Visitors
 {
     using global::K2Bridge.Models.Request.Aggregations;
     using global::K2Bridge.Visitors;
+    using global::K2Bridge.Tests.UnitTests.Visitors;
     using NUnit.Framework;
 
     [TestFixture]
@@ -14,8 +15,7 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(ExpectedResult = "_data | summarize metric by ['key'] = field\n| order by ['key'] asc")]
         public string DateHistogramVisit_WithSimpleAggregation_ReturnsValidResponse()
         {
-            var histogramAggregation = new DateHistogramAggregation()
-            {
+            var histogramAggregation = new DateHistogramAggregation() {
                 Field = "field",
                 Key = "key",
                 Metric = "metric",
@@ -36,8 +36,7 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("z", ExpectedResult = "_data | summarize metric by ['key'] = bin(field, z)\n| order by ['key'] asc")]
         public string DateHistogramVisit_WithAggregation_ReturnsValidResponse(string interval)
         {
-            var histogramAggregation = new DateHistogramAggregation()
-            {
+            var histogramAggregation = new DateHistogramAggregation() {
                 Field = "field",
                 FixedInterval = interval,
                 Key = "key",
@@ -45,6 +44,28 @@ namespace UnitTests.K2Bridge.Visitors
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(histogramAggregation);
+
+            return histogramAggregation.KustoQL;
+        }
+
+        [TestCase("w", ExpectedResult = "_data | summarize metric by ['key'] = startofweek(todatetime(field.A))\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("week", ExpectedResult = "_data | summarize metric by ['key'] = startofweek(todatetime(field.A))\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("y", ExpectedResult = "_data | summarize metric by ['key'] = startofyear(todatetime(field.A))\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("year", ExpectedResult = "_data | summarize metric by ['key'] = startofyear(todatetime(field.A))\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("M", ExpectedResult = "_data | summarize metric by ['key'] = startofmonth(todatetime(field.A))\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("month", ExpectedResult = "_data | summarize metric by ['key'] = startofmonth(todatetime(field.A))\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("z", ExpectedResult = "_data | summarize metric by ['key'] = bin(todatetime(field.A), z)\n| order by ['key'] asc")]
+        public string DateHistogramVisit_WithAggregation_WithDynamicField_ReturnsValidResponse(string interval)
+        {
+            var histogramAggregation = new DateHistogramAggregation() {
+                Field = "field.A",
+                FixedInterval = interval,
+                Key = "key",
+                Metric = "metric",
+            };
+
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("field.A", "date");
             visitor.Visit(histogramAggregation);
 
             return histogramAggregation.KustoQL;

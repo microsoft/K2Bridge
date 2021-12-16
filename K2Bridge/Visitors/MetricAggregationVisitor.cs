@@ -21,7 +21,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(avgAggregation, nameof(avgAggregation));
             EnsureClause.StringIsNotNullOrEmpty(avgAggregation.Field, avgAggregation.Field, ExceptionMessage);
 
-            avgAggregation.KustoQL = $"['{avgAggregation.Key}']={KustoQLOperators.Avg}({avgAggregation.Field})";
+            avgAggregation.KustoQL = $"['{avgAggregation.Key}']={KustoQLOperators.Avg}({ConvertDynamicToCorrectType(avgAggregation)})";
         }
 
         /// <inheritdoc/>
@@ -30,7 +30,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(cardinalityAggregation, nameof(cardinalityAggregation));
             EnsureClause.StringIsNotNullOrEmpty(cardinalityAggregation.Field, cardinalityAggregation.Field, ExceptionMessage);
 
-            cardinalityAggregation.KustoQL = $"['{cardinalityAggregation.Key}']={KustoQLOperators.DCount}({cardinalityAggregation.Field})";
+            cardinalityAggregation.KustoQL = $"['{cardinalityAggregation.Key}']={KustoQLOperators.DCount}({ConvertDynamicToCorrectType(cardinalityAggregation)})";
         }
 
         /// <inheritdoc/>
@@ -39,7 +39,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(minAggregation, nameof(minAggregation));
             EnsureClause.StringIsNotNullOrEmpty(minAggregation.Field, minAggregation.Field, ExceptionMessage);
 
-            minAggregation.KustoQL = $"['{minAggregation.Key}']={KustoQLOperators.Min}({minAggregation.Field})";
+            minAggregation.KustoQL = $"['{minAggregation.Key}']={KustoQLOperators.Min}({ConvertDynamicToCorrectType(minAggregation)})";
         }
 
         /// <inheritdoc/>
@@ -48,7 +48,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(maxAggregation, nameof(maxAggregation));
             EnsureClause.StringIsNotNullOrEmpty(maxAggregation.Field, maxAggregation.Field, ExceptionMessage);
 
-            maxAggregation.KustoQL = $"['{maxAggregation.Key}']={KustoQLOperators.Max}({maxAggregation.Field})";
+            maxAggregation.KustoQL = $"['{maxAggregation.Key}']={KustoQLOperators.Max}({ConvertDynamicToCorrectType(maxAggregation)})";
         }
 
         /// <inheritdoc/>
@@ -57,7 +57,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(sumAggregation, nameof(sumAggregation));
             EnsureClause.StringIsNotNullOrEmpty(sumAggregation.Field, sumAggregation.Field, ExceptionMessage);
 
-            sumAggregation.KustoQL = $"['{sumAggregation.Key}']={KustoQLOperators.Sum}({sumAggregation.Field})";
+            sumAggregation.KustoQL = $"['{sumAggregation.Key}']={KustoQLOperators.Sum}({ConvertDynamicToCorrectType(sumAggregation)})";
         }
 
         /// <inheritdoc/>
@@ -73,7 +73,7 @@ namespace K2Bridge.Visitors
             var valuesForOperator = string.Join(',', percentileAggregation.Percents);
 
             // Example: ['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)']
-            percentileAggregation.KustoQL += $"['{percentileAggregation.Key}%percentile%{valuesForColumnNames}%{percentileAggregation.Keyed}']={KustoQLOperators.PercentilesArray}({percentileAggregation.Field}, {valuesForOperator})";
+            percentileAggregation.KustoQL += $"['{percentileAggregation.Key}%percentile%{valuesForColumnNames}%{percentileAggregation.Keyed}']={KustoQLOperators.PercentilesArray}({ConvertDynamicToCorrectType(percentileAggregation)}, {valuesForOperator})";
         }
     }
 }

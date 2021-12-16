@@ -37,7 +37,7 @@ namespace K2Bridge.Visitors
             {
                 rangeAggregation.KustoQL += $"(_data | {KustoQLOperators.Where} ";
 
-                range.Field = rangeAggregation.Field;
+                range.Field = ConvertDynamicToCorrectType(rangeAggregation);
                 range.Accept(this);
 
                 // Insert the range clause

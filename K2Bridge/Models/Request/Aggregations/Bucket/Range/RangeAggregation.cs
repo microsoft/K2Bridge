@@ -18,7 +18,7 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets the field to aggregate.
         /// </summary>
         [JsonProperty("field")]
-        public string Field { get; set; }
+        public override string Field { get; set; }
 
         /// <summary>
         /// Gets or sets the range expressions.
