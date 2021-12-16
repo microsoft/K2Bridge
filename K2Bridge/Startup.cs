@@ -80,12 +80,19 @@ namespace K2Bridge
 
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
+            var dynamicSamplePercentage = GetConfigOptional<double>("dynamicSamplePercentage");
+            if (dynamicSamplePercentage is < 0 or > 100)
+            {
+                throw new ArgumentException(
+                    $"dynamicSamplePercentage must be between 0 and 100, but was {dynamicSamplePercentage}");
+            }
+
             services.AddTransient<IKustoDataAccess, KustoDataAccess>(
                 s => new KustoDataAccess(
                     s.GetRequiredService<IQueryExecutor>(),
                     s.GetRequiredService<RequestContext>(),
                     s.GetRequiredService<ILogger<KustoDataAccess>>(),
-                    GetConfigOptional<double>("dynamicSamplePercentage"))); // TODO - Add validations
+                    dynamicSamplePercentage));
 
             services.AddTransient<ISchemaRetrieverFactory, SchemaRetrieverFactory>(
                 s => new SchemaRetrieverFactory(
