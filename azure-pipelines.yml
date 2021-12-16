@@ -2,7 +2,7 @@
 # The following variables can be optionally set for each pipeline run:
 # - RUN_FLAG_TERRAFORM: Set to 1 to have `terraform apply`. By default
 #   `terraform apply` only runs on the master branch.
-# - RUN_FLAG_PROMOTE: Set to 1 to promote the Docker image to `latest` tag if
+# - RUN_FLAG_PROMOTE: Set to 1 to promote the Docker image to `<supported_kibana_version>_latest` tag if
 #   tests are successful. By default this is only done on the master branch.
 # - RUN_SET_NAMESPACE: Set to a string to deploy to the given AKS namespace,
 #   and not delete the namespace after the build. By default the build deploys to
@@ -417,7 +417,7 @@ stages:
     steps:
 
     - task: AzureCLI@1
-      displayName: Tag Docker image as latest
+      displayName: Tag Docker image as $(k2Tag)
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -428,11 +428,11 @@ stages:
           docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_NAME.azurecr.io/k2bridge:latest"
-          docker push "$ACR_NAME.azurecr.io/k2bridge:latest"
+            "$ACR_NAME.azurecr.io/k2bridge:$k2Tag"
+          docker push "$ACR_NAME.azurecr.io/k2bridge:$k2Tag"
 
     - task: AzureCLI@1
-      displayName: Tag Docker image as latest for MCR
+      displayName: Tag Docker image as $(k2Tag) for MCR
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -443,8 +443,8 @@ stages:
           docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:latest"
-          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:latest"
+            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$k2Tag"
+          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$k2Tag"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
             "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$SEMANTIC_VERSION"
