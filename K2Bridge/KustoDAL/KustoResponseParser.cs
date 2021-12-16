@@ -187,6 +187,9 @@ namespace K2Bridge.KustoDAL
                     case nameof(Models.Request.Aggregations.DateHistogramAggregation):
                         createBucketFromDataRow = BucketFactory.CreateDateHistogramBucketFromDataRow;
                         break;
+                    case nameof(Models.Request.Aggregations.DateRangeAggregation):
+                        createBucketFromDataRow = BucketFactory.CreateDateRangeBucketFromDataRow;
+                        break;
                 }
 
                 // Read aggregations

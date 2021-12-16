@@ -121,6 +121,58 @@ namespace K2Bridge.Factories
             return rb;
         }
 
+        /// <summary>
+        /// Create a new <see cref="DateRangeBucket" from a given <see cref="DataRow"/>/>.
+        /// </summary>
+        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <returns>A new DateRangeBucket.</returns>
+        public static DateRangeBucket CreateDateRangeBucketFromDataRow(DataRow row, ILogger logger)
+        {
+            Ensure.IsNotNull(row, nameof(row));
+
+            var range = Convert.ToString(row[(int)BucketColumnNames.SummarizeByColumn]);
+            var count = row[BucketColumnNames.Count];
+
+            // Ignore the row for "other" records, that did not match the ranges
+            if (range == BucketColumnNames.RangeDefaultBucket)
+            {
+                return null;
+            }
+
+            // Assemble the bucket
+            var drb = new DateRangeBucket
+            {
+                DocCount = Convert.ToInt32(count),
+                Aggs = new Dictionary<string, Dictionary<string, object>>(),
+            };
+
+            // Parse the range
+            var splitRange = range
+                            .Split('_')
+                            .Select(s => string.IsNullOrEmpty(s) ? (DateTime?)null : DateTime.Parse(s).ToUniversalTime())
+                            .ToArray();
+            var from = splitRange[0];
+            var to = splitRange[1];
+
+            if (from != null)
+            {
+                drb.From = TimeUtils.ToEpochMilliseconds(from.Value);
+                drb.FromAsString = from?.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+            }
+
+            if (to != null)
+            {
+                drb.To = TimeUtils.ToEpochMilliseconds(to.Value);
+                drb.ToAsString = to?.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+            }
+
+            drb.Key = $"{drb.FromAsString}-{drb.ToAsString}";
+
+            CreateAggregationColumns(drb, row, logger);
+
+            return drb;
+        }
+
         public static void CreateAggregationColumns(Bucket bucket, DataRow row, ILogger logger)
         {
             // TODO: refactor the columns handling based on the Percentiles code.
