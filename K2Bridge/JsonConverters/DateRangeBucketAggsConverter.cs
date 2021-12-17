@@ -27,7 +27,9 @@ namespace K2Bridge.JsonConverters
             if (bucket.From is not null)
             {
                 writer.WritePropertyName("from");
-                serializer.Serialize(writer, bucket.From);
+
+                // ES formats this long as a double (trailing zero)
+                serializer.Serialize(writer, (double)bucket.From);
             }
 
             if (bucket.FromAsString is not null)
@@ -39,7 +41,9 @@ namespace K2Bridge.JsonConverters
             if (bucket.To is not null)
             {
                 writer.WritePropertyName("to");
-                serializer.Serialize(writer, bucket.To);
+
+                // ES formats this long as a double (trailing zero)
+                serializer.Serialize(writer, (double)bucket.To);
             }
 
             if (bucket.ToAsString is not null)
