@@ -6,13 +6,15 @@ namespace K2Bridge.Models.Response
 {
     using System.Collections.Generic;
     using K2Bridge.JsonConverters;
+    using K2Bridge.Models.Request;
+    using K2Bridge.Visitors;
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Terms bucket response.
+    /// Describes base aggregation class for buckets in response.
     /// </summary>
-    [JsonConverter(typeof(TermsBucketAggsConverter))]
-    public class TermsBucket : IBucket
+    [JsonConverter(typeof(BucketAggsConverter))]
+    public class Bucket
     {
         /// <summary>
         /// Gets or sets document count.
@@ -30,7 +32,6 @@ namespace K2Bridge.Models.Response
         /// <summary>
         /// Gets or Sets aggegations dictionary.
         /// </summary>
-        [JsonIgnore]
-        public Dictionary<string, List<double>> Aggs { get; set; }
+        public Dictionary<string, Dictionary<string, object>> Aggs { get; set; }
     }
 }

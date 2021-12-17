@@ -37,48 +37,12 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['B']=avg(fieldB), ['A']=avg(fieldA)")]
-        public string AggregationVisit_WithSubAvgAgg_ReturnsAvgAggregates()
-        {
-            var aggregateClause = new AggregationContainer()
-            {
-                PrimaryAggregation = new AverageAggregation() { Field = "fieldA", Key = "A" },
-                SubAggregations = new AggregationDictionary
-                {
-                    { "sub", new AggregationContainer() { PrimaryAggregation = new AverageAggregation { Field = "fieldB", Key = "B" } } },
-                },
-            };
-
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit(aggregateClause);
-
-            return aggregateClause.KustoQL;
-        }
-
         [TestCase(ExpectedResult = "['A']=dcount(fieldA)")]
         public string AggregationVisit_WithCardinalityAgg_ReturnsDCount()
         {
             var aggregateClause = new AggregationContainer()
             {
                 PrimaryAggregation = new CardinalityAggregation() { Field = "fieldA", Key = "A" },
-            };
-
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit(aggregateClause);
-
-            return aggregateClause.KustoQL;
-        }
-
-        [TestCase(ExpectedResult = "['B']=dcount(fieldB), ['A']=dcount(fieldA)")]
-        public string AggregationVisit_WithSubCardinalityAggs_ReturnsDCounts()
-        {
-            var aggregateClause = new AggregationContainer()
-            {
-                PrimaryAggregation = new CardinalityAggregation() { Field = "fieldA", Key = "A" },
-                SubAggregations = new AggregationDictionary
-                {
-                    { "sub", new AggregationContainer() { PrimaryAggregation = new CardinalityAggregation { Field = "fieldB", Key = "B" } } },
-                },
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
@@ -101,24 +65,6 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['B']=min(fieldB), ['A']=min(fieldA)")]
-        public string AggregationVisit_WithSubMinAgg_ReturnsMinAggregates()
-        {
-            var aggregateClause = new AggregationContainer()
-            {
-                PrimaryAggregation = new MinAggregation() { Field = "fieldA", Key = "A" },
-                SubAggregations = new AggregationDictionary
-                {
-                    { "sub", new AggregationContainer() { PrimaryAggregation = new MinAggregation { Field = "fieldB", Key = "B" } } },
-                },
-            };
-
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit(aggregateClause);
-
-            return aggregateClause.KustoQL;
-        }
-
         [TestCase(ExpectedResult = "['A']=max(fieldA)")]
         public string AggregationVisit_WithMaxAgg_ReturnsMaxPrimary()
         {
@@ -133,48 +79,12 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['B']=max(fieldB), ['A']=max(fieldA)")]
-        public string AggregationVisit_WithSubMaxAgg_ReturnsMaxAggregates()
-        {
-            var aggregateClause = new AggregationContainer()
-            {
-                PrimaryAggregation = new MaxAggregation() { Field = "fieldA", Key = "A" },
-                SubAggregations = new AggregationDictionary
-                {
-                    { "sub", new AggregationContainer() { PrimaryAggregation = new MaxAggregation { Field = "fieldB", Key = "B" } } },
-                },
-            };
-
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit(aggregateClause);
-
-            return aggregateClause.KustoQL;
-        }
-
         [TestCase(ExpectedResult = "['A']=sum(fieldA)")]
         public string AggregationVisit_WithSumAgg_ReturnsSumPrimary()
         {
             var aggregateClause = new AggregationContainer()
             {
                 PrimaryAggregation = new SumAggregation() { Field = "fieldA", Key = "A" },
-            };
-
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit(aggregateClause);
-
-            return aggregateClause.KustoQL;
-        }
-
-        [TestCase(ExpectedResult = "['B']=sum(fieldB), ['A']=sum(fieldA)")]
-        public string AggregationVisit_WithSubSumAgg_ReturnsSumAggregates()
-        {
-            var aggregateClause = new AggregationContainer()
-            {
-                PrimaryAggregation = new SumAggregation() { Field = "fieldA", Key = "A" },
-                SubAggregations = new AggregationDictionary
-                {
-                    { "sub", new AggregationContainer() { PrimaryAggregation = new SumAggregation { Field = "fieldB", Key = "B" } } },
-                },
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());

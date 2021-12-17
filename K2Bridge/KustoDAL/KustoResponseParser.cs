@@ -25,6 +25,7 @@ namespace K2Bridge.KustoDAL
     {
         private const string AggregationTableName = "aggs";
         private const string HitsTableName = "hits";
+        private const string HitsTotalTableName = "hitsTotal";
         private readonly Metrics metricsHistograms;
 
         private readonly bool outputBackendQuery;
@@ -173,14 +174,18 @@ namespace K2Bridge.KustoDAL
                 response.AddParentToAgg(parent);
 
                 // Determine how to create the buckets based on the aggregation type
-                Func<DataRow, IBucket> createBucketFromDataRow = null;
+                Func<DataRow, ILogger, Bucket> createBucketFromDataRow = null;
                 switch (query.PrimaryAggregation)
                 {
+                    case nameof(Models.Request.Aggregations.RangeAggregation):
+                        createBucketFromDataRow = BucketFactory.CreateRangeBucketFromDataRow;
+                        response.SetAggregationKeyed(true);
+                        break;
                     case nameof(Models.Request.Aggregations.TermsAggregation):
-                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateTermsBucketFromDataRow(row, Logger);
+                        createBucketFromDataRow = BucketFactory.CreateTermsBucketFromDataRow;
                         break;
                     case nameof(Models.Request.Aggregations.DateHistogramAggregation):
-                        createBucketFromDataRow = (DataRow row) => BucketFactory.CreateDateHistogramBucketFromDataRow(row, Logger);
+                        createBucketFromDataRow = BucketFactory.CreateDateHistogramBucketFromDataRow;
                         break;
                 }
 
@@ -189,9 +194,19 @@ namespace K2Bridge.KustoDAL
                 {
                     foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
                     {
-                        IBucket bucket = createBucketFromDataRow(row);
-                        response.AddBucketToAggregation(bucket);
+                        Bucket bucket = createBucketFromDataRow(row, Logger);
+                        if (bucket != null)
+                        {
+                            response.AddBucketToAggregation(bucket);
+                        }
                     }
+                }
+
+                // For Range aggregations, the calculated total hits is wrong, so we have an additional column with the expected count
+                if (parsedKustoResponse[HitsTotalTableName] != null)
+                {
+                    // A single row with a single column
+                    response.SetTotal((long)parsedKustoResponse[HitsTotalTableName].TableData.Rows[0][0]);
                 }
             }
             else

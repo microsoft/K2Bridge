@@ -28,10 +28,10 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            // TODO: timestamp is always the first row (probably named _2), and count will be named _count
+            // TODO: timestamp is always the first column (probably named 2), and count will be named _count
             // we currently mix index and column names, need to check if we can enhance this logic
             // workitem 15050
-            var timestamp = row[(int)BucketColumnNames.Timestamp];
+            var timestamp = row[(int)BucketColumnNames.SummarizeByColumn];
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
@@ -43,15 +43,97 @@ namespace K2Bridge.Factories
                 Aggs = new Dictionary<string, Dictionary<string, object>>(),
             };
 
-            var clmns = row.Table.Columns;
-            foreach (DataColumn clmn in clmns)
+            CreateAggregationColumns(dhb, row, logger);
+
+            return dhb;
+        }
+
+        /// <summary>
+        /// Create a new <see cref="Bucket" from a given <see cref="DataRow"/>/>.
+        /// </summary>
+        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <returns>A new Bucket.</returns>
+        public static Bucket CreateTermsBucketFromDataRow(DataRow row, ILogger logger)
+        {
+            Ensure.IsNotNull(row, nameof(row));
+
+            var key = row[(int)BucketColumnNames.SummarizeByColumn];
+            var count = row[BucketColumnNames.Count];
+
+            var tb = new Bucket
             {
-                if (clmn.ColumnName == BucketColumnNames.Count || clmns.IndexOf(clmn) == (int)BucketColumnNames.Timestamp)
+                DocCount = Convert.ToInt32(count),
+                Key = Convert.ToString(key),
+                Aggs = new Dictionary<string, Dictionary<string, object>>(),
+            };
+
+            CreateAggregationColumns(tb, row, logger);
+
+            return tb;
+        }
+
+        /// <summary>
+        /// Create a new <see cref="RangeBucket" from a given <see cref="DataRow"/>/>.
+        /// </summary>
+        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <returns>A new TermsBucket.</returns>
+        public static RangeBucket CreateRangeBucketFromDataRow(DataRow row, ILogger logger)
+        {
+            Ensure.IsNotNull(row, nameof(row));
+
+            var range = Convert.ToString(row[(int)BucketColumnNames.SummarizeByColumn]);
+            var count = row[BucketColumnNames.Count];
+
+            // Ignore the row for "other" records, that did not match the ranges
+            if (range == BucketColumnNames.RangeDefaultBucket)
+            {
+                return null;
+            }
+
+            // Parse the range
+            var splitRange = range
+                            .Split('-')
+                            .Select(s => string.IsNullOrEmpty(s) ? (double?)null : double.Parse(s))
+                            .ToArray();
+            var from = splitRange[0];
+            var to = splitRange[1];
+
+            // Assemble the key
+            // An empty limit becomes "*"
+            // An integer limit is suffixed with ".0"
+            var fromKey = from?.ToString("0.0##########", CultureInfo.InvariantCulture) ?? "*";
+            var toKey = to?.ToString("0.0##########", CultureInfo.InvariantCulture) ?? "*";
+
+            string key = $"{fromKey}-{toKey}";
+
+            // Assemble the bucket
+            var rb = new RangeBucket
+            {
+                DocCount = Convert.ToInt32(count),
+                Key = key,
+                From = from,
+                To = to,
+                Aggs = new Dictionary<string, Dictionary<string, object>>(),
+            };
+
+            CreateAggregationColumns(rb, row, logger);
+
+            return rb;
+        }
+
+        public static void CreateAggregationColumns(Bucket bucket, DataRow row, ILogger logger)
+        {
+            // TODO: refactor the columns handling based on the Percentiles code.
+            // See: workitem 15724
+            var columns = row.Table.Columns;
+            foreach (DataColumn column in columns)
+            {
+                if (column.ColumnName == BucketColumnNames.Count || columns.IndexOf(column) == (int)BucketColumnNames.SummarizeByColumn)
                 {
                     continue;
                 }
 
-                var columnNameInfo = clmn.ColumnName.Split('%');
+                var columnNameInfo = column.ColumnName.Split('%');
 
                 if (columnNameInfo.Length > 1)
                 {
@@ -71,10 +153,10 @@ namespace K2Bridge.Factories
                     }
                     else
                     {
-                        dhb.Aggs[key] = new Dictionary<string, object>();
+                        bucket.Aggs[key] = new Dictionary<string, object>();
                         var returnValues = new Dictionary<string, double>();
 
-                        var percentileValues = (JArray)row[clmn.ColumnName];
+                        var percentileValues = (JArray)row[column.ColumnName];
 
                         foreach (var (name, value) in queryValues.Zip(percentileValues))
                         {
@@ -85,65 +167,25 @@ namespace K2Bridge.Factories
                         if (keyed)
                         {
                             // keyed ====> Dictionary<string, double>
-                            dhb.Aggs[key].Add("values", returnValues);
+                            bucket.Aggs[key].Add("values", returnValues);
                         }
                         else
                         {
                             // not keyed ====> List<KeyValuePair<double,double>>
-                            dhb.Aggs[key].Add("values", returnValues.ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value).ToList());
+                            bucket.Aggs[key].Add("values", returnValues.ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value).ToList());
                         }
                     }
                 }
                 else
                 {
-                    var columnName = clmn.ColumnName;
+                    var columnName = column.ColumnName;
                     logger.LogTrace("Defining the value for {columnName}", columnName);
 
-                    dhb.Aggs[columnName] = new Dictionary<string, object>() {
+                    bucket.Aggs[columnName] = new Dictionary<string, object>() {
                         { "value", double.Parse(row[columnName].ToString(), CultureInfo.InvariantCulture) },
                     };
                 }
             }
-
-            return dhb;
-        }
-
-        /// <summary>
-        /// Create a new <see cref="TermsBucket" from a given <see cref="DataRow"/>/>.
-        /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
-        /// <returns>A new TermsBucket.</returns>
-        public static TermsBucket CreateTermsBucketFromDataRow(DataRow row, ILogger logger)
-        {
-            Ensure.IsNotNull(row, nameof(row));
-
-            var key = row[(int)BucketColumnNames.Timestamp];
-            var count = row[BucketColumnNames.Count];
-
-            var tb = new TermsBucket
-            {
-                DocCount = Convert.ToInt32(count),
-                Key = Convert.ToString(key),
-                Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
-            };
-
-            // TODO: refactor the columns handling based on the Percentiles code.
-            // See: workitem 15724
-            var clmns = row.Table.Columns;
-            foreach (DataColumn clmn in clmns)
-            {
-                if (clmn.ColumnName == BucketColumnNames.Count || clmns.IndexOf(clmn) == (int)BucketColumnNames.Timestamp)
-                {
-                    continue;
-                }
-
-                var columnName = clmn.ColumnName;
-                logger.LogTrace("Defining the value for {columnName}", columnName);
-
-                tb.Aggs[columnName] = new System.Collections.Generic.List<double>() { Convert.ToDouble(row[columnName]) };
-            }
-
-            return tb;
         }
     }
 }

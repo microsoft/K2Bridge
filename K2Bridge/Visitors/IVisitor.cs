@@ -76,6 +76,12 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
+        /// <param name="rangeAggregation">The Range aggregation to visit.</param>
+        void Visit(RangeAggregation rangeAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
         /// <param name="avgAggregation">The Average Aggregations to visit.</param>
         void Visit(AverageAggregation avgAggregation);
 
@@ -104,6 +110,11 @@ namespace K2Bridge.Visitors
         void Visit(SumAggregation sumAggregation);
 
         /// <summary>
+        /// Accepts a range expression, and builds the Kusto query.
+        /// </summary>
+        /// <param name="rangeAggregationExpression">The range aggregation expression.</param>
+        void Visit(RangeAggregationExpression rangeAggregationExpression);
+
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
         /// <param name="PercentileAggregation">The Percentile Aggregation to visit.</param>

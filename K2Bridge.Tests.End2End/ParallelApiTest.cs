@@ -220,6 +220,19 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
+        [Description("/_msearch visualization query with range")]
+        public void CompareElasticKusto_WhenMSearchVizRange_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Range_Metrics.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with overlapping range")]
+        public void CompareElasticKusto_WhenMSearchVizRangeOverlapping_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Range_Overlapping.json");
+        }
+
         [Description("/_msearch visualization query with date histogram and percentiles")]
         public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentiles_ResponsesAreEquivalent()
         {

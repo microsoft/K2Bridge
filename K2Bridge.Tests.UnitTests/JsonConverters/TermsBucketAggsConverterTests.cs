@@ -4,6 +4,7 @@
 
 namespace UnitTests.K2Bridge.JsonConverters
 {
+    using System.Collections.Generic;
     using global::K2Bridge.Models.Response;
     using global::K2Bridge.Models.Response.Metadata;
     using NUnit.Framework;
@@ -16,11 +17,11 @@ namespace UnitTests.K2Bridge.JsonConverters
             ""key"": ""IT""
         }";
 
-        private static readonly TermsBucket ValidTermsBucket = new TermsBucket()
+        private static readonly Bucket ValidTermsBucket = new Bucket()
         {
             DocCount = 502,
             Key = "IT",
-            Aggs = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<double>>(),
+            Aggs = new Dictionary<string, Dictionary<string, object>>(),
         };
 
         private static readonly object[] FieldCapsTestCases = {
@@ -30,7 +31,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         [TestCaseSource(nameof(FieldCapsTestCases))]
         public void TestTermsBucketAggsConverter(string queryString, object expected)
         {
-            ((TermsBucket)expected).AssertJson(queryString);
+            ((Bucket)expected).AssertJson(queryString);
         }
     }
 }

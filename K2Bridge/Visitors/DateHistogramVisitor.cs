@@ -18,7 +18,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Metric, nameof(dateHistogramAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Field, nameof(dateHistogramAggregation.Field));
 
-            dateHistogramAggregation.KustoQL =
+            dateHistogramAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + dateHistogramAggregation.SubAggregationsKustoQL +
                 $"{dateHistogramAggregation.Metric} by ['{dateHistogramAggregation.Key}'] = ";
             var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
 

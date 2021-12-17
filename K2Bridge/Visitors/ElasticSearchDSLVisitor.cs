@@ -58,7 +58,7 @@ namespace K2Bridge.Visitors
                 // Aggregations
                 if (elasticSearchDSL.Aggregations?.Count > 0)
                 {
-                    queryStringBuilder.Append('\n').Append($"(_data | {KustoQLOperators.Summarize} ");
+                    queryStringBuilder.Append('\n').Append("(");
 
                     foreach (var (_, aggregation) in elasticSearchDSL.Aggregations)
                     {
@@ -67,6 +67,9 @@ namespace K2Bridge.Visitors
                     }
 
                     queryStringBuilder.Append("| as aggs);");
+
+                    // We will need the "true" hits count for some aggregations, e.g. Range
+                    queryStringBuilder.Append($"\n(_data | {KustoQLOperators.Count} | as hitsTotal);");
                 }
 
                 // hits (projections...)

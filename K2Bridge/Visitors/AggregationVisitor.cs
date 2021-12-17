@@ -21,19 +21,29 @@ namespace K2Bridge.Visitors
                 return;
             }
 
-            aggregationContainer.PrimaryAggregation.Accept(this);
-
-            // TODO: do something with the sub aggregations to KQL
+            // First, go over the sub-aggregations (metrics) and assemble their KustoQL snippets
             if (aggregationContainer.SubAggregations != null)
             {
                 foreach (var (_, subAgg) in aggregationContainer.SubAggregations)
                 {
+                    // Visit the aggregation
                     subAgg.Accept(this);
-                    aggregationContainer.KustoQL += $"{subAgg.KustoQL}, "; // this won't work when 2+ bucket aggregations are used!
+
+                    // Bucket aggregations are responsible for inserting the metrics expressions in the final query
+                    if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
+                    {
+                        // Store the metrics snippet in the bucket aggregation
+                        bucketAggregation.SubAggregationsKustoQL += $"{subAgg.KustoQL}, ";
+                    }
                 }
             }
 
-            aggregationContainer.KustoQL += aggregationContainer.PrimaryAggregation.KustoQL;
+            // Visit the Primary aggregation
+            // If it is a bucket aggregation, it will return a full query including metrics
+            // If it is a metric aggregation, it will return its KustoQL snippet
+            aggregationContainer.PrimaryAggregation.Accept(this);
+
+            aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
     }
 }

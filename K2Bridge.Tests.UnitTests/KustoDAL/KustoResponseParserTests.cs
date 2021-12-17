@@ -137,14 +137,53 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(2, elasticResult.Hits.Hits.Count());
         }
 
-        [Test]
-        public void ParseElasticResponse_WithAggs_ReturnsElasticResponseWithAggs()
+        [TestCase(nameof(DateHistogramAggregation))]
+        [TestCase(nameof(TermsAggregation))]
+        public void ParseElasticResponse_WithAggs_ReturnsElasticResponseWithAggs(string primaryAggregation)
         {
             using var aggsTable = GetAggsTable();
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index", primaryAggregation: nameof(DateHistogramAggregation));
+            var query = new QueryData("query", "index", primaryAggregation: primaryAggregation);
+
+            var reader = aggsTable.CreateDataReader();
+            var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
+
+            var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
+            Assert.AreEqual(1, result.Responses.Count());
+
+            var elasticResult = result.Responses.ToList()[0];
+            Assert.AreEqual(2, elasticResult.Aggregations.Collection.Buckets.Count());
+        }
+
+        [Test]
+        public void ParseElasticResponse_WithRangeAggs_ReturnsElasticResponseWithAggs()
+        {
+            using var aggsTable = GetRangeAggsTable();
+            aggsTable.TableName = "aggs";
+
+            var timeTaken = new TimeSpan(17);
+            var query = new QueryData("query", "index", primaryAggregation: nameof(RangeAggregation));
+
+            var reader = aggsTable.CreateDataReader();
+            var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
+
+            var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
+            Assert.AreEqual(1, result.Responses.Count());
+
+            var elasticResult = result.Responses.ToList()[0];
+            Assert.AreEqual(3, elasticResult.Aggregations.Collection.Buckets.Count());
+        }
+
+        [Test]
+        public void ParseElasticResponse_WithOverlappingRangeAggs_ReturnsElasticResponseWithAggs()
+        {
+            using var aggsTable = GetOverlappingRangeAggsTable();
+            aggsTable.TableName = "aggs";
+
+            var timeTaken = new TimeSpan(17);
+            var query = new QueryData("query", "index", primaryAggregation: nameof(RangeAggregation));
 
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
@@ -244,6 +283,62 @@ namespace UnitTests.K2Bridge.KustoDAL
             var row2 = resTable.NewRow();
             row2["timestamp"] = DateTime.Now;
             row2["count_"] = 2;
+
+            resTable.Rows.Add(row2);
+
+            return resTable;
+        }
+
+        private static DataTable GetRangeAggsTable()
+        {
+            DataTable resTable = new DataTable();
+
+            var column1 = new DataColumn("2");
+            var column2 = new DataColumn("count_");
+
+            resTable.Columns.Add(column1);
+            resTable.Columns.Add(column2);
+
+            var row1 = resTable.NewRow();
+            row1["2"] = "-100";
+            row1["count_"] = 1;
+
+            resTable.Rows.Add(row1);
+
+            var row2 = resTable.NewRow();
+            row2["2"] = "100-200";
+            row2["count_"] = 2;
+
+            resTable.Rows.Add(row2);
+
+            var row3 = resTable.NewRow();
+            row3["2"] = "200-";
+            row3["count_"] = 3;
+
+            resTable.Rows.Add(row3);
+
+            return resTable;
+        }
+
+        private static DataTable GetOverlappingRangeAggsTable()
+        {
+            DataTable resTable = new DataTable();
+
+            var column1 = new DataColumn("2");
+            var column2 = new DataColumn("count_");
+
+            resTable.Columns.Add(column1);
+            resTable.Columns.Add(column2);
+
+            var row1 = resTable.NewRow();
+            row1["2"] = "1000-20000";
+            row1["count_"] = 10;
+
+            resTable.Rows.Add(row1);
+
+            var row2 = resTable.NewRow();
+            row2["2"] = "5000-10000";
+            row2["count_"] = 20;
 
             resTable.Rows.Add(row2);
 
