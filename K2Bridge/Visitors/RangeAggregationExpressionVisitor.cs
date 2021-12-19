@@ -19,8 +19,9 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(rangeExpression, nameof(rangeExpression));
             EnsureClause.StringIsNotNullOrEmpty(rangeExpression.Field, nameof(rangeExpression.Field));
 
-            var gteExpr = rangeExpression.From.HasValue ? $"{rangeExpression.Field} >= {rangeExpression.From}" : null;
-            var ltExpr = rangeExpression.To.HasValue ? $"{rangeExpression.Field} < {rangeExpression.To}" : null;
+            var field = ConvertDynamicToCorrectType(rangeExpression);
+            var gteExpr = rangeExpression.From.HasValue ? $"{field} >= {rangeExpression.From}" : null;
+            var ltExpr = rangeExpression.To.HasValue ? $"{field} < {rangeExpression.To}" : null;
 
             rangeExpression.KustoQL = (gteExpr, ltExpr) switch
             {

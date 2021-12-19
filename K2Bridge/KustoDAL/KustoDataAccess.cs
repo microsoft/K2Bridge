@@ -186,8 +186,7 @@ namespace K2Bridge.KustoDAL
         /// <exception cref="InvalidOperationException">When parsing the json response yields an unexpected type.</exception>
         private async Task HandleDynamicField(FieldCapabilityResponse response, string tableName, FieldCapabilityElement fieldCapabilityElement)
         {
-            var query = "set query_results_cache_max_age = time(30d);";
-            query += DynamicSamplePercentage.HasValue ?
+            var query = DynamicSamplePercentage.HasValue ?
                 $@"{KustoQLOperators.Let} percentage = {DynamicSamplePercentage} / 100.0;
 {KustoQLOperators.Let} table_count = {KustoQLOperators.ToScalar}({tableName} | {KustoQLOperators.Count});
 {tableName} | {KustoQLOperators.Sample} {KustoQLOperators.ToInt}({KustoQLOperators.Floor}(table_count * percentage, 1)) | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})" :

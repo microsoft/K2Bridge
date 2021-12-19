@@ -17,7 +17,7 @@ namespace K2Bridge.Models.Request.Aggregations
         /// <summary>
         ///  Key of the aggregation.
         /// </summary>
-        public string Key { get; set; }
+        public virtual string Key { get; set; }
 
         /// <summary>
         /// Aggregation field.

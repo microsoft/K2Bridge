@@ -11,13 +11,8 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// Range expression for aggregation.
     /// </summary>
-    internal class RangeAggregationExpression : KustoQLBase, IVisitable
+    internal class RangeAggregationExpression : Aggregation, IVisitable
     {
-        /// <summary>
-        /// Gets or sets the field.
-        /// </summary>
-        public string Field { get; set; }
-
         /// <summary>
         /// Gets or sets the from value.
         /// </summary>
@@ -34,10 +29,10 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets the key.
         /// </summary>
         [JsonProperty("key")]
-        public string Key { get; set; }
+        public override string Key { get; set; }
 
         /// <inheritdoc/>
-        public void Accept(IVisitor visitor)
+        public override void Accept(IVisitor visitor)
         {
             visitor.Visit(this);
         }
