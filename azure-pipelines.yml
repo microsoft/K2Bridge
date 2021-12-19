@@ -230,6 +230,7 @@ stages:
   dependsOn:
   - build
   - terraform
+  condition: or(succeeded(), and(succeeded('terraform'), variables['IS_DEMO_PIPELINE']))
   jobs:
   - job: Deploy_K2Bridge
     displayName: Deploy K2Bridge
