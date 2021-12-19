@@ -443,7 +443,7 @@ stages:
     steps:
 
     - task: AzureCLI@1
-      displayName: Tag Docker image as $K2_TAG
+      displayName: Tag Docker image as $(K2_TAG)
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -458,7 +458,7 @@ stages:
           docker push "$ACR_NAME.azurecr.io/k2bridge:$K2_TAG"
 
     - task: AzureCLI@1
-      displayName: Tag Docker image as $K2_TAG for MCR
+      displayName: Tag Docker image as $(K2_TAG) for MCR
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
