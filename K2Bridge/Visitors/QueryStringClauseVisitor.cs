@@ -110,11 +110,10 @@ namespace K2Bridge.Visitors
                 new QueryParser(
                     Lucene.Net.Util.Version.LUCENE_30,
                     queryStringClause.Default,
-                    analyzer)
-                {
-                    AllowLeadingWildcard = queryStringClause.Wildcard,
-                    LowercaseExpandedTerms = false,
-                };
+                    analyzer) {
+                        AllowLeadingWildcard = queryStringClause.Wildcard,
+                        LowercaseExpandedTerms = false,
+                    };
 
             // escaping special charachters from the pharse before parsing.
             // we would call QueryParser.Escape() method, but it escapes all charachters and

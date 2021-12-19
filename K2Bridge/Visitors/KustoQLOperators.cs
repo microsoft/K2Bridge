@@ -55,7 +55,9 @@ namespace K2Bridge.Visitors
         public const string ToScalar = "toscalar";
         public const string ToInt = "toint";
         public const string ToDouble = "todouble";
-        public const string ToString = "tostring";
+
+        // Renamed to avoid conflict with ToString()
+        public const string ToStringOperator = "tostring";
         public const string Floor = "floor";
         public const string Sample = "sample";
         public const string Equal = "==";

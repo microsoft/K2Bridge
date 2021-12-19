@@ -128,7 +128,7 @@ namespace K2Bridge.Visitors
             return ClauseFieldTypeProcessor.GetType(schemaRetriever, agg.Field).Result switch {
                 ClauseFieldType.Date => $"{KustoQLOperators.ToDateTime}({agg.Field})",
                 ClauseFieldType.Numeric => $"{KustoQLOperators.ToDouble}({agg.Field})",
-                _ => $"{KustoQLOperators.ToString}({agg.Field})",
+                _ => $"{KustoQLOperators.ToStringOperator}({agg.Field})",
             };
         }
     }
