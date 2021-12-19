@@ -18,8 +18,8 @@ variables:
   value: true
 - name: TELEMETRY_KEY
   value: "5d939046-15b2-448c-84be-2ecced5e9b1d"
-- name: k2Tag
-  value: 6.8_latest
+- name: IMAGE_TAG
+  value: $(DEMO_IMAGE_TAG) #For the demo, deploy the version as defined in the pipeline
 
 pool:
   vmImage: ubuntu-latest

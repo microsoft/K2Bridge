@@ -35,8 +35,10 @@ variables:
   value: false
 - name: TELEMETRY_KEY
   value: "00000000-0000-0000-0000-000000000000"
-- name: k2Tag
+- name: K2_TAG
   value: 6.8_latest
+- name: IMAGE_TAG
+  value: "$(SEMANTIC_VERSION)"
 
 pool:
   vmImage: ubuntu-latest
