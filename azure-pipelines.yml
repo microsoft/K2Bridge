@@ -15,12 +15,11 @@ stages:
 
 - stage: build
   displayName: Build
-  condition: and(always(), not(variables['IS_DEMO_PIPELINE']))
   jobs:
 
   - job: security_analysis
     displayName: Security Analysis
-
+    condition: and(always(), not(variables['IS_DEMO_PIPELINE']))
     pool:
       # CredScan only runs on Windows
       vmImage: 'windows-latest'
@@ -101,6 +100,7 @@ stages:
 
   - job: build_and_unittest
     displayName: Build with UnitTests
+    condition: and(always(), not(variables['IS_DEMO_PIPELINE']))
     steps:
 
     - bash: |
@@ -173,6 +173,19 @@ stages:
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
           
+  - job: push_helm_charts
+    displayName: Build with UnitTests
+    steps:
+    - task: AzureCLI@1
+      displayName: Login to ACR
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          az configure --defaults acr="$ACR_NAME"
+          az acr login
+
     - task: HelmInstaller@1
       displayName: Helm installer
       inputs:
@@ -242,7 +255,17 @@ stages:
     - template: infrastructure/setup-k8s-clients-template.yml
 
     - task: AzureCLI@1
-      displayName: Log into ACR Helm repo
+      displayName: Login to ACR
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          az configure --defaults acr="$ACR_NAME"
+          az acr login
+
+    - task: AzureCLI@1
+      displayName: Add Helm repo to ACR
       inputs:
         azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -254,6 +277,7 @@ stages:
 
     - bash: |
         set -eux  # fail on error
+
         helm show chart $(ACR_NAME)/k2bridge
         # List charts before deploying (for job log, useful if rerunning job)
         helm list
