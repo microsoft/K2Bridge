@@ -1,0 +1,30 @@
+# Demo environment
+
+# manual operation only!
+trigger: none
+pr: none
+
+name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+- group: K2Bridge CI-CD - demo (7.10)
+- name: MAJOR_MINOR_VERSION
+  value: "0.3" # ONLY UPDATE THIS
+- name: SEMANTIC_VERSION
+  value: "$(MAJOR_MINOR_VERSION).$(Build.BuildId)"
+- name: KUSTO_DB
+  value: "demo"
+- name: COLLECT_TELEMETRY
+  value: true
+- name: TELEMETRY_KEY
+  value: "5d939046-15b2-448c-84be-2ecced5e9b1d"
+- name: IMAGE_TAG
+  value: $(DEMO_IMAGE_TAG) #For the demo, deploy the version as defined in the pipeline
+- name: RUN_SET_NAMESPACE
+  value: v7-10-latest
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- template: azure-pipelines.yml
