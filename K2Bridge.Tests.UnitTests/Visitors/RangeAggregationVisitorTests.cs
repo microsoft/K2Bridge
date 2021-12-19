@@ -75,7 +75,7 @@ namespace UnitTests.K2Bridge.Visitors
             VisitorTestsUtils.VisitRootDsl(visitor);
             visitor.Visit(rangeAggregation);
 
-            Assert.AreEqual("union (_data | where true | summarize wibble | extend ['key'] = '-') | project-reorder ['key'], * asc", rangeAggregation.KustoQL);
+            Assert.AreEqual("union (_data | summarize wibble | extend ['key'] = '-') | project-reorder ['key'], * asc", rangeAggregation.KustoQL);
         }
     }
 }
