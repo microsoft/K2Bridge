@@ -117,7 +117,7 @@ namespace K2Bridge.Visitors
             return agg.Field.Contains('.');
         }
 
-        // Dynamic fields need their types to be explcitly specified in the query
+        // Dynamic fields need their types to be explicitly specified in the query
         private string ConvertDynamicToCorrectType(Aggregation agg)
         {
             if (!IsFieldDynamic(agg))

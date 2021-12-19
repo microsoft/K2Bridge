@@ -38,7 +38,7 @@ namespace K2Bridge.JsonConverters
             return obj;
         }
 
-        private static string ConvertToString(JProperty prop, string value)
+        private static string ConvertToString(JToken prop, string value)
         {
             var first = prop.First[value];
             if (first == null)
