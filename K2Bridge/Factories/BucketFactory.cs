@@ -59,31 +59,7 @@ namespace K2Bridge.Factories
             var key = row[(int)BucketColumnNames.SummarizeByColumn];
             var count = row[BucketColumnNames.Count];
 
-            var tb = new Bucket {
-                DocCount = Convert.ToInt32(count),
-                Key = Convert.ToString(key),
-                Aggs = new Dictionary<string, Dictionary<string, object>>(),
-            };
-
-            CreateAggregationColumns(tb, row, logger);
-
-            return tb;
-        }
-
-        /// <summary>
-        /// Create a new <see cref="RangeBucket" from a given <see cref="DataRow"/>/>.
-        /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
-        /// <returns>A new TermsBucket.</returns>
-        public static RangeBucket CreateRangeBucketFromDataRow(DataRow row, ILogger logger)
-        {
-            Ensure.IsNotNull(row, nameof(row));
-
-            var range = Convert.ToString(row[(int)BucketColumnNames.SummarizeByColumn]);
-            var count = row[BucketColumnNames.Count];
-
-            // Ignore the row for "other" records, that did not match the ranges
-            if (range == BucketColumnNames.RangeDefaultBucket)
+            var tb = new Bucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = Convert.ToString(key),
