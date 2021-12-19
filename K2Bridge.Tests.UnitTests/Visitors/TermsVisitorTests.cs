@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-
 namespace UnitTests.K2Bridge.Visitors
 {
     using global::K2Bridge.Models.Request.Aggregations;
