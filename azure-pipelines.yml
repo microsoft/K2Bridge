@@ -202,6 +202,7 @@ stages:
           helm repo update
           helm dependency update charts/k2bridge
           empty_dir="$(Build.StagingDirectory)/charts_out"
+          echo $SEMANTIC_VERSION
           helm package --version "$SEMANTIC_VERSION" charts/k2bridge -d $empty_dir
           az acr helm push --force "$(ls $empty_dir/*)"
 
@@ -286,7 +287,7 @@ stages:
           --version "$SEMANTIC_VERSION" \
           --wait --timeout 30m \
           --set image.repository=$(ACR_NAME).azurecr.io/k2bridge \
-          --set image.tag=$SEMANTIC_VERSION \
+          --set image.tag=$IMAGE_TAG \
           --set replicaCount=2 \
           --set settings.adxClusterUrl="$KUSTO_URI" \
           --set settings.adxDefaultDatabaseName="$(KUSTO_DB)" \
