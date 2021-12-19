@@ -21,7 +21,7 @@ variables:
 - name: IMAGE_TAG
   value: $(DEMO_IMAGE_TAG) #For the demo, deploy the version as defined in the pipeline
 - name: RUN_SET_NAMESPACE
-  value: $(DEMO_IMAGE_TAG)
+  value: v7-10-latest
 
 pool:
   vmImage: ubuntu-latest
