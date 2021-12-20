@@ -6,16 +6,16 @@ namespace K2Bridge.Factories
 {
     using System;
     using System.Linq;
-    using System.Collections.Generic;
     using System.Data;
     using System.Globalization;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
+    using K2Bridge.Models.Response.Aggregations;
 
     /// <summary>
-    /// BucketFactory.
+    /// Bucket Factory.
     /// </summary>
     internal static class BucketFactory
     {
@@ -23,8 +23,9 @@ namespace K2Bridge.Factories
         /// Create a new <see cref="DateHistogramBucket" from a given <see cref="DataRow"/>/>.
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>
+        /// <param name="logger">ILogger object for logging.</param>
         /// <returns>A new DateHistogramBucket.</returns>
-        public static DateHistogramBucket CreateDateHistogramBucketFromDataRow(DataRow row, ILogger logger)
+        public static DateHistogramBucket CreateDateHistogramBucket(DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -40,34 +41,33 @@ namespace K2Bridge.Factories
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
-                Aggs = new Dictionary<string, Dictionary<string, object>>(),
             };
 
-            CreateAggregationColumns(dhb, row, logger);
+            dhb.AddAggregates(row, logger);
 
             return dhb;
         }
 
         /// <summary>
-        /// Create a new <see cref="Bucket" from a given <see cref="DataRow"/>/>.
+        /// Create a new <see cref="TermsBucket" from a given <see cref="DataRow"/>/>.
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>
-        /// <returns>A new Bucket.</returns>
-        public static Bucket CreateTermsBucketFromDataRow(DataRow row, ILogger logger)
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns>A new TermsBucket.</returns>
+        public static TermsBucket CreateTermsBucket(DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
             var key = row[(int)BucketColumnNames.SummarizeByColumn];
             var count = row[BucketColumnNames.Count];
 
-            var tb = new Bucket
+            var tb = new TermsBucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = Convert.ToString(key),
-                Aggs = new Dictionary<string, Dictionary<string, object>>(),
             };
 
-            CreateAggregationColumns(tb, row, logger);
+            tb.AddAggregates(row, logger);
 
             return tb;
         }
@@ -76,8 +76,9 @@ namespace K2Bridge.Factories
         /// Create a new <see cref="RangeBucket" from a given <see cref="DataRow"/>/>.
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>
+        /// <param name="logger">ILogger object for logging.</param>
         /// <returns>A new TermsBucket.</returns>
-        public static RangeBucket CreateRangeBucketFromDataRow(DataRow row, ILogger logger)
+        public static RangeBucket CreateRangeBucket(DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -113,79 +114,11 @@ namespace K2Bridge.Factories
                 Key = key,
                 From = from,
                 To = to,
-                Aggs = new Dictionary<string, Dictionary<string, object>>(),
             };
 
-            CreateAggregationColumns(rb, row, logger);
+            rb.AddAggregates(row, logger);
 
             return rb;
-        }
-
-        public static void CreateAggregationColumns(Bucket bucket, DataRow row, ILogger logger)
-        {
-            // TODO: refactor the columns handling based on the Percentiles code.
-            // See: workitem 15724
-            var columns = row.Table.Columns;
-            foreach (DataColumn column in columns)
-            {
-                if (column.ColumnName == BucketColumnNames.Count || columns.IndexOf(column) == (int)BucketColumnNames.SummarizeByColumn)
-                {
-                    continue;
-                }
-
-                var columnNameInfo = column.ColumnName.Split('%');
-
-                if (columnNameInfo.Length > 1)
-                {
-                    // key%metric%value1%value2%keyed
-                    var key = columnNameInfo[0];
-                    var metric = columnNameInfo[1];
-
-                    // extract the percentiles values: from the second to the last-1
-                    var queryValues = columnNameInfo[2..^1];
-
-                    // extract the boolean: last item of the pattern elements array
-                    var keyed = bool.Parse(columnNameInfo[^1]);
-
-                    if (metric != "percentile")
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        bucket.Aggs[key] = new Dictionary<string, object>();
-                        var returnValues = new Dictionary<string, double>();
-
-                        var percentileValues = (JArray)row[column.ColumnName];
-
-                        foreach (var (name, value) in queryValues.Zip(percentileValues))
-                        {
-                            logger.LogTrace("Adding Percentile {name}:{value}", name, value);
-                            returnValues.Add(name, value.Value<double>());
-                        }
-
-                        if (keyed)
-                        {
-                            // keyed ====> Dictionary<string, double>
-                            bucket.Aggs[key].Add("values", returnValues);
-                        }
-                        else
-                        {
-                            // not keyed ====> List<KeyValuePair<double,double>>
-                            bucket.Aggs[key].Add("values", returnValues.ToDictionary(item => double.Parse(item.Key, CultureInfo.InvariantCulture), item => item.Value).ToList());
-                        }
-                    }
-                }
-                else
-                {
-                    var columnName = column.ColumnName;
-                    logger.LogTrace("Defining the value for {columnName}", columnName);
-
-                    bucket.Aggs[columnName] = new Dictionary<string, object>() {
-                        { "value", double.Parse(row[columnName].ToString(), CultureInfo.InvariantCulture) },
-                    };
-                }
-            }
         }
     }
 }
