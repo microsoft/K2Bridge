@@ -40,17 +40,16 @@ namespace K2Bridge.Visitors
             // Preparing the schema with the index name to be used later
             schemaRetriever = schemaRetrieverFactory.Make(elasticSearchDSL.IndexName);
 
-            // base query
+            // Base query
             elasticSearchDSL.Query.Accept(this);
 
             var queryStringBuilder = new StringBuilder();
 
             var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(elasticSearchDSL.IndexName, defaultDatabaseName);
 
-            // when an index-pattern doesn't have a default time filter the query element can be empty
+            // When an index-pattern doesn't have a default time filter the query element can be empty
             var translatedQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KustoQL) ? $"| {elasticSearchDSL.Query.KustoQL}" : string.Empty;
 
-            // Aggregations
             if (elasticSearchDSL.Query.Bool != null)
             {
                 queryStringBuilder.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
@@ -58,18 +57,8 @@ namespace K2Bridge.Visitors
                 // Aggregations
                 if (elasticSearchDSL.Aggregations?.Count > 0)
                 {
-                    queryStringBuilder.Append('\n').Append("(");
-
-                    foreach (var (_, aggregation) in elasticSearchDSL.Aggregations)
-                    {
-                        aggregation.Accept(this);
-                        queryStringBuilder.Append($"{aggregation.KustoQL} ");
-                    }
-
-                    queryStringBuilder.Append("| as aggs);");
-
-                    // We will need the "true" hits count for some aggregations, e.g. Range
-                    queryStringBuilder.Append($"\n(_data | {KustoQLOperators.Count} | as hitsTotal);");
+                    elasticSearchDSL.Aggregations.Accept(this);
+                    queryStringBuilder.Append(elasticSearchDSL.Aggregations.KustoQL);
                 }
 
                 // hits (projections...)
