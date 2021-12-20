@@ -19,7 +19,7 @@ stages:
 
   - job: security_analysis
     displayName: Security Analysis
-    condition: and(always(), not(variables['IS_DEMO_PIPELINE']))
+    condition: not(variables['IS_DEMO_PIPELINE'])
     pool:
       # CredScan only runs on Windows
       vmImage: 'windows-latest'
@@ -100,7 +100,7 @@ stages:
 
   - job: build_and_unittest
     displayName: Build with UnitTests
-    condition: and(always(), not(variables['IS_DEMO_PIPELINE']))
+    condition: not(variables['IS_DEMO_PIPELINE'])
     steps:
 
     - bash: |
@@ -312,7 +312,7 @@ stages:
 
 - stage: integration_tests
   displayName: Integration Tests
-  condition: and(always(), not(variables['IS_DEMO_PIPELINE']))
+  condition: not(variables['IS_DEMO_PIPELINE'])
   dependsOn:
   - build
   - terraform
@@ -412,7 +412,7 @@ stages:
   # - if pipeline was canceled or failed before a Kubernetes namespace was generated
   # - if deploying on master branch
   # - if namespace was manually set with RUN_SET_NAMESPACE
-  condition: and(always(), not(variables['RUN_SET_NAMESPACE']), not(variables['IS_DEMO_PIPELINE']))
+  condition: and(not(variables['RUN_SET_NAMESPACE']), not(variables['IS_DEMO_PIPELINE']))
   jobs:
 
   - job: Cleanup
@@ -433,7 +433,7 @@ stages:
 
 - stage: release
   displayName: Release Artifacts
-  condition: and(always(), not(variables['IS_DEMO_PIPELINE']))
+  condition: not(variables['IS_DEMO_PIPELINE'])
   dependsOn: integration_tests
   jobs:
 
