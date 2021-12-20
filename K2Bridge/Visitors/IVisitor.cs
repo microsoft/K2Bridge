@@ -58,6 +58,12 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
+        /// <param name="aggregationDictionary">The aggregation to visit.</param>
+        void Visit(AggregationDictionary aggregationDictionary);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
         /// <param name="aggregationContainer">The aggregation to visit.</param>
         void Visit(AggregationContainer aggregationContainer);
 
