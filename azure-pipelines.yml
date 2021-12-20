@@ -19,7 +19,7 @@ stages:
 
   - job: security_analysis
     displayName: Security Analysis
-
+    condition: not(variables['IS_DEMO_PIPELINE'])
     pool:
       # CredScan only runs on Windows
       vmImage: 'windows-latest'
@@ -100,6 +100,7 @@ stages:
 
   - job: build_and_unittest
     displayName: Build with UnitTests
+    condition: not(variables['IS_DEMO_PIPELINE'])
     steps:
 
     - bash: |
@@ -132,15 +133,6 @@ stages:
         summaryFileLocation: 'coverage.cobertura.xml'
         pathToSources: '$(Build.SourcesDirectory)/K2Bridge/'
         failIfCoverageEmpty: true
-    
-    - task: BuildQualityChecks@8
-      displayName: 'Check build quality'
-      inputs:
-        checkCoverage: true # Optional
-        coverageFailOption: fixed # Optional; Valid values: build, fixed
-        coverageType: lines # Optional; Valid values: blocks, lines, branches, custom
-        coverageThreshold: '78.9' # Optional
-        coverageDeltaType: percentage # Optional; Valid values: absolute, percentage
 
     - task: AzureCLI@1
       displayName: Login to ACR
@@ -181,6 +173,19 @@ stages:
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
           
+  - job: push_helm_charts
+    displayName: Prepare and push helm charts
+    steps:
+    - task: AzureCLI@1
+      displayName: Login to ACR
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          az configure --defaults acr="$ACR_NAME"
+          az acr login
+
     - task: HelmInstaller@1
       displayName: Helm installer
       inputs:
@@ -197,6 +202,7 @@ stages:
           helm repo update
           helm dependency update charts/k2bridge
           empty_dir="$(Build.StagingDirectory)/charts_out"
+          echo $SEMANTIC_VERSION
           helm package --version "$SEMANTIC_VERSION" charts/k2bridge -d $empty_dir
           az acr helm push --force "$(ls $empty_dir/*)"
 
@@ -233,40 +239,34 @@ stages:
         TerraformEnvVariables:
           TF_VAR_aks_sp_client_secret: $(AKS_SP_CLIENT_SECRET)
 
-- stage: integration_tests
-  displayName: Integration Tests
+- stage: deploy_solution
+  displayName: Deploy Solution
   dependsOn:
   - build
   - terraform
-  # Deploy a new Kusto db
-  # Either if the db name is not set to 'demo' which means it is the Dev CI process
-  # Or it is the Demo CI process AND the RUN_CREATE_DEMO_KUSTO was set
+  condition: or(succeeded(), and(succeeded('terraform'), variables['IS_DEMO_PIPELINE']))
   jobs:
-  - job: Deploy_Kusto
-    displayName: Provision a new Kusto database
-    condition: or(and(succeeded(), not(eq(variables['KUSTO_DB'], 'demo'))), and(succeeded(), eq(variables['KUSTO_DB'], 'demo'), variables['RUN_CREATE_DEMO_KUSTO']))
-    steps:
-
-        - task: AzureCLI@1
-          displayName: Provision Kusto database
-          inputs:
-            azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
-            scriptLocation: inlineScript
-            inlineScript: |
-              set -eux  # fail on error
-              az kusto database create -g "$(RESOURCE_GROUP)" --cluster-name "$(KUSTO_NAME)" -n "$(KUSTO_DB)"
-
   - job: Deploy_K2Bridge
     displayName: Deploy K2Bridge
     variables:
-      ${{ if and(ne(variables['Build.SourceBranchName'], 'master'), ne(variables['Build.SourceBranchName'], 'dev-vnext')) }}:
+      ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
         NOT_MASTER_ES_CONFIG: "--set elasticsearch.replicas=2 --set elasticsearch.minimumMasterNodes=2"
     steps:
 
     - template: infrastructure/setup-k8s-clients-template.yml
 
     - task: AzureCLI@1
-      displayName: Log into ACR Helm repo
+      displayName: Login to ACR
+      inputs:
+        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -eux  # fail on error
+          az configure --defaults acr="$ACR_NAME"
+          az acr login
+
+    - task: AzureCLI@1
+      displayName: Add Helm repo to ACR
       inputs:
         azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -278,6 +278,7 @@ stages:
 
     - bash: |
         set -eux  # fail on error
+
         helm show chart $(ACR_NAME)/k2bridge
         # List charts before deploying (for job log, useful if rerunning job)
         helm list
@@ -286,7 +287,7 @@ stages:
           --version "$SEMANTIC_VERSION" \
           --wait --timeout 30m \
           --set image.repository=$(ACR_NAME).azurecr.io/k2bridge \
-          --set image.tag=$SEMANTIC_VERSION \
+          --set image.tag=$IMAGE_TAG \
           --set replicaCount=2 \
           --set settings.adxClusterUrl="$KUSTO_URI" \
           --set settings.adxDefaultDatabaseName="$(KUSTO_DB)" \
@@ -308,6 +309,31 @@ stages:
         kubectl run --attach --rm --restart=Never --image=curlimages/curl smoke-test-$RANDOM -- \
           --max-time 5 --retry 99999 --retry-max-time 1200 http://k2bridge:8080
       displayName: Smoke test
+
+- stage: integration_tests
+  displayName: Integration Tests
+  condition: not(variables['IS_DEMO_PIPELINE'])
+  dependsOn:
+  - build
+  - terraform
+  - deploy_solution
+  # Deploy a new Kusto db
+  # Either if the db name is not set to 'demo' which means it is the Dev CI process
+  # Or it is the Demo CI process AND the RUN_CREATE_DEMO_KUSTO was set
+  jobs:
+  - job: Deploy_Kusto
+    displayName: Provision a new Kusto database
+    condition: or(and(succeeded(), not(eq(variables['KUSTO_DB'], 'demo'))), and(succeeded(), eq(variables['KUSTO_DB'], 'demo'), variables['RUN_CREATE_DEMO_KUSTO']))
+    steps:
+
+        - task: AzureCLI@1
+          displayName: Provision Kusto database
+          inputs:
+            azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
+            scriptLocation: inlineScript
+            inlineScript: |
+              set -eux  # fail on error
+              az kusto database create -g "$(RESOURCE_GROUP)" --cluster-name "$(KUSTO_NAME)" -n "$(KUSTO_DB)"
 
   - job: Deploy_Elasticsearch
     displayName: Deploy Elasticsearch
@@ -341,7 +367,6 @@ stages:
     displayName: Run Tests
     dependsOn:
     - Deploy_Kusto
-    - Deploy_K2Bridge
     - Deploy_Elasticsearch
     steps:
 
@@ -387,7 +412,7 @@ stages:
   # - if pipeline was canceled or failed before a Kubernetes namespace was generated
   # - if deploying on master branch
   # - if namespace was manually set with RUN_SET_NAMESPACE
-  condition: and(always(), not(variables['RUN_SET_NAMESPACE']))
+  condition: and(not(variables['RUN_SET_NAMESPACE']), not(variables['IS_DEMO_PIPELINE']))
   jobs:
 
   - job: Cleanup
@@ -397,7 +422,7 @@ stages:
 
     - task: AzureCLI@1
       displayName: Delete AKS namespace and Kusto database
-      condition: and(variables['KUBERNETES_NAMESPACE'], not(eq(variables['KUBERNETES_NAMESPACE'], 'master')), not(eq(variables['KUBERNETES_NAMESPACE'], 'dev-vnext')))
+      condition: and(variables['KUBERNETES_NAMESPACE'], not(eq(variables['KUBERNETES_NAMESPACE'], 'master')))
       inputs:
         azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -408,6 +433,7 @@ stages:
 
 - stage: release
   displayName: Release Artifacts
+  condition: not(variables['IS_DEMO_PIPELINE'])
   dependsOn: integration_tests
   jobs:
 
@@ -417,7 +443,7 @@ stages:
     steps:
 
     - task: AzureCLI@1
-      displayName: Tag Docker image as $(k2Tag)
+      displayName: Tag Docker image as $(K2_TAG)
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -428,11 +454,11 @@ stages:
           docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_NAME.azurecr.io/k2bridge:$(k2Tag)"
-          docker push "$ACR_NAME.azurecr.io/k2bridge:$(k2Tag)"
+            "$ACR_NAME.azurecr.io/k2bridge:$K2_TAG"
+          docker push "$ACR_NAME.azurecr.io/k2bridge:$K2_TAG"
 
     - task: AzureCLI@1
-      displayName: Tag Docker image as $(k2Tag) for MCR
+      displayName: Tag Docker image as $(K2_TAG) for MCR
       inputs:
         azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
         scriptLocation: inlineScript
@@ -443,8 +469,8 @@ stages:
           docker pull "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
-            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$(k2Tag)"
-          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$(k2Tag)"
+            "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$K2_TAG"
+          docker push "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$K2_TAG"
           docker tag \
             "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION" \
             "$ACR_MCR_NAME.azurecr.io/public/azuredataexplorer/k2bridge:$SEMANTIC_VERSION"
