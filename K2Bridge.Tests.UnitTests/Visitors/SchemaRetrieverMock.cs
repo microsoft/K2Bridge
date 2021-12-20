@@ -24,7 +24,7 @@ namespace UnitTests.K2Bridge.Visitors
             var responseTask = Task.FromResult(response);
 
             var mockDAL = new Mock<IKustoDataAccess>();
-            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
+            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), false)).Returns(responseTask);
 
             var mockLogger = new Mock<ILogger<SchemaRetriever>>();
             return new SchemaRetrieverFactory(mockLogger.Object, mockDAL.Object);
