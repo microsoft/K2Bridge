@@ -306,7 +306,7 @@ namespace UnitTests.K2Bridge.Visitors
             TestName = "QueryAccept_WithTimestamp_ReturnsExpectedResult")]
         [TestCase(
             QueryBetweenRangeSingle,
-            ExpectedResult = "where (TEST_FIELD >= 0 and TEST_FIELD < 10)",
+            ExpectedResult = "where (['TEST_FIELD'] >= 0 and ['TEST_FIELD'] < 10)",
             TestName = "QueryAccept_WithBetweenRange_ReturnsExpectedResult")]
         public string TestRangeQueries(string queryString)
         {
