@@ -274,11 +274,11 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryMatchPhraseSingle,
-            ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\")",
+            ExpectedResult = "where (['TEST_FIELD'] == \"TEST_RESULT\")",
             TestName = "QueryAccept_WithSingleMatchPhrase_ReturnsExpectedResult")]
         [TestCase(
             QueryMatchPhraseMulti,
-            ExpectedResult = "where (TEST_FIELD == \"TEST_RESULT\") and (TEST_FIELD_2 == \"TEST_RESULT_2\")",
+            ExpectedResult = "where (['TEST_FIELD'] == \"TEST_RESULT\") and (['TEST_FIELD_2'] == \"TEST_RESULT_2\")",
             TestName = "QueryAccept_WithMultiMatchPhrase_ReturnsExpectedResult")]
         public string TestMatchPhraseQueries(string queryString)
         {
@@ -335,11 +335,11 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             CombinedQuery,
-            ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (['timestamp'] >= unixtime_milliseconds_todatetime(0) and ['timestamp'] <= unixtime_milliseconds_todatetime(10))",
+            ExpectedResult = "where (* has \"TEST_RESULT\") and (['TEST_FIELD'] == \"TEST_RESULT_2\") and (['TEST_FIELD_2'] == \"TEST_RESULT_3\") and (['timestamp'] >= unixtime_milliseconds_todatetime(0) and ['timestamp'] <= unixtime_milliseconds_todatetime(10))",
             TestName = "QueryAccept_WithCombinedQuery_ReturnsExpectedResult")]
         [TestCase(
             NotQueryStringClause,
-            ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD != \"TEST_RESULT_2\")",
+            ExpectedResult = "where (* has \"TEST_RESULT\") and (['TEST_FIELD'] != \"TEST_RESULT_2\")",
             TestName = "QueryAccept_WithNotString_ReturnsExpectedResult")]
         public string TestCombinedQueries(string queryString)
         {
