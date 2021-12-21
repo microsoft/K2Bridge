@@ -16,8 +16,8 @@ namespace K2Bridge.Visitors
     {
         // The following regexes look for the '?' or '*' chars which are
         // not followed by an escape character
-        private static readonly Regex SingleCharPattern = new (@"(?<!\\)\?");
-        private static readonly Regex MultiCharPattern = new (@"(?<!\\)\*");
+        private static readonly Regex SingleCharPattern = new(@"(?<!\\)\?");
+        private static readonly Regex MultiCharPattern = new(@"(?<!\\)\*");
 
         /// <inheritdoc/>
         public void Visit(MatchPhraseClause matchPhraseClause)
@@ -36,11 +36,11 @@ namespace K2Bridge.Visitors
                     object o => $"\"{matchPhraseClause.Phrase.ToString().EscapeSlashes()}\"",
                 };
 
-                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} {parsedPhrase}";
+                matchPhraseClause.KustoQL = $"['{matchPhraseClause.FieldName}'] {KustoQLOperators.Equal} {parsedPhrase}";
                 return;
             }
 
-            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"\"";
+            matchPhraseClause.KustoQL = $"['{matchPhraseClause.FieldName}'] {KustoQLOperators.Equal} \"\"";
         }
     }
 }
