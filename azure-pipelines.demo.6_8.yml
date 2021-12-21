@@ -17,7 +17,7 @@ variables:
 - name: COLLECT_TELEMETRY
   value: true
 - name: TELEMETRY_KEY
-  value: "5d939046-15b2-448c-84be-2ecced5e9b1d"
+  value: "c2d813f9-745f-400f-ad95-ce54178463fb"
 - name: IMAGE_TAG
   value: $(DEMO_IMAGE_TAG) #For the demo, deploy the version as defined in the pipeline
 - name: RUN_SET_NAMESPACE
