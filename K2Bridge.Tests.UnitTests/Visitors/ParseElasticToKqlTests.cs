@@ -302,7 +302,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryTimestampRangeSingle,
-            ExpectedResult = "where (timestamp >= unixtime_milliseconds_todatetime(0) and timestamp <= unixtime_milliseconds_todatetime(10))",
+            ExpectedResult = "where (['timestamp'] >= unixtime_milliseconds_todatetime(0) and ['timestamp'] <= unixtime_milliseconds_todatetime(10))",
             TestName = "QueryAccept_WithTimestamp_ReturnsExpectedResult")]
         [TestCase(
             QueryBetweenRangeSingle,
@@ -335,7 +335,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             CombinedQuery,
-            ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (timestamp >= unixtime_milliseconds_todatetime(0) and timestamp <= unixtime_milliseconds_todatetime(10))",
+            ExpectedResult = "where (* has \"TEST_RESULT\") and (TEST_FIELD == \"TEST_RESULT_2\") and (TEST_FIELD_2 == \"TEST_RESULT_3\") and (['timestamp'] >= unixtime_milliseconds_todatetime(0) and ['timestamp'] <= unixtime_milliseconds_todatetime(10))",
             TestName = "QueryAccept_WithCombinedQuery_ReturnsExpectedResult")]
         [TestCase(
             NotQueryStringClause,

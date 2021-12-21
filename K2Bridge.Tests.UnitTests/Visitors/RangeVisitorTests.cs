@@ -13,7 +13,7 @@ namespace UnitTests.K2Bridge.Visitors
     public class RangeVisitorTests
     {
         [TestCase(
-            ExpectedResult = "myField >= 3 and myField < 5",
+            ExpectedResult = "['MyField'] >= 3 and ['MyField'] < 5",
             TestName = "Visit_WithBasicInput_ReturnsValidResponse")]
         public string TestBasicRangeVisitor()
         {
@@ -24,7 +24,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             ExpectedResult =
-            "myField >= unixtime_milliseconds_todatetime(1212121121) and myField <= unixtime_milliseconds_todatetime(2121212121)",
+            "['MyField'] >= unixtime_milliseconds_todatetime(1212121121) and ['MyField'] <= unixtime_milliseconds_todatetime(2121212121)",
             TestName = "Visit_WithEpochInput_ReturnsValidResponse")]
         public string TestEpochBasicRangeVisitor()
         {

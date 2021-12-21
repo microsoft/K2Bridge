@@ -36,7 +36,7 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(matchPhraseClause);
         }
 
-        [TestCase(ExpectedResult = "MyField == todatetime(\"2017-01-02T13:45:23.1330000Z\")")]
+        [TestCase(ExpectedResult = "['MyField'] == todatetime(\"2017-01-02T13:45:23.1330000Z\")")]
         public string MatchPhraseVisit_WithValidDateClause_ReturnsEquals()
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", new DateTime(2017, 1, 2, 13, 45, 23, 133, DateTimeKind.Utc));
