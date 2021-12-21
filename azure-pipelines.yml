@@ -312,7 +312,7 @@ stages:
 
 - stage: integration_tests
   displayName: Integration Tests
-  condition: not(variables['IS_DEMO_PIPELINE'])
+  condition: and(succeeded(), not(variables['IS_DEMO_PIPELINE']))
   dependsOn:
   - build
   - terraform
