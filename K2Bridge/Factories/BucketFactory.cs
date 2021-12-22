@@ -11,7 +11,6 @@ namespace K2Bridge.Factories
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json.Linq;
     using K2Bridge.Models.Response.Aggregations;
 
     /// <summary>
@@ -20,19 +19,27 @@ namespace K2Bridge.Factories
     internal static class BucketFactory
     {
         /// <summary>
-        /// Create a new <see cref="DateHistogramBucket" from a given <see cref="DataRow"/>/>.
+        /// Declare a delegate used to create a bucket instance of type TBucket from a given <see cref="DataRow"/>.
         /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
-        /// <param name="logger">ILogger object for logging.</param>
-        /// <returns>A new DateHistogramBucket.</returns>
-        public static DateHistogramBucket CreateDateHistogramBucket(DataRow row, ILogger logger)
+        /// <typeparam name="TBucket">The bucket type.</typeparam>
+        /// <param name="primaryKey">The primary aggregation key.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="logger">The <see cref="ILogger"> used for logging.</param>
+        /// <returns>TBucket instance.</returns>
+        public delegate TBucket CreateBucket<TBucket>(string primaryKey, DataRow row, ILogger logger);
+
+        /// <summary>
+        /// Create a new <see cref="DateHistogramBucket" from a given <see cref="DataRow"/>.
+        /// </summary>
+        /// <param name="primaryKey">The primary aggregation key.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="logger">The <see cref="ILogger"> used for logging.</param>
+        /// <returns><see cref="DateHistogramBucket"> instance.</returns>
+        public static DateHistogramBucket CreateDateHistogramBucket(string primaryKey, DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            // TODO: timestamp is always the first column (probably named 2), and count will be named _count
-            // we currently mix index and column names, need to check if we can enhance this logic
-            // workitem 15050
-            var timestamp = row[(int)BucketColumnNames.SummarizeByColumn];
+            var timestamp = row[primaryKey];
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
@@ -43,22 +50,23 @@ namespace K2Bridge.Factories
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
             };
 
-            dhb.AddAggregates(row, logger);
+            dhb.AddAggregates(row, logger, primaryKey);
 
             return dhb;
         }
 
         /// <summary>
-        /// Create a new <see cref="TermsBucket" from a given <see cref="DataRow"/>/>.
+        /// Create a new <see cref="TermsBucket" from a given <see cref="DataRow"/>.
         /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
-        /// <param name="logger">ILogger object for logging.</param>
-        /// <returns>A new TermsBucket.</returns>
-        public static TermsBucket CreateTermsBucket(DataRow row, ILogger logger)
+        /// <param name="primaryKey">The primary aggregation key.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="logger">The <see cref="ILogger"> used for logging.</param>
+        /// <returns><see cref="TermsBucket"> instance.</returns>
+        public static TermsBucket CreateTermsBucket(string primaryKey, DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var key = row[(int)BucketColumnNames.SummarizeByColumn];
+            var key = row[primaryKey];
             var count = row[BucketColumnNames.Count];
 
             var tb = new TermsBucket
@@ -67,22 +75,23 @@ namespace K2Bridge.Factories
                 Key = Convert.ToString(key),
             };
 
-            tb.AddAggregates(row, logger);
+            tb.AddAggregates(row, logger, primaryKey);
 
             return tb;
         }
 
         /// <summary>
-        /// Create a new <see cref="RangeBucket" from a given <see cref="DataRow"/>/>.
+        /// Create a new <see cref="RangeBucket" from a given <see cref="DataRow"/>.
         /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
-        /// <param name="logger">ILogger object for logging.</param>
-        /// <returns>A new TermsBucket.</returns>
-        public static RangeBucket CreateRangeBucket(DataRow row, ILogger logger)
+        /// <param name="primaryKey">The primary aggregation key.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="logger">The <see cref="ILogger"> used for logging.</param>
+        /// <returns><see cref="RangeBucket"> instance.</returns>
+        public static RangeBucket CreateRangeBucket(string primaryKey, DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var range = Convert.ToString(row[(int)BucketColumnNames.SummarizeByColumn]);
+            var range = Convert.ToString(row[primaryKey]);
             var count = row[BucketColumnNames.Count];
 
             // Ignore the row for "other" records, that did not match the ranges
@@ -116,7 +125,7 @@ namespace K2Bridge.Factories
                 To = to,
             };
 
-            rb.AddAggregates(row, logger);
+            rb.AddAggregates(row, logger, primaryKey);
 
             return rb;
         }
