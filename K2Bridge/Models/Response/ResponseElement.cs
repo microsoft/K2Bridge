@@ -16,6 +16,6 @@ namespace K2Bridge.Models.Response
         /// Gets or sets aggregations in a response element.
         /// </summary>
         [JsonProperty("aggregations")]
-        public AggregateDictionary Aggregations => new AggregateDictionary();
+        public AggregateDictionary Aggregations { get; } = new AggregateDictionary();
     }
 }
