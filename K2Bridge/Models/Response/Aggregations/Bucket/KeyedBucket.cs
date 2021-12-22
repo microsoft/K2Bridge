@@ -11,10 +11,14 @@ namespace K2Bridge.Models.Response.Aggregations
     /// </summary>
     public class KeyedBucket<TKey> : BucketBase
     {
-        [JsonProperty("key")]
+        /// <summary>
+        /// Gets or sets the Key value.
+        /// </summary>
         public TKey Key { get; set; }
 
-        [JsonProperty("key_as_string")]
+        /// <summary>
+        /// Gets or sets the KeyAsString value.
+        /// </summary>
         public string KeyAsString { get; set; }
     }
 }

@@ -5,40 +5,32 @@
 namespace K2Bridge.Models.Response.Aggregations
 {
     using Newtonsoft.Json;
+    using K2Bridge.JsonConverters;
 
     /// <summary>
     /// Describes range bucket response element.
     /// </summary>
-    public class RangeBucket : BucketBase
+    [JsonConverter(typeof(RangeBucketConverter))]
+    public class RangeBucket : KeyedBucket<string>
     {
         /// <summary>
-        /// Gets or sets the from value.
+        /// Gets or sets the From value.
         /// </summary>
-        [JsonProperty("from")]
         public double? From { get; set; }
 
         /// <summary>
-        /// Gets or sets the from_as_string value.
+        /// Gets or sets the FromAsString value.
         /// </summary>
-        [JsonProperty("from_as_string")]
         public string FromAsString { get; set; }
 
         /// <summary>
-        /// Gets or sets the key value.
+        /// Gets or sets the To value.
         /// </summary>
-        [JsonProperty("key")]
-        public string Key { get; set; }
-
-        /// <summary>
-        /// Gets or sets the to value.
-        /// </summary>
-        [JsonProperty("to")]
         public double? To { get; set; }
 
         /// <summary>
-        /// Gets or sets the to_as_string value.
+        /// Gets or sets the ToAsString value.
         /// </summary>
-        [JsonProperty("to_as_string")]
         public string ToAsString { get; set; }
     }
 }

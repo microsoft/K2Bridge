@@ -12,9 +12,8 @@ namespace K2Bridge.Models.Response.Aggregations
     public abstract class BucketBase : AggregateDictionary, IBucket
     {
         /// <summary>
-        /// Gets or sets the doc_count value.
+        /// Gets or sets the DocCount value.
         /// </summary>
-        [JsonProperty("doc_count")]
         public long DocCount { get; set; }
     }
 }

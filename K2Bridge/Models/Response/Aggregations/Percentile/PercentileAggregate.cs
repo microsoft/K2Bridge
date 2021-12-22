@@ -14,8 +14,14 @@ namespace K2Bridge.Models.Response.Aggregations
     [JsonConverter(typeof(PercentileAggregateConverter))]
     public class PercentileAggregate : IAggregate
     {
+        /// <summary>
+        /// Gets or sets the list of PercentileItem values.
+        /// </summary>
         public List<PercentileItem> Values { get; } = new List<PercentileItem>();
 
+        /// <summary>
+        /// Gets or sets Keyed value.
+        /// </summary>
         public bool Keyed { get; set; }
     }
 }
