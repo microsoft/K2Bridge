@@ -10,7 +10,7 @@ namespace K2Bridge.JsonConverters
     using Newtonsoft.Json;
 
     /// <summary>
-    /// This converter serializes <see cref="TermsBucketConverter"/> to Elasticsearh response json format.
+    /// This converter serializes <see cref="TermsBucket"/> to Elasticsearh response json format.
     /// </summary>
     internal class TermsBucketConverter : WriteOnlyJsonConverter
     {
@@ -27,8 +27,11 @@ namespace K2Bridge.JsonConverters
                 writer.WritePropertyName("key");
                 serializer.Serialize(writer, termsBucket.Key);
 
-                writer.WritePropertyName("key_as_string");
-                serializer.Serialize(writer, termsBucket.KeyAsString);
+                if (!string.IsNullOrEmpty(termsBucket.KeyAsString))
+                {
+                    writer.WritePropertyName("key_as_string");
+                    serializer.Serialize(writer, termsBucket.KeyAsString);
+                }
 
                 foreach (KeyValuePair<string, IAggregate> aggregate in termsBucket)
                 {
