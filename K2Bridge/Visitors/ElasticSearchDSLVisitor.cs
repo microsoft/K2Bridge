@@ -61,7 +61,12 @@ namespace K2Bridge.Visitors
                     queryStringBuilder.Append(elasticSearchDSL.Aggregations.KustoQL);
                 }
 
-                // hits (projections...)
+                // We will need the "true" hits count for some aggregations, e.g. Range
+                // And this line must be added even there is no aggregation (default count metric)
+                // KQL ==> (_data | count | as hitsTotal);
+                queryStringBuilder.Append($"\n(_data | {KustoQLOperators.Count} | as hitsTotal);");
+
+                // Hits (projections...)
                 // The size is deserialized property
                 // therefore we check 'Size >= 0' to protect the query.
                 if (elasticSearchDSL.Size >= 0)

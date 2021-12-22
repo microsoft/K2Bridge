@@ -45,10 +45,6 @@ namespace K2Bridge.Visitors
                 query.Append($"\n(_data | {KustoQLOperators.Summarize} {metricsKustoQL} | as aggs);");
             }
 
-            // We will need the "true" hits count for some aggregations, e.g. Range
-            // KQL ==> (_data | count | as hitsTotal);
-            query.Append($"\n(_data | {KustoQLOperators.Count} | as hitsTotal);");
-
             aggregationDictionary.KustoQL = query.ToString();
         }
     }
