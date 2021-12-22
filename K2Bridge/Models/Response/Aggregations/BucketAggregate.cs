@@ -5,6 +5,7 @@
 namespace K2Bridge.Models.Response.Aggregations
 {
     using System.Collections.Generic;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Describes bucket aggregate response element.
@@ -15,6 +16,7 @@ namespace K2Bridge.Models.Response.Aggregations
         /// <summary>
         /// Gets or sets a collection of buckets.
         /// </summary>
-        public List<TBucket> Buckets { get; set; }
+        [JsonProperty("buckets")]
+        public List<TBucket> Buckets { get; } = new List<TBucket>();
     }
 }
