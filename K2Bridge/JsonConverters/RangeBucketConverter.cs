@@ -24,8 +24,11 @@ namespace K2Bridge.JsonConverters
                 writer.WritePropertyName("doc_count");
                 serializer.Serialize(writer, rangeBucket.DocCount);
 
-                writer.WritePropertyName("key");
-                serializer.Serialize(writer, rangeBucket.Key);
+                if (rangeBucket.Key is not null)
+                {
+                    writer.WritePropertyName("key");
+                    serializer.Serialize(writer, rangeBucket.Key);
+                }
 
                 if (rangeBucket.From is not null)
                 {
@@ -33,7 +36,7 @@ namespace K2Bridge.JsonConverters
                     serializer.Serialize(writer, rangeBucket.From);
                 }
 
-                if (!string.IsNullOrWhiteSpace(rangeBucket.FromAsString))
+                if (rangeBucket.FromAsString is not null)
                 {
                     writer.WritePropertyName("from_as_string");
                     serializer.Serialize(writer, rangeBucket.FromAsString);
@@ -45,7 +48,7 @@ namespace K2Bridge.JsonConverters
                     serializer.Serialize(writer, rangeBucket.To);
                 }
 
-                if (!string.IsNullOrWhiteSpace(rangeBucket.FromAsString))
+                if (rangeBucket.ToAsString is not null)
                 {
                     writer.WritePropertyName("to_as_string");
                     serializer.Serialize(writer, rangeBucket.ToAsString);
