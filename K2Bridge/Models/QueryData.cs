@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Models
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -19,7 +20,12 @@ namespace K2Bridge.Models
         /// <param name="sortFields">Field names specified in query sort clause.</param>
         /// <param name="docValueFields">Field names specified in query docvalue_fields clause.</param>
         /// <param name="highlightText">What terms need to be highlighted in the results.</param>
-        public QueryData(string queryCommandText, string indexName, IList<string> sortFields = null, IList<string> docValueFields = null, Dictionary<string, string> highlightText = null, string primaryAggregation = null)
+        public QueryData(
+            string queryCommandText,
+            string indexName,
+            IList<string> sortFields = null,
+            IList<string> docValueFields = null,
+            Dictionary<string, string> highlightText = null)
         {
             Ensure.IsNotNullOrEmpty(queryCommandText, nameof(queryCommandText), "Query string cannot be empty or null");
             Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), "Index name string cannot be empty or null");
@@ -31,7 +37,7 @@ namespace K2Bridge.Models
             HighlightText = highlightText;
             HighlightPreTag = string.Empty;
             HighlightPostTag = string.Empty;
-            PrimaryAggregation = primaryAggregation;
+            PrimaryAggregation = default;
         }
 
         /// <summary>
@@ -62,16 +68,16 @@ namespace K2Bridge.Models
         /// <summary>
         /// Gets or sets the tag that opens highlighted text.
         /// </summary>
-        public string HighlightPreTag { get; set; }
+        public string HighlightPreTag { get; internal set; }
 
         /// <summary>
         /// Gets or sets the tag that closes highlighted text.
         /// </summary>
-        public string HighlightPostTag { get; set; }
+        public string HighlightPostTag { get; internal set; }
 
         /// <summary>
         /// Gets or sets the primary aggregation.
         /// </summary>
-        public string PrimaryAggregation { get; private set; }
+        public KeyValuePair<string, string> PrimaryAggregation { get; internal set; }
     }
 }
