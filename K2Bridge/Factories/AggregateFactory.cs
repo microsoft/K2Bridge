@@ -23,13 +23,14 @@ namespace K2Bridge.Factories
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>
         /// <param name="row">The row to be added as aggregate.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        public static void AddAggregates(this AggregateDictionary aggregateDictionary, DataRow row, ILogger logger)
+        /// <param name="primaryKey">The primary aggregation key.</param>
+        public static void AddAggregates(this AggregateDictionary aggregateDictionary, DataRow row, ILogger logger, string primaryKey)
         {
             var columns = row.Table.Columns;
 
             foreach (DataColumn column in columns)
             {
-                if (column.ColumnName == BucketColumnNames.Count || columns.IndexOf(column) == (int)BucketColumnNames.SummarizeByColumn)
+                if (column.ColumnName == BucketColumnNames.Count || column.ColumnName == primaryKey)
                 {
                     continue;
                 }
@@ -53,7 +54,9 @@ namespace K2Bridge.Factories
                     var key = column.ColumnName;
                     logger.LogTrace($"Defining the value for {key}");
 
-                    var value = (double)row[key];
+                    var rowValue = (double)row[key];
+                    double? value = double.IsNaN(rowValue) ? null : rowValue;
+
                     aggregateDictionary.Add(key, new ValueAggregate() { Value = value });
                 }
             }
@@ -75,15 +78,17 @@ namespace K2Bridge.Factories
 
             var percentileAggregate = new PercentileAggregate() { Keyed = keyed };
 
-            var percentileValues = (JArray)row[columnName];
-            foreach (var (percent, value) in percents.Zip(percentileValues))
+            if (row[columnName] is JArray percentileValues)
             {
-                percentileAggregate.Values.Add(
-                    new PercentileItem()
-                    {
-                        Percentile = double.Parse(percent, CultureInfo.InvariantCulture),
-                        Value = value.Value<double>(),
-                    });
+                foreach (var (percent, value) in percents.Zip(percentileValues))
+                {
+                    percentileAggregate.Values.Add(
+                        new PercentileItem()
+                        {
+                            Percentile = double.Parse(percent, CultureInfo.InvariantCulture),
+                            Value = value.Value<double>(),
+                        });
+                }
             }
 
             return percentileAggregate;
