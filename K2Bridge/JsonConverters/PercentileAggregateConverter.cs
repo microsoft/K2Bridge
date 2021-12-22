@@ -4,6 +4,7 @@
 
 namespace K2Bridge.JsonConverters
 {
+    using System.Globalization;
     using System.Linq;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response.Aggregations;
@@ -25,7 +26,7 @@ namespace K2Bridge.JsonConverters
             if (aggregate.Keyed)
             {
                 // Keyed ==> Dictionary<string, double>
-                serializer.Serialize(writer, aggregate.Values.ToDictionary(item => item.Percentile.ToString(), item => item.Value));
+                serializer.Serialize(writer, aggregate.Values.ToDictionary(item => item.Percentile.ToString("F1", CultureInfo.InvariantCulture), item => item.Value));
             }
             else
             {

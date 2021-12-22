@@ -5,7 +5,7 @@
 namespace K2Bridge.Models.Response.Aggregations
 {
     using System.Collections.Generic;
-    using System.Text.Json.Serialization;
+    using Newtonsoft.Json;
     using K2Bridge.JsonConverters;
 
     /// <summary>
@@ -14,7 +14,7 @@ namespace K2Bridge.Models.Response.Aggregations
     [JsonConverter(typeof(PercentileAggregateConverter))]
     public class PercentileAggregate : IAggregate
     {
-        public List<PercentileItem> Values => new List<PercentileItem>();
+        public List<PercentileItem> Values { get; } = new List<PercentileItem>();
 
         public bool Keyed { get; set; }
     }
