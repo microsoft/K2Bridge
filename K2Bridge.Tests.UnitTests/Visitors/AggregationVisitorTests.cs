@@ -23,7 +23,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=avg(fieldA)")]
+        [TestCase(ExpectedResult = "['A']=avg(['fieldA'])")]
         public string AggregationVisit_WithAvgAgg_ReturnsAvgPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -36,7 +36,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=avg(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=avg(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicLongAvgAgg_ReturnsAvgPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -49,7 +49,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=avg(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=avg(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicDoubleAvgAgg_ReturnsAvgPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -62,7 +62,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=dcount(fieldA)")]
+        [TestCase(ExpectedResult = "['A']=dcount(['fieldA'])")]
         public string AggregationVisit_WithCardinalityAgg_ReturnsDCount()
         {
             var aggregateClause = new AggregationContainer() {
@@ -75,7 +75,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=dcount(tostring(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=dcount(tostring(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicStringCardinalityAgg_ReturnsDCount()
         {
             var aggregateClause = new AggregationContainer() {
@@ -88,7 +88,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=dcount(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=dcount(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicLongCardinalityAgg_ReturnsDCount()
         {
             var aggregateClause = new AggregationContainer() {
@@ -101,7 +101,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=dcount(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=dcount(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicDoubleCardinalityAgg_ReturnsDCount()
         {
             var aggregateClause = new AggregationContainer() {
@@ -114,7 +114,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=dcount(todatetime(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=dcount(todatetime(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicDatetimeCardinalityAgg_ReturnsDCount()
         {
             var aggregateClause = new AggregationContainer() {
@@ -127,7 +127,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=min(fieldA)")]
+        [TestCase(ExpectedResult = "['A']=min(['fieldA'])")]
         public string AggregationVisit_WithMinAgg_ReturnsMinPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -140,7 +140,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=min(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=min(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicLongMinAgg_ReturnsMinPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -153,7 +153,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=min(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=min(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicDoubleMinAgg_ReturnsMinPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -166,7 +166,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=min(todatetime(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=min(todatetime(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicDatetimeMinAgg_ReturnsMinPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -179,7 +179,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=max(fieldA)")]
+        [TestCase(ExpectedResult = "['A']=max(['fieldA'])")]
         public string AggregationVisit_WithMaxAgg_ReturnsMaxPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -192,7 +192,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=max(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=max(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicLongMaxAgg_ReturnsMaxPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -205,7 +205,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=max(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=max(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicDoubleMaxAgg_ReturnsMaxPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -218,7 +218,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=max(todatetime(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=max(todatetime(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicDatetimeMaxAgg_ReturnsMaxPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -231,7 +231,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=sum(fieldA)")]
+        [TestCase(ExpectedResult = "['A']=sum(['fieldA'])")]
         public string AggregationVisit_WithSumAgg_ReturnsSumPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -244,7 +244,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=sum(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=sum(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicLongSumAgg_ReturnsSumPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -257,7 +257,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A']=sum(todouble(fieldA.B))")]
+        [TestCase(ExpectedResult = "['A']=sum(todouble(['fieldA'].['B']))")]
         public string AggregationVisit_WithDynamicDoubleSumAgg_ReturnsSumPrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -270,7 +270,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%percentile%50.0%False']=percentiles_array(fieldA, 50)")]
+        [TestCase(ExpectedResult = "['A%percentile%50.0%False']=percentiles_array(['fieldA'], 50)")]
         public string AggregationVisit_WithPercentileAgg_ReturnsPercentilePrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -283,7 +283,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%percentile%50.0%False']=percentiles_array(todouble(fieldA.B), 50)")]
+        [TestCase(ExpectedResult = "['A%percentile%50.0%False']=percentiles_array(todouble(['fieldA'].['B']), 50)")]
         public string AggregationVisit_WithDynamicLongPercentileAgg_ReturnsPercentilePrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -296,7 +296,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%percentile%50.0%False']=percentiles_array(todouble(fieldA.B), 50)")]
+        [TestCase(ExpectedResult = "['A%percentile%50.0%False']=percentiles_array(todouble(['fieldA'].['B']), 50)")]
         public string AggregationVisit_WithDynamicDoublePercentileAgg_ReturnsPercentilePrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -309,7 +309,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)")]
+        [TestCase(ExpectedResult = "['A%percentile%25.0%50.0%99.0%False']=percentiles_array(['fieldA'], 25,50,99)")]
         public string AggregationVisit_WithPercentilesAgg_ReturnsPercentilePrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -322,7 +322,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%percentile%25.0%50.0%99.0%False']=percentiles_array(todouble(fieldA.B), 25,50,99)")]
+        [TestCase(ExpectedResult = "['A%percentile%25.0%50.0%99.0%False']=percentiles_array(todouble(['fieldA'].['B']), 25,50,99)")]
         public string AggregationVisit_WithDynamicLongPercentilesAgg_ReturnsPercentilePrimary()
         {
             var aggregateClause = new AggregationContainer() {
@@ -335,7 +335,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%percentile%25.0%50.0%99.0%False']=percentiles_array(todouble(fieldA.B), 25,50,99)")]
+        [TestCase(ExpectedResult = "['A%percentile%25.0%50.0%99.0%False']=percentiles_array(todouble(['fieldA'].['B']), 25,50,99)")]
         public string AggregationVisit_WithDynamicDoublePercentilesAgg_ReturnsPercentilePrimary()
         {
             var aggregateClause = new AggregationContainer() {

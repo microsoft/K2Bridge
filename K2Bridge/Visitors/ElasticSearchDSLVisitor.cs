@@ -129,7 +129,7 @@ namespace K2Bridge.Visitors
             }
 
             // Dynamic fields need their types to be explicitly specified in the query if in aggregation
-            return ClauseFieldTypeProcessor.GetType(schemaRetriever, quoted).Result switch {
+            return ClauseFieldTypeProcessor.GetType(schemaRetriever, field).Result switch {
                 ClauseFieldType.Date => $"{KustoQLOperators.ToDateTime}({quoted})",
                 ClauseFieldType.Numeric => $"{KustoQLOperators.ToDouble}({quoted})",
                 _ => $"{KustoQLOperators.ToStringOperator}({quoted})",
