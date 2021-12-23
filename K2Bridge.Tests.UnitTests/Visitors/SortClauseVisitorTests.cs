@@ -25,7 +25,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase(
-            ExpectedResult = "wibble asc",
+            ExpectedResult = "['wibble'] asc",
             TestName = "Visit_WithValidInput_ReturnsExpectedResult")]
         public string GeneratesClauseQuery()
         {

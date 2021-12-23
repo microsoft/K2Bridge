@@ -39,7 +39,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
                 Throws.TypeOf<IllegalClauseException>());
         }
 
-        [TestCase(ExpectedResult = "days >= 2 and days <= 6")]
+        [TestCase(ExpectedResult = "['days'] >= 2 and ['days'] <= 6")]
         public string Visit_WithValidRangeQuery_ReturnsValidResponse()
         {
             var rangeQuery = new LuceneRangeQuery
