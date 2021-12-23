@@ -33,7 +33,7 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("year", ExpectedResult = "_data | summarize metric by ['key'] = startofyear(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
         [TestCase("M", ExpectedResult = "_data | summarize metric by ['key'] = startofmonth(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
         [TestCase("month", ExpectedResult = "_data | summarize metric by ['key'] = startofmonth(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
-        [TestCase("z", ExpectedResult = "_data | summarize metric by ['key'] = bin(field, z)\n| order by ['key'] asc")]
+        [TestCase("z", ExpectedResult = "_data | summarize metric by ['key'] = bin(['field'], z)\n| order by ['key'] asc")]
         public string DateHistogramVisit_WithAggregation_ReturnsValidResponse(string interval)
         {
             var histogramAggregation = new DateHistogramAggregation()
