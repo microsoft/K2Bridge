@@ -188,7 +188,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.True(dsl.KustoQL.Contains("_data | summarize count() by ['2'] = bin(timestamp, 1m)\n", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("_data | summarize count() by ['2'] = bin(['timestamp'], 1m)\n", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
@@ -215,7 +215,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.True(dsl.KustoQL.Contains("\n(_data | order by timestamp asc | limit 17", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("\n(_data | order by ['timestamp'] asc | limit 17", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
@@ -242,7 +242,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.False(dsl.KustoQL.Contains("\n(_data | order by timestamp asc", StringComparison.OrdinalIgnoreCase));
+            Assert.False(dsl.KustoQL.Contains("\n(_data | order by ['timestamp'] asc", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]

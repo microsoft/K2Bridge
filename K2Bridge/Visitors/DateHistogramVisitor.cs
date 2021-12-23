@@ -31,13 +31,13 @@ namespace K2Bridge.Visitors
                 var period = interval[^1];
                 dateHistogramAggregation.KustoQL += period switch
                 {
-                    'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.Field})",
-                    'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.Field})",
-                    'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.Field})",
-                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.Field})",
-                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.Field})",
-                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.Field})",
-                    _ => $"bin({dateHistogramAggregation.Field}, {interval})",
+                    'w' => $"{KustoQLOperators.StartOfWeek}(['{dateHistogramAggregation.Field}'])",
+                    'M' => $"{KustoQLOperators.StartOfMonth}(['{dateHistogramAggregation.Field}'])",
+                    'y' => $"{KustoQLOperators.StartOfYear}(['{dateHistogramAggregation.Field}'])",
+                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}(['{dateHistogramAggregation.Field}'])",
+                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}(['{dateHistogramAggregation.Field}'])",
+                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}(['{dateHistogramAggregation.Field}'])",
+                    _ => $"bin(['{dateHistogramAggregation.Field}'], {interval})",
                 };
             }
             else

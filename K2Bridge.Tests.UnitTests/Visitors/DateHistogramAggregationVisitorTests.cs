@@ -27,13 +27,13 @@ namespace UnitTests.K2Bridge.Visitors
             return histogramAggregation.KustoQL;
         }
 
-        [TestCase("w", ExpectedResult = "_data | summarize metric by ['key'] = startofweek(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
-        [TestCase("week", ExpectedResult = "_data | summarize metric by ['key'] = startofweek(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
-        [TestCase("y", ExpectedResult = "_data | summarize metric by ['key'] = startofyear(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
-        [TestCase("year", ExpectedResult = "_data | summarize metric by ['key'] = startofyear(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
-        [TestCase("M", ExpectedResult = "_data | summarize metric by ['key'] = startofmonth(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
-        [TestCase("month", ExpectedResult = "_data | summarize metric by ['key'] = startofmonth(field)\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
-        [TestCase("z", ExpectedResult = "_data | summarize metric by ['key'] = bin(field, z)\n| order by ['key'] asc")]
+        [TestCase("w", ExpectedResult = "_data | summarize metric by ['key'] = startofweek(['field'])\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("week", ExpectedResult = "_data | summarize metric by ['key'] = startofweek(['field'])\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("y", ExpectedResult = "_data | summarize metric by ['key'] = startofyear(['field'])\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("year", ExpectedResult = "_data | summarize metric by ['key'] = startofyear(['field'])\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("M", ExpectedResult = "_data | summarize metric by ['key'] = startofmonth(['field'])\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("month", ExpectedResult = "_data | summarize metric by ['key'] = startofmonth(['field'])\n| order by ['key'] asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("z", ExpectedResult = "_data | summarize metric by ['key'] = bin(['field'], z)\n| order by ['key'] asc")]
         public string DateHistogramVisit_WithAggregation_ReturnsValidResponse(string interval)
         {
             var histogramAggregation = new DateHistogramAggregation()
