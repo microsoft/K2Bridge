@@ -53,7 +53,7 @@ namespace K2Bridge.Visitors
 
                 // Create the column with the range name using extend
                 var bucketName = $"{range.From}-{range.To}";
-                rangeAggregation.KustoQL += $" | {KustoQLOperators.Extend} ['{rangeAggregation.Key}'] = '{bucketName}'), ";
+                rangeAggregation.KustoQL += $" | {KustoQLOperators.Extend} {EncodeKustoField(rangeAggregation.Key)} = '{bucketName}'), ";
             }
 
             // Remove final comma and space
@@ -61,7 +61,7 @@ namespace K2Bridge.Visitors
 
             // Re-order columns by ascending order
             // Make sure the aggregation column (with range names) is first
-            rangeAggregation.KustoQL += $" | {KustoQLOperators.ProjectReorder} ['{rangeAggregation.Key}'], * asc";
+            rangeAggregation.KustoQL += $" | {KustoQLOperators.ProjectReorder} {EncodeKustoField(rangeAggregation.Key)}, * asc";
         }
     }
 }

@@ -5,6 +5,7 @@
 namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using K2Bridge.KustoDAL;
     using K2Bridge.Models.Request;
@@ -112,23 +113,26 @@ namespace K2Bridge.Visitors
             elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
         }
 
-        private static bool IsFieldDynamic(Aggregation agg)
-        {
-            return agg.Field.Contains('.');
-        }
+        private static string QuoteKustoField(string field) => string.Join(".", field.Split(".").Select(s => $"['{s}']"));
 
-        // Dynamic fields need their types to be explicitly specified in the query
-        private string ConvertDynamicToCorrectType(Aggregation agg)
+        private static bool IsFieldDynamic(string field) => field.Contains('.');
+
+        // Aggregations always need to be wrapped in a type
+        private string EncodeKustoField(Aggregation agg) => EncodeKustoField(agg.Field, true);
+
+        private string EncodeKustoField(string field, bool wrapDynamic = false)
         {
-            if (!IsFieldDynamic(agg))
+            var quoted = QuoteKustoField(field);
+            if (!IsFieldDynamic(field) || !wrapDynamic)
             {
-                return agg.Field;
+                return quoted;
             }
 
-            return ClauseFieldTypeProcessor.GetType(schemaRetriever, agg.Field).Result switch {
-                ClauseFieldType.Date => $"{KustoQLOperators.ToDateTime}({agg.Field})",
-                ClauseFieldType.Numeric => $"{KustoQLOperators.ToDouble}({agg.Field})",
-                _ => $"{KustoQLOperators.ToStringOperator}({agg.Field})",
+            // Dynamic fields need their types to be explicitly specified in the query if in aggregation
+            return ClauseFieldTypeProcessor.GetType(schemaRetriever, quoted).Result switch {
+                ClauseFieldType.Date => $"{KustoQLOperators.ToDateTime}({quoted})",
+                ClauseFieldType.Numeric => $"{KustoQLOperators.ToDouble}({quoted})",
+                _ => $"{KustoQLOperators.ToStringOperator}({quoted})",
             };
         }
     }
