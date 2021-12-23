@@ -29,15 +29,16 @@ namespace K2Bridge.Visitors
                 // If its calendar_interval, it can contain complete words like 'year', 'month' etc, so we need to check for that explicitly.
                 // We also check if its a known character, if not, just use the value in the bin as-is.
                 var period = interval[^1];
+                var field = EncodeKustoField(dateHistogramAggregation.Field, true);
                 dateHistogramAggregation.KustoQL += period switch
                 {
-                    'w' => $"{KustoQLOperators.StartOfWeek}({EncodeKustoField(dateHistogramAggregation)})",
-                    'M' => $"{KustoQLOperators.StartOfMonth}({EncodeKustoField(dateHistogramAggregation)})",
-                    'y' => $"{KustoQLOperators.StartOfYear}({EncodeKustoField(dateHistogramAggregation)})",
-                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}({EncodeKustoField(dateHistogramAggregation)})",
-                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}({EncodeKustoField(dateHistogramAggregation)})",
-                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({EncodeKustoField(dateHistogramAggregation)})",
-                    _ => $"bin({EncodeKustoField(dateHistogramAggregation)}, {interval})",
+                    'w' => $"{KustoQLOperators.StartOfWeek}({field})",
+                    'M' => $"{KustoQLOperators.StartOfMonth}({field})",
+                    'y' => $"{KustoQLOperators.StartOfYear}({field})",
+                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}({field})",
+                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}({field})",
+                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({field})",
+                    _ => $"bin({field}, {interval})",
                 };
             }
             else

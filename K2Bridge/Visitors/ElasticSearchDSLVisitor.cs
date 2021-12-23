@@ -118,7 +118,7 @@ namespace K2Bridge.Visitors
         private static bool IsFieldDynamic(string field) => field.Contains('.');
 
         // Aggregations always need to be wrapped in a type
-        private string EncodeKustoField(Aggregation agg) => EncodeKustoField(agg.Field, true);
+        private string EncodeKustoField(MetricAggregation agg) => EncodeKustoField(agg.Field, true);
 
         private string EncodeKustoField(string field, bool wrapDynamic = false)
         {

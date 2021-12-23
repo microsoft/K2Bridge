@@ -19,7 +19,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(rangeExpression, nameof(rangeExpression));
             EnsureClause.StringIsNotNullOrEmpty(rangeExpression.Field, nameof(rangeExpression.Field));
 
-            var field = EncodeKustoField(rangeExpression);
+            var field = EncodeKustoField(rangeExpression.Field, true);
             var gteExpr = rangeExpression.From.HasValue ? $"{field} >= {rangeExpression.From}" : null;
             var ltExpr = rangeExpression.To.HasValue ? $"{field} < {rangeExpression.To}" : null;
 

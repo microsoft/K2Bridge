@@ -18,7 +18,7 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets the field to aggregate.
         /// </summary>
         [JsonProperty("field")]
-        public override string Field { get; set; }
+        public string Field { get; set; }
 
         [JsonProperty("order")]
         [JsonConverter(typeof(TermsOrderConverter))]

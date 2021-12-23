@@ -19,11 +19,6 @@ namespace K2Bridge.Models.Request.Aggregations
         /// </summary>
         public virtual string Key { get; set; }
 
-        /// <summary>
-        /// Aggregation field.
-        /// </summary>
-        public virtual string Field { get; set; }
-
         /// <inheritdoc/>
         public abstract void Accept(IVisitor visitor);
     }
