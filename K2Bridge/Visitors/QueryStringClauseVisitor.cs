@@ -110,7 +110,8 @@ namespace K2Bridge.Visitors
                 new QueryParser(
                     Lucene.Net.Util.Version.LUCENE_30,
                     queryStringClause.Default,
-                    analyzer) {
+                    analyzer)
+                    {
                         AllowLeadingWildcard = queryStringClause.Wildcard,
                         LowercaseExpandedTerms = false,
                     };
