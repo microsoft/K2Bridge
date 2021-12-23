@@ -27,8 +27,11 @@ namespace K2Bridge.JsonConverters
                 writer.WritePropertyName("key");
                 serializer.Serialize(writer, dateHistogramBucket.Key);
 
-                writer.WritePropertyName("key_as_string");
-                serializer.Serialize(writer, dateHistogramBucket.KeyAsString);
+                if (dateHistogramBucket.KeyAsString is not null)
+                {
+                    writer.WritePropertyName("key_as_string");
+                    serializer.Serialize(writer, dateHistogramBucket.KeyAsString);
+                }
 
                 foreach (KeyValuePair<string, IAggregate> aggregate in dateHistogramBucket)
                 {

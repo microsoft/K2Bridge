@@ -24,10 +24,13 @@ namespace K2Bridge.JsonConverters
                 writer.WritePropertyName("doc_count");
                 serializer.Serialize(writer, termsBucket.DocCount);
 
-                writer.WritePropertyName("key");
-                serializer.Serialize(writer, termsBucket.Key);
+                if (termsBucket.Key is not null)
+                {
+                    writer.WritePropertyName("key");
+                    serializer.Serialize(writer, termsBucket.Key);
+                }
 
-                if (!string.IsNullOrEmpty(termsBucket.KeyAsString))
+                if (termsBucket.KeyAsString is not null)
                 {
                     writer.WritePropertyName("key_as_string");
                     serializer.Serialize(writer, termsBucket.KeyAsString);
