@@ -12,13 +12,13 @@ namespace UnitTests.K2Bridge.JsonConverters
     {
         private const string ExpectedValidBucket = @"{
             ""doc_count"": 4133,
-            ""key"": 1625176800000.0,
+            ""key"": 1625176800000,
             ""key_as_string"": ""2021-07-02T00:00:00.000+02:00""
         }";
 
         private const string ExpectedValidBucketWithAggs = @"{
             ""doc_count"": 4133,
-            ""key"": 1625176800000.0,
+            ""key"": 1625176800000,
             ""key_as_string"": ""2021-07-02T00:00:00.000+02:00"",
             ""2"" : {""value"": 644.0861}
         }";
