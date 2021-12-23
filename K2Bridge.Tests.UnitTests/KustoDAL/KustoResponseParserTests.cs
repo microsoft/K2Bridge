@@ -5,11 +5,13 @@
 namespace UnitTests.K2Bridge.KustoDAL
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
     using global::K2Bridge.Models.Request.Aggregations;
+    using global::K2Bridge.Models.Response.Aggregations;
     using global::K2Bridge.Telemetry;
     using Kusto.Data;
     using Kusto.Data.Data;
@@ -115,7 +117,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             Assert.AreEqual(0, elasticResult.Hits.Hits.Count());
-            Assert.AreEqual(0, elasticResult.Aggregations.Collection.Buckets.Count());
+            Assert.AreEqual(0, elasticResult.Aggregations.Count());
         }
 
         [Test]
@@ -137,15 +139,17 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(2, elasticResult.Hits.Hits.Count());
         }
 
-        [TestCase(nameof(DateHistogramAggregation))]
-        [TestCase(nameof(TermsAggregation))]
-        public void ParseElasticResponse_WithAggs_ReturnsElasticResponseWithAggs(string primaryAggregation)
+        [Test]
+        public void ParseElasticResponse_WithDateHistogramAggs_ReturnsElasticResponseWithAggs()
         {
-            using var aggsTable = GetAggsTable();
+            using var aggsTable = GetDateHistogramAggsTable();
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index", primaryAggregation: primaryAggregation);
+            var query = new QueryData("query", "index");
+
+            var primaryAggregation = KeyValuePair.Create<string, string>("timestamp", nameof(DateHistogramAggregation));
+            query.PrimaryAggregation = primaryAggregation;
 
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
@@ -154,7 +158,8 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
-            Assert.AreEqual(2, elasticResult.Aggregations.Collection.Buckets.Count());
+            var aggregate = elasticResult.Aggregations[primaryAggregation.Key] as BucketAggregate<DateHistogramBucket>;
+            Assert.AreEqual(2, aggregate.Buckets.Count());
         }
 
         [Test]
@@ -164,7 +169,10 @@ namespace UnitTests.K2Bridge.KustoDAL
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index", primaryAggregation: nameof(RangeAggregation));
+            var query = new QueryData("query", "index");
+
+            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
+            query.PrimaryAggregation = primaryAggregation;
 
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
@@ -173,7 +181,8 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
-            Assert.AreEqual(3, elasticResult.Aggregations.Collection.Buckets.Count());
+            var aggregate = elasticResult.Aggregations[primaryAggregation.Key] as BucketAggregate<RangeBucket>;
+            Assert.AreEqual(3, aggregate.Buckets.Count());
         }
 
         [Test]
@@ -183,7 +192,10 @@ namespace UnitTests.K2Bridge.KustoDAL
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index", primaryAggregation: nameof(RangeAggregation));
+            var query = new QueryData("query", "index");
+
+            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
+            query.PrimaryAggregation = primaryAggregation;
 
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
@@ -192,17 +204,18 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
-            Assert.AreEqual(2, elasticResult.Aggregations.Collection.Buckets.Count());
+            var aggregate = elasticResult.Aggregations[primaryAggregation.Key] as BucketAggregate<RangeBucket>;
+            Assert.AreEqual(2, aggregate.Buckets.Count());
         }
 
         [Test]
         public void ParseElasticResponse_BackendQueryFalse_ReturnsNull()
         {
-            using var aggsTable = GetAggsTable();
+            using var aggsTable = GetEmptyTable();
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
-            var query = new QueryData("query", "index", null);
+            var query = new QueryData("query", "index");
 
             var reader = aggsTable.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
@@ -215,7 +228,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public void ParseElasticResponse_BackendQueryTrue_ReturnsTheQuery()
         {
-            using var aggsTable = GetAggsTable();
+            using var aggsTable = GetEmptyTable();
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
@@ -263,12 +276,17 @@ namespace UnitTests.K2Bridge.KustoDAL
             return resTable;
         }
 
-        private static DataTable GetAggsTable()
+        private static DataTable GetEmptyTable()
+        {
+            DataTable resTable = new DataTable();
+            return resTable;
+        }
+
+        private static DataTable GetDateHistogramAggsTable()
         {
             DataTable resTable = new DataTable();
 
             var column1 = new DataColumn("timestamp", Type.GetType("System.DateTime"));
-
             var column2 = new DataColumn("count_");
 
             resTable.Columns.Add(column1);
