@@ -44,7 +44,13 @@ namespace K2Bridge.JsonConverters
             // Setting the keyed flag to true will associate a unique string key with each bucket and return the ranges as a hash rather than an array.
             if (aggregate.Keyed)
             {
-                serializer.Serialize(writer, aggregate.Buckets.ToDictionary(bucket => bucket.Key, bucket => { bucket.Key = default(TKey); return bucket; }));
+                serializer.Serialize(writer, aggregate.Buckets.ToDictionary(
+                    bucket => bucket.Key,
+                    bucket =>
+                    {
+                        bucket.Key = default(TKey);
+                        return bucket;
+                    }));
             }
             else
             {
