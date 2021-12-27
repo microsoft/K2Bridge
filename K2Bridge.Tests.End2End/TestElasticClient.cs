@@ -170,10 +170,8 @@ namespace K2Bridge.Tests.End2End
             DeleteValue(result, "responses[*].aggregations.*.doc_count_error_upper_bound");
             DeleteValue(result, "responses[*].aggregations.*.sum_other_doc_count");
 
-            // Normalize all float metric values with fixed number of decimal
-            // TODO: Need to update NormalizeMetricValues for bucket returning values instead of value
-            // workitem 15247
-            NormalizeMetricValues(result, "responses[*].aggregations..buckets..value");
+            // Normalize aggregate value (double) with fixed number of decimal
+            NormalizeAggregateValue(result, "responses[*].aggregations..buckets..value");
 
             return result;
         }
@@ -332,11 +330,11 @@ namespace K2Bridge.Tests.End2End
         }
 
         // <summary>
-        /// Normalize metric values with fixed number of decimals.
+        /// Normalize aggregate metric value with fixed number of decimals.
         /// </summary>
         /// <param name="parent">JSON element at which to start search.</param>
         /// <param name="jsonPath">JSONPath search pattern for metric values to normalize.</param>
-        private static void NormalizeMetricValues(JToken parent, string jsonPath)
+        private static void NormalizeAggregateValue(JToken parent, string jsonPath)
         {
             var tokens = parent.SelectTokens(jsonPath);
             foreach (JValue v in tokens)
