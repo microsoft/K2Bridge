@@ -180,7 +180,9 @@ namespace K2Bridge.Factories
                     var columnName = column.ColumnName;
                     logger.LogTrace("Defining the value for {columnName}", columnName);
 
-                    if (!double.TryParse(row[columnName]?.ToString() ?? string.Empty, NumberStyles.Number, CultureInfo.InvariantCulture,  out var value))
+                    var cell = row[columnName].ToString();
+                    if (string.IsNullOrEmpty(cell) ||
+                        !double.TryParse(cell, NumberStyles.Number, CultureInfo.InvariantCulture, out var value))
                     {
                         value = 0;
                     }

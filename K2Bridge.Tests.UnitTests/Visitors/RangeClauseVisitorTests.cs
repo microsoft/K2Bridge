@@ -169,7 +169,6 @@ namespace UnitTests.K2Bridge.Visitors
         private static string DateRangeClauseToKQL(RangeClause rangeClause)
         {
             var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("MyField", "date");
-            VisitorTestsUtils.VisitRootDsl(visitor);
             visitor.Visit(rangeClause);
             return rangeClause.KustoQL;
         }

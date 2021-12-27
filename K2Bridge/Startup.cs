@@ -82,7 +82,7 @@ namespace K2Bridge
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
             var dynamicSamplePercentage = GetConfigOptional<double>("dynamicSamplePercentage");
-            if (dynamicSamplePercentage is < 0 or > 100)
+            if (dynamicSamplePercentage is <= 0 or > 100)
             {
                 throw new ArgumentException(
                     $"dynamicSamplePercentage must be between 0 and 100, but was {dynamicSamplePercentage}");
