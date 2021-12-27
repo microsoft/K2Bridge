@@ -53,7 +53,7 @@ namespace K2Bridge.Visitors
             }
         }
 
-        private static void FillKqlQuery(RangeClause rangeClause, Func<string, string> valueConverter = null)
+        private void FillKqlQuery(RangeClause rangeClause, Func<string, string> valueConverter = null)
         {
             valueConverter ??= s => s;
             var (gtOperator, gtValue) = rangeClause switch
@@ -74,8 +74,8 @@ namespace K2Bridge.Visitors
                 _ => throw new Exception("Invalid range clause."),
             };
 
-            var gtQuery = gtOperator != null ? $"['{rangeClause.FieldName}'] {gtOperator} {gtValue}" : null;
-            var ltQuery = ltOperator != null ? $"['{rangeClause.FieldName}'] {ltOperator} {ltValue}" : null;
+            var gtQuery = gtOperator != null ? $"{EncodeKustoField(rangeClause.FieldName)} {gtOperator} {gtValue}" : null;
+            var ltQuery = ltOperator != null ? $"{EncodeKustoField(rangeClause.FieldName)} {ltOperator} {ltValue}" : null;
             rangeClause.KustoQL = (gtQuery, ltQuery) switch
             {
                 (null, null) => string.Empty,
