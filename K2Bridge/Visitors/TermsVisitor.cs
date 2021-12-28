@@ -21,21 +21,12 @@ namespace K2Bridge.Visitors
 
             termsAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + termsAggregation.SubAggregationsKustoQL + $"{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}";
 
-            if (termsAggregation.Order.SortField == "_key")
-            {
-                // Alphabetical order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}";
-            }
-            else if (termsAggregation.Order.SortField == "_count")
-            {
-                // Count order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.Order.SortOrder}";
-            }
-            else
-            {
-                // Custom order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Order.SortField)} {termsAggregation.Order.SortOrder}";
-            }
+            termsAggregation.KustoQL += termsAggregation.Order?.SortField switch {
+                "_key" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}",
+                "_count" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.Order.SortOrder}",
+                { } s => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(s)} {termsAggregation.Order.SortOrder}",
+                _ => string.Empty,
+            };
 
             termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}";
         }
