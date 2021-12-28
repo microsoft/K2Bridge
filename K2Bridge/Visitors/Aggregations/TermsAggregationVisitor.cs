@@ -24,14 +24,14 @@ namespace K2Bridge.Visitors
 
             // Add main aggregation query (summarize)
             // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=field
-            query.Append($"_data | {KustoQLOperators.Summarize} {termsAggregation.SubAggregationsKustoQL}{termsAggregation.Metric} by ['{termsAggregation.Key}'] = {termsAggregation.Field}");
+            query.Append($"_data | {KustoQLOperators.Summarize} {termsAggregation.SubAggregationsKustoQL}{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}");
 
             // Add order by (alphabetical, count and custom)
             var orderBy = termsAggregation.Order.SortField switch
             {
-                "_key" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{termsAggregation.Key}'] {termsAggregation.Order.SortOrder}",
+                "_key" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}",
                 "_count" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.Order.SortOrder}",
-                _ => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{termsAggregation.Order.SortField}'] {termsAggregation.Order.SortOrder}"
+                _ => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Order.SortField)} {termsAggregation.Order.SortOrder}"
             };
             query.Append(orderBy);
 

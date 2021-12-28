@@ -72,7 +72,7 @@ namespace K2Bridge.Visitors
             // We don't use EncodeKustoField on this key because it contains a '.' but isn't dynamic
             // Example: ['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)']
             var key = $"['{percentileAggregation.Key}%percentile%{valuesForColumnNames}%{percentileAggregation.Keyed}']";
-            percentileAggregation.KustoQL += $"{key}={KustoQLOperators.PercentilesArray}({EncodeKustoField(percentileAggregation)}, {valuesForOperator})";
+            percentileAggregation.KustoQL = $"{key}={KustoQLOperators.PercentilesArray}({EncodeKustoField(percentileAggregation)}, {valuesForOperator})";
         }
     }
 }
