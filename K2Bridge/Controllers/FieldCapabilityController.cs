@@ -46,7 +46,7 @@ namespace K2Bridge.Controllers
         [HttpPost]
         public async Task<IActionResult> Process(string indexName)
         {
-            var response = await KustoDataAccess.GetFieldCapsAsync(indexName);
+            var response = await KustoDataAccess.GetFieldCapsAsync(indexName, invalidateCache: true);
 
             return new ContentResult
             {

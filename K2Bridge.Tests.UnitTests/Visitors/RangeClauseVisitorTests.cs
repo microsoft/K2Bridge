@@ -168,8 +168,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         private static string DateRangeClauseToKQL(RangeClause rangeClause)
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockDateSchemaRetriever());
-            VisitorTestsUtils.VisitRootDsl(visitor);
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("MyField", "date");
             visitor.Visit(rangeClause);
             return rangeClause.KustoQL;
         }
