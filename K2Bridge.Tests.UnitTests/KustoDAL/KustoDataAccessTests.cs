@@ -398,6 +398,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var testData = new List<Dictionary<string, object>>() {
                 column("myint", "System.Int32"),
                 column("nested_dynamic", "System.Object"),
+                column("nested_indexer", "System.Object"),
                 column("dynamic_top_level_string", "System.Object"),
                 column("dynamic_top_level_indexer", "System.Object"),
                 column("dynamic_top_level_array", "System.Object"),
@@ -410,7 +411,11 @@ namespace UnitTests.K2Bridge.KustoDAL
                 .Returns((QueryData query, RequestContext context) =>
                 {
                     string response;
-                    if (query.QueryCommandText.Contains("nested_dynamic"))
+                    if (query.QueryCommandText.Contains("nested_indexer"))
+                    {
+                        response = "{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": {\"b1\": \"int\", \"b2\": \"string\"}}}";
+                    }
+                    else if (query.QueryCommandText.Contains("nested_dynamic"))
                     {
                         response = "{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}";
                     }
@@ -449,6 +454,41 @@ namespace UnitTests.K2Bridge.KustoDAL
                             ""aggregatable"": true,
                             ""searchable"": true,
                             ""type"": ""integer""
+                          }
+                        },
+                        ""nested_indexer"": {
+                          ""object"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""object""
+                          }
+                        },
+                        ""nested_indexer.a"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        },
+                        ""nested_indexer.b"": {
+                          ""object"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""object""
+                          }
+                        },
+                        ""nested_indexer.b.b1"": {
+                          ""integer"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""integer""
+                          }
+                        },
+                        ""nested_indexer.b.b2"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
                           }
                         },
                         ""nested_dynamic"": {
