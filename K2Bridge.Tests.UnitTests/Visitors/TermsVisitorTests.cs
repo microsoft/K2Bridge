@@ -12,23 +12,6 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class TermsVisitorTests
     {
-        [TestCase(ExpectedResult = "_data | summarize metric by ['key'] = ['field']\n| limit 10")]
-        public string TermsVisit_WithNullOrder_ReturnsValidResponse()
-        {
-            var termsAggregation = new TermsAggregation() {
-                Field = "field",
-                Key = "key",
-                Size = 10,
-                Order = null,
-                Metric = "metric",
-            };
-
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit(termsAggregation);
-
-            return termsAggregation.KustoQL;
-        }
-
         [TestCase("_count", ExpectedResult = "_data | summarize metric by ['key'] = ['field']\n| order by count_ desc\n| limit 10", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
         [TestCase("_key", ExpectedResult = "_data | summarize metric by ['key'] = ['field']\n| order by ['key'] desc\n| limit 10", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
         [TestCase("1", ExpectedResult = "_data | summarize metric by ['key'] = ['field']\n| order by ['1'] desc\n| limit 10", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
