@@ -46,5 +46,11 @@ namespace K2Bridge.Visitors.LuceneNet
         /// </summary>
         /// <param name="rangeQueryWrapper">The LuceneRangeQuery object to visit.</param>
         void Visit(LuceneRangeQuery rangeQueryWrapper);
+
+        /// <summary>
+        /// Accepts a given lucene visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="luceneMatchAllDocsQueryWrapper">The LuceneMatchAllDocsQuery object to visit.</param>
+        void Visit(LuceneMatchAllDocsQuery luceneMatchAllDocsQueryWrapper);
     }
 }
