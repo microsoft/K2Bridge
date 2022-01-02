@@ -5,6 +5,7 @@
 namespace K2Bridge.JsonConverters
 {
     using System;
+    using System.Globalization;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Request.Queries;
     using Newtonsoft.Json;
@@ -25,17 +26,32 @@ namespace K2Bridge.JsonConverters
             var jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            var obj = new RangeClause
-            {
+            var obj = new RangeClause {
                 FieldName = first.Name,
-                GTEValue = first.First.Value<string>("gte"),
-                GTValue = first.First.Value<string>("gt"),
-                LTEValue = first.First.Value<string>("lte"),
-                LTValue = first.First.Value<string>("lt"),
-                Format = (string)first.First["format"],
+                GTEValue = ConvertToString(first, "gte"),
+                GTValue = ConvertToString(first, "ge"),
+                LTEValue = ConvertToString(first, "lte"),
+                LTValue = ConvertToString(first, "lt"),
+                Format = first.First.Value<string>("format"),
             };
 
             return obj;
+        }
+
+        private static string ConvertToString(JToken prop, string value)
+        {
+            var first = prop.First[value];
+            if (first == null)
+            {
+                return null;
+            }
+
+            return first.Type switch {
+                JTokenType.Date => first.Value<DateTime>().ToString("o"),
+                JTokenType.Float => first.Value<double>().ToString(CultureInfo.InvariantCulture),
+                JTokenType.Integer => first.Value<long>().ToString(CultureInfo.InvariantCulture),
+                _ => first.Value<string>(value),
+            };
         }
     }
 }

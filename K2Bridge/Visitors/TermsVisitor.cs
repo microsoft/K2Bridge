@@ -19,12 +19,12 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Metric, nameof(TermsAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Field, nameof(TermsAggregation.Field));
 
-            termsAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + termsAggregation.SubAggregationsKustoQL + $"{termsAggregation.Metric} by ['{termsAggregation.Key}'] = {termsAggregation.Field}";
+            termsAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + termsAggregation.SubAggregationsKustoQL + $"{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}";
 
             if (termsAggregation.Order.SortField == "_key")
             {
                 // Alphabetical order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{termsAggregation.Key}'] {termsAggregation.Order.SortOrder}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}";
             }
             else if (termsAggregation.Order.SortField == "_count")
             {
@@ -34,7 +34,7 @@ namespace K2Bridge.Visitors
             else
             {
                 // Custom order
-                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{termsAggregation.Order.SortField}'] {termsAggregation.Order.SortOrder}";
+                termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Order.SortField)} {termsAggregation.Order.SortOrder}";
             }
 
             termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}";

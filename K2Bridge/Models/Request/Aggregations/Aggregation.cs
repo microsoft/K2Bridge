@@ -14,7 +14,10 @@ namespace K2Bridge.Models.Request.Aggregations
     /// </summary>
     internal abstract class Aggregation : KustoQLBase, IVisitable
     {
-        public string Key { get; set; }
+        /// <summary>
+        ///  Key of the aggregation.
+        /// </summary>
+        public virtual string Key { get; set; }
 
         /// <inheritdoc/>
         public abstract void Accept(IVisitor visitor);

@@ -35,8 +35,7 @@ namespace K2Bridge.Factories
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
-            var dhb = new DateHistogramBucket
-            {
+            var dhb = new DateHistogramBucket {
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
@@ -233,8 +232,15 @@ namespace K2Bridge.Factories
                     var columnName = column.ColumnName;
                     logger.LogTrace("Defining the value for {columnName}", columnName);
 
+                    var cell = row[columnName].ToString();
+                    if (string.IsNullOrEmpty(cell) ||
+                        !double.TryParse(cell, NumberStyles.Number, CultureInfo.InvariantCulture, out var value))
+                    {
+                        value = 0;
+                    }
+
                     bucket.Aggs[columnName] = new Dictionary<string, object>() {
-                        { "value", double.Parse(row[columnName].ToString(), CultureInfo.InvariantCulture) },
+                        { "value", value },
                     };
                 }
             }
