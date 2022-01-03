@@ -9,10 +9,8 @@ namespace K2Bridge.KustoDAL
     using System.Data;
     using System.Linq;
     using K2Bridge;
-    using K2Bridge.Factories;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
-    using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Telemetry;
     using K2Bridge.Utils;
     using Kusto.Data;

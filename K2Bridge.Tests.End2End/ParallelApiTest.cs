@@ -300,6 +300,32 @@ namespace K2Bridge.Tests.End2End
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateRange_Metrics.json");
         }
 
+        [Description("/_msearch visualization query with histogram and aggregation metrics")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMetrics_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Metrics.json");
+        }
+
+        [Description("/_msearch visualization query with histogram and percentiles")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramPercentiles_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Percentiles.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with  histogram and median")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMedian_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with histogram and median")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramPercentile_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Percentile.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);

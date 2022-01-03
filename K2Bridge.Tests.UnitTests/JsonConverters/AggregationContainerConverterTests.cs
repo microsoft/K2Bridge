@@ -63,6 +63,17 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string HistogramAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""histogram"": {
+                        ""field"": ""price"",
+                        ""interval"": 50,
+                        ""min_doc_count"": 1
+                    }
+                }
+            }}";
+
         private const string CardinalityAggregation = @"
             {""aggs"": { 
                 ""2"": {
@@ -270,7 +281,25 @@ namespace UnitTests.K2Bridge.JsonConverters
                                 From = "2016-02-01",
                                 To = "now/d",
                             },
-                        },
+                        }
+                    },
+                },
+            }
+        };
+
+        private static readonly AggregationContainer ExpectedValidHistogramAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new HistogramAggregation
+                    {
+                        Field = "price",
+                        Key = "2",
+                        Interval = 50,
+                        MinimumDocumentCount = 1,
                         Metric = "count()",
                     },
                     SubAggregations = new AggregationDictionary(),
@@ -485,6 +514,7 @@ namespace UnitTests.K2Bridge.JsonConverters
 
         private static readonly object[] AggregationTestCases = {
             new TestCaseData(DateHistogramAggregation, ExpectedValidDateHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidDateHistogram_DeserializedCorrectly"),
+            new TestCaseData(HistogramAggregation, ExpectedValidHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidHistogram_DeserializedCorrectly"),
             new TestCaseData(TermsAggregation, ExpectedValidTermsAggregation).SetName("JsonDeserializeObject_WithAggregationValidTerms_DeserializedCorrectly"),
             new TestCaseData(RangeAggregation, ExpectedValidRangeAggregation).SetName("JsonDeserializeObject_WithAggregationValidRange_DeserializedCorrectly"),
             new TestCaseData(CardinalityAggregation, ExpectedValidCardinalityAggregation).SetName("JsonDeserializeObject_WithAggregationValidCardinality_DeserializedCorrectly"),
