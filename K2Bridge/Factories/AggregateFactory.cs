@@ -35,7 +35,8 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
-                var columnMetadata = column.ColumnName.Split('%');
+                const char Seperator = '%';
+                var columnMetadata = column.ColumnName.Split(Seperator);
 
                 if (columnMetadata.Length > 1)
                 {
