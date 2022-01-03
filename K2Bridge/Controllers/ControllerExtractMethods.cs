@@ -48,7 +48,7 @@ namespace K2Bridge.Controllers
         /// containing :. and replaces it, with a valid token.
         /// </summary>
         /// <param name="templateString">string to replace tokens in.</param>
-        /// <returns>string with charachter replaced back.</returns>
+        /// <returns>string with character replaced back.</returns>
         internal static string ReplaceBackTemplateString(string templateString) =>
             !string.IsNullOrEmpty(templateString) && templateString.Contains(TemplateString, StringComparison.OrdinalIgnoreCase) ?
                 templateString.Replace(AltTemplateQueryStringSeparator, TemplateQueryStringSeparator, StringComparison.OrdinalIgnoreCase) :

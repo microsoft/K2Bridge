@@ -110,10 +110,31 @@ namespace K2Bridge.KustoDAL
                 Logger.LogDebug("[metric] backend query total (sdk) duration: {timeTaken}", timeTaken);
                 return (timeTaken, dataReader);
             }
+            catch (Kusto.Data.Exceptions.SemanticException ex)
+            {
+                Logger.LogError(ex, "Semantic exception - Failed to execute query.");
+
+                // If it was a semantic error AND it is about an invalid field, ignore
+                // the error and return an empty results set, as this is the behaviour of
+                // Kibana
+                if (!ex.Message.Contains(
+                    "failed to resolve scalar expression",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new QueryException("Failed executing Azure Data Explorer (ADX/Kusto) query", ex);
+                }
+
+                Logger.LogError(ex, "Semantic exception - Failed to execute query.");
+                Logger.LogWarning("Returning empty results set.");
+
+                // Empty results set
+                var emptyTable = new DataTable();
+                return (TimeSpan.FromSeconds(0), emptyTable.CreateDataReader());
+            }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Failed to execute query.");
-                throw new QueryException("Failed executing azure data explorer query", ex);
+                throw new QueryException("Failed executing Azure Data Explorer (ADX/Kusto) query", ex);
             }
         }
     }

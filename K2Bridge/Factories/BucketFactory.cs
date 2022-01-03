@@ -120,7 +120,7 @@ namespace K2Bridge.Factories
             return rb;
         }
 
-        public static void CreateAggregationColumns(Bucket bucket, DataRow row, ILogger logger)
+        private static void CreateAggregationColumns(Bucket bucket, DataRow row, ILogger logger)
         {
             // TODO: refactor the columns handling based on the Percentiles code.
             // See: workitem 15724
