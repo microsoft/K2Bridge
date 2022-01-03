@@ -226,7 +226,7 @@ namespace K2Bridge.KustoDAL
                         AddSingleDynamicField(response, name, arr);
                         break;
                     case JObject obj when obj[specialArrayKey] != null:
-                        AddSingleDynamicField(response, name, obj[specialArrayKey]);
+                        stack.Push((name, obj[specialArrayKey]));
                         break;
                     case JObject obj:
                         AddSingleDynamicField(response, name, "dynamic");
