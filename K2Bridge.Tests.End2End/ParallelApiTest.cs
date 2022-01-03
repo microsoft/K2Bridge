@@ -33,6 +33,13 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch Kibana aggregation query returning zero results")]
+        public void CompareElasticKusto_WhenMSearchContainsInvalidFieldNameZeroResults_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Text_Contains_Invalid_Field.json", minResults: 0);
+        }
+
+        [Test]
+        [Description("/_msearch Kibana aggregation query returning zero results")]
         public void CompareElasticKusto_WhenMSearchZeroResults_ResponsesAreEquivalent()
         {
             ParallelQuery($"{FLIGHTSDIR}/MSearch_ZeroResults_Equivalent.json", minResults: 0);
