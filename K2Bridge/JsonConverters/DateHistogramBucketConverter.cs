@@ -17,27 +17,29 @@ namespace K2Bridge.JsonConverters
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            var dateHistogramBucket = (DateHistogramBucket)value;
+
             writer.WriteStartObject();
 
-            if (value is DateHistogramBucket dateHistogramBucket)
-            {
-                writer.WritePropertyName("doc_count");
-                serializer.Serialize(writer, dateHistogramBucket.DocCount);
+            writer.WritePropertyName("doc_count");
+            serializer.Serialize(writer, dateHistogramBucket.DocCount);
 
+            if (dateHistogramBucket.Key is not null)
+            {
                 writer.WritePropertyName("key");
                 serializer.Serialize(writer, dateHistogramBucket.Key);
+            }
 
-                if (dateHistogramBucket.KeyAsString is not null)
-                {
-                    writer.WritePropertyName("key_as_string");
-                    serializer.Serialize(writer, dateHistogramBucket.KeyAsString);
-                }
+            if (dateHistogramBucket.KeyAsString is not null)
+            {
+                writer.WritePropertyName("key_as_string");
+                serializer.Serialize(writer, dateHistogramBucket.KeyAsString);
+            }
 
-                foreach (KeyValuePair<string, IAggregate> aggregate in dateHistogramBucket)
-                {
-                    writer.WritePropertyName(aggregate.Key);
-                    serializer.Serialize(writer, aggregate.Value);
-                }
+            foreach (KeyValuePair<string, IAggregate> aggregate in dateHistogramBucket)
+            {
+                writer.WritePropertyName(aggregate.Key);
+                serializer.Serialize(writer, aggregate.Value);
             }
 
             writer.WriteEndObject();

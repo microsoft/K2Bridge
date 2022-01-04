@@ -17,30 +17,29 @@ namespace K2Bridge.JsonConverters
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            var termsBucket = (TermsBucket)value;
+
             writer.WriteStartObject();
 
-            if (value is TermsBucket termsBucket)
+            writer.WritePropertyName("doc_count");
+            serializer.Serialize(writer, termsBucket.DocCount);
+
+            if (termsBucket.Key is not null)
             {
-                writer.WritePropertyName("doc_count");
-                serializer.Serialize(writer, termsBucket.DocCount);
+                writer.WritePropertyName("key");
+                serializer.Serialize(writer, termsBucket.Key);
+            }
 
-                if (termsBucket.Key is not null)
-                {
-                    writer.WritePropertyName("key");
-                    serializer.Serialize(writer, termsBucket.Key);
-                }
+            if (termsBucket.KeyAsString is not null)
+            {
+                writer.WritePropertyName("key_as_string");
+                serializer.Serialize(writer, termsBucket.KeyAsString);
+            }
 
-                if (termsBucket.KeyAsString is not null)
-                {
-                    writer.WritePropertyName("key_as_string");
-                    serializer.Serialize(writer, termsBucket.KeyAsString);
-                }
-
-                foreach (KeyValuePair<string, IAggregate> aggregate in termsBucket)
-                {
-                    writer.WritePropertyName(aggregate.Key);
-                    serializer.Serialize(writer, aggregate.Value);
-                }
+            foreach (KeyValuePair<string, IAggregate> aggregate in termsBucket)
+            {
+                writer.WritePropertyName(aggregate.Key);
+                serializer.Serialize(writer, aggregate.Value);
             }
 
             writer.WriteEndObject();

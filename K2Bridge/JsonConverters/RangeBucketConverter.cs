@@ -17,48 +17,47 @@ namespace K2Bridge.JsonConverters
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            var rangeBucket = (RangeBucket)value;
+
             writer.WriteStartObject();
 
-            if (value is RangeBucket rangeBucket)
+            writer.WritePropertyName("doc_count");
+            serializer.Serialize(writer, rangeBucket.DocCount);
+
+            if (rangeBucket.Key is not null)
             {
-                writer.WritePropertyName("doc_count");
-                serializer.Serialize(writer, rangeBucket.DocCount);
+                writer.WritePropertyName("key");
+                serializer.Serialize(writer, rangeBucket.Key);
+            }
 
-                if (rangeBucket.Key is not null)
-                {
-                    writer.WritePropertyName("key");
-                    serializer.Serialize(writer, rangeBucket.Key);
-                }
+            if (rangeBucket.From is not null)
+            {
+                writer.WritePropertyName("from");
+                serializer.Serialize(writer, rangeBucket.From);
+            }
 
-                if (rangeBucket.From is not null)
-                {
-                    writer.WritePropertyName("from");
-                    serializer.Serialize(writer, rangeBucket.From);
-                }
+            if (rangeBucket.FromAsString is not null)
+            {
+                writer.WritePropertyName("from_as_string");
+                serializer.Serialize(writer, rangeBucket.FromAsString);
+            }
 
-                if (rangeBucket.FromAsString is not null)
-                {
-                    writer.WritePropertyName("from_as_string");
-                    serializer.Serialize(writer, rangeBucket.FromAsString);
-                }
+            if (rangeBucket.To is not null)
+            {
+                writer.WritePropertyName("to");
+                serializer.Serialize(writer, rangeBucket.To);
+            }
 
-                if (rangeBucket.To is not null)
-                {
-                    writer.WritePropertyName("to");
-                    serializer.Serialize(writer, rangeBucket.To);
-                }
+            if (rangeBucket.ToAsString is not null)
+            {
+                writer.WritePropertyName("to_as_string");
+                serializer.Serialize(writer, rangeBucket.ToAsString);
+            }
 
-                if (rangeBucket.ToAsString is not null)
-                {
-                    writer.WritePropertyName("to_as_string");
-                    serializer.Serialize(writer, rangeBucket.ToAsString);
-                }
-
-                foreach (KeyValuePair<string, IAggregate> aggregate in rangeBucket)
-                {
-                    writer.WritePropertyName(aggregate.Key);
-                    serializer.Serialize(writer, aggregate.Value);
-                }
+            foreach (KeyValuePair<string, IAggregate> aggregate in rangeBucket)
+            {
+                writer.WritePropertyName(aggregate.Key);
+                serializer.Serialize(writer, aggregate.Value);
             }
 
             writer.WriteEndObject();
