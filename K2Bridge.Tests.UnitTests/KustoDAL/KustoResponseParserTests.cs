@@ -158,7 +158,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
-            var aggregate = elasticResult.Aggregations[primaryAggregation.Key] as BucketAggregate<DateHistogramBucket>;
+            var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
             Assert.AreEqual(2, aggregate.Buckets.Count());
         }
 
@@ -181,7 +181,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
-            var aggregate = elasticResult.Aggregations[primaryAggregation.Key] as BucketAggregate<RangeBucket>;
+            var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
             Assert.AreEqual(3, aggregate.Buckets.Count());
         }
 
@@ -204,7 +204,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(1, result.Responses.Count());
 
             var elasticResult = result.Responses.ToList()[0];
-            var aggregate = elasticResult.Aggregations[primaryAggregation.Key] as BucketAggregate<RangeBucket>;
+            var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
             Assert.AreEqual(2, aggregate.Buckets.Count());
         }
 
