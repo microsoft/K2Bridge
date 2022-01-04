@@ -39,6 +39,11 @@ namespace K2Bridge.Models.Request.Queries
             /// A phrase containing wildcards ('?' or '*').
             /// </summary>
             Wildcard,
+
+            /// <summary>
+            /// Matches everything (*:*)
+            /// </summary>
+            MatchAll,
         }
 
         /// <summary>
