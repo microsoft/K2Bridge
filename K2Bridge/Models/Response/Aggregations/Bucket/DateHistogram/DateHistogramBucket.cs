@@ -12,7 +12,7 @@ namespace K2Bridge.Models.Response.Aggregations
     /// Key is a 64 bit number representing a timestamp in milliseconds-since-the-epoch.
     /// </summary>
     [JsonConverter(typeof(DateHistogramBucketConverter))]
-    public class DateHistogramBucket : KeyedBucket<long>
+    public class DateHistogramBucket : KeyedBucket
     {
     }
 }

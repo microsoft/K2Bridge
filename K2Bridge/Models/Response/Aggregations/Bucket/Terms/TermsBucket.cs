@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Response.Aggregations
     /// Describes terms bucket response element.
     /// </summary>
     [JsonConverter(typeof(TermsBucketConverter))]
-    public class TermsBucket : KeyedBucket<string>
+    public class TermsBucket : KeyedBucket
     {
     }
 }

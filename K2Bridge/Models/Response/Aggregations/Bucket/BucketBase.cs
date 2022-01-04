@@ -4,16 +4,14 @@
 
 namespace K2Bridge.Models.Response.Aggregations
 {
-    using Newtonsoft.Json;
-
     /// <summary>
     /// Describes abstract base class for bucket response element.
     /// </summary>
-    public abstract class BucketBase : AggregateDictionary, IBucket
+    public abstract class BucketBase : AggregateDictionary
     {
         /// <summary>
         /// Gets or sets the DocCount value.
         /// </summary>
-        public long DocCount { get; set; }
+        public virtual long DocCount { get; set; }
     }
 }

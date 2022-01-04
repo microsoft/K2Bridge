@@ -11,7 +11,7 @@ namespace K2Bridge.Models.Response.Aggregations
     /// Describes range bucket response element.
     /// </summary>
     [JsonConverter(typeof(RangeBucketConverter))]
-    public class RangeBucket : KeyedBucket<string>
+    public class RangeBucket : KeyedBucket
     {
         /// <summary>
         /// Gets or sets the From value.

@@ -17,45 +17,28 @@ namespace K2Bridge.JsonConverters
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            var bucketAggregate = (BucketAggregate)value;
+
             writer.WriteStartObject();
             writer.WritePropertyName("buckets");
 
-            if (value is BucketAggregate<RangeBucket> rangeAggregate)
-            {
-                KeyedSerialization<RangeBucket, string>(writer, rangeAggregate, serializer);
-            }
-
-            if (value is BucketAggregate<DateHistogramBucket> dateHistogramAggregate)
-            {
-                serializer.Serialize(writer, dateHistogramAggregate.Buckets);
-            }
-
-            if (value is BucketAggregate<TermsBucket> termsAggregate)
-            {
-                serializer.Serialize(writer, termsAggregate.Buckets);
-            }
-
-            writer.WriteEndObject();
-        }
-
-        private void KeyedSerialization<TBucket, TKey>(JsonWriter writer, BucketAggregate<TBucket> aggregate, JsonSerializer serializer)
-            where TBucket : KeyedBucket<TKey>
-        {
             // Setting the keyed flag to true will associate a unique string key with each bucket and return the ranges as a hash rather than an array.
-            if (aggregate.Keyed)
+            if (bucketAggregate.Keyed)
             {
-                serializer.Serialize(writer, aggregate.Buckets.ToDictionary(
+                serializer.Serialize(writer, bucketAggregate.Buckets.ToDictionary(
                     bucket => bucket.Key,
                     bucket =>
                     {
-                        bucket.Key = default(TKey);
+                        bucket.Key = null;
                         return bucket;
                     }));
             }
             else
             {
-                serializer.Serialize(writer, aggregate.Buckets);
+                serializer.Serialize(writer, bucketAggregate.Buckets);
             }
+
+            writer.WriteEndObject();
         }
     }
 }

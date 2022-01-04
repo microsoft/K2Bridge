@@ -5,18 +5,18 @@
 namespace K2Bridge.Models.Response.Aggregations
 {
     /// <summary>
-    /// Describes keyed bucket response element.
+    /// Interface for keyed bucket response element.
     /// </summary>
-    public class KeyedBucket : BucketBase, IKeyedBucket
+    public interface IKeyedBucket
     {
         /// <summary>
         /// Gets or sets the Key value.
         /// </summary>
-        public object Key { get; set; }
+        object Key { get; set; }
 
         /// <summary>
         /// Gets or sets the KeyAsString value.
         /// </summary>
-        public string KeyAsString { get; set; }
+        string KeyAsString { get; set; }
     }
 }
