@@ -21,13 +21,88 @@ namespace K2Bridge.Factories
     internal static class AggregateFactory
     {
         /// <summary>
+        /// Get date histogram aggregate from a given <see cref="DataRowCollection"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="BucketAggregate"></returns>
+        public static BucketAggregate GetDateHistogramAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        {
+            logger.LogTrace($"Get date histogram aggregate for {key}.");
+
+            var dateHistogramAggregate = new BucketAggregate();
+
+            foreach (DataRow row in rowCollection)
+            {
+                var bucket = BucketFactory.CreateDateHistogramBucket(key, row, logger);
+                if (bucket != null)
+                {
+                    dateHistogramAggregate.Buckets.Add(bucket);
+                }
+            }
+
+            return dateHistogramAggregate;
+        }
+
+        /// <summary>
+        /// Get range aggregate from a given <see cref="DataRowCollection"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="BucketAggregate"></returns>
+        public static BucketAggregate GetRangeAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        {
+            logger.LogTrace($"Get range aggregate for {key}.");
+
+            var rangeAggregate = new BucketAggregate() { Keyed = true };
+
+            foreach (DataRow row in rowCollection)
+            {
+                var bucket = BucketFactory.CreateRangeBucket(key, row, logger);
+                if (bucket != null)
+                {
+                    rangeAggregate.Buckets.Add(bucket);
+                }
+            }
+
+            return rangeAggregate;
+        }
+
+        /// <summary>
+        /// Get terms aggregate from a given <see cref="DataRowCollection"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="TermsAggregate"></returns>
+        public static TermsAggregate GetTermsAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        {
+            logger.LogTrace($"Get terms aggregate for {key}.");
+
+            var termsAggregate = new TermsAggregate() { SumOtherDocCount = 0 };
+
+            foreach (DataRow row in rowCollection)
+            {
+                var bucket = BucketFactory.CreateTermsBucket(key, row, logger);
+                if (bucket != null)
+                {
+                    termsAggregate.Buckets.Add(bucket);
+                }
+            }
+
+            return termsAggregate;
+        }
+
+        /// <summary>
         /// Add aggregates to current <see cref="AggregateDictionary"> instance from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>
+        /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be added as aggregate.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <param name="primaryKey">The primary aggregation key.</param>
-        public static void AddAggregates(this AggregateDictionary aggregateDictionary, DataRow row, ILogger logger, string primaryKey)
+        public static void AddAggregates(this AggregateDictionary aggregateDictionary, string primaryKey, DataRow row, ILogger logger)
         {
             var columns = row.Table.Columns;
 
@@ -66,16 +141,16 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Get <see cref="PercentileAggregate"> object from a given <see cref="DataRow"/>.
+        /// Get percentile aggregate from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="columnName">The column name.</param>
         /// <param name="columnMetadata">The column metadata.</param>
-        /// <param name="row">The row to be added as aggregate.</param>
+        /// <param name="row">The row to be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns></returns>
+        /// <returns><see cref="PercentileAggregate"></returns>
         private static PercentileAggregate GetPercentileAggregate(string columnName, string[] columnMetadata, DataRow row, ILogger logger)
         {
-            logger.LogTrace($"Get the percentile aggregate for {columnName}.");
+            logger.LogTrace($"Get percentile aggregate for {columnName}.");
 
             // Parse list of percents, and keyed option
             var percents = columnMetadata[2..^1];
@@ -108,7 +183,7 @@ namespace K2Bridge.Factories
             }
             else
             {
-                // If row[columnName] is empty, we returns null value for each percentile requested
+                // If row[columnName] is empty, it returns null value for each percentile requested
                 foreach (var percent in percents)
                 {
                     var percentileItem = new PercentileItem()
@@ -125,15 +200,15 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Get <see cref="ValueAggregate"> object from a given <see cref="DataRow"/>.
+        /// Get value aggregate from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="row">The row to be added as aggregate.</param>
+        /// <param name="row">The row to be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns></returns>
+        /// <returns><see cref="ValueAggregate"></returns>
         private static ValueAggregate GetValueAggregate(string key, DataRow row, ILogger logger)
         {
-            logger.LogTrace($"Get the value aggregate for {key}.");
+            logger.LogTrace($"Get value aggregate for {key}.");
 
             var valueAggregate = new ValueAggregate() { Value = null };
             var rowValue = row[key];

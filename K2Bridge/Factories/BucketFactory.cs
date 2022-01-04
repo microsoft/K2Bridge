@@ -43,13 +43,14 @@ namespace K2Bridge.Factories
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
-            var dhb = new DateHistogramBucket {
+            var dhb = new DateHistogramBucket
+            {
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
             };
 
-            dhb.AddAggregates(row, logger, primaryKey);
+            dhb.AddAggregates(primaryKey, row, logger);
 
             return dhb;
         }
@@ -74,7 +75,7 @@ namespace K2Bridge.Factories
                 Key = Convert.ToString(key),
             };
 
-            tb.AddAggregates(row, logger, primaryKey);
+            tb.AddAggregates(primaryKey, row, logger);
 
             return tb;
         }
@@ -124,7 +125,7 @@ namespace K2Bridge.Factories
                 To = to,
             };
 
-            rb.AddAggregates(row, logger, primaryKey);
+            rb.AddAggregates(primaryKey, row, logger);
 
             return rb;
         }

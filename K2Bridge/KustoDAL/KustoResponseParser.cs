@@ -177,7 +177,7 @@ namespace K2Bridge.KustoDAL
                     // This is not a bucket aggregation scenario
                     foreach (DataRow row in dataRowCollection)
                     {
-                        searchResponse.Aggregations.AddAggregates(row, Logger, key);
+                        searchResponse.Aggregations.AddAggregates(key, row, Logger);
                     }
                 }
                 else
@@ -185,9 +185,9 @@ namespace K2Bridge.KustoDAL
                     // This a bucket aggregation scenario
                     IAggregate bucketAggregate = aggregationType switch
                     {
-                        nameof(Models.Request.Aggregations.DateHistogramAggregation) => CreateBucketAggregate<DateHistogramBucket>(BucketFactory.CreateDateHistogramBucket, dataRowCollection, key),
-                        nameof(Models.Request.Aggregations.RangeAggregation) => CreateBucketAggregate<RangeBucket>(BucketFactory.CreateRangeBucket, dataRowCollection, key),
-                        nameof(Models.Request.Aggregations.TermsAggregation) => CreateBucketAggregate<TermsBucket>(BucketFactory.CreateTermsBucket, dataRowCollection, key),
+                        nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, dataRowCollection, Logger),
+                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, dataRowCollection, Logger),
+                        nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, dataRowCollection, Logger),
                         _ => null,
                     };
 
@@ -212,39 +212,6 @@ namespace K2Bridge.KustoDAL
             }
 
             return elasticResponse;
-        }
-
-        /// <summary>
-        /// Create <see cref="BucketAggregate"/> instance of type TBucket from a given <see cref="DataRow"/>.
-        /// </summary>
-        /// <typeparam name="TBucket">The bucket type.</typeparam>
-        /// <param name="createBucket">Delegate method used to create bucket.</param>
-        /// <param name="dataRowCollection">The row to be parsed.</param>
-        /// <param name="primaryKey">The primary aggregation key.</param>
-        /// <returns>BucketAggregate<TBucket> instance.</returns>
-        private BucketAggregate<TBucket> CreateBucketAggregate<TBucket>(
-            BucketFactory.CreateBucket<TBucket> createBucket,
-            DataRowCollection dataRowCollection,
-            string primaryKey)
-            where TBucket : IBucket
-        {
-            var aggregate = new BucketAggregate<TBucket>();
-
-            foreach (DataRow row in dataRowCollection)
-            {
-                var bucket = createBucket(primaryKey, row, Logger);
-                if (bucket != null)
-                {
-                    aggregate.Buckets.Add(bucket);
-                }
-            }
-
-            if (typeof(TBucket) == typeof(RangeBucket))
-            {
-                aggregate.Keyed = true;
-            }
-
-            return aggregate;
         }
     }
 }
