@@ -18,20 +18,57 @@ namespace K2Bridge.JsonConverters
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var aggregate = value as PercentileAggregate;
+            var percentileAggregate = (PercentileAggregate)value;
 
             writer.WriteStartObject();
             writer.WritePropertyName("values");
 
-            if (aggregate.Keyed)
+            if (percentileAggregate.Keyed)
             {
-                // Keyed ==> Dictionary<string, double>
-                serializer.Serialize(writer, aggregate.Values.ToDictionary(item => item.Percentile.ToString("F1", CultureInfo.InvariantCulture), item => item.Value));
+                writer.WriteStartObject();
+
+                foreach (var percentileItem in percentileAggregate.Values)
+                {
+                    var key = percentileItem.Percentile.ToString("F1", CultureInfo.InvariantCulture);
+
+                    // To be alligned with elasticsearch behavior, null value must be serialized.
+                    writer.WritePropertyName(key);
+                    serializer.Serialize(writer, percentileItem.Value);
+
+                    if (percentileItem.ValueAsString is not null)
+                    {
+                        writer.WritePropertyName($"{key}_as_string");
+                        serializer.Serialize(writer, percentileItem.ValueAsString);
+                    }
+                }
+
+                writer.WriteEndObject();
             }
             else
             {
-                // Not Keyed ==> List<KeyValuePair<double,double>>
-                serializer.Serialize(writer, aggregate.Values.ToDictionary(item => item.Percentile, item => item.Value).ToList());
+                writer.WriteStartArray();
+
+                foreach (var percentileItem in percentileAggregate.Values)
+                {
+                    writer.WriteStartObject();
+
+                    writer.WritePropertyName("key");
+                    serializer.Serialize(writer, percentileItem.Percentile);
+
+                    // To be alligned with elasticsearch behavior, null value must be serialized.
+                    writer.WritePropertyName("value");
+                    serializer.Serialize(writer, percentileItem.Value);
+
+                    if (percentileItem.ValueAsString is not null)
+                    {
+                        writer.WritePropertyName("value_as_string");
+                        serializer.Serialize(writer, percentileItem.ValueAsString);
+                    }
+
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray();
             }
 
             writer.WriteEndObject();
