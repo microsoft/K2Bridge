@@ -4,13 +4,16 @@
 
 namespace K2Bridge.Factories
 {
+    using System;
     using System.Linq;
     using System.Data;
     using System.Globalization;
     using K2Bridge.Models.Response;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using K2Bridge.Models.Response.Aggregations;
+    using K2Bridge.Utils;
 
     /// <summary>
     /// Aggregate Factory.
@@ -35,13 +38,13 @@ namespace K2Bridge.Factories
                     continue;
                 }
 
+                // Column Metadata (Separator %)
+                // Structure: key%metric%value1%value2%keyed
                 const char Seperator = '%';
                 var columnMetadata = column.ColumnName.Split(Seperator);
 
                 if (columnMetadata.Length > 1)
                 {
-                    // Column Metadata (Separator %)
-                    // Structure: key%metric%value1%value2%keyed
                     var metric = columnMetadata[1];
 
                     if (metric == "percentile")
@@ -49,16 +52,15 @@ namespace K2Bridge.Factories
                         var key = columnMetadata[0];
                         aggregateDictionary.Add(key, GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger));
                     }
+                    else
+                    {
+                        throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid.");
+                    }
                 }
                 else
                 {
                     var key = column.ColumnName;
-                    logger.LogTrace($"Defining the value for {key}");
-
-                    var rowValue = (double)row[key];
-                    double? value = double.IsNaN(rowValue) ? null : rowValue;
-
-                    aggregateDictionary.Add(key, new ValueAggregate() { Value = value });
+                    aggregateDictionary.Add(key, GetValueAggregate(key, row, logger));
                 }
             }
         }
@@ -73,26 +75,79 @@ namespace K2Bridge.Factories
         /// <returns></returns>
         private static PercentileAggregate GetPercentileAggregate(string columnName, string[] columnMetadata, DataRow row, ILogger logger)
         {
+            logger.LogTrace($"Get the percentile aggregate for {columnName}.");
+
             // Parse list of percents, and keyed option
             var percents = columnMetadata[2..^1];
             var keyed = bool.Parse(columnMetadata[^1]);
 
             var percentileAggregate = new PercentileAggregate() { Keyed = keyed };
 
-            if (row[columnName] is JArray percentileValues)
+            if (row[columnName] is JArray percentileValues && percentileValues.HasValues)
             {
                 foreach (var (percent, value) in percents.Zip(percentileValues))
                 {
-                    percentileAggregate.Values.Add(
-                        new PercentileItem()
+                    var percentileItem = value.Type switch
+                    {
+                        // If token type is a string, we assume this is is date time
+                        JTokenType.String => new PercentileItem()
+                        {
+                            Percentile = double.Parse(percent, CultureInfo.InvariantCulture),
+                            Value = TimeUtils.ToEpochMilliseconds(value.Value<DateTime>()),
+                            ValueAsString = value.Value<DateTime>().ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
+                        },
+                        _ => new PercentileItem()
                         {
                             Percentile = double.Parse(percent, CultureInfo.InvariantCulture),
                             Value = value.Value<double>(),
-                        });
+                        },
+                    };
+
+                    percentileAggregate.Values.Add(percentileItem);
+                }
+            }
+            else
+            {
+                // If row[columnName] is empty, we returns null value for each percentile requested
+                foreach (var percent in percents)
+                {
+                    var percentileItem = new PercentileItem()
+                    {
+                        Percentile = double.Parse(percent, CultureInfo.InvariantCulture),
+                        Value = null,
+                    };
+
+                    percentileAggregate.Values.Add(percentileItem);
                 }
             }
 
             return percentileAggregate;
+        }
+
+        /// <summary>
+        /// Get <see cref="ValueAggregate"> object from a given <see cref="DataRow"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="row">The row to be added as aggregate.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns></returns>
+        private static ValueAggregate GetValueAggregate(string key, DataRow row, ILogger logger)
+        {
+            logger.LogTrace($"Get the value aggregate for {key}.");
+
+            var valueAggregate = new ValueAggregate() { Value = null };
+            var rowValue = row[key];
+
+            if (rowValue.GetType() != typeof(System.DBNull))
+            {
+                valueAggregate = rowValue switch
+                {
+                    System.DateTime dateValue => new ValueAggregate() { Value = TimeUtils.ToEpochMilliseconds(dateValue), ValueAsString = dateValue.ToString("yyyy-MM-ddTHH:mm:ss.fffK") },
+                    _ => new ValueAggregate() { Value = Convert.ToDouble(rowValue) },
+                };
+            }
+
+            return valueAggregate;
         }
     }
 }
