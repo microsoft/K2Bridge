@@ -15,8 +15,13 @@ namespace K2Bridge.Models.Response.Aggregations
         public double Percentile { get; set; }
 
         /// <summary>
-        /// Gets or sets the percentile value.
+        /// Gets or sets the percentile Value.
         /// </summary>
         public double? Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets the percentile ValueAsString.
+        /// </summary>
+        public string ValueAsString { get; set; }
     }
 }

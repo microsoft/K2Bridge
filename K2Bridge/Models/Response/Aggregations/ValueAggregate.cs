@@ -4,17 +4,23 @@
 
 namespace K2Bridge.Models.Response.Aggregations
 {
+    using K2Bridge.JsonConverters;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Describes value aggregate response element.
     /// </summary>
+    [JsonConverter(typeof(ValueAggregateConverter))]
     public class ValueAggregate : IAggregate
     {
         /// <summary>
-        /// Gets or sets the value.
+        /// Gets or sets aggregate Value.
         /// </summary>
-        [JsonProperty("value")]
         public double? Value { get; set; }
+
+        /// <summary>
+        /// Gets or sets aggregate ValueAsString.
+        /// </summary>
+        public string ValueAsString { get; set; }
     }
 }
