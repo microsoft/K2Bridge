@@ -209,6 +209,29 @@ namespace UnitTests.K2Bridge.KustoDAL
         }
 
         [Test]
+        public void ParseElasticResponse_WithTermsAggs_ReturnsElasticResponseWithAggs()
+        {
+            using var aggsTable = GetTermsAggsTable();
+            aggsTable.TableName = "aggs";
+
+            var timeTaken = new TimeSpan(17);
+            var query = new QueryData("query", "index");
+
+            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(TermsAggregation));
+            query.PrimaryAggregation = primaryAggregation;
+
+            var reader = aggsTable.CreateDataReader();
+            var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
+
+            var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
+            Assert.AreEqual(1, result.Responses.Count());
+
+            var elasticResult = result.Responses.ToList()[0];
+            var aggregate = (TermsAggregate)elasticResult.Aggregations[primaryAggregation.Key];
+            Assert.AreEqual(2, aggregate.Buckets.Count());
+        }
+
+        [Test]
         public void ParseElasticResponse_BackendQueryFalse_ReturnsNull()
         {
             using var aggsTable = GetEmptyTable();
@@ -357,6 +380,31 @@ namespace UnitTests.K2Bridge.KustoDAL
             var row2 = resTable.NewRow();
             row2["2"] = "5000-10000";
             row2["count_"] = 20;
+
+            resTable.Rows.Add(row2);
+
+            return resTable;
+        }
+
+        private static DataTable GetTermsAggsTable()
+        {
+            DataTable resTable = new DataTable();
+
+            var column1 = new DataColumn("2");
+            var column2 = new DataColumn("count_");
+
+            resTable.Columns.Add(column1);
+            resTable.Columns.Add(column2);
+
+            var row1 = resTable.NewRow();
+            row1["2"] = "term1";
+            row1["count_"] = 1;
+
+            resTable.Rows.Add(row1);
+
+            var row2 = resTable.NewRow();
+            row2["2"] = "term2";
+            row2["count_"] = 2;
 
             resTable.Rows.Add(row2);
 
