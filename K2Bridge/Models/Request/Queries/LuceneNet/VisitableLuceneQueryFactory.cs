@@ -59,6 +59,12 @@ namespace K2Bridge.Models.Request.Queries.LuceneNet
                         LuceneQuery = q,
                     };
                     return luceneRangeQuery;
+                case MatchAllDocsQuery q:
+                    var luceneMatchAllDocsQuery = new LuceneMatchAllDocsQuery
+                    {
+                        LuceneQuery = q,
+                    };
+                    return luceneMatchAllDocsQuery;
                 default:
                     throw new NotImplementedException();
             }

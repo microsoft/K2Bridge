@@ -12,7 +12,7 @@ namespace UnitTests.K2Bridge.Visitors
     public class SortVisitorTests
     {
         [TestCase(
-            ExpectedResult = "myFieldName ASC",
+            ExpectedResult = "['myFieldName'] ASC",
             TestName = "Visit_WithBasicInput_ReturnsExpectedResult")]
         public string TestBasicSortVisitor()
         {

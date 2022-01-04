@@ -13,6 +13,9 @@ namespace UnitTests.K2Bridge.KustoDAL
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
     using global::K2Bridge.Models.Response;
+    using global::K2Bridge.Models.Response.Metadata;
+    using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Newtonsoft.Json.Linq;
@@ -33,6 +36,8 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private Mock<IConnectionDetails> mockDetails;
 
+        private IMemoryCache memoryCache;
+
         [SetUp]
         public void SetUp_DefaultMocks()
         {
@@ -46,6 +51,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             using IDataReader emptyReader2 = new DataReaderMock(new List<Dictionary<string, object>>());
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsNotNull<QueryData>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.FromSeconds(1), emptyReader2)));
+            memoryCache = GetMemoryCache();
         }
 
         [Test]
@@ -84,7 +90,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
 
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var response = await kusto.GetFieldCapsAsync("testIndexName");
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
@@ -206,6 +212,181 @@ namespace UnitTests.K2Bridge.KustoDAL
         }
 
         [Test]
+        public async Task GetFieldCaps_WithValidIndex_WithCache_ReturnFieldCaps()
+        {
+            Func<string, string, Dictionary<string, object>> column = (name, type) =>
+                new Dictionary<string, object> {
+                    { "ColumnName", name },
+                    { "ColumnType", type },
+                };
+
+            var testData = new List<Dictionary<string, object>>() {
+                column("mybool", "System.SByte"),
+                column("myint", "System.Int32"),
+                column("mylong", "System.Int64"),
+                column("myreal", "System.Double"),
+                column("mystring", "System.String"),
+                column("mydatetime", "System.DateTime"),
+                column("mydynamic", "System.Object"),
+                column("myguid", "System.Guid"),
+                column("mytimespan", "System.TimeSpan"),
+                column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
+            };
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+                .Returns(() =>
+                {
+                    IDataReader testReader = new DataReaderMock(testData);
+                    return Task.FromResult(testReader);
+                });
+
+            // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
+            var calls = new List<QueryData>();
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+                .Returns(() =>
+                {
+                    IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                        new Dictionary<string, object>() {
+                            { "result", JToken.Parse(@"{""a"": ""int"", ""b"": ""string"", ""c"": {""d"": {""e"": ""string""}}}") },
+                        },
+                    });
+                    return Task.FromResult((TimeSpan.Zero, dynamicResultReader));
+                });
+
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+
+            memoryCache.Get<FieldCapabilityResponse>("testIndexName").Should().BeNull();
+
+            var response = await kusto.GetFieldCapsAsync("testIndexName");
+
+            JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
+                  {
+                    ""indices"": [
+                      ""testIndexName""
+                    ],
+                    ""fields"": {
+                      ""mybool"": {
+                        ""boolean"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""boolean""
+                        }
+                      },
+                      ""myint"": {
+                        ""integer"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""integer""
+                        }
+                      },
+                      ""mylong"": {
+                        ""long"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""long""
+                        }
+                      },
+                      ""myreal"": {
+                        ""double"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""double""
+                        }
+                      },
+                      ""mystring"": {
+                        ""keyword"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""keyword""
+                        }
+                      },
+                      ""mydatetime"": {
+                        ""date"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""date""
+                        }
+                      },
+                      ""mydynamic"": {
+                        ""object"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""object""
+                        }
+                      },
+                      ""mydynamic.a"": {
+                        ""integer"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""integer""
+                        }
+                      },
+                      ""mydynamic.b"": {
+                        ""keyword"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""keyword""
+                        }
+                      },
+                      ""mydynamic.c"": {
+                        ""object"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""object""
+                        }
+                      },
+                      ""mydynamic.c.d"": {
+                        ""object"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""object""
+                        }
+                      },
+                      ""mydynamic.c.d.e"": {
+                        ""keyword"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""keyword""
+                        }
+                      },
+                      ""myguid"": {
+                        ""string"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""string""
+                        }
+                      },
+                      ""mytimespan"": {
+                        ""string"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""string""
+                        }
+                      },
+                      ""mydecimal"": {
+                        ""double"": {
+                          ""aggregatable"": true,
+                          ""searchable"": true,
+                          ""type"": ""double""
+                        }
+                      }
+                    }
+                  }
+                  "));
+
+            calls.Should().HaveCount(1);
+            calls[0].QueryCommandText.Should().Be("testIndexName | summarize buildschema(mydynamic)");
+
+            memoryCache.Get<FieldCapabilityResponse>("testIndexName").Should().NotBeNull();
+            var response2 = await kusto.GetFieldCapsAsync("testIndexName");
+            response2.Should().BeEquivalentTo(response);
+            calls.Should().HaveCount(1);
+
+            var response3 = await kusto.GetFieldCapsAsync("testIndexName", invalidateCache: true);
+            response3.Should().BeEquivalentTo(response);
+            calls.Should().HaveCount(2);
+        }
+
+        [Test]
         public async Task GetFieldCaps_WithDynamicColumnArray_ReturnFieldCaps()
         {
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
@@ -217,6 +398,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var testData = new List<Dictionary<string, object>>() {
                 column("myint", "System.Int32"),
                 column("nested_dynamic", "System.Object"),
+                column("nested_indexer", "System.Object"),
                 column("dynamic_top_level_string", "System.Object"),
                 column("dynamic_top_level_indexer", "System.Object"),
                 column("dynamic_top_level_array", "System.Object"),
@@ -229,7 +411,11 @@ namespace UnitTests.K2Bridge.KustoDAL
                 .Returns((QueryData query, RequestContext context) =>
                 {
                     string response;
-                    if (query.QueryCommandText.Contains("nested_dynamic"))
+                    if (query.QueryCommandText.Contains("nested_indexer"))
+                    {
+                        response = "{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": {\"b1\": \"int\", \"b2\": \"string\"}}}";
+                    }
+                    else if (query.QueryCommandText.Contains("nested_dynamic"))
                     {
                         response = "{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}";
                     }
@@ -255,7 +441,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                     return Task.FromResult((TimeSpan.Zero, dynamicResultReader));
                 });
 
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var response = await kusto.GetFieldCapsAsync("testIndexName");
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"{
@@ -268,6 +454,41 @@ namespace UnitTests.K2Bridge.KustoDAL
                             ""aggregatable"": true,
                             ""searchable"": true,
                             ""type"": ""integer""
+                          }
+                        },
+                        ""nested_indexer"": {
+                          ""object"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""object""
+                          }
+                        },
+                        ""nested_indexer.a"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
+                          }
+                        },
+                        ""nested_indexer.b"": {
+                          ""object"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""object""
+                          }
+                        },
+                        ""nested_indexer.b.b1"": {
+                          ""integer"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""integer""
+                          }
+                        },
+                        ""nested_indexer.b.b2"": {
+                          ""keyword"": {
+                            ""aggregatable"": true,
+                            ""searchable"": true,
+                            ""type"": ""keyword""
                           }
                         },
                         ""nested_dynamic"": {
@@ -360,7 +581,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
 
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, percentage);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, percentage);
             await kusto.GetFieldCapsAsync("testIndexName");
 
             calls[0].QueryCommandText.Should().Be(@"let percentage = 30.5 / 100.0;
@@ -385,7 +606,7 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.FromSeconds(1), (IDataReader)testReader)));
 
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var response = await kusto.GetFieldCapsAsync("testIndexName");
 
             mockQueryExecutor.Verify(exec => exec.ExecuteQueryAsync(
@@ -430,7 +651,7 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
                     It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync("testIndex");
 
             mockQueryExecutor.Verify(exec => exec.ExecuteControlCommandAsync(
@@ -460,7 +681,7 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
                     It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync("testIndex");
 
             mockQueryExecutor.Verify(exec => exec.ExecuteControlCommandAsync(
@@ -499,7 +720,7 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
                     It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader2));
 
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync("testIndex");
 
             Assert.IsNotNull(indexResponse);
@@ -527,13 +748,22 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
                 });
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, StringComparison.OrdinalIgnoreCase)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
-            var kusto = new KustoDataAccess(mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync(indexName);
 
             Assert.IsNotNull(indexResponse, $"null response for indexname {indexName}");
             var itr = indexResponse.Indices.GetEnumerator();
             itr.MoveNext();
             Assert.NotNull(itr.Current, $"failed to provide valid search term with database name {databaseName} and table name {tableName} from indexname {indexName}. expected: {searchString}");
+        }
+
+        private static IMemoryCache GetMemoryCache()
+        {
+            var services = new ServiceCollection();
+            services.AddMemoryCache();
+            var serviceProvider = services.BuildServiceProvider();
+
+            return serviceProvider.GetService<IMemoryCache>();
         }
     }
 }

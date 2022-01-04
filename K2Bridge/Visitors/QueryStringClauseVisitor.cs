@@ -84,6 +84,9 @@ namespace K2Bridge.Visitors
                 case QueryStringClause.Subtype.Prefix:
                     queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
                     break;
+                case QueryStringClause.Subtype.MatchAll:
+                    // Match all returns everything, so we don't need a query
+                    break;
                 default:
                     // should not happen
                     break;
@@ -111,10 +114,10 @@ namespace K2Bridge.Visitors
                     Lucene.Net.Util.Version.LUCENE_30,
                     queryStringClause.Default,
                     analyzer)
-                {
-                    AllowLeadingWildcard = queryStringClause.Wildcard,
-                    LowercaseExpandedTerms = false,
-                };
+                    {
+                        AllowLeadingWildcard = queryStringClause.Wildcard,
+                        LowercaseExpandedTerms = false,
+                    };
 
             // escaping special charachters from the pharse before parsing.
             // we would call QueryParser.Escape() method, but it escapes all charachters and

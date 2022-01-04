@@ -36,7 +36,7 @@ namespace UnitTests.K2Bridge.Controllers
             var response = new FieldCapabilityResponse();
             response.AddField(new FieldCapabilityElement { Name = "testFieldName" });
             var responseTask = Task.FromResult(response);
-            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>())).Returns(responseTask);
+            mockDAL.Setup(kusto => kusto.GetFieldCapsAsync(It.IsNotNull<string>(), false)).Returns(responseTask);
             mockDAL.Setup(kusto => kusto.ResolveIndexAsync(It.IsNotNull<string>())).Returns(Task.FromResult(new ResolveIndexResponse() { }));
             var mockLogger = new Mock<ILogger<IndexListController>>();
 

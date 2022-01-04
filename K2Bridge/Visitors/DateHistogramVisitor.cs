@@ -19,7 +19,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Field, nameof(dateHistogramAggregation.Field));
 
             dateHistogramAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + dateHistogramAggregation.SubAggregationsKustoQL +
-                $"{dateHistogramAggregation.Metric} by ['{dateHistogramAggregation.Key}'] = ";
+                $"{dateHistogramAggregation.Metric} by {EncodeKustoField(dateHistogramAggregation.Key)} = ";
             var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
 
             if (!string.IsNullOrEmpty(interval))
@@ -29,15 +29,16 @@ namespace K2Bridge.Visitors
                 // If its calendar_interval, it can contain complete words like 'year', 'month' etc, so we need to check for that explicitly.
                 // We also check if its a known character, if not, just use the value in the bin as-is.
                 var period = interval[^1];
+                var field = EncodeKustoField(dateHistogramAggregation.Field, true);
                 dateHistogramAggregation.KustoQL += period switch
                 {
-                    'w' => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.Field})",
-                    'M' => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.Field})",
-                    'y' => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.Field})",
-                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}({dateHistogramAggregation.Field})",
-                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}({dateHistogramAggregation.Field})",
-                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({dateHistogramAggregation.Field})",
-                    _ => $"bin({dateHistogramAggregation.Field}, {interval})",
+                    'w' => $"{KustoQLOperators.StartOfWeek}({field})",
+                    'M' => $"{KustoQLOperators.StartOfMonth}({field})",
+                    'y' => $"{KustoQLOperators.StartOfYear}({field})",
+                    _ when interval.Contains("week", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfWeek}({field})",
+                    _ when interval.Contains("month", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfMonth}({field})",
+                    _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({field})",
+                    _ => $"bin({field}, {interval})",
                 };
             }
             else
@@ -46,7 +47,7 @@ namespace K2Bridge.Visitors
             }
 
             // todatetime is redundent but we'll keep it for now
-            dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} ['{dateHistogramAggregation.Key}'] asc";
+            dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc";
         }
     }
 }

@@ -23,6 +23,7 @@ namespace K2Bridge
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Rewrite;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -80,12 +81,22 @@ namespace K2Bridge
 
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
+            var dynamicSamplePercentage = GetConfigOptional<double>("dynamicSamplePercentage");
+            if (dynamicSamplePercentage is <= 0 or > 100)
+            {
+                throw new ArgumentException(
+                    $"dynamicSamplePercentage must be between 0 and 100, but was {dynamicSamplePercentage}");
+            }
+
+            services.AddMemoryCache();
+
             services.AddTransient<IKustoDataAccess, KustoDataAccess>(
                 s => new KustoDataAccess(
+                    s.GetRequiredService<IMemoryCache>(),
                     s.GetRequiredService<IQueryExecutor>(),
                     s.GetRequiredService<RequestContext>(),
                     s.GetRequiredService<ILogger<KustoDataAccess>>(),
-                    GetConfigOptional<double>("dynamicSamplePercentage"))); // TODO - Add validations
+                    dynamicSamplePercentage));
 
             services.AddTransient<ISchemaRetrieverFactory, SchemaRetrieverFactory>(
                 s => new SchemaRetrieverFactory(

@@ -36,11 +36,11 @@ namespace K2Bridge.Visitors
                     object o => $"\"{matchPhraseClause.Phrase.ToString().EscapeSlashes()}\"",
                 };
 
-                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} {parsedPhrase}";
+                matchPhraseClause.KustoQL = $"{EncodeKustoField(matchPhraseClause.FieldName)} {KustoQLOperators.Equal} {parsedPhrase}";
                 return;
             }
 
-            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"\"";
+            matchPhraseClause.KustoQL = $"{EncodeKustoField(matchPhraseClause.FieldName)} {KustoQLOperators.Equal} \"\"";
         }
     }
 }

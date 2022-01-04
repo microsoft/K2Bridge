@@ -13,6 +13,7 @@ namespace K2Bridge.KustoDAL
     using K2Bridge.Models.Response.Metadata;
     using K2Bridge.Utils;
     using K2Bridge.Visitors;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
 
@@ -21,15 +22,19 @@ namespace K2Bridge.KustoDAL
     /// </summary>
     internal class KustoDataAccess : IKustoDataAccess
     {
+        private readonly IMemoryCache cache;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="KustoDataAccess"/> class.
         /// </summary>
+        /// <param name="cache"></param>
         /// <param name="kustoClient">Query Executor.</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <param name="logger">A logger.</param>
         /// <param name="dynamicSamplePercentage">Percentage of table to sample when building a dynamic field. When empty, queries the entire table.</param>
-        public KustoDataAccess(IQueryExecutor kustoClient, RequestContext requestContext, ILogger<KustoDataAccess> logger, double? dynamicSamplePercentage = null)
+        public KustoDataAccess(IMemoryCache cache, IQueryExecutor kustoClient, RequestContext requestContext, ILogger<KustoDataAccess> logger, double? dynamicSamplePercentage = null)
         {
+            this.cache = cache;
             Kusto = kustoClient;
             RequestContext = requestContext;
             Logger = logger;
@@ -48,9 +53,15 @@ namespace K2Bridge.KustoDAL
         /// Executes a query to Kusto for Fields Caps.
         /// </summary>
         /// <param name="indexName">Index name.</param>
+        /// <param name="invalidateCache">Invalidate the cache and force refresh.</param>
         /// <returns>An object with the field caps.</returns>
-        public async Task<FieldCapabilityResponse> GetFieldCapsAsync(string indexName)
+        public async Task<FieldCapabilityResponse> GetFieldCapsAsync(string indexName, bool invalidateCache = false)
         {
+            if (!invalidateCache && cache.TryGetValue(indexName, out var cached))
+            {
+                return (FieldCapabilityResponse)cached;
+            }
+
             var response = new FieldCapabilityResponse();
             try
             {
@@ -65,6 +76,7 @@ namespace K2Bridge.KustoDAL
 
                 if (response.Fields.Count > 0)
                 {
+                    cache.Set(indexName, response);
                     return response;
                 }
 
@@ -80,6 +92,7 @@ namespace K2Bridge.KustoDAL
                 throw;
             }
 
+            cache.Set(indexName, response);
             return response;
         }
 
@@ -213,7 +226,7 @@ namespace K2Bridge.KustoDAL
                         AddSingleDynamicField(response, name, arr);
                         break;
                     case JObject obj when obj[specialArrayKey] != null:
-                        AddSingleDynamicField(response, name, obj[specialArrayKey]);
+                        stack.Push((name, obj[specialArrayKey]));
                         break;
                     case JObject obj:
                         AddSingleDynamicField(response, name, "dynamic");
