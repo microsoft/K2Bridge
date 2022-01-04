@@ -8,7 +8,7 @@ namespace UnitTests.K2Bridge.JsonConverters
     using NUnit.Framework;
 
     [TestFixture]
-    public class DateHistogramBucketAggsConverterTests
+    public class DateHistogramBucketConverterTests
     {
         private const string ExpectedValidBucket = @"{
             ""doc_count"": 4133,

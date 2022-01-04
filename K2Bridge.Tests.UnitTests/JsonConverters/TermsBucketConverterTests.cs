@@ -8,7 +8,7 @@ namespace UnitTests.K2Bridge.JsonConverters
     using NUnit.Framework;
 
     [TestFixture]
-    public class TermsBucketAggsConverterTests
+    public class TermsBucketConverterTests
     {
         private const string ExpectedValidBucket = @"{
             ""doc_count"": 502,
