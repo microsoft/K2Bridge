@@ -47,7 +47,7 @@ namespace UnitTests.K2Bridge.JsonConverters
         };
 
         [TestCaseSource(nameof(ValueAggregateTestCases))]
-        public void TestTermsBucketAggsConverter(string queryString, object expected)
+        public void TestValueAggregateConverter(string queryString, object expected)
         {
             ((ValueAggregate)expected).AssertJson(queryString);
         }
