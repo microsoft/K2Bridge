@@ -27,7 +27,7 @@ namespace K2Bridge.Models.Request.Aggregations
         public IList<RangeAggregationExpression> Ranges { get; set; }
 
         /// <summary>
-        /// Gets or sets the keyed flag, indicating the bucket should be returned as a hash.
+        /// Gets or sets a value indicating whether the bucket should be returned as a hash.
         /// </summary>
         [JsonProperty("keyed")]
         public bool Keyed { get; set; }
