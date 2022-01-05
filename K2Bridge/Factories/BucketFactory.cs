@@ -5,9 +5,9 @@
 namespace K2Bridge.Factories
 {
     using System;
-    using System.Linq;
     using System.Data;
     using System.Globalization;
+    using System.Linq;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
