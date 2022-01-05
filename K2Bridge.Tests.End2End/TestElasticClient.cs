@@ -81,7 +81,7 @@ namespace K2Bridge.Tests.End2End
         ///   "cluster_name" : "__placeholder__",
         ///   "cluster_uuid" : "__placeholder__",
         ///   "version" : {
-        ///     "number" : "6.8.5",
+        ///     "number" : "6.8.22",
         ///     "build_flavor" : "oss",
         ///     "build_type" : "docker",
         ///     "build_hash" : "78990e9",

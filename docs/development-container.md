@@ -19,8 +19,8 @@ The following packages are installed on top of this base image.
 | dotnet-sdk-3.1 | latest |
 | dotnet-sdk-5.0 | latest |
 | default-jre | latest |
-| elasticsearch-oss| 6.8.20 |
-| kibana-oss | 6.8.20 |
+| elasticsearch-oss| 6.8.22 |
+| kibana-oss | 6.8.22 |
 
 Elasticsearch and Kibana are available at `/home/vscode`; and dev container will start using vscode non-root user. For reference, you cannot start elasticsearch using root user, an exception will occur.
 
@@ -31,9 +31,9 @@ Elasticsearch and Kibana are available at `/home/vscode`; and dev container will
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
 vscode ➜ ~ $ ls
-elasticsearch-6.8.20  kibana-6.8.20-linux-x86_64
-vscode ➜ ~ $ cd elasticsearch-6.8.20/
-vscode ➜ ~/elasticsearch-6.8.20 $ ./bin/elasticsearch
+elasticsearch-6.8.22  kibana-6.8.22-linux-x86_64
+vscode ➜ ~ $ cd elasticsearch-6.8.22/
+vscode ➜ ~/elasticsearch-6.8.22 $ ./bin/elasticsearch
 
 [...]
 [2021-11-05T13:52:23,448][INFO ][o.e.h.n.Netty4HttpServerTransport] [Aj2lFRl] publish_address {127.0.0.1:9200}, bound_addresses {127.0.0.1:9200}
@@ -50,7 +50,7 @@ Open a web browser and targets http://localhost:9200/. Similar json must be retu
   "cluster_name" : "elasticsearch",
   "cluster_uuid" : "RqGRp20aRlO2b7DTkPjmDg",
   "version" : {
-    "number" : "6.8.20",
+    "number" : "6.8.22",
     "build_flavor" : "oss",
     "build_type" : "tar",
     "build_hash" : "c859302",
@@ -72,17 +72,17 @@ Then start Kibana.
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
 vscode ➜ ~ $ ls
-elasticsearch-6.8.20  kibana-6.8.20-linux-x86_64
-vscode ➜ ~ $ cd kibana-6.8.20-linux-x86_64/
-vscode ➜ ~/kibana-6.8.20-linux-x86_64 $ ./bin/kibana
-  log   [14:03:45.726] [info][status][plugin:kibana@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.773] [info][status][plugin:elasticsearch@6.8.20] Status changed from uninitialized to yellow - Waiting for Elasticsearch
-  log   [14:03:45.780] [info][status][plugin:console@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.797] [info][status][plugin:interpreter@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.813] [info][status][plugin:metrics@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.832] [info][status][plugin:tile_map@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:45.977] [info][status][plugin:timelion@6.8.20] Status changed from uninitialized to green - Ready
-  log   [14:03:46.042] [info][status][plugin:elasticsearch@6.8.20] Status changed from yellow to green - Ready
+elasticsearch-6.8.22  kibana-6.8.22-linux-x86_64
+vscode ➜ ~ $ cd kibana-6.8.22-linux-x86_64/
+vscode ➜ ~/kibana-6.8.22-linux-x86_64 $ ./bin/kibana
+  log   [14:03:45.726] [info][status][plugin:kibana@6.8.22] Status changed from uninitialized to green - Ready
+  log   [14:03:45.773] [info][status][plugin:elasticsearch@6.8.22] Status changed from uninitialized to yellow - Waiting for Elasticsearch
+  log   [14:03:45.780] [info][status][plugin:console@6.8.22] Status changed from uninitialized to green - Ready
+  log   [14:03:45.797] [info][status][plugin:interpreter@6.8.22] Status changed from uninitialized to green - Ready
+  log   [14:03:45.813] [info][status][plugin:metrics@6.8.22] Status changed from uninitialized to green - Ready
+  log   [14:03:45.832] [info][status][plugin:tile_map@6.8.22] Status changed from uninitialized to green - Ready
+  log   [14:03:45.977] [info][status][plugin:timelion@6.8.22] Status changed from uninitialized to green - Ready
+  log   [14:03:46.042] [info][status][plugin:elasticsearch@6.8.22] Status changed from yellow to green - Ready
   log   [14:03:46.159] [info][listening] Server running at http://localhost:5601
 ```
 
@@ -96,8 +96,8 @@ Under Kibana's '*config*' directory, edit the *kibana.yml* file.
 
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
-vscode ➜ ~ $ cd kibana-6.8.20-linux-x86_64/
-vscode ➜ ~/kibana-6.8.20-linux-x86_64 $ code ./config/kibana.yml
+vscode ➜ ~ $ cd kibana-6.8.22-linux-x86_64/
+vscode ➜ ~/kibana-6.8.22-linux-x86_64 $ code ./config/kibana.yml
 ```
 
 And add the following line. Note that this assumes that the bridge will listen on port 8080. All requests will be forwarded to bridge. 

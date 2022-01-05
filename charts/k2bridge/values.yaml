@@ -40,7 +40,7 @@ elasticsearch:
   masterService:  k2bridgees-master
 
   image: docker.elastic.co/elasticsearch/elasticsearch-oss
-  imageTag: 6.8.5
+  imageTag: 6.8.22
 
   replicas: 3
 
