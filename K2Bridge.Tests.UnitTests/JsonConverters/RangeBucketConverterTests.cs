@@ -4,30 +4,29 @@
 
 namespace UnitTests.K2Bridge.JsonConverters
 {
-    using System.Collections.Generic;
-    using global::K2Bridge.Models.Response;
+    using global::K2Bridge.Models.Response.Aggregations;
     using NUnit.Framework;
 
     [TestFixture]
-    public class RangeBucketAggsConverterTests
+    public class RangeBucketConverterTests
     {
         private const string ExpectedValidBucketFromToJSON = @"{
             ""doc_count"": 502,
+            ""key"": ""foo"",
             ""from"": 0.0,
-            ""to"": 800.0,
-            ""key"": ""foo""
+            ""to"": 800.0
         }";
 
         private const string ExpectedValidBucketFromJSON = @"{
             ""doc_count"": 502,
-            ""from"": 0.0,
-            ""key"": ""foo""
+            ""key"": ""foo"",
+            ""from"": 0.0
         }";
 
         private const string ExpectedValidBucketToJSON = @"{
             ""doc_count"": 502,
-            ""to"": 800.0,
-            ""key"": ""foo""
+            ""key"": ""foo"",
+            ""to"": 800.0
         }";
 
         private const string ExpectedValidBucketFromToNullKeyJSON = @"{
@@ -60,7 +59,6 @@ namespace UnitTests.K2Bridge.JsonConverters
                 To = to,
                 DocCount = 502,
                 Key = key,
-                Aggs = new Dictionary<string, Dictionary<string, object>>(),
             };
 
             ((RangeBucket)validRangeBucket).AssertJson(expectedJSON);

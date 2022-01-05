@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Text;
     using K2Bridge.Models.Request.Aggregations;
 
     /// <content>
@@ -18,10 +19,15 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Metric, nameof(dateHistogramAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Field, nameof(dateHistogramAggregation.Field));
 
-            dateHistogramAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + dateHistogramAggregation.SubAggregationsKustoQL +
-                $"{dateHistogramAggregation.Metric} by {EncodeKustoField(dateHistogramAggregation.Key)} = ";
-            var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
+            var query = new StringBuilder();
 
+            // Add main aggregation query (summarize)
+            // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=
+            query.Append($"_data | {KustoQLOperators.Summarize} {dateHistogramAggregation.SubAggregationsKustoQL}{dateHistogramAggregation.Metric} ");
+            query.Append($"by {EncodeKustoField(dateHistogramAggregation.Key)} = ");
+
+            // Add group expression
+            var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
             if (!string.IsNullOrEmpty(interval))
             {
                 // https://www.elastic.co/guide/en/elasticsearch/reference/master/search-aggregations-bucket-datehistogram-aggregation.html#calendar_and_fixed_intervals
@@ -30,7 +36,7 @@ namespace K2Bridge.Visitors
                 // We also check if its a known character, if not, just use the value in the bin as-is.
                 var period = interval[^1];
                 var field = EncodeKustoField(dateHistogramAggregation.Field, true);
-                dateHistogramAggregation.KustoQL += period switch
+                var groupExpression = period switch
                 {
                     'w' => $"{KustoQLOperators.StartOfWeek}({field})",
                     'M' => $"{KustoQLOperators.StartOfMonth}({field})",
@@ -40,14 +46,16 @@ namespace K2Bridge.Visitors
                     _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({field})",
                     _ => $"bin({field}, {interval})",
                 };
+                query.Append(groupExpression);
             }
             else
             {
-                dateHistogramAggregation.KustoQL += dateHistogramAggregation.Field;
+                query.Append(dateHistogramAggregation.Field);
             }
 
-            // todatetime is redundent but we'll keep it for now
-            dateHistogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc";
+            // Add order by
+            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
+            dateHistogramAggregation.KustoQL = query.ToString();
         }
     }
 }

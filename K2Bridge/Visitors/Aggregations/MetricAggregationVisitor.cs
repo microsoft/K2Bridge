@@ -5,8 +5,8 @@
 namespace K2Bridge.Visitors
 {
     using System.Linq;
-    using System.Collections.Generic;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the different <see cref="MetricAggregation"/> types.
@@ -66,16 +66,15 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(percentileAggregation, nameof(percentileAggregation));
             EnsureClause.StringIsNotNullOrEmpty(percentileAggregation.Field, percentileAggregation.Field, ExceptionMessage);
 
-            /// Median is Percentile(fieldName, 50)
-            percentileAggregation.KustoQL = string.Empty;
+            var sep = AggregationsConstants.MetadataSeparator;
 
-            var valuesForColumnNames = string.Join('%', percentileAggregation.Percents.ToList().Select(item => $"{item:0.0}"));
+            var valuesForColumnNames = string.Join(sep, percentileAggregation.Percents.ToList().Select(item => $"{item:0.0}"));
             var valuesForOperator = string.Join(',', percentileAggregation.Percents);
 
             // We don't use EncodeKustoField on this key because it contains a '.' but isn't dynamic
             // Example: ['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)']
-            var key = $"['{percentileAggregation.Key}%percentile%{valuesForColumnNames}%{percentileAggregation.Keyed}']";
-            percentileAggregation.KustoQL += $"{key}={KustoQLOperators.PercentilesArray}({EncodeKustoField(percentileAggregation)}, {valuesForOperator})";
+            var key = $"['{percentileAggregation.Key}{sep}percentile{sep}{valuesForColumnNames}{sep}{percentileAggregation.Keyed}']";
+            percentileAggregation.KustoQL = $"{key}={KustoQLOperators.PercentilesArray}({EncodeKustoField(percentileAggregation)}, {valuesForOperator})";
         }
     }
 }

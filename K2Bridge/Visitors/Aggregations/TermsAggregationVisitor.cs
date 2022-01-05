@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Text;
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Models.Response;
 
@@ -19,16 +20,25 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Metric, nameof(TermsAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Field, nameof(TermsAggregation.Field));
 
-            termsAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + termsAggregation.SubAggregationsKustoQL + $"{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}";
+            var query = new StringBuilder();
 
-            termsAggregation.KustoQL += termsAggregation.Order?.SortField switch {
+            // Add main aggregation query (summarize)
+            // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=field
+            query.Append($"_data | {KustoQLOperators.Summarize} {termsAggregation.SubAggregationsKustoQL}{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}");
+
+            var orderBy = termsAggregation.Order?.SortField switch
+            {
                 "_key" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}",
                 "_count" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.Order.SortOrder}",
                 { } s => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(s)} {termsAggregation.Order.SortOrder}",
                 _ => string.Empty,
             };
+            query.Append(orderBy);
 
-            termsAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}";
+            // Add limit
+            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}");
+
+            termsAggregation.KustoQL = query.ToString();
         }
     }
 }

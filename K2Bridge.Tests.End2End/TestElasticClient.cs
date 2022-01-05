@@ -61,12 +61,21 @@ namespace K2Bridge.Tests.End2End
         /// <param name="parent">JSON element at which to start search.</param>
         public static void DeleteValuesToComparePercentiles(JToken parent)
         {
-            var tokens = parent.SelectTokens("responses[*].aggregations..buckets..value");
+            var tokens = parent.SelectTokens("responses[*].aggregations..value");
             foreach (JValue v in tokens)
             {
                 if (v.Type == JTokenType.String)
                 {
                     v.Value = "0";
+                }
+            }
+
+            tokens = parent.SelectTokens("responses[*].aggregations..value_as_string");
+            foreach (JValue v in tokens)
+            {
+                if (v.Type == JTokenType.Date)
+                {
+                    v.Value = "2022-01-01T23:50:52.916+00:00";
                 }
             }
 
@@ -171,7 +180,7 @@ namespace K2Bridge.Tests.End2End
             DeleteValue(result, "responses[*].aggregations.*.sum_other_doc_count");
 
             // Normalize aggregate value (double) with fixed number of decimal
-            NormalizeAggregateValue(result, "responses[*].aggregations..buckets..value");
+            NormalizeAggregateValue(result, "responses[*].aggregations..value");
 
             return result;
         }

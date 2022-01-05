@@ -29,47 +29,6 @@ namespace K2Bridge.Models.Response
         public int TookMilliseconds { get; set; }
 
         /// <summary>
-        /// Add parent to the main agg
-        /// </summary>
-        public void AddParentToAgg(string parent)
-        {
-            responses[0].Aggregations.Parent = parent;
-        }
-
-        /// <summary>
-        /// Add aggregation to first response.
-        /// </summary>
-        /// <param name="bucket">The added bucket.</param>
-        public void AddBucketToAggregation(Bucket bucket)
-        {
-            // TODO: support more than one response
-            responses[0].Aggregations.Collection.AddBucket(bucket);
-
-            // Add DocCount to HitsCollection.Total
-            responses[0].Hits.AddToTotal(bucket.DocCount);
-        }
-
-        /// <summary>
-        /// Set aggregation keyed flag on first response.
-        /// </summary>
-        /// <param name="isKeyed">The added bucket.</param>
-        public void SetAggregationKeyed(bool keyed)
-        {
-            // TODO: support more than one response
-            responses[0].Aggregations.Collection.Keyed = keyed;
-        }
-
-        /// <summary>
-        /// Retrieve all aggregations.
-        /// </summary>
-        /// <returns>IEnumerable of all aggregations.</returns>
-        public IEnumerable<Bucket> GetAllAggregations()
-        {
-            // TODO: support more than one response
-            return responses[0].Aggregations.Collection.Buckets;
-        }
-
-        /// <summary>
         /// Add hits to first response.
         /// </summary>
         /// <param name="hits">The added hits.</param>

@@ -47,8 +47,8 @@ namespace K2Bridge.Models.Response
         /// <summary>
         /// Calculating HitsCollection.Total by summing up the DocCount values of every DateHistogramBucket.
         /// </summary>
-        /// <param name="docCount">int representing doc count.</param>
-        public void AddToTotal(int docCount)
+        /// <param name="docCount">long representing doc count.</param>
+        public void AddToTotal(long docCount)
         {
             Total.Value += docCount;
         }
@@ -56,7 +56,7 @@ namespace K2Bridge.Models.Response
         /// <summary>
         /// Set the HitsCollection.Total.
         /// </summary>
-        /// <param name="docCount">int representing doc count.</param>
+        /// <param name="docCount">long representing doc count.</param>
         public void SetTotal(long docCount)
         {
             Total.Value = docCount;
