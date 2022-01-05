@@ -10,7 +10,6 @@ namespace K2Bridge.Factories
     using System.Globalization;
     using K2Bridge.Models.Response;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
@@ -29,7 +28,7 @@ namespace K2Bridge.Factories
         /// <returns><see cref="BucketAggregate"></returns>
         public static BucketAggregate GetDateHistogramAggregate(string key, DataRowCollection rowCollection, ILogger logger)
         {
-            logger.LogTrace($"Get date histogram aggregate for {key}.");
+            logger.LogTrace("Get date histogram aggregate for {}", key);
 
             var dateHistogramAggregate = new BucketAggregate();
 
@@ -54,7 +53,7 @@ namespace K2Bridge.Factories
         /// <returns><see cref="BucketAggregate"></returns>
         public static BucketAggregate GetRangeAggregate(string key, DataRowCollection rowCollection, ILogger logger)
         {
-            logger.LogTrace($"Get range aggregate for {key}.");
+            logger.LogTrace("Get range aggregate for {}", key);
 
             var rangeAggregate = new BucketAggregate() { Keyed = true };
 
@@ -79,7 +78,7 @@ namespace K2Bridge.Factories
         /// <returns><see cref="TermsAggregate"></returns>
         public static TermsAggregate GetTermsAggregate(string key, DataRowCollection rowCollection, ILogger logger)
         {
-            logger.LogTrace($"Get terms aggregate for {key}.");
+            logger.LogTrace("Get terms aggregate for {}", key);
 
             var termsAggregate = new TermsAggregate() { SumOtherDocCount = 0 };
 
@@ -150,7 +149,7 @@ namespace K2Bridge.Factories
         /// <returns><see cref="PercentileAggregate"></returns>
         private static PercentileAggregate GetPercentileAggregate(string columnName, string[] columnMetadata, DataRow row, ILogger logger)
         {
-            logger.LogTrace($"Get percentile aggregate for {columnName}.");
+            logger.LogTrace("Get percentile aggregate for {}", columnName);
 
             // Parse list of percents, and keyed option
             var percents = columnMetadata[2..^1];
@@ -196,6 +195,8 @@ namespace K2Bridge.Factories
                 }
             }
 
+            logger.LogTrace("Percentile aggregate returned for {0}: {1}", columnName, percentileAggregate);
+
             return percentileAggregate;
         }
 
@@ -208,7 +209,7 @@ namespace K2Bridge.Factories
         /// <returns><see cref="ValueAggregate"></returns>
         private static ValueAggregate GetValueAggregate(string key, DataRow row, ILogger logger)
         {
-            logger.LogTrace($"Get value aggregate for {key}.");
+            logger.LogTrace("Get value aggregate for {}", key);
 
             var valueAggregate = new ValueAggregate() { Value = null };
             var rowValue = row[key];
@@ -221,6 +222,8 @@ namespace K2Bridge.Factories
                     _ => new ValueAggregate() { Value = Convert.ToDouble(rowValue) },
                 };
             }
+
+            logger.LogTrace("Value aggregate returned for {0}: {1}", key, valueAggregate);
 
             return valueAggregate;
         }
