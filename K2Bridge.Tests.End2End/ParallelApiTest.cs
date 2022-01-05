@@ -199,6 +199,13 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
+        [Description("/_msearch visualization query with aggregation metrics and no bucket aggregation")]
+        public void CompareElasticKusto_WhenMSearchVizMetrics_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Metrics.json");
+        }
+
+        [Test]
         [Description("/_msearch visualization query with date histogram and aggregation metrics")]
         public void CompareElasticKusto_WhenMSearchVizDateHistogramMetrics_ResponsesAreEquivalent()
         {
@@ -233,6 +240,14 @@ namespace K2Bridge.Tests.End2End
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Range_Overlapping.json");
         }
 
+        [Test]
+        [Description("/_msearch visualization with percentiles and no bucket aggregation")]
+        public void CompareElasticKusto_WhenMSearchVizPercentiles_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Percentiles.json");
+        }
+
+        [Test]
         [Description("/_msearch visualization query with date histogram and percentiles")]
         public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentiles_ResponsesAreEquivalent()
         {
