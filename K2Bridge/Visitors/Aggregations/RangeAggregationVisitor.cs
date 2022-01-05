@@ -20,7 +20,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Field, nameof(RangeAggregation.Field));
 
             // Start the union operator
-            rangeAggregation.KustoQL += "union ";
+            rangeAggregation.KustoQL += $"{KustoQLOperators.Union} ";
 
             // Query expressions for each range
             // (_data | where foo >= 1 and bar < 10 | summarize ['3']=avg(baz), count() | extend ['2'] = '1-10')
