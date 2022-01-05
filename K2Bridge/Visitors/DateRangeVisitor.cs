@@ -23,7 +23,7 @@ namespace K2Bridge.Visitors
             // Part 1:
             // _data | extend ['_range'] = pack_array("range1", "range2", "range3"), ['_range_value']=pack_array(expr1, expr2, expr3)
 
-            // Start of query, until dynamic()
+            // Start of query, until first pack_array()
             dateRangeAggregation.KustoQL += $"_data | {KustoQLOperators.Extend} {EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}(";
 
             // Insert range names
@@ -38,7 +38,7 @@ namespace K2Bridge.Visitors
             // Remove final comma
             dateRangeAggregation.KustoQL = dateRangeAggregation.KustoQL.TrimEnd(',');
 
-            // Close the dynamic() and start the pack_array()
+            // Close the first pack_array() and start the second pack_array()
             dateRangeAggregation.KustoQL += $"), ['_range_value'] = {KustoQLOperators.PackArray}(";
 
             // Insert range expressions
@@ -61,7 +61,7 @@ namespace K2Bridge.Visitors
             // End part 1
             dateRangeAggregation.KustoQL += ")";
 
-            // Part 2 is static
+            // Part 2 is expansion and filtering of rows
             dateRangeAggregation.KustoQL += $" | {KustoQLOperators.MvExpand} {EncodeKustoField(dateRangeAggregation.Key)} to typeof(string), ['_range_value']";
             dateRangeAggregation.KustoQL += $" | {KustoQLOperators.Where} ['_range_value'] == true";
 
