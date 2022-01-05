@@ -19,16 +19,6 @@ namespace K2Bridge.Factories
     internal static class BucketFactory
     {
         /// <summary>
-        /// Declare a delegate used to create a bucket instance of type TBucket from a given <see cref="DataRow"/>.
-        /// </summary>
-        /// <typeparam name="TBucket">The bucket type.</typeparam>
-        /// <param name="primaryKey">The primary aggregation key.</param>
-        /// <param name="row">The row to be parsed.</param>
-        /// <param name="logger">The <see cref="ILogger"> used for logging.</param>
-        /// <returns>TBucket instance.</returns>
-        public delegate TBucket CreateBucket<TBucket>(string primaryKey, DataRow row, ILogger logger);
-
-        /// <summary>
         /// Create a new <see cref="DateHistogramBucket" from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="primaryKey">The primary aggregation key.</param>
