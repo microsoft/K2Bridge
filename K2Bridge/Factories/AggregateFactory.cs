@@ -194,7 +194,7 @@ namespace K2Bridge.Factories
                 }
             }
 
-            logger.LogTrace("Percentile aggregate returned for {0}: {1}", columnName, percentileAggregate);
+            logger.LogTrace("Percentile aggregate returned for {}: {}", columnName, percentileAggregate);
 
             return percentileAggregate;
         }
@@ -222,7 +222,7 @@ namespace K2Bridge.Factories
                 };
             }
 
-            logger.LogTrace("Value aggregate returned for {0}: {1}", key, valueAggregate);
+            logger.LogTrace("Value aggregate returned for {}: {}", key, valueAggregate);
 
             return valueAggregate;
         }
