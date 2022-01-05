@@ -10,11 +10,6 @@ namespace K2Bridge.Models.Response
     internal class BucketColumnNames
     {
         /// <summary>
-        /// Timestamp.
-        /// </summary>
-        public static int SummarizeByColumn => 0;
-
-        /// <summary>
         /// Count.
         /// </summary>
         public static string Count => "count_";

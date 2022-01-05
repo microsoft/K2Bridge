@@ -9,6 +9,7 @@ namespace K2Bridge
     using System.Linq;
     using K2Bridge.Models;
     using K2Bridge.Models.Request;
+    using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Telemetry;
     using K2Bridge.Visitors;
@@ -98,13 +99,6 @@ namespace K2Bridge
                 docValueFields = new List<string>();
                 elasticSearchDsl.DocValueFields?.ForEach(item => docValueFields.Add(item.Field));
 
-                // We currently only support a single primary aggregation, so we take the first element from the dictionary and retrieve its type name
-                string primaryAggregation = null;
-                if (elasticSearchDsl.Aggregations != null && elasticSearchDsl.Aggregations.Count > 0)
-                {
-                    primaryAggregation = elasticSearchDsl.Aggregations.First().Value.PrimaryAggregation.GetType().Name;
-                }
-
                 // Use the visitor and build the KustoQL string from the esDSL object
                 elasticSearchDsl.Accept(visitor);
 
@@ -113,8 +107,7 @@ namespace K2Bridge
                     elasticSearchDsl.IndexName,
                     sortFields,
                     docValueFields,
-                    elasticSearchDsl.HighlightText,
-                    primaryAggregation);
+                    elasticSearchDsl.HighlightText);
 
                 if (elasticSearchDsl.Highlight != null)
                 {
@@ -123,6 +116,15 @@ namespace K2Bridge
 
                     queryData.HighlightPreTag = elasticSearchDsl.Highlight.PreTags[0];
                     queryData.HighlightPostTag = elasticSearchDsl.Highlight.PostTags[0];
+                }
+
+                var aggregations = elasticSearchDsl.Aggregations;
+
+                // If PrimaryAggregation is BucketAggregation, we add its key and type to QueryData
+                if (aggregations?.Count == 1 && aggregations.First().Value.PrimaryAggregation is BucketAggregation)
+                {
+                    var (key, aggregationContainer) = aggregations.First();
+                    queryData.PrimaryAggregation = KeyValuePair.Create<string, string>(key, aggregationContainer.PrimaryAggregation.GetType().Name);
                 }
 
                 return queryData;

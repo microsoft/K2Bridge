@@ -2,17 +2,16 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response
+namespace K2Bridge.Models.Response.Aggregations
 {
-    using System.Collections.Generic;
     using K2Bridge.JsonConverters;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Terms bucket response.
     /// </summary>
-    [JsonConverter(typeof(DateRangeBucketAggsConverter))]
-    public class DateRangeBucket : Bucket
+    [JsonConverter(typeof(DateRangeBucketConverter))]
+    public class DateRangeBucket : KeyedBucket
     {
         /// <summary>
         /// Gets or sets the from value.

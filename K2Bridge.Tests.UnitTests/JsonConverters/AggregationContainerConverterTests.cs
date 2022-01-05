@@ -9,7 +9,7 @@ namespace UnitTests.K2Bridge.JsonConverters
     using NUnit.Framework;
 
     [TestFixture]
-    public class AggregationConverterTests
+    public class AggregationContainerConverterTests
     {
         private const string DateHistogramAggregation = @"
             {""aggs"": { 

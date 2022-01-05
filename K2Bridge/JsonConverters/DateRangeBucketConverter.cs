@@ -4,20 +4,20 @@
 
 namespace K2Bridge.JsonConverters
 {
+    using System.Collections.Generic;
     using K2Bridge.JsonConverters.Base;
-    using K2Bridge.Models.Response;
+    using K2Bridge.Models.Response.Aggregations;
     using Newtonsoft.Json;
 
     /// <summary>
     /// A converter able to serialize Bucket aggregations to Elasticsearh response json format.
     /// </summary>
-    internal class RangeBucketAggsConverter : BucketAggsJsonConverter
+    internal class DateRangeBucketConverter : WriteOnlyJsonConverter
     {
         /// <inheritdoc/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var bucket = (RangeBucket)value;
-            var aggs = bucket.Aggs;
+            var bucket = (DateRangeBucket)value;
 
             writer.WriteStartObject();
 
@@ -27,13 +27,29 @@ namespace K2Bridge.JsonConverters
             if (bucket.From is not null)
             {
                 writer.WritePropertyName("from");
-                serializer.Serialize(writer, bucket.From);
+
+                // ES formats this long as a double (trailing zero)
+                serializer.Serialize(writer, (double)bucket.From);
+            }
+
+            if (bucket.FromAsString is not null)
+            {
+                writer.WritePropertyName("from_as_string");
+                serializer.Serialize(writer, bucket.FromAsString);
             }
 
             if (bucket.To is not null)
             {
                 writer.WritePropertyName("to");
-                serializer.Serialize(writer, bucket.To);
+
+                // ES formats this long as a double (trailing zero)
+                serializer.Serialize(writer, (double)bucket.To);
+            }
+
+            if (bucket.ToAsString is not null)
+            {
+                writer.WritePropertyName("to_as_string");
+                serializer.Serialize(writer, bucket.ToAsString);
             }
 
             if (bucket.Key is not null)
@@ -42,7 +58,11 @@ namespace K2Bridge.JsonConverters
                 serializer.Serialize(writer, bucket.Key);
             }
 
-            WriteAggregations(writer, aggs, serializer);
+            foreach (KeyValuePair<string, IAggregate> aggregate in bucket)
+            {
+                writer.WritePropertyName(aggregate.Key);
+                serializer.Serialize(writer, aggregate.Value);
+            }
 
             writer.WriteEndObject();
         }

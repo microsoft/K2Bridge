@@ -12,6 +12,7 @@ namespace K2Bridge.KustoDAL
     using K2Bridge.Factories;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Telemetry;
     using Kusto.Data;
     using Kusto.Data.Data;
@@ -156,79 +157,62 @@ namespace K2Bridge.KustoDAL
                 IDataReader reader,
                 TimeSpan timeTaken)
         {
-            var response = new ElasticResponse();
+            var elasticResponse = new ElasticResponse();
+            var searchResponse = elasticResponse.Responses.First();
 
-            response.AddTook(timeTaken);
+            elasticResponse.AddTook(timeTaken);
 
             Logger.LogTrace("Reading response using reader.");
-            var parsedKustoResponse = ReadDataResponse(reader);
+            var kustoResponse = ReadDataResponse(reader);
 
-            if (parsedKustoResponse[AggregationTableName] != null)
+            if (kustoResponse[AggregationTableName] != null)
             {
+                var (key, aggregationType) = query.PrimaryAggregation;
+                var dataRowCollection = kustoResponse[AggregationTableName].TableData.Rows;
+
                 Logger.LogTrace("Parsing aggregations");
 
-                // Convert the first column name
-                var parent = parsedKustoResponse[AggregationTableName].TableData.Columns[0].ColumnName;
-
-                // Add parent name to aggregations
-                response.AddParentToAgg(parent);
-
-                // Determine how to create the buckets based on the aggregation type
-                Func<DataRow, ILogger, Bucket> createBucketFromDataRow = null;
-                switch (query.PrimaryAggregation)
+                if (string.IsNullOrWhiteSpace(aggregationType))
                 {
-                    case nameof(Models.Request.Aggregations.RangeAggregation):
-                        createBucketFromDataRow = BucketFactory.CreateRangeBucketFromDataRow;
-                        response.SetAggregationKeyed(true);
-                        break;
-                    case nameof(Models.Request.Aggregations.TermsAggregation):
-                        createBucketFromDataRow = BucketFactory.CreateTermsBucketFromDataRow;
-                        break;
-                    case nameof(Models.Request.Aggregations.DateHistogramAggregation):
-                        createBucketFromDataRow = BucketFactory.CreateDateHistogramBucketFromDataRow;
-                        break;
-                    case nameof(Models.Request.Aggregations.DateRangeAggregation):
-                        createBucketFromDataRow = BucketFactory.CreateDateRangeBucketFromDataRow;
-                        break;
-                }
-
-                // Read aggregations
-                if (createBucketFromDataRow != null)
-                {
-                    foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
+                    // This is not a bucket aggregation scenario
+                    foreach (DataRow row in dataRowCollection)
                     {
-                        Bucket bucket = createBucketFromDataRow(row, Logger);
-                        if (bucket != null)
-                        {
-                            response.AddBucketToAggregation(bucket);
-                        }
+                        searchResponse.Aggregations.AddAggregates(key, row, Logger);
                     }
                 }
-
-                // For Range aggregations, the calculated total hits is wrong, so we have an additional column with the expected count
-                if (parsedKustoResponse[HitsTotalTableName] != null)
+                else
                 {
-                    // A single row with a single column
-                    response.SetTotal((long)parsedKustoResponse[HitsTotalTableName].TableData.Rows[0][0]);
+                    // This a bucket aggregation scenario
+                    IAggregate bucketAggregate = aggregationType switch
+                    {
+                        nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, dataRowCollection, Logger),
+                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, dataRowCollection, Logger),
+                        nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, dataRowCollection, Logger),
+                        nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, dataRowCollection, Logger),
+                        _ => null,
+                    };
+
+                    searchResponse.Aggregations.Add(key, bucketAggregate);
                 }
             }
-            else
+
+            // For Range aggregations, the calculated total hits is wrong, so we have an additional column with the expected count
+            if (kustoResponse[HitsTotalTableName] != null)
             {
-                // A ViewSingleDocument queries do not produce any aggregations used for total,
-                // but Kibana expects this value
-                response.AddToTotal(1);
+                // A single row with a single column
+                elasticResponse.SetTotal((long)kustoResponse[HitsTotalTableName].TableData.Rows[0][0]);
             }
 
             // Read hits
             Logger.LogDebug("Reading Hits using QueryData: {@query}", query.ToSensitiveData());
-            var hits = ReadHits(parsedKustoResponse, query);
-            response.AddHits(hits);
+            var hits = ReadHits(kustoResponse, query);
+            elasticResponse.AddHits(hits);
             if (outputBackendQuery)
             {
-                response.AppendBackendQuery(query.QueryCommandText);
+                elasticResponse.AppendBackendQuery(query.QueryCommandText);
             }
 
-            return response;
+            return elasticResponse;
         }
     }
 }
