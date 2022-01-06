@@ -7,7 +7,6 @@ namespace K2Bridge.Visitors
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Models.Request.Queries.LuceneNet;

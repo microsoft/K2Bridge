@@ -4,10 +4,8 @@
 
 namespace K2Bridge.Visitors.LuceneNet
 {
-    using System.Globalization;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Models.Request.Queries.LuceneNet;
-    using Lucene.Net.Search;
 
     /// <content>
     /// Defines a visit method for lucene range query.

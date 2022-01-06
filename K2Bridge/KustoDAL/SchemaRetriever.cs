@@ -8,7 +8,6 @@ namespace K2Bridge.KustoDAL
     using System.Collections;
     using System.Linq;
     using System.Threading.Tasks;
-    using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>

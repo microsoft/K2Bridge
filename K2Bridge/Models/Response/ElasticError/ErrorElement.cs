@@ -7,7 +7,7 @@ namespace K2Bridge.Models.Response.ElasticError
     using System.Collections.Generic;
     using Newtonsoft.Json;
 
-   /// <summary>
+    /// <summary>
     /// Error Element class.
     /// Note this implementation requires further refactoring by adding the failed_shards section.
     /// This would be where stack trace information could be provided to the user.

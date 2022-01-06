@@ -5,7 +5,6 @@
 namespace K2Bridge.JsonConverters
 {
     using System.Globalization;
-    using System.Linq;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response.Aggregations;
     using Newtonsoft.Json;
