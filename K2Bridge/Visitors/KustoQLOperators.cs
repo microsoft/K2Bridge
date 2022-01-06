@@ -28,9 +28,11 @@ namespace K2Bridge.Visitors
         public const string OrderBy = "order by";
         public const string Let = "let";
         public const string Limit = "limit";
+        public const string Pack = "pack";
         public const string Summarize = "summarize";
         public const string Materialize = "materialize";
         public const string DCount = "dcount";
+        public const string StDev = "stdev";
         public const string Avg = "avg";
         public const string Min = "min";
         public const string Max = "max";

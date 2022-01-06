@@ -125,6 +125,11 @@ namespace K2Bridge.Factories
                         var key = columnMetadata[0];
                         aggregateDictionary.Add(key, GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger));
                     }
+                    else if (metric == "extended_stats")
+                    {
+                        var key = columnMetadata[0];
+                        aggregateDictionary.Add(key, GetExtendedStatsAggregate(column.ColumnName, row, logger));
+                    }
                     else
                     {
                         throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid.");
@@ -136,6 +141,53 @@ namespace K2Bridge.Factories
                     aggregateDictionary.Add(key, GetValueAggregate(key, row, logger));
                 }
             }
+        }
+
+        /// <summary>
+        /// Get extended stats for standard deviation aggregate from a given <see cref="DataRow"/>.
+        /// </summary>
+        /// <param name="columnName">The column name.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="ExtendedStatsAggregate"></returns>
+        private static ExtendedStatsAggregate GetExtendedStatsAggregate(string columnName, DataRow row, ILogger logger)
+        {
+            logger.LogTrace("Get extended stats for standard deviation aggregate for {}", columnName);
+
+            var extendedStatsAggregate = new ExtendedStatsAggregate();
+
+            var jObject = (JObject)row[columnName];
+
+            if (jObject == null)
+            {
+                return extendedStatsAggregate;
+            }
+
+            if (jObject.ContainsKey(AggregationsConstants.StandardDeviationBoundsUpper))
+            {
+                var upper = jObject[AggregationsConstants.StandardDeviationBoundsUpper].Value<double?>();
+                extendedStatsAggregate.StandardDeviationBounds.Upper = upper ?? (double.IsNaN(upper.Value) ? null : upper);
+            }
+
+            if (jObject.ContainsKey(AggregationsConstants.StandardDeviationBoundsLower))
+            {
+                var lower = jObject[AggregationsConstants.StandardDeviationBoundsLower].Value<double?>();
+                extendedStatsAggregate.StandardDeviationBounds.Lower = lower ?? (double.IsNaN(lower.Value) ? null : lower);
+            }
+
+            if (jObject.ContainsKey(AggregationsConstants.StandardDeviation))
+            {
+                var stddev = jObject[AggregationsConstants.StandardDeviation].Value<double?>();
+                extendedStatsAggregate.StandardDeviation = stddev ?? (double.IsNaN(stddev.Value) ? null : stddev);
+            }
+
+            if (jObject.ContainsKey(AggregationsConstants.Average))
+            {
+                var avg = jObject[AggregationsConstants.Average].Value<double?>();
+                extendedStatsAggregate.Average = avg ?? (double.IsNaN(avg.Value) ? null : avg);
+            }
+
+            return extendedStatsAggregate;
         }
 
         /// <summary>

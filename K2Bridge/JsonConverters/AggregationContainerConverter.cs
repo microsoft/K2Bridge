@@ -47,6 +47,7 @@ namespace K2Bridge.JsonConverters
                     "range" => property.Value.ToObject<RangeAggregation>(serializer),
                     "avg" => property.Value.ToObject<AverageAggregation>(serializer),
                     "cardinality" => property.Value.ToObject<CardinalityAggregation>(serializer),
+                    "extended_stats" => property.Value.ToObject<ExtendedStatsAggregation>(serializer),
                     "min" => property.Value.ToObject<MinAggregation>(serializer),
                     "max" => property.Value.ToObject<MaxAggregation>(serializer),
                     "sum" => property.Value.ToObject<SumAggregation>(serializer),

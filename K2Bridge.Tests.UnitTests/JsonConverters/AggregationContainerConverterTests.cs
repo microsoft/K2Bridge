@@ -86,6 +86,15 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string StandardDeviationAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""extended_stats"" : {
+                        ""field"" : ""metric"" 
+                    } 
+                }
+            }}";
+
         private const string MaxAggregation = @"
             {""aggs"": { 
                 ""2"": {
@@ -279,6 +288,24 @@ namespace UnitTests.K2Bridge.JsonConverters
                 ["2"] = new AggregationContainer
                 {
                     PrimaryAggregation = new MinAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
+
+        private static readonly AggregationContainer ExpectedValidStandardDeviationAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new ExtendedStatsAggregation
                     {
                         Field = "metric",
                         Key = "2",

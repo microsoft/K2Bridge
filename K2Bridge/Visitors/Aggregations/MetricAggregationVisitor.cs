@@ -5,6 +5,7 @@
 namespace K2Bridge.Visitors
 {
     using System.Linq;
+    using System.Text;
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Utils;
 
@@ -31,6 +32,29 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(cardinalityAggregation.Field, cardinalityAggregation.Field, ExceptionMessage);
 
             cardinalityAggregation.KustoQL = $"{EncodeKustoField(cardinalityAggregation.Key)}={KustoQLOperators.DCount}({EncodeKustoField(cardinalityAggregation)})";
+        }
+
+        /// <inheritdoc/>
+        public void Visit(ExtendedStatsAggregation extendedStatsAggregation)
+        {
+            Ensure.IsNotNull(extendedStatsAggregation, nameof(extendedStatsAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(extendedStatsAggregation.Field, extendedStatsAggregation.Field, ExceptionMessage);
+
+            var sep = AggregationsConstants.MetadataSeparator;
+            var key = $"['{extendedStatsAggregation.Key}{sep}extended_stats']";
+            var average = $"{KustoQLOperators.Avg}({EncodeKustoField(extendedStatsAggregation)})";
+            var standard_deviation = $"{KustoQLOperators.StDev}({EncodeKustoField(extendedStatsAggregation)})";
+
+            var query = new StringBuilder();
+
+            query.Append($"{key}={KustoQLOperators.Pack}(");
+            query.Append($"'{AggregationsConstants.StandardDeviation}', {standard_deviation},");
+            query.Append($"'{AggregationsConstants.Average}', {average},");
+            query.Append($"'{AggregationsConstants.StandardDeviationBoundsUpper}', {average} + {standard_deviation} * {extendedStatsAggregation.Sigma},");
+            query.Append($"'{AggregationsConstants.StandardDeviationBoundsLower}', {average} - {standard_deviation} * {extendedStatsAggregation.Sigma}");
+            query.Append($")");
+
+            extendedStatsAggregation.KustoQL = query.ToString();
         }
 
         /// <inheritdoc/>

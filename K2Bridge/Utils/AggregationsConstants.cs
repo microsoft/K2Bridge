@@ -11,5 +11,9 @@ namespace K2Bridge.Utils
         /// Only used for percentiles metrics at the moment
         /// </summary>
         public const char MetadataSeparator = '%';
+        public const string Average = "average";
+        public const string StandardDeviation = "std_deviation";
+        public const string StandardDeviationBoundsUpper = "std_deviation_bounds_upper";
+        public const string StandardDeviationBoundsLower = "std_deviation_bounds_lower";
     }
 }
