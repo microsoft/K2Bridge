@@ -4,10 +4,8 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
-    using System.Text.RegularExpressions;
-    using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="RangeAggregationExpression"/> element.
@@ -26,7 +24,7 @@ namespace K2Bridge.Visitors
             var gteExpr = dateRangeExpression.From != null ? $"['{dateRangeExpression.Field}'] >= {fromExpr}" : null;
             var ltExpr = dateRangeExpression.To != null ? $"['{dateRangeExpression.Field}'] < {toExpr}" : null;
 
-            dateRangeExpression.BucketNameKustoQL = $"strcat({fromExpr}, '_', {toExpr})";
+            dateRangeExpression.BucketNameKustoQL = $"strcat({fromExpr}, '{AggregationsConstants.MetadataSeparator}', {toExpr})";
 
             dateRangeExpression.KustoQL = (gteExpr, ltExpr) switch
             {

@@ -13,6 +13,7 @@ namespace UnitTests.K2Bridge.KustoDAL
     using global::K2Bridge.Models.Request.Aggregations;
     using global::K2Bridge.Models.Response.Aggregations;
     using global::K2Bridge.Telemetry;
+    using global::K2Bridge.Utils;
     using Kusto.Data;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
@@ -420,19 +421,19 @@ namespace UnitTests.K2Bridge.KustoDAL
             resTable.Columns.Add(column2);
 
             var row1 = resTable.NewRow();
-            row1["2"] = "_2018-02-02T00:00:00.0000000Z";
+            row1["2"] = $"{AggregationsConstants.MetadataSeparator}2018-02-02T00:00:00.0000000Z";
             row1["count_"] = 1;
 
             resTable.Rows.Add(row1);
 
             var row2 = resTable.NewRow();
-            row2["2"] = "2018-02-02T00:00:00.0000000Z_2018-02-03T00:00:00.0000000Z";
+            row2["2"] = $"2018-02-02T00:00:00.0000000Z{AggregationsConstants.MetadataSeparator}2018-02-03T00:00:00.0000000Z";
             row2["count_"] = 2;
 
             resTable.Rows.Add(row2);
 
             var row3 = resTable.NewRow();
-            row3["2"] = "2018-02-03T00:00:00.0000000Z_";
+            row3["2"] = $"2018-02-03T00:00:00.0000000Z{AggregationsConstants.MetadataSeparator}";
             row3["count_"] = 3;
 
             resTable.Rows.Add(row3);
