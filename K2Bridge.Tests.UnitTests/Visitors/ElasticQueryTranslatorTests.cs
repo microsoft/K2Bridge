@@ -5,7 +5,6 @@
 namespace UnitTests.K2Bridge.Visitors
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using global::K2Bridge;
     using global::K2Bridge.Models.Request;

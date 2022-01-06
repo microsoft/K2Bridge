@@ -192,16 +192,16 @@ namespace K2Bridge.Tests.End2End
 
             foreach (var entry in KustoColumnType)
             {
-              var name = entry.Key;
-              kustoColumns.Add($"{name}:{entry.Value}");
-              columnMappings.Add(new ColumnMapping()
-              {
-                ColumnName = name,
-                Properties = new Dictionary<string, string>
+                var name = entry.Key;
+                kustoColumns.Add($"{name}:{entry.Value}");
+                columnMappings.Add(new ColumnMapping()
                 {
-                  ["Path"] = $"$.{name}",
-                },
-              });
+                    ColumnName = name,
+                    Properties = new Dictionary<string, string>
+                    {
+                        ["Path"] = $"$.{name}",
+                    },
+                });
             }
 
             // Send drop table ifexists command to Kusto

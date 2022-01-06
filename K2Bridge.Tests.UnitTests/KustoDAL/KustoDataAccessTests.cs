@@ -12,7 +12,6 @@ namespace UnitTests.K2Bridge.KustoDAL
     using FluentAssertions.Json;
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
-    using global::K2Bridge.Models.Response;
     using global::K2Bridge.Models.Response.Metadata;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.DependencyInjection;

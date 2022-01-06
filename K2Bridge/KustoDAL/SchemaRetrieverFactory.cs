@@ -4,7 +4,6 @@
 
 namespace K2Bridge.KustoDAL
 {
-    using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
 
     /// <inheritdoc/>

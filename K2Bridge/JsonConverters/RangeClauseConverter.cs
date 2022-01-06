@@ -26,7 +26,8 @@ namespace K2Bridge.JsonConverters
             var jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            var obj = new RangeClause {
+            var obj = new RangeClause
+            {
                 FieldName = first.Name,
                 GTEValue = ConvertToString(first, "gte"),
                 GTValue = ConvertToString(first, "ge"),
@@ -46,7 +47,8 @@ namespace K2Bridge.JsonConverters
                 return null;
             }
 
-            return first.Type switch {
+            return first.Type switch
+            {
                 JTokenType.Date => first.Value<DateTime>().ToString("o"),
                 JTokenType.Float => first.Value<double>().ToString(CultureInfo.InvariantCulture),
                 JTokenType.Integer => first.Value<long>().ToString(CultureInfo.InvariantCulture),

@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Models
 {
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
