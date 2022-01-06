@@ -6,6 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="HistogramAggregation"/> element.
@@ -19,21 +20,22 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(histogramAggregation.Metric, nameof(histogramAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(histogramAggregation.Field, nameof(histogramAggregation.Field));
 
-            histogramAggregation.KustoQL = $"_data | {KustoQLOperators.Summarize} " + histogramAggregation.SubAggregationsKustoQL +
-            $"{histogramAggregation.Metric} by {EncodeKustoField(histogramAggregation.Key + "%" + histogramAggregation.Keyed)} = ";
+            var histogramKey = EncodeKustoField(histogramAggregation.Key + "%" + histogramAggregation.Keyed);
+
+            histogramAggregation.KustoQL = $"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {histogramAggregation.SubAggregationsKustoQL}" +
+            $"{histogramAggregation.Metric} by {histogramKey} = ";
 
             var interval = Convert.ToInt32(histogramAggregation.Interval);
             var field = EncodeKustoField(histogramAggregation.Field, true);
 
             histogramAggregation.KustoQL += $"bin({field}, {interval})";
 
-            // todatetime is redundent but we'll keep it for now
-            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(histogramAggregation.Key + "%" + histogramAggregation.Keyed)} asc";
+            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc";
             if (histogramAggregation.HardBounds != null)
             {
                 var min = Convert.ToInt32(histogramAggregation.HardBounds.Min) - interval;
                 var max = Convert.ToInt32(histogramAggregation.HardBounds.Max) + interval;
-                histogramAggregation.KustoQL += $" | where {EncodeKustoField(histogramAggregation.Key + "%" + histogramAggregation.Keyed)} between (" + min + " .. " + max + ") ";
+                histogramAggregation.KustoQL += $" | {KustoQLOperators.Where} {histogramKey} between ({min} .. {max}) ";
             }
         }
     }
