@@ -10,12 +10,12 @@ namespace K2Bridge.Models.Response
     internal class BucketColumnNames
     {
         /// <summary>
-        /// Count.
+        /// Gets Count.
         /// </summary>
         public static string Count => "count_";
 
         /// <summary>
-        /// Name of the default bucket for values that don't match any range.
+        /// Gets name of the default bucket for values that don't match any range.
         /// </summary>
         public static string RangeDefaultBucket => "default_bucket";
     }

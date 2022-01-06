@@ -4,9 +4,8 @@
 
 namespace K2Bridge.Visitors
 {
-    using System.Globalization;
     using K2Bridge.Models.Request.Aggregations;
-    using K2Bridge.Models.Response;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="RangeAggregation"/> element.
@@ -21,7 +20,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Field, nameof(RangeAggregation.Field));
 
             // Start the union operator
-            rangeAggregation.KustoQL += "union ";
+            rangeAggregation.KustoQL += $"{KustoQLOperators.Union} ";
 
             // Query expressions for each range
             // (_data | where foo >= 1 and bar < 10 | summarize ['3']=avg(baz), count() | extend ['2'] = '1-10')
@@ -35,7 +34,7 @@ namespace K2Bridge.Visitors
             //                                                                            Column with the range name
             foreach (var range in rangeAggregation.Ranges)
             {
-                rangeAggregation.KustoQL += $"(_data";
+                rangeAggregation.KustoQL += $"({KustoTableNames.Data}";
 
                 range.Field = rangeAggregation.Field;
                 range.Accept(this);

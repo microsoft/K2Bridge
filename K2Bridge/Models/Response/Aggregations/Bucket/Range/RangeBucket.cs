@@ -4,8 +4,8 @@
 
 namespace K2Bridge.Models.Response.Aggregations
 {
-    using Newtonsoft.Json;
     using K2Bridge.JsonConverters;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Describes range bucket response element.
