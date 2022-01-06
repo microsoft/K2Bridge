@@ -14,7 +14,7 @@ namespace K2Bridge.Visitors
         public static string ParseDateMath(string expr)
         {
             // See Wiki or ES docs for details on date math syntax
-            var pattern = @"^([0-9-T:]+|now)\|*([0-9-+]*)([a-zA-Z]*)\/?([a-zA-Z]*)";
+            var pattern = @"^(?<anchor>now|.+?(?:\|\||$))(?<ranges>(?:(?:\+|\-)[^\/]*))?(?<rounding>\/(?:y|M|w|d|h|H|m|s))?$";
 
             Regex rgx = new Regex(pattern);
             Match match = rgx.Match(expr);
@@ -24,30 +24,32 @@ namespace K2Bridge.Visitors
             if (match.Success)
             {
                 // The date literal, ie.g. YYYY-MM-DD or "now"
-                if (match.Groups[1].Value.Equals("now"))
+                if (match.Groups["anchor"].Value.Equals("now"))
                 {
                     kexpr = "now()";
                 }
                 else
                 {
-                    kexpr = $"make_datetime('{match.Groups[1]}')";
+                    kexpr = $"make_datetime('{match.Groups["anchor"].Value.TrimEnd('|').TrimEnd('|')}')";
                 }
 
                 // Date operation, e.g. -1M, +3d, etc.
-                if (!string.IsNullOrEmpty(match.Groups[2].Value) && !string.IsNullOrEmpty(match.Groups[3].Value))
+                if (match.Groups["ranges"].Success)
                 {
-                    var valueStr = match.Groups[2].Value;
+                    var rangeStr = match.Groups["ranges"].Value;
+                    var valueStr = rangeStr.Substring(0, rangeStr.Length - 1);
+                    var unitStr = rangeStr[^1];
                     var value = int.Parse(valueStr[0] == '+' ? valueStr.Substring(1) : valueStr);
-                    var unit = match.Groups[3].Value switch
+                    var unit = unitStr switch
                     {
-                        "y" => "year",
-                        "M" => "month",
-                        "w" => "week",
-                        "d" => "day",
-                        "h" => "hour",
-                        "H" => "hour",
-                        "m" => "minute",
-                        "s" => "second",
+                        'y' => "year",
+                        'M' => "month",
+                        'w' => "week",
+                        'd' => "day",
+                        'h' => "hour",
+                        'H' => "hour",
+                        'm' => "minute",
+                        's' => "second",
                         _ => null,
                     };
 
@@ -58,9 +60,9 @@ namespace K2Bridge.Visitors
                 }
 
                 // Rounding, e.g. /d, /h, /m, etc.
-                if (!string.IsNullOrEmpty(match.Groups[4].Value))
+                if (match.Groups["rounding"].Success)
                 {
-                    var unit = match.Groups[4].Value;
+                    var unit = match.Groups["rounding"].Value.Substring(1);
                     kexpr = unit switch
                     {
                         "y" => $"startofyear({kexpr})",
