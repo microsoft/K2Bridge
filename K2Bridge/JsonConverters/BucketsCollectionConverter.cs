@@ -4,17 +4,12 @@
 
 namespace K2Bridge.JsonConverters
 {
-    using System;
-    using K2Bridge.JsonConverters.Base;
-    using K2Bridge.Models.Response;
-    using Newtonsoft.Json;
-
     /// <summary>
     /// A converter able to serialize <see cref="Aggregations"/> to Elasticsearh response json format.
     /// </summary>
-    internal class BucketsCollectionConverter : WriteOnlyJsonConverter
+    internal class BucketsCollectionConverter
     {
-        /// <inheritdoc/>
+        /*
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var buckets = (BucketsCollection)value;
@@ -54,5 +49,7 @@ namespace K2Bridge.JsonConverters
 
             writer.WriteEndObject();
         }
+    }
+    */
     }
 }

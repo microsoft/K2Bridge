@@ -42,13 +42,13 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets field extended_bounds for the Histogram Aggregation.
         /// </summary>
         [JsonProperty("extended_bounds")]
-        public Bounds? ExtendedBounds { get; set; }
+        public Bounds ExtendedBounds { get; set; }
 
         /// <summary>
         /// Gets or sets field extended_bounds for the Histogram Aggregation.
         /// </summary>
         [JsonProperty("hard_bounds")]
-        public Bounds? HardBounds { get; set; }
+        public Bounds HardBounds { get; set; }
 
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)

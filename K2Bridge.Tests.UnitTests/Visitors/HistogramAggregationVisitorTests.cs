@@ -11,7 +11,7 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class HistogramAggregationVisitorTests
     {
-        [TestCase(ExpectedResult = "_data | summarize count() by ['key'] = bin(['field'], 20)\n| order by ['key'] asc")]
+        [TestCase(ExpectedResult = "_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| order by ['key%False'] asc")]
         public string HistogramVisit_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new HistogramAggregation()
@@ -28,7 +28,7 @@ namespace UnitTests.K2Bridge.Visitors
             return histogramAggregation.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_data | summarize count() by ['key'] = bin(['field'], 20)\n| order by ['key'] asc")]
+        [TestCase(ExpectedResult = "_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| order by ['key%False'] asc")]
         public string HistogramVisitWithMinDocCount_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new HistogramAggregation()

@@ -9,8 +9,10 @@ namespace K2Bridge.KustoDAL
     using System.Data;
     using System.Linq;
     using K2Bridge;
+    using K2Bridge.Factories;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Telemetry;
     using K2Bridge.Utils;
     using Kusto.Data;
@@ -191,6 +193,7 @@ namespace K2Bridge.KustoDAL
                         nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, tableData, Logger),
                         nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, tableData, Logger),
                         nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, tableData, Logger),
+                        nameof(Models.Request.Aggregations.HistogramAggregation) => AggregateFactory.GetHistogramAggregate(key, tableData, Logger),
                         _ => null,
                     };
 
