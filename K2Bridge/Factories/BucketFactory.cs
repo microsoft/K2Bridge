@@ -9,9 +9,9 @@ namespace K2Bridge.Factories
     using System.Globalization;
     using System.Linq;
     using K2Bridge.Models.Response;
+    using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
-    using K2Bridge.Models.Response.Aggregations;
 
     /// <summary>
     /// Bucket Factory.

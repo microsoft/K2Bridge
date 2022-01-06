@@ -5,8 +5,8 @@
 namespace K2Bridge.Models.Response.Aggregations
 {
     using System.Collections.Generic;
-    using Newtonsoft.Json;
     using K2Bridge.JsonConverters;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Describes percentile aggregate response element.

@@ -5,14 +5,14 @@
 namespace K2Bridge.Factories
 {
     using System;
-    using System.Linq;
     using System.Data;
     using System.Globalization;
+    using System.Linq;
     using K2Bridge.Models.Response;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json.Linq;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Aggregate Factory.
