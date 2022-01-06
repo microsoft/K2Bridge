@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Request.Aggregations
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Range expression for aggregation.
+    /// Date Range expression for aggregation.
     /// </summary>
     internal class DateRangeAggregationExpression : KustoQLBase, IVisitable
     {

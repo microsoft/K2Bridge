@@ -8,7 +8,7 @@ namespace K2Bridge.Visitors
     using K2Bridge.Utils;
 
     /// <content>
-    /// A visitor for the <see cref="RangeAggregationExpression"/> element.
+    /// A visitor for the <see cref="DateRangeAggregationExpression"/> element.
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {

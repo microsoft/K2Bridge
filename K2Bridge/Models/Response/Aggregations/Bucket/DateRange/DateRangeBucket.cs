@@ -8,7 +8,7 @@ namespace K2Bridge.Models.Response.Aggregations
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Terms bucket response.
+    /// DateRange bucket response.
     /// </summary>
     [JsonConverter(typeof(DateRangeBucketConverter))]
     public class DateRangeBucket : KeyedBucket

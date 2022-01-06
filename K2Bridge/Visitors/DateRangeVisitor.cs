@@ -9,7 +9,7 @@ namespace K2Bridge.Visitors
     using K2Bridge.Models.Response;
 
     /// <content>
-    /// A visitor for the <see cref="RangeAggregation"/> element.
+    /// A visitor for the <see cref="DateRangeAggregation"/> element.
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {

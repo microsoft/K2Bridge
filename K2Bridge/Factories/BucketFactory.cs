@@ -121,7 +121,7 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Create a new <see cref="DateRangeBucket" from a given <see cref="DataRow"/>/>.
+        /// Create a new <see cref="DateRangeBucket"/> from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>
         /// <returns>A new DateRangeBucket.</returns>
