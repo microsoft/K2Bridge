@@ -76,7 +76,7 @@ namespace K2Bridge.Models
         public string HighlightPostTag { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the primary aggregation.
+        /// Gets the primary aggregation.
         /// </summary>
         public KeyValuePair<string, string> PrimaryAggregation { get; internal set; }
     }

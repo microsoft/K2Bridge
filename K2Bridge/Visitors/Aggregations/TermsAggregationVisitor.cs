@@ -7,6 +7,7 @@ namespace K2Bridge.Visitors
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Models.Response;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="TermsAggregation"/> element.
@@ -24,7 +25,7 @@ namespace K2Bridge.Visitors
 
             // Add main aggregation query (summarize)
             // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=field
-            query.Append($"_data | {KustoQLOperators.Summarize} {termsAggregation.SubAggregationsKustoQL}{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}");
+            query.Append($"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {termsAggregation.SubAggregationsKustoQL}{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}");
 
             var orderBy = termsAggregation.Order?.SortField switch
             {
