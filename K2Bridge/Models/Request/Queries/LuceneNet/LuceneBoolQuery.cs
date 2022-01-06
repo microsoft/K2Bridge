@@ -14,7 +14,7 @@ namespace K2Bridge.Models.Request.Queries.LuceneNet
         /// <inheritdoc/>
         public void Accept(ILuceneVisitor visitor)
         {
-             visitor.Visit(this);
+            visitor.Visit(this);
         }
     }
 }

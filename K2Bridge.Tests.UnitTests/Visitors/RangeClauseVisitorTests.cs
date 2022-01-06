@@ -4,10 +4,8 @@
 
 namespace UnitTests.K2Bridge.Visitors
 {
-    using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Queries;
     using global::K2Bridge.Tests.UnitTests.Visitors;
-    using global::K2Bridge.Visitors;
     using NUnit.Framework;
 
     public enum RangeType

@@ -143,19 +143,23 @@ namespace K2Bridge.Tests.End2End
             esClient = await CreateElasticsearchClient(testMethodName);
         }
 
-        protected static string KustoDatabase() {
+        protected static string KustoDatabase()
+        {
             return kustoDatabase;
         }
 
-        protected static KustoConnectionStringBuilder Kusto() {
+        protected static KustoConnectionStringBuilder Kusto()
+        {
             return kusto;
         }
 
-        protected TestElasticClient K2Client() {
+        protected TestElasticClient K2Client()
+        {
             return k2Client;
         }
 
-        protected TestElasticClient ESClient() {
+        protected TestElasticClient ESClient()
+        {
             return esClient;
         }
 
