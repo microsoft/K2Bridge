@@ -1,7 +1,6 @@
 # K2Bridge
 
-| :exclamation: Important security note - Action required !  
-Upgrade your K2bridge deployment. Read more [here](./docs/es6822.md) |
+| :exclamation: Important security note - Action required! : Upgrade your K2bridge deployment. Read more [here](./docs/es6822.md) |
 |----------------------------------------------------------------------|
 
 | :zap: Breaking change notice !  |
