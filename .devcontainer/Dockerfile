@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/vscode/devcontainers/base:0-ubuntu20.04
 
-ARG BUILD_ELASTIC_STACK_VERSION="6.8.20"
+ARG BUILD_ELASTIC_STACK_VERSION="6.8.22"
 ARG BUILD_TERRAFORM_VERSION="1.0.9"
 
 # Update & Install Open JDK
