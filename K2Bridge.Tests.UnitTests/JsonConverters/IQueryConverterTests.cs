@@ -5,10 +5,8 @@
 namespace UnitTests.K2Bridge.JsonConverters
 {
     using System.Collections.Generic;
-    using DeepEqual.Syntax;
     using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Queries;
-    using Newtonsoft.Json;
     using NUnit.Framework;
 
     [TestFixture]
