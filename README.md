@@ -14,7 +14,7 @@ _Action item:_ Use the provided helm chart to update the deployment with the new
 
 ---
 
-## K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) (ADX, or codename Kusto) as its backend database.
+### K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) (ADX, or codename Kusto) as its backend database.
 
 ---
 
