@@ -13,7 +13,8 @@ The new images tags are: 6.8_latest and 7.10_latest, support Kibana 6.8 and Kiba
 _Action item:_ Use the provided helm chart to update the deployment with the new image tags. |
 
 ---
-K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) (ADX, or codename Kusto) as its backend database.
+
+## K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) (ADX, or codename Kusto) as its backend database.
 
 ---
 
