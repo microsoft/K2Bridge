@@ -15,12 +15,12 @@ namespace K2Bridge.Models.Response.Aggregations
     public class PercentileAggregate : IAggregate
     {
         /// <summary>
-        /// Gets or sets the list of PercentileItem values.
+        /// Gets the list of PercentileItem values.
         /// </summary>
         public List<PercentileItem> Values { get; } = new List<PercentileItem>();
 
         /// <summary>
-        /// Gets or sets Keyed value.
+        /// Gets or sets a value indicating whether this is a Keyed value.
         /// </summary>
         public bool Keyed { get; set; }
     }

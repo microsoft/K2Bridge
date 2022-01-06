@@ -23,8 +23,8 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be parsed.</param>
-        /// <param name="logger">The <see cref="ILogger"> used for logging.</param>
-        /// <returns><see cref="DateHistogramBucket"> instance.</returns>
+        /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
+        /// <returns><see cref="DateHistogramBucket"/> instance.</returns>
         public static DateHistogramBucket CreateDateHistogramBucket(string primaryKey, DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
@@ -50,8 +50,8 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be parsed.</param>
-        /// <param name="logger">The <see cref="ILogger"> used for logging.</param>
-        /// <returns><see cref="TermsBucket"> instance.</returns>
+        /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
+        /// <returns><see cref="TermsBucket"/> instance.</returns>
         public static TermsBucket CreateTermsBucket(string primaryKey, DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
@@ -75,8 +75,8 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be parsed.</param>
-        /// <param name="logger">The <see cref="ILogger"> used for logging.</param>
-        /// <returns><see cref="RangeBucket"> instance.</returns>
+        /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
+        /// <returns><see cref="RangeBucket"/> instance.</returns>
         public static RangeBucket CreateRangeBucket(string primaryKey, DataRow row, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));

@@ -10,7 +10,6 @@ namespace K2Bridge.Telemetry
     /// <summary>
     /// Prometheus Histograms to collect query performance data.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1724", Justification ="Metrics is a valid name.")]
     public class Metrics
     {
         /// <summary>
