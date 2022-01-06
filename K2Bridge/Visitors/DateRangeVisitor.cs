@@ -68,9 +68,8 @@ namespace K2Bridge.Visitors
             // Part 3 is the summarize part for metrics
             dateRangeAggregation.KustoQL += $" | {KustoQLOperators.Summarize} {dateRangeAggregation.SubAggregationsKustoQL}{dateRangeAggregation.Metric} by {EncodeKustoField(dateRangeAggregation.Key)}";
 
-            // Order rows by key, and re-order columns by ascending order
-            // Make sure the aggregation column (with range names) is first
-            dateRangeAggregation.KustoQL += $" | {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc | {KustoQLOperators.ProjectReorder} {EncodeKustoField(dateRangeAggregation.Key)}, * asc";
+            // Order rows by key
+            dateRangeAggregation.KustoQL += $" | {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc";
         }
     }
 }
