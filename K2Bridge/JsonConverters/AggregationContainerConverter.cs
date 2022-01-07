@@ -51,6 +51,7 @@ namespace K2Bridge.JsonConverters
                     "max" => property.Value.ToObject<MaxAggregation>(serializer),
                     "sum" => property.Value.ToObject<SumAggregation>(serializer),
                     "percentiles" => property.Value.ToObject<PercentileAggregation>(serializer),
+                    "top_hits" => property.Value.ToObject<TopHitsAggregation>(serializer),
                     _ => aggregation
                 };
             }

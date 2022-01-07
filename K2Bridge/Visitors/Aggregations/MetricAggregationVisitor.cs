@@ -5,6 +5,7 @@
 namespace K2Bridge.Visitors
 {
     using System.Linq;
+    using System.Text;
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Utils;
 
@@ -75,6 +76,13 @@ namespace K2Bridge.Visitors
             // Example: ['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)']
             var key = $"['{percentileAggregation.Key}{sep}percentile{sep}{valuesForColumnNames}{sep}{percentileAggregation.Keyed}']";
             percentileAggregation.KustoQL = $"{key}={KustoQLOperators.PercentilesArray}({EncodeKustoField(percentileAggregation)}, {valuesForOperator})";
+        }
+
+        /// <inheritdoc/>
+        public void Visit(TopHitsAggregation topHitsAggregation)
+        {
+            Ensure.IsNotNull(topHitsAggregation, nameof(topHitsAggregation));
+            EnsureClause.StringIsNotNullOrEmpty(topHitsAggregation.Field, topHitsAggregation.Field, ExceptionMessage);
         }
     }
 }

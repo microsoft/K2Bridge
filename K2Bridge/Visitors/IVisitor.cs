@@ -116,6 +116,12 @@ namespace K2Bridge.Visitors
         void Visit(SumAggregation sumAggregation);
 
         /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="topHitsAggregation">The TopHits Aggregations to visit.</param>
+        void Visit(TopHitsAggregation topHitsAggregation);
+
+        /// <summary>
         /// Accepts a range expression, and builds the Kusto query.
         /// </summary>
         /// <param name="rangeAggregationExpression">The range aggregation expression.</param>
