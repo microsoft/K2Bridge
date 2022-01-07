@@ -14,8 +14,8 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class FiltersVisitorTests
     {
-        [TestCase("foo:bar", "bar:baz", ExpectedResult = "_data | extend ['key'] = pack_array('foo:bar','bar:baz'), ['_range_value'] = pack_array((foo has \"bar\"),(bar has \"baz\")) | mv-expand ['key'] to typeof(string), ['_range_value'] | where ['_range_value'] == true | summarize wibble by ['key'] | order by ['key'] asc")]
-        [TestCase("foo:(bar OR baz)", "bar:(baz OR foo)", ExpectedResult = "_data | extend ['key'] = pack_array('foo:(bar OR baz)','bar:(baz OR foo)'), ['_range_value'] = pack_array(((foo has \"bar\") or (foo has \"baz\")),((bar has \"baz\") or (bar has \"foo\"))) | mv-expand ['key'] to typeof(string), ['_range_value'] | where ['_range_value'] == true | summarize wibble by ['key'] | order by ['key'] asc")]
+        [TestCase("foo:bar", "bar:baz", ExpectedResult = "_data | extend ['key'] = pack_array('foo:bar','bar:baz'), ['_filter_value'] = pack_array((foo has \"bar\"),(bar has \"baz\")) | mv-expand ['key'] to typeof(string), ['_filter_value'] | where ['_filter_value'] == true | summarize wibble by ['key'] | order by ['key'] asc")]
+        [TestCase("foo:(bar OR baz)", "bar:(baz OR foo)", ExpectedResult = "_data | extend ['key'] = pack_array('foo:(bar OR baz)','bar:(baz OR foo)'), ['_filter_value'] = pack_array(((foo has \"bar\") or (foo has \"baz\")),((bar has \"baz\") or (bar has \"foo\"))) | mv-expand ['key'] to typeof(string), ['_filter_value'] | where ['_filter_value'] == true | summarize wibble by ['key'] | order by ['key'] asc")]
         public string FiltersVisit_WithAggregation_ReturnsValidResponse(string q1, string q2)
         {
             var rangeAggregation = new FiltersAggregation()
