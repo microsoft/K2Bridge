@@ -119,5 +119,29 @@ namespace K2Bridge.Factories
 
             return rb;
         }
+
+        /// <summary>
+        /// Create a new <see cref="FiltersBucket"/> from a given <see cref="DataRow"/>.
+        /// </summary>
+        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <returns>A new FiltersBucket.</returns>
+        public static FiltersBucket CreateFiltersBucket(string primaryKey, DataRow row, ILogger logger)
+        {
+            Ensure.IsNotNull(row, nameof(row));
+
+            var filter = Convert.ToString(row[primaryKey]);
+            var count = row[BucketColumnNames.Count];
+
+            // Assemble the bucket
+            var fb = new FiltersBucket
+            {
+                Key = filter,
+                DocCount = Convert.ToInt32(count),
+            };
+
+            fb.AddAggregates(primaryKey, row, logger);
+
+            return fb;
+        }
     }
 }

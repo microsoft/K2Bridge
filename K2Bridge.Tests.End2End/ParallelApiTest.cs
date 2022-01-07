@@ -268,6 +268,13 @@ namespace K2Bridge.Tests.End2End
             ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentile.json");
         }
 
+        [Test]
+        [Description("/_msearch visualization query with filters")]
+        public void CompareElasticKusto_WhenMSearchVizFilters_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Filters_Metrics.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);

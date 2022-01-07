@@ -134,6 +134,12 @@ namespace K2Bridge.Visitors
         void Visit(QueryStringClause queryStringClause);
 
         /// <summary>
+        /// Accepts a filters aggregation, and builds the Kusto query.
+        /// </summary>
+        /// <param name="filtersAggregation">The filters aggregation expression.</param>
+        void Visit(FiltersAggregation filtersAggregation);
+
+        /// <summary>
         /// Accepts a given visitable object and builds a Kusto single doc query.
         /// </summary>
         /// <param name="documentIds">The DocumentIds object to visit.</param>
