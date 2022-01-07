@@ -22,10 +22,10 @@ namespace K2Bridge.Visitors
             var queryStringBuilder = new StringBuilder();
 
             // Part 1:
-            // _data | extend ['_range'] = pack_array("range1", "range2", "range3"), ['_range_value']=pack_array(expr1, expr2, expr3)
+            // _data | extend ['key'] = pack_array("k1", "k2", "k3"), ['_filter_value']=pack_array(expr1, expr2, expr3)
 
             // Start of query, until first pack_array()
-            queryStringBuilder.Append($"_data | {KustoQLOperators.Extend} {EncodeKustoField(filtersAggregation.Key)} = {KustoQLOperators.PackArray}(");
+            queryStringBuilder.Append($"{KustoTableNames.Data} | {KustoQLOperators.Extend} {EncodeKustoField(filtersAggregation.Key)} = {KustoQLOperators.PackArray}(");
 
             // Insert filters names
             foreach (var filter in filtersAggregation.Filters)
@@ -37,7 +37,7 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Remove(queryStringBuilder.Length - 1, 1);
 
             // Close the first pack_array() and start the second pack_array()
-            queryStringBuilder.Append($"), ['_range_value'] = {KustoQLOperators.PackArray}(");
+            queryStringBuilder.Append($"), ['_filter_value'] = {KustoQLOperators.PackArray}(");
 
             // Insert filters expressions
             foreach (var filter in filtersAggregation.Filters)
@@ -53,8 +53,8 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Append(")");
 
             // Part 2 is expansion and filtering of rows
-            queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(filtersAggregation.Key)} to typeof(string), ['_range_value']");
-            queryStringBuilder.Append($" | {KustoQLOperators.Where} ['_range_value'] == true");
+            queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(filtersAggregation.Key)} to typeof(string), ['_filter_value']");
+            queryStringBuilder.Append($" | {KustoQLOperators.Where} ['_filter_value'] == true");
 
             // Part 3 is the summarize part for metrics
             queryStringBuilder.Append($" | {KustoQLOperators.Summarize} {filtersAggregation.SubAggregationsKustoQL}{filtersAggregation.Metric} by {EncodeKustoField(filtersAggregation.Key)}");
