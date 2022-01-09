@@ -10,7 +10,7 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// A single-value metrics aggregation that computes the median of numeric values that are extracted from the aggregated documents.
     /// </summary>
-    internal class PercentileAggregation : MetricAggregation
+    internal class PercentileAggregation : MetricAggregation, ISummarizable
     {
         /// <summary>
         /// Gets or sets field percents for metric computation.
