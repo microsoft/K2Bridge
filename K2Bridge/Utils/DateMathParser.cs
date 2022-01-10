@@ -18,7 +18,7 @@ namespace K2Bridge.Visitors
             var rgx = new Regex(
                 @"^
                         (?: (?<anchor>now) | (?: (?<anchor>.+?) (?:\|\||$)) )
-                        (?: (?<rangeSign>[+-]) (?<rangeValue>\d+) (?<rangeUnit>[a-zA-Z]))?
+                        (?: (?<rangeSign>[+-]) (?<rangeValue>\d+) (?<rangeUnit>[a-zA-Z]))*
                         (?: (?:\/ (?<rounding>y|M|w|d|h|H|m|s)))?", RegexOptions.IgnorePatternWhitespace);
             var match = rgx.Match(expr);
 
@@ -43,24 +43,27 @@ namespace K2Bridge.Visitors
             // Date operation, e.g. -1M, +3d, etc.
             if (match.Groups["rangeSign"].Success)
             {
-                var sign = match.Groups["rangeSign"].Value == "-" ? "-" : string.Empty;
-                var value = int.Parse(match.Groups["rangeValue"].Value);
-                var unit = match.Groups["rangeUnit"].Value[0] switch
+                for (var i = 0; i < match.Groups["rangeSign"].Captures.Count; i++)
                 {
-                    'y' => "year",
-                    'M' => "month",
-                    'w' => "week",
-                    'd' => "day",
-                    'h' => "hour",
-                    'H' => "hour",
-                    'm' => "minute",
-                    's' => "second",
-                    _ => throw new Exception("Invalid date math range unit."),
-                };
+                    var sign = match.Groups["rangeSign"].Captures[i].Value == "-" ? "-" : string.Empty;
+                    var value = int.Parse(match.Groups["rangeValue"].Captures[i].Value);
+                    var unit = match.Groups["rangeUnit"].Captures[i].Value[0] switch
+                    {
+                        'y' => "year",
+                        'M' => "month",
+                        'w' => "week",
+                        'd' => "day",
+                        'h' => "hour",
+                        'H' => "hour",
+                        'm' => "minute",
+                        's' => "second",
+                        _ => throw new IllegalClauseException("Invalid date math range unit."),
+                    };
 
-                if (unit != null)
-                {
-                    kexpr = $"datetime_add('{unit}', {sign}{value}, {kexpr})";
+                    if (unit != null)
+                    {
+                        kexpr = $"datetime_add('{unit}', {sign}{value}, {kexpr})";
+                    }
                 }
             }
 
@@ -77,7 +80,7 @@ namespace K2Bridge.Visitors
                     "H" => $"bin({kexpr}, 1h)",
                     "m" => $"bin({kexpr}, 1m)",
                     "s" => $"bin({kexpr}, 1s)",
-                    _ => throw new Exception("Invalid date math rounding."),
+                    _ => throw new IllegalClauseException("Invalid date math rounding."),
                 };
             }
 
