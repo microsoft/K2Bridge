@@ -21,8 +21,8 @@ namespace K2Bridge.Visitors
             var fromExpr = dateRangeExpression.From != null ? DateMathParser.ParseDateMath(dateRangeExpression.From) : "''";
             var toExpr = dateRangeExpression.To != null ? DateMathParser.ParseDateMath(dateRangeExpression.To) : "''";
 
-            var gteExpr = dateRangeExpression.From != null ? $"['{dateRangeExpression.Field}'] >= {fromExpr}" : null;
-            var ltExpr = dateRangeExpression.To != null ? $"['{dateRangeExpression.Field}'] < {toExpr}" : null;
+            var gteExpr = dateRangeExpression.From != null ? $"{EncodeKustoField(dateRangeExpression.Field)} >= {fromExpr}" : null;
+            var ltExpr = dateRangeExpression.To != null ? $"{EncodeKustoField(dateRangeExpression.Field)} < {toExpr}" : null;
 
             dateRangeExpression.BucketNameKustoQL = $"strcat({fromExpr}, '{AggregationsConstants.MetadataSeparator}', {toExpr})";
 
