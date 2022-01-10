@@ -59,8 +59,7 @@ namespace K2Bridge.KustoDAL
         {
             KustoConnectionStringBuilder conn;
 
-            if (string.IsNullOrEmpty(connectionDetails.AadClientId) ||
-                string.IsNullOrEmpty(connectionDetails.AadClientSecret))
+            if (connectionDetails.UseManagedIdentity)
             {
                 conn = new KustoConnectionStringBuilder(
                     connectionDetails.ClusterUrl,

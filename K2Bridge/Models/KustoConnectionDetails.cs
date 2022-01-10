@@ -22,7 +22,8 @@ namespace K2Bridge.Models
             string defaultDatabaseName,
             string aadClientId,
             string aadClientSecret,
-            string aadTenantId)
+            string aadTenantId,
+            bool useManagedIdentity = false)
         {
             Ensure.IsNotNullOrEmpty(clusterUrl, "Kusto Cluster URL is empty or null");
             Ensure.IsNotNullOrEmpty(defaultDatabaseName, "Kusto default database name is empty or null");
@@ -35,6 +36,7 @@ namespace K2Bridge.Models
             AadClientId = aadClientId;
             AadClientSecret = aadClientSecret;
             AadTenantId = aadTenantId;
+            UseManagedIdentity = useManagedIdentity;
         }
 
         /// <summary>
@@ -61,5 +63,10 @@ namespace K2Bridge.Models
         /// Gets and Sets Kusto AAD Tenant ID.
         /// </summary>
         public string AadTenantId { get; private set; }
+
+        /// <summary>
+        /// Gets a boolean indicating if we need to use a Managed Identity.
+        /// </summary>
+        public bool UseManagedIdentity { get; private set; }
     }
 }
