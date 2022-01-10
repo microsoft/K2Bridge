@@ -36,7 +36,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
                 Throws.TypeOf<IllegalClauseException>());
         }
 
-        [TestCase(ExpectedResult = null)]
+        [TestCase(ExpectedResult = "true")]
         public string Visit_WithValidQuery_ReturnsValidResponse()
         {
             var query = new LuceneMatchAllDocsQuery
