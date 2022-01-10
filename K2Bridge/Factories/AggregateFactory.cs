@@ -120,6 +120,34 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
+        /// Get filters aggregate from a given <see cref="DataRowCollection"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="BucketAggregate"></returns>
+        public static BucketAggregate GetFiltersAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        {
+            logger.LogTrace("Get filters aggregate for {}", key);
+
+            var filtersAggregate = new BucketAggregate()
+            {
+                Keyed = true,
+            };
+
+            foreach (DataRow row in rowCollection)
+            {
+                var bucket = BucketFactory.CreateFiltersBucket(key, row, logger);
+                if (bucket != null)
+                {
+                    filtersAggregate.Buckets.Add(bucket);
+                }
+            }
+
+            return filtersAggregate;
+        }
+
+        /// <summary>
         /// Add aggregates to current <see cref="AggregateDictionary"/> instance from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>

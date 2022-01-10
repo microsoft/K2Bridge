@@ -269,6 +269,13 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
+        [Description("/_msearch visualization query with filters")]
+        public void CompareElasticKusto_WhenMSearchVizFilters_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Filters_Metrics.json");
+        }
+
+        [Test]
         [Description("/_msearch visualization query with date range")]
         public void CompareElasticKusto_WhenMSearchVizDateRange_ResponsesAreEquivalent()
         {
