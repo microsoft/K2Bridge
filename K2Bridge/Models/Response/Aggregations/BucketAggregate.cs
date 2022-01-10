@@ -15,12 +15,12 @@ namespace K2Bridge.Models.Response.Aggregations
     public class BucketAggregate : IAggregate
     {
         /// <summary>
-        /// Gets or sets a collection of buckets.
+        /// Gets a collection of buckets.
         /// </summary>
         public List<IKeyedBucket> Buckets { get; } = new List<IKeyedBucket>();
 
         /// <summary>
-        /// Gets or sets the Keyed value.
+        /// Gets or sets a value indicating whether it's a Keyed aggregate.
         /// </summary>
         public bool Keyed { get; set; } = false;
     }
