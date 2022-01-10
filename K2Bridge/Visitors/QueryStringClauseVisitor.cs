@@ -84,7 +84,7 @@ namespace K2Bridge.Visitors
                     queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
                     break;
                 case QueryStringClause.Subtype.MatchAll:
-                    // Match all returns everything, so we don't need a query
+                    queryStringClause.KustoQL = "true";
                     break;
                 default:
                     // should not happen
