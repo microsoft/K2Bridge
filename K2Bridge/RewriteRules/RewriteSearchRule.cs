@@ -4,11 +4,8 @@
 
 namespace K2Bridge.RewriteRules
 {
-    using System.IO;
-    using System.Text;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Rewrite;
-    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Normalizes the route of IndexList.

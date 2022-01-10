@@ -11,7 +11,6 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
     using global::K2Bridge.Visitors;
     using global::K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
-    using UnitTests.K2Bridge.Visitors;
 
     [TestFixture]
     public class LuceneTermVisitorTests

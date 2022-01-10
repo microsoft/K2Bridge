@@ -4,8 +4,6 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
-    using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
 
     /// <content>

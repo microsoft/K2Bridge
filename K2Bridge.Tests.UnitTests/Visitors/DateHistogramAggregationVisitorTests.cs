@@ -15,7 +15,8 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(ExpectedResult = "_data | summarize metric by ['key'] = field\n| order by ['key'] asc")]
         public string DateHistogramVisit_WithSimpleAggregation_ReturnsValidResponse()
         {
-            var histogramAggregation = new DateHistogramAggregation() {
+            var histogramAggregation = new DateHistogramAggregation()
+            {
                 Field = "field",
                 Key = "key",
                 Metric = "metric",
@@ -36,7 +37,8 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("z", ExpectedResult = "_data | summarize metric by ['key'] = bin(['field'], z)\n| order by ['key'] asc")]
         public string DateHistogramVisit_WithAggregation_ReturnsValidResponse(string interval)
         {
-            var histogramAggregation = new DateHistogramAggregation() {
+            var histogramAggregation = new DateHistogramAggregation()
+            {
                 Field = "field",
                 FixedInterval = interval,
                 Key = "key",
@@ -58,7 +60,8 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("z", ExpectedResult = "_data | summarize metric by ['key'] = bin(todatetime(['field'].['A']), z)\n| order by ['key'] asc")]
         public string DateHistogramVisit_WithAggregation_WithDynamicField_ReturnsValidResponse(string interval)
         {
-            var histogramAggregation = new DateHistogramAggregation() {
+            var histogramAggregation = new DateHistogramAggregation()
+            {
                 Field = "field.A",
                 FixedInterval = interval,
                 Key = "key",

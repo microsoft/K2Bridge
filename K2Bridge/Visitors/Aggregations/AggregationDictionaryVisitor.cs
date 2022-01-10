@@ -4,9 +4,9 @@
 
 namespace K2Bridge.Visitors
 {
-    using System.Text;
-    using System.Linq;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
     using K2Bridge.Models.Request.Aggregations;
 
     /// <content>

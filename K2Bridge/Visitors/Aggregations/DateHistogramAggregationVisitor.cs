@@ -6,6 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="DateHistogramAggregation"/> element.
@@ -23,7 +24,7 @@ namespace K2Bridge.Visitors
 
             // Add main aggregation query (summarize)
             // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=
-            query.Append($"_data | {KustoQLOperators.Summarize} {dateHistogramAggregation.SubAggregationsKustoQL}{dateHistogramAggregation.Metric} ");
+            query.Append($"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {dateHistogramAggregation.SubAggregationsKustoQL}{dateHistogramAggregation.Metric} ");
             query.Append($"by {EncodeKustoField(dateHistogramAggregation.Key)} = ");
 
             // Add group expression

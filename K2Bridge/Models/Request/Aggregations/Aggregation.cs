@@ -4,10 +4,8 @@
 
 namespace K2Bridge.Models.Request.Aggregations
 {
-    using K2Bridge.JsonConverters;
     using K2Bridge.Models.Request;
     using K2Bridge.Visitors;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Describes base aggregation class to visit.
@@ -15,7 +13,7 @@ namespace K2Bridge.Models.Request.Aggregations
     internal abstract class Aggregation : KustoQLBase, IVisitable
     {
         /// <summary>
-        ///  Key of the aggregation.
+        ///  Gets or sets key of the aggregation.
         /// </summary>
         public virtual string Key { get; set; }
 

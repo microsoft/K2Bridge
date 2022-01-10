@@ -20,7 +20,8 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(0, 10000, 2000, 3000, ExpectedResult = "union (_data | where ['dayOfWeek'] >= 0 and ['dayOfWeek'] < 10000 | summarize wibble | extend ['key'] = '0-10000'), (_data | where ['dayOfWeek'] >= 2000 and ['dayOfWeek'] < 3000 | summarize wibble | extend ['key'] = '2000-3000') | project-reorder ['key'], * asc")]
         public string RangeVisit_WithAggregation_ReturnsValidResponse(double? from1, double? to1, double? from2, double? to2)
         {
-            var rangeAggregation = new RangeAggregation() {
+            var rangeAggregation = new RangeAggregation()
+            {
                 Metric = "wibble",
                 Field = "dayOfWeek",
                 Key = "key",
@@ -43,7 +44,8 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(0, 10000, 2000, 3000, ExpectedResult = "union (_data | where todouble(['dayOfWeek'].['A']) >= 0 and todouble(['dayOfWeek'].['A']) < 10000 | summarize wibble | extend ['key'] = '0-10000'), (_data | where todouble(['dayOfWeek'].['A']) >= 2000 and todouble(['dayOfWeek'].['A']) < 3000 | summarize wibble | extend ['key'] = '2000-3000') | project-reorder ['key'], * asc")]
         public string RangeVisit_WithAggregation_Dynamic_ReturnsValidResponse(double? from1, double? to1, double? from2, double? to2)
         {
-            var rangeAggregation = new RangeAggregation() {
+            var rangeAggregation = new RangeAggregation()
+            {
                 Metric = "wibble",
                 Field = "dayOfWeek.A",
                 Key = "key",
@@ -62,7 +64,8 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void RangeVisit_WithOpenAggregation_ReturnsValidResponse()
         {
-            var rangeAggregation = new RangeAggregation() {
+            var rangeAggregation = new RangeAggregation()
+            {
                 Metric = "wibble",
                 Field = "dayOfWeek",
                 Key = "key",
