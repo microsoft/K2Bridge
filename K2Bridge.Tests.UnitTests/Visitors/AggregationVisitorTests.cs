@@ -372,5 +372,61 @@ namespace UnitTests.K2Bridge.Visitors
 
             return aggregateClause.KustoQL;
         }
+
+        [TestCase(ExpectedResult = "['A%extended_stats']=pack('std_deviation', stdev(todouble(['fieldA'].['B'])),'average', avg(todouble(['fieldA'].['B'])),'std_deviation_bounds_upper', avg(todouble(['fieldA'].['B'])) + stdev(todouble(['fieldA'].['B'])) * 2,'std_deviation_bounds_lower', avg(todouble(['fieldA'].['B'])) - stdev(todouble(['fieldA'].['B'])) * 2)")]
+        public string AggregationVisit_WithDynamicLongExtendedStatsAggWithoutSigma_ReturnsExtendedStatsAggregation()
+        {
+            var aggregateClause = new AggregationContainer()
+            {
+                PrimaryAggregation = new ExtendedStatsAggregation { Field = "fieldA.B", Key = "A" },
+            };
+
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("fieldA.B", "long");
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
+
+        [TestCase(ExpectedResult = "['A%extended_stats']=pack('std_deviation', stdev(todouble(['fieldA'].['B'])),'average', avg(todouble(['fieldA'].['B'])),'std_deviation_bounds_upper', avg(todouble(['fieldA'].['B'])) + stdev(todouble(['fieldA'].['B'])) * 2,'std_deviation_bounds_lower', avg(todouble(['fieldA'].['B'])) - stdev(todouble(['fieldA'].['B'])) * 2)")]
+        public string AggregationVisit_WithDynamicDoubleExtendedStatsAggWithoutSigma_ReturnsExtendedStatsAggregation()
+        {
+            var aggregateClause = new AggregationContainer()
+            {
+                PrimaryAggregation = new ExtendedStatsAggregation { Field = "fieldA.B", Key = "A" },
+            };
+
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("fieldA.B", "double");
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
+
+        [TestCase(ExpectedResult = "['A%extended_stats']=pack('std_deviation', stdev(todouble(['fieldA'].['B'])),'average', avg(todouble(['fieldA'].['B'])),'std_deviation_bounds_upper', avg(todouble(['fieldA'].['B'])) + stdev(todouble(['fieldA'].['B'])) * 3,'std_deviation_bounds_lower', avg(todouble(['fieldA'].['B'])) - stdev(todouble(['fieldA'].['B'])) * 3)")]
+        public string AggregationVisit_WithDynamicLongExtendedStatsAggWithSigma_ReturnsExtendedStatsAggregation()
+        {
+            var aggregateClause = new AggregationContainer()
+            {
+                PrimaryAggregation = new ExtendedStatsAggregation { Field = "fieldA.B", Key = "A", Sigma = 3 },
+            };
+
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("fieldA.B", "long");
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
+
+        [TestCase(ExpectedResult = "['A%extended_stats']=pack('std_deviation', stdev(todouble(['fieldA'].['B'])),'average', avg(todouble(['fieldA'].['B'])),'std_deviation_bounds_upper', avg(todouble(['fieldA'].['B'])) + stdev(todouble(['fieldA'].['B'])) * 3,'std_deviation_bounds_lower', avg(todouble(['fieldA'].['B'])) - stdev(todouble(['fieldA'].['B'])) * 3)")]
+        public string AggregationVisit_WithDynamicDoubleExtendedStatsAggWithSigma_ReturnsExtendedStatsAggregation()
+        {
+            var aggregateClause = new AggregationContainer()
+            {
+                PrimaryAggregation = new ExtendedStatsAggregation { Field = "fieldA.B", Key = "A", Sigma = 3 },
+            };
+
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("fieldA.B", "double");
+            visitor.Visit(aggregateClause);
+
+            return aggregateClause.KustoQL;
+        }
     }
 }

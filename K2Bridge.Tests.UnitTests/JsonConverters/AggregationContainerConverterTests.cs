@@ -86,15 +86,6 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
-        private const string StandardDeviationAggregation = @"
-            {""aggs"": { 
-                ""2"": {
-                    ""extended_stats"" : {
-                        ""field"" : ""metric"" 
-                    } 
-                }
-            }}";
-
         private const string MaxAggregation = @"
             {""aggs"": { 
                 ""2"": {
@@ -147,6 +138,25 @@ namespace UnitTests.K2Bridge.JsonConverters
                             1, 50, 90, 95
                         ]
                     }
+                }
+            }}";
+
+        private const string ExtendedStatsAggregationWithSigma = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""extended_stats"" : {
+                        ""field"" : ""metric"",
+                        ""sigma"" : 3
+                    } 
+                }
+            }}";
+
+        private const string ExtendedStatsAggregationWithoutSigma = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""extended_stats"" : {
+                        ""field"" : ""metric""
+                    } 
                 }
             }}";
 
@@ -297,24 +307,6 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-
-        private static readonly AggregationContainer ExpectedValidStandardDeviationAggregation = new AggregationContainer()
-        {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
-            {
-                ["2"] = new AggregationContainer
-                {
-                    PrimaryAggregation = new ExtendedStatsAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
-                },
-            },
-        };
-
         private static readonly AggregationContainer ExpectedValidMaxAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
@@ -404,6 +396,41 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
+        private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithoutSigma = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new ExtendedStatsAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
+        private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithSigma = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new ExtendedStatsAggregation
+                    {
+                        Field = "metric",
+                        Key = "2",
+                        Sigma = 3,
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
         private static readonly AggregationContainer ExpectedNoAggAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
@@ -430,6 +457,8 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(PercentileAggregation, ExpectedValidPercentileAggregation).SetName("JsonDeserializeObject_WithAggregationValidPercentile_DeserializedCorrectly"),
             new TestCaseData(PercentilesAggregation, ExpectedValidPercentilesAggregation).SetName("JsonDeserializeObject_WithAggregationValidPercentiles_DeserializedCorrectly"),
             new TestCaseData(PercentilesKeyedAggregation, ExpectedValidPercentilesKeyedAggregation).SetName("JsonDeserializeObject_WithAggregationValidPercentiles_DeserializedCorrectly"),
+            new TestCaseData(ExtendedStatsAggregationWithSigma, ExpectedExtendedStatsAggregationWithSigma).SetName("JsonDeserializeObject_WithExtendedStatsAggregationWithSigma_DeserializedCorrectly"),
+            new TestCaseData(ExtendedStatsAggregationWithoutSigma, ExpectedExtendedStatsAggregationWithoutSigma).SetName("JsonDeserializeObject_WithExtendedStatsAggregationWithoutSigma_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
 
