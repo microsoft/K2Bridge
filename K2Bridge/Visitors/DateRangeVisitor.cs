@@ -8,6 +8,7 @@ namespace K2Bridge.Visitors
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Models.Response;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="DateRangeAggregation"/> element.
@@ -21,13 +22,15 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateRangeAggregation.Metric, nameof(RangeAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(dateRangeAggregation.Field, nameof(RangeAggregation.Field));
 
+            string expandColumn = EncodeKustoField("_range_value");
+
             var queryStringBuilder = new StringBuilder();
 
             // Part 1:
             // _data | extend ['_range'] = pack_array("range1", "range2", "range3"), ['_range_value']=pack_array(expr1, expr2, expr3)
 
             // Start of query, until first pack_array()
-            queryStringBuilder.Append($"_data | {KustoQLOperators.Extend} {EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}(");
+            queryStringBuilder.Append($"{KustoTableNames.Data} | {KustoQLOperators.Extend} {EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}(");
 
             // Insert range names
             foreach (var range in dateRangeAggregation.Ranges)
@@ -42,7 +45,7 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Remove(queryStringBuilder.Length - 1, 1);
 
             // Close the first pack_array() and start the second pack_array()
-            queryStringBuilder.Append($"), ['_range_value'] = {KustoQLOperators.PackArray}(");
+            queryStringBuilder.Append($"), {expandColumn} = {KustoQLOperators.PackArray}(");
 
             // Insert range expressions
             foreach (var range in dateRangeAggregation.Ranges)
@@ -65,8 +68,8 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Append(")");
 
             // Part 2 is expansion and filtering of rows
-            queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(dateRangeAggregation.Key)} to typeof(string), ['_range_value']");
-            queryStringBuilder.Append($" | {KustoQLOperators.Where} ['_range_value'] == true");
+            queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(dateRangeAggregation.Key)} to typeof(string), {expandColumn}");
+            queryStringBuilder.Append($" | {KustoQLOperators.Where} {expandColumn} == true");
 
             // Part 3 is the summarize part for metrics
             queryStringBuilder.Append($" | {KustoQLOperators.Summarize} {dateRangeAggregation.SubAggregationsKustoQL}{dateRangeAggregation.Metric} by {EncodeKustoField(dateRangeAggregation.Key)}");
