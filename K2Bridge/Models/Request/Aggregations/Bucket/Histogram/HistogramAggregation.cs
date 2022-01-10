@@ -30,7 +30,7 @@ namespace K2Bridge.Models.Request.Aggregations
         /// The default is 0 meaning that buckets with no documents will be returned.
         /// </summary>
         [JsonProperty("min_doc_count")]
-        public int? MinimumDocumentCount { get; set; }
+        public int MinimumDocumentCount { get; set; } = 0;
 
         /// <summary>
         /// Gets or sets field keyed for the Histogram Aggregation.
@@ -45,7 +45,7 @@ namespace K2Bridge.Models.Request.Aggregations
         public Bounds ExtendedBounds { get; set; }
 
         /// <summary>
-        /// Gets or sets field extended_bounds for the Histogram Aggregation.
+        /// Gets or sets field hard_bounds for the Histogram Aggregation.
         /// </summary>
         [JsonProperty("hard_bounds")]
         public Bounds HardBounds { get; set; }

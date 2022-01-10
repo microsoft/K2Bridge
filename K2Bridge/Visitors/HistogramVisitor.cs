@@ -6,6 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Response;
     using K2Bridge.Utils;
 
     /// <content>
@@ -30,13 +31,16 @@ namespace K2Bridge.Visitors
 
             histogramAggregation.KustoQL += $"bin({field}, {interval})";
 
-            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc";
+            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} ['{BucketColumnNames.Count}'] >= {histogramAggregation.MinimumDocumentCount}";
+
             if (histogramAggregation.HardBounds != null)
             {
                 var min = Convert.ToInt32(histogramAggregation.HardBounds.Min) - interval;
                 var max = Convert.ToInt32(histogramAggregation.HardBounds.Max) + interval;
-                histogramAggregation.KustoQL += $" | {KustoQLOperators.Where} {histogramKey} between ({min} .. {max}) ";
+                histogramAggregation.KustoQL += $" {KustoQLOperators.And} {histogramKey} between ({min} .. {max})";
             }
+
+            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc";
         }
     }
 }

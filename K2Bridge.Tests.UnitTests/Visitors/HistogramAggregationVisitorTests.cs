@@ -11,7 +11,7 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class HistogramAggregationVisitorTests
     {
-        [TestCase(ExpectedResult = "_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| order by ['key%False'] asc")]
+        [TestCase(ExpectedResult = "_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 0\n| order by ['key%False'] asc")]
         public string HistogramVisit_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new HistogramAggregation()
@@ -28,7 +28,7 @@ namespace UnitTests.K2Bridge.Visitors
             return histogramAggregation.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| order by ['key%False'] asc")]
+        [TestCase(ExpectedResult = "_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 1\n| order by ['key%False'] asc")]
         public string HistogramVisitWithMinDocCount_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new HistogramAggregation()
@@ -36,6 +36,27 @@ namespace UnitTests.K2Bridge.Visitors
                 Field = "field",
                 Interval = 20,
                 MinimumDocumentCount = 1,
+                Key = "key",
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(histogramAggregation);
+
+            return histogramAggregation.KustoQL;
+        }
+
+        [TestCase(ExpectedResult = "_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 0 and ['key%False'] between (30 .. 170)\n| order by ['key%False'] asc")]
+        public string HistogramVisitWithHardBounds_WithSimpleAggregation_ReturnsValidResponse()
+        {
+            var histogramAggregation = new HistogramAggregation()
+            {
+                Field = "field",
+                Interval = 20,
+                HardBounds = new Bounds
+                {
+                    Min = 50,
+                    Max = 150,
+                },
                 Key = "key",
             };
 

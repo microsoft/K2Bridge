@@ -36,10 +36,10 @@ namespace K2Bridge.JsonConverters
                 serializer.Serialize(writer, histogramBucket.KeyAsString);
             }
 
-            foreach (KeyValuePair<string, IAggregate> aggregate in histogramBucket)
+            foreach (var (key, aggregate) in histogramBucket)
             {
-                writer.WritePropertyName(aggregate.Key);
-                serializer.Serialize(writer, aggregate.Value);
+                writer.WritePropertyName(key);
+                serializer.Serialize(writer, aggregate);
             }
 
             writer.WriteEndObject();

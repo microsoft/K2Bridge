@@ -313,7 +313,7 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("/_msearch visualization query with  histogram and median")]
+        [Description("/_msearch visualization query with histogram and median")]
         public void CompareElasticKusto_WhenMSearchVizHistogramMedian_ResponsesAreEquivalent()
         {
             ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median.json");
