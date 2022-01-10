@@ -30,10 +30,10 @@ namespace K2Bridge.JsonConverters
                 serializer.Serialize(writer, filtersBucket.Key);
             }
 
-            foreach (KeyValuePair<string, IAggregate> aggregate in filtersBucket)
+            foreach (var (key, aggregate) in filtersBucket)
             {
-                writer.WritePropertyName(aggregate.Key);
-                serializer.Serialize(writer, aggregate.Value);
+                writer.WritePropertyName(key);
+                serializer.Serialize(writer, aggregate);
             }
 
             writer.WriteEndObject();

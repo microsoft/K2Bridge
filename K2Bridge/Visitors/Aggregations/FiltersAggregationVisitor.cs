@@ -40,17 +40,17 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Append($"), ['_filter_value'] = {KustoQLOperators.PackArray}(");
 
             // Insert filters expressions
-            foreach (var filter in filtersAggregation.Filters)
+            foreach (var (_, value) in filtersAggregation.Filters)
             {
-                filter.Value.BoolQuery.Accept(this);
-                queryStringBuilder.Append($"{filter.Value.BoolQuery.KustoQL},");
+                value.BoolQuery.Accept(this);
+                queryStringBuilder.Append($"{value.BoolQuery.KustoQL},");
             }
 
             // Remove final comma
             queryStringBuilder.Remove(queryStringBuilder.Length - 1, 1);
 
             // End part 1
-            queryStringBuilder.Append(")");
+            queryStringBuilder.Append(')');
 
             // Part 2 is expansion and filtering of rows
             queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(filtersAggregation.Key)} to typeof(string), ['_filter_value']");
