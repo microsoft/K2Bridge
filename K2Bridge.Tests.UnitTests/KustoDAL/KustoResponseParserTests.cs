@@ -210,6 +210,29 @@ namespace UnitTests.K2Bridge.KustoDAL
         }
 
         [Test]
+        public void ParseElasticResponse_WithFiltersAggs_ReturnsElasticResponseWithAggs()
+        {
+            using var aggsTable = GetTermsAggsTable();
+            aggsTable.TableName = "aggs";
+
+            var timeTaken = new TimeSpan(17);
+            var query = new QueryData("query", "index");
+
+            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(FiltersAggregation));
+            query.PrimaryAggregation = primaryAggregation;
+
+            var reader = aggsTable.CreateDataReader();
+            var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
+
+            var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
+            Assert.AreEqual(1, result.Responses.Count());
+
+            var elasticResult = result.Responses.ToList()[0];
+            var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
+            Assert.AreEqual(2, aggregate.Buckets.Count());
+        }
+
+        [Test]
         public void ParseElasticResponse_WithOverlappingRangeAggs_ReturnsElasticResponseWithAggs()
         {
             using var aggsTable = GetOverlappingRangeAggsTable();
