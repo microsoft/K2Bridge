@@ -134,6 +134,18 @@ namespace K2Bridge.Visitors
         void Visit(QueryStringClause queryStringClause);
 
         /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="rangeAggregation">The Range aggregation to visit.</param>
+        void Visit(DateRangeAggregation dateRangeAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="dateRangeAggregationExpression">The range aggregation expression.</param>
+        void Visit(DateRangeAggregationExpression dateRangeAggregationExpression);
+
+        /// <summary>
         /// Accepts a given visitable object and builds a Kusto single doc query.
         /// </summary>
         /// <param name="documentIds">The DocumentIds object to visit.</param>
