@@ -143,5 +143,55 @@ namespace K2Bridge.Factories
 
             return fb;
         }
+
+        /// Create a new <see cref="DateRangeBucket"/> from a given <see cref="DataRow"/>.
+        /// </summary>
+        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <returns>A new DateRangeBucket.</returns>
+        public static DateRangeBucket CreateDateRangeBucket(string primaryKey, DataRow row, ILogger logger)
+        {
+            Ensure.IsNotNull(row, nameof(row));
+
+            var range = Convert.ToString(row[primaryKey]);
+            var count = row[BucketColumnNames.Count];
+
+            // Ignore the row for "other" records, that did not match the ranges
+            if (range == BucketColumnNames.RangeDefaultBucket)
+            {
+                return null;
+            }
+
+            // Assemble the bucket
+            var drb = new DateRangeBucket
+            {
+                DocCount = Convert.ToInt32(count),
+            };
+
+            // Parse the range
+            var splitRange = range
+                            .Split(AggregationsConstants.MetadataSeparator)
+                            .Select(s => string.IsNullOrEmpty(s) ? (DateTime?)null : DateTime.Parse(s).ToUniversalTime())
+                            .ToArray();
+            var from = splitRange[0];
+            var to = splitRange[1];
+
+            if (from != null)
+            {
+                drb.From = TimeUtils.ToEpochMilliseconds(from.Value);
+                drb.FromAsString = from?.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+            }
+
+            if (to != null)
+            {
+                drb.To = TimeUtils.ToEpochMilliseconds(to.Value);
+                drb.ToAsString = to?.ToString("yyyy-MM-ddTHH:mm:ss.fffK");
+            }
+
+            drb.Key = $"{drb.FromAsString}-{drb.ToAsString}";
+
+            drb.AddAggregates(primaryKey, row, logger);
+
+            return drb;
+        }
     }
 }

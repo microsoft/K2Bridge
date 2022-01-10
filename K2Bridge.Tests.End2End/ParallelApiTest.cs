@@ -275,6 +275,13 @@ namespace K2Bridge.Tests.End2End
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Filters_Metrics.json");
         }
 
+        [Test]
+        [Description("/_msearch visualization query with date range")]
+        public void CompareElasticKusto_WhenMSearchVizDateRange_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateRange_Metrics.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -46,13 +46,14 @@ namespace K2Bridge.JsonConverters
                     "terms" => property.Value.ToObject<TermsAggregation>(serializer),
                     "range" => property.Value.ToObject<RangeAggregation>(serializer),
                     "filters" => property.Value.ToObject<FiltersAggregation>(serializer),
+                    "date_range" => property.Value.ToObject<DateRangeAggregation>(serializer),
                     "avg" => property.Value.ToObject<AverageAggregation>(serializer),
                     "cardinality" => property.Value.ToObject<CardinalityAggregation>(serializer),
                     "min" => property.Value.ToObject<MinAggregation>(serializer),
                     "max" => property.Value.ToObject<MaxAggregation>(serializer),
                     "sum" => property.Value.ToObject<SumAggregation>(serializer),
                     "percentiles" => property.Value.ToObject<PercentileAggregation>(serializer),
-                    _ => aggregation
+                    _ => aggregation,
                 };
             }
 
