@@ -19,6 +19,8 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(filtersAggregation, nameof(FiltersAggregation));
 
+            var expandColumn = EncodeKustoField("_filter_value");
+
             var queryStringBuilder = new StringBuilder();
 
             // Part 1:
@@ -37,7 +39,7 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Remove(queryStringBuilder.Length - 1, 1);
 
             // Close the first pack_array() and start the second pack_array()
-            queryStringBuilder.Append($"), ['_filter_value'] = {KustoQLOperators.PackArray}(");
+            queryStringBuilder.Append($"), {expandColumn} = {KustoQLOperators.PackArray}(");
 
             // Insert filters expressions
             foreach (var (_, value) in filtersAggregation.Filters)
@@ -53,8 +55,8 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Append(')');
 
             // Part 2 is expansion and filtering of rows
-            queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(filtersAggregation.Key)} to typeof(string), ['_filter_value']");
-            queryStringBuilder.Append($" | {KustoQLOperators.Where} ['_filter_value'] == true");
+            queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(filtersAggregation.Key)} to typeof(string), {expandColumn}");
+            queryStringBuilder.Append($" | {KustoQLOperators.Where} {expandColumn} == true");
 
             // Part 3 is the summarize part for metrics
             queryStringBuilder.Append($" | {KustoQLOperators.Summarize} {filtersAggregation.SubAggregationsKustoQL}{filtersAggregation.Metric} by {EncodeKustoField(filtersAggregation.Key)}");
