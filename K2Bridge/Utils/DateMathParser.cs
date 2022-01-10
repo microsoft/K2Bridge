@@ -41,30 +41,24 @@ namespace K2Bridge.Visitors
             }
 
             // Date operation, e.g. -1M, +3d, etc.
-            if (match.Groups["rangeSign"].Success)
+            for (var i = 0; i < match.Groups["rangeSign"].Captures.Count; i++)
             {
-                for (var i = 0; i < match.Groups["rangeSign"].Captures.Count; i++)
+                var sign = match.Groups["rangeSign"].Captures[i].Value == "-" ? "-" : string.Empty;
+                var value = int.Parse(match.Groups["rangeValue"].Captures[i].Value);
+                var unit = match.Groups["rangeUnit"].Captures[i].Value[0] switch
                 {
-                    var sign = match.Groups["rangeSign"].Captures[i].Value == "-" ? "-" : string.Empty;
-                    var value = int.Parse(match.Groups["rangeValue"].Captures[i].Value);
-                    var unit = match.Groups["rangeUnit"].Captures[i].Value[0] switch
-                    {
-                        'y' => "year",
-                        'M' => "month",
-                        'w' => "week",
-                        'd' => "day",
-                        'h' => "hour",
-                        'H' => "hour",
-                        'm' => "minute",
-                        's' => "second",
-                        _ => throw new IllegalClauseException("Invalid date math range unit."),
-                    };
+                    'y' => "year",
+                    'M' => "month",
+                    'w' => "week",
+                    'd' => "day",
+                    'h' => "hour",
+                    'H' => "hour",
+                    'm' => "minute",
+                    's' => "second",
+                    _ => throw new IllegalClauseException("Invalid date math range unit."),
+                };
 
-                    if (unit != null)
-                    {
-                        kexpr = $"datetime_add('{unit}', {sign}{value}, {kexpr})";
-                    }
-                }
+                kexpr = $"datetime_add('{unit}', {sign}{value}, {kexpr})";
             }
 
             // Rounding, e.g. /d, /h, /m, etc.
