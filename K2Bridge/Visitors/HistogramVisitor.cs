@@ -21,7 +21,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(histogramAggregation.Metric, nameof(histogramAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(histogramAggregation.Field, nameof(histogramAggregation.Field));
 
-            var histogramKey = EncodeKustoField(histogramAggregation.Key + "%" + histogramAggregation.Keyed);
+            var histogramKey = EncodeKustoField($"{histogramAggregation.Key}{AggregationsConstants.MetadataSeparator}{histogramAggregation.Keyed}");
 
             histogramAggregation.KustoQL = $"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {histogramAggregation.SubAggregationsKustoQL}" +
             $"{histogramAggregation.Metric} by {histogramKey} = ";

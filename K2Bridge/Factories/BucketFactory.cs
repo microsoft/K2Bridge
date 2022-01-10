@@ -30,6 +30,8 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var timestamp = row[primaryKey];
+            Ensure.IsNotNull(timestamp, nameof(timestamp));
+
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
@@ -210,8 +212,10 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var key = row[0];
+            Ensure.IsNotNull(key, nameof(key));
+
             var count = row[BucketColumnNames.Count];
-            var keyed = row.Table.Columns[0].ToString().Split('%')[1];
+            var keyed = row.Table.Columns[0].ToString().Split(AggregationsConstants.MetadataSeparator)[1];
 
             var hb = new HistogramBucket
             {

@@ -281,10 +281,10 @@ namespace UnitTests.K2Bridge.JsonConverters
                                 From = "2016-02-01",
                                 To = "now/d",
                             },
-                        }
+                        },
                     },
                 },
-            }
+            },
         };
 
         private static readonly AggregationContainer ExpectedValidHistogramAggregation = new AggregationContainer()
