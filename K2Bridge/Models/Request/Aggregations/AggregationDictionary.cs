@@ -17,6 +17,11 @@ namespace K2Bridge.Models.Request.Aggregations
         /// </summary>
         public string KustoQL { get; set; }
 
+        /// <summary>
+        ///  Gets or sets the parent aggregation conatiner.
+        /// </summary>
+        public AggregationContainer Parent { get; set; }
+
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)
         {
