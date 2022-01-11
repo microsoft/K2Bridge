@@ -19,14 +19,11 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Metric, nameof(dateHistogramAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Field, nameof(dateHistogramAggregation.Field));
 
-            var query = new StringBuilder();
+            var extendExpression = $"{EncodeKustoField(dateHistogramAggregation.Field, true)}";
 
-            // Add main aggregation query (summarize)
-            // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=
-            query.Append($"_data | {KustoQLOperators.Summarize} {dateHistogramAggregation.SubAggregationsKustoQL}{dateHistogramAggregation.Metric} ");
-            query.Append($"by {EncodeKustoField(dateHistogramAggregation.Key)} = ");
+            var bucketExpression = new StringBuilder();
+            bucketExpression.Append($"{dateHistogramAggregation.Metric} by {EncodeKustoField(dateHistogramAggregation.Key)} = ");
 
-            // Add group expression
             var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
             if (!string.IsNullOrEmpty(interval))
             {
@@ -46,16 +43,21 @@ namespace K2Bridge.Visitors
                     _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({field})",
                     _ => $"bin({field}, {interval})",
                 };
-                query.Append(groupExpression);
+                bucketExpression.Append(groupExpression);
             }
             else
             {
-                query.Append(dateHistogramAggregation.Field);
+                bucketExpression.Append(dateHistogramAggregation.Field);
             }
 
-            // Add order by
-            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
-            dateHistogramAggregation.KustoQL = query.ToString();
+            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
+
+            var subAggregations = dateHistogramAggregation.Parent.SubAggregations;
+            var bucketKey = dateHistogramAggregation.Key;
+
+            var query = BuildBucketQuery(subAggregations, bucketKey, extendExpression, bucketExpression.ToString());
+
+            dateHistogramAggregation.KustoQL = query;
         }
     }
 }
