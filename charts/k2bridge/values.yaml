@@ -9,7 +9,7 @@ replicaCount: 2
 
 image:
   repository: mcr.microsoft.com/azuredataexplorer/k2bridge
-  tag: 7.10_latest
+  tag: 7.16_latest
   pullPolicy: Always
 
 settings:
@@ -39,8 +39,8 @@ elasticsearch:
   clusterName: k2bridgees
   masterService:  k2bridgees-master
 
-  image: docker.elastic.co/elasticsearch/elasticsearch-oss
-  imageTag: 7.10.2
+  image: docker.elastic.co/elasticsearch/elasticsearch
+  imageTag: 7.16.2
 
   replicas: 3
 

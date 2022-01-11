@@ -32,5 +32,10 @@ namespace K2Bridge.Models.Response.Metadata
         /// Gets or sets a value indicating whether the field is searchable.
         /// </summary>
         public bool IsSearchable { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the field is metadatas.
+        /// </summary>
+        public bool IsMetadataField { get; set; } = false;
     }
 }
