@@ -9,11 +9,15 @@ namespace K2Bridge.Models.Request.Aggregations
     /// </summary>
     internal abstract class BucketAggregation : Aggregation
     {
+        /// <summary>
+        /// Gets or sets the bucket aggregation metric.
+        /// </summary>
         public string Metric { get; set; } = "count()";
 
         /// <summary>
-        /// Gets or sets the metrics part of the query, assembled by the sub aggregations.
+        ///  Gets or sets the parent aggregation container.
         /// </summary>
-        public string SubAggregationsKustoQL { get; set; }
+        //
+        public AggregationContainer Parent { get; set; }
     }
 }
