@@ -40,8 +40,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(extendedStatsAggregation, nameof(extendedStatsAggregation));
             EnsureClause.StringIsNotNullOrEmpty(extendedStatsAggregation.Field, extendedStatsAggregation.Field, ExceptionMessage);
 
-            var sep = AggregationsConstants.MetadataSeparator;
-            var key = $"['{extendedStatsAggregation.Key}{sep}extended_stats{sep}{extendedStatsAggregation.Sigma}']";
+            var key = $"['{extendedStatsAggregation.Key}{AggregationsConstants.MetadataSeparator}extended_stats{AggregationsConstants.MetadataSeparator}{extendedStatsAggregation.Sigma}']";
 
             var count = $"{KustoQLOperators.Count}()";
             var min = $"{KustoQLOperators.Min}({EncodeKustoField(extendedStatsAggregation)})";
@@ -67,7 +66,7 @@ namespace K2Bridge.Visitors
             query.Append($"'{AggregationsConstants.VarianceSampling}', {variance_sampling},");
             query.Append($"'{AggregationsConstants.StandardDeviationPopulation}', {standard_deviation_population},");
             query.Append($"'{AggregationsConstants.StandardDeviationSampling}', {standard_deviation_sampling}");
-            query.Append($")");
+            query.Append(")");
 
             extendedStatsAggregation.KustoQL = query.ToString();
         }
