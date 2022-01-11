@@ -70,6 +70,31 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
+        /// Get date range aggregate from a given <see cref="DataRowCollection"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="BucketAggregate"></returns>
+        public static BucketAggregate GetDateRangeAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        {
+            logger.LogTrace("Get date range aggregate for {}", key);
+
+            var rangeAggregate = new BucketAggregate();
+
+            foreach (DataRow row in rowCollection)
+            {
+                var bucket = BucketFactory.CreateDateRangeBucket(key, row, logger);
+                if (bucket != null)
+                {
+                    rangeAggregate.Buckets.Add(bucket);
+                }
+            }
+
+            return rangeAggregate;
+        }
+
+        /// <summary>
         /// Get terms aggregate from a given <see cref="DataRowCollection"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
@@ -92,6 +117,34 @@ namespace K2Bridge.Factories
             }
 
             return termsAggregate;
+        }
+
+        /// <summary>
+        /// Get filters aggregate from a given <see cref="DataRowCollection"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="BucketAggregate"></returns>
+        public static BucketAggregate GetFiltersAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        {
+            logger.LogTrace("Get filters aggregate for {}", key);
+
+            var filtersAggregate = new BucketAggregate()
+            {
+                Keyed = true,
+            };
+
+            foreach (DataRow row in rowCollection)
+            {
+                var bucket = BucketFactory.CreateFiltersBucket(key, row, logger);
+                if (bucket != null)
+                {
+                    filtersAggregate.Buckets.Add(bucket);
+                }
+            }
+
+            return filtersAggregate;
         }
 
         /// <summary>

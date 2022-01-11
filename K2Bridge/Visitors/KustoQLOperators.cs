@@ -60,6 +60,8 @@ namespace K2Bridge.Visitors
         public const string Extend = "extend";
         public const string ProjectReorder = "project-reorder";
         public const string Union = "union";
+        public const string PackArray = "pack_array";
+        public const string MvExpand = "mv-expand";
         public const string CommandSeparator = "\n| ";
 #pragma warning restore SA1600 // Elements should be documented
     }

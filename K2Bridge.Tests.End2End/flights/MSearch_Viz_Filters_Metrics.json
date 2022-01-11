@@ -1,0 +1,85 @@
+{
+    "aggs": {
+        "4": {
+            "filters": {
+                "filters": {
+                    "Carrier:(\"Logstash Airways\" OR \"JetBeats\")": {
+                        "bool": {
+                            "must": [
+                                {
+                                    "query_string": {
+                                        "query": "Carrier:(\"Logstash Airways\" OR \"JetBeats\")",
+                                        "analyze_wildcard": true,
+                                        "time_zone": "UTC"
+                                    }
+                                }
+                            ],
+                            "filter": [],
+                            "should": [],
+                            "must_not": []
+                        }
+                    },
+                    "Carrier:(\"Kibana Airlines\" OR \"ES-Air\")": {
+                        "bool": {
+                            "must": [
+                                {
+                                    "query_string": {
+                                        "query": "Carrier:(\"Kibana Airlines\" OR \"ES-Air\")",
+                                        "analyze_wildcard": true,
+                                        "time_zone": "UTC"
+                                    }
+                                }
+                            ],
+                            "filter": [],
+                            "should": [],
+                            "must_not": []
+                        }
+                    }
+                }
+            },
+            "aggs": {
+                "3": {
+                    "avg": {
+                        "field": "AvgTicketPrice"
+                    }
+                }
+            }
+        }
+    },
+    "size": 0,
+    "stored_fields": [
+        "*"
+    ],
+    "script_fields": {},
+    "docvalue_fields": [
+        {
+            "field": "timestamp",
+            "format": "date_time"
+        }
+    ],
+    "_source": {
+        "excludes": []
+    },
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "match_all": {}
+                }
+            ],
+            "filter": [
+                {
+                    "range": {
+                        "timestamp": {
+                            "gte": "2018-02-01T11:00:00.000Z",
+                            "lte": "2018-02-10T11:00:00.000Z",
+                            "format": "strict_date_optional_time"
+                        }
+                    }
+                }
+            ],
+            "should": [],
+            "must_not": []
+        }
+    }
+}

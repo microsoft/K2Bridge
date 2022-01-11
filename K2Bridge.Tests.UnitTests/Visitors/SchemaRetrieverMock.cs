@@ -34,5 +34,10 @@ namespace UnitTests.K2Bridge.Visitors
         {
             return CreateMockSchemaRetriever(name, type);
         }
+
+        public static ISchemaRetrieverFactory CreateMockTimestampSchemaRetriever(string name = "timestamp", string type = "date")
+        {
+            return CreateMockSchemaRetriever(name, type);
+        }
     }
 }
