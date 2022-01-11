@@ -28,7 +28,7 @@ K2Bridge generates a *random* number for this value. Please note that this is *n
 
 1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features. Feel free to vote and/or comment on this [issue](../../issues/3).
 
-1. We have used and tested the solution using Kibana 7.16.2.
+1. We have used and tested the solution using Kibana OSS 7.10.2.
 
 ## Installing
 
