@@ -22,23 +22,6 @@ namespace K2Bridge.Visitors
                 return;
             }
 
-            if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
-            {
-                // Get all sub aggregation metrics
-                // KQL ==> [key1]=metric(field1), [key2]=metric(field2), (will be appended with count())
-                var metrics = new StringBuilder();
-                if (aggregationContainer.SubAggregations?.Count > 0)
-                {
-                    foreach (var (_, subAgg) in aggregationContainer.SubAggregations)
-                    {
-                        subAgg.Accept(this);
-                        metrics.Append($"{subAgg.KustoQL}, ");
-                    }
-
-                    bucketAggregation.SubAggregationsKustoQL = metrics.ToString();
-                }
-            }
-
             aggregationContainer.PrimaryAggregation.Accept(this);
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
