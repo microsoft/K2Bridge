@@ -17,12 +17,18 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets the field on which to aggregate.
         /// </summary>
         [JsonProperty("field")]
-        public string Field { get; set; }
+        public virtual string Field { get; set; }
 
         /// <summary>
         /// Gets or sets the value to use when the aggregation finds a missing value in a document.
         /// </summary>
         [JsonProperty("missing")]
-        public double? Missing { get; set; }
+        public virtual double? Missing { get; set; }
+
+        /// <summary>
+        ///  Gets or sets the parent aggregation dictionary.
+        /// </summary>
+        [JsonIgnore]
+        public virtual AggregationDictionary Parent { get; set; }
     }
 }
