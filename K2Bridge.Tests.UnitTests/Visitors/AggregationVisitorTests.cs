@@ -373,7 +373,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%extended_stats']=pack('std_deviation', stdev(todouble(['fieldA'].['B'])),'average', avg(todouble(['fieldA'].['B'])),'std_deviation_bounds_upper', avg(todouble(['fieldA'].['B'])) + stdev(todouble(['fieldA'].['B'])) * 2,'std_deviation_bounds_lower', avg(todouble(['fieldA'].['B'])) - stdev(todouble(['fieldA'].['B'])) * 2)")]
+        [TestCase(ExpectedResult = "['A%extended_stats%2']=pack('count', count(),'min', min(todouble(['fieldA'].['B'])),'max', max(todouble(['fieldA'].['B'])),'avg', avg(todouble(['fieldA'].['B'])),'sum', sum(todouble(['fieldA'].['B'])),'sum_of_squares', sum(pow(todouble(['fieldA'].['B']), 2)),'variance_population', variancep(todouble(['fieldA'].['B'])),'variance_sampling', variance(todouble(['fieldA'].['B'])),'std_deviation_population', stdevp(todouble(['fieldA'].['B'])),'std_deviation_sampling', stdev(todouble(['fieldA'].['B'])))")]
         public string AggregationVisit_WithDynamicLongExtendedStatsAggWithoutSigma_ReturnsExtendedStatsAggregation()
         {
             var aggregateClause = new AggregationContainer()
@@ -387,7 +387,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%extended_stats']=pack('std_deviation', stdev(todouble(['fieldA'].['B'])),'average', avg(todouble(['fieldA'].['B'])),'std_deviation_bounds_upper', avg(todouble(['fieldA'].['B'])) + stdev(todouble(['fieldA'].['B'])) * 2,'std_deviation_bounds_lower', avg(todouble(['fieldA'].['B'])) - stdev(todouble(['fieldA'].['B'])) * 2)")]
+        [TestCase(ExpectedResult = "['A%extended_stats%2']=pack('count', count(),'min', min(todouble(['fieldA'].['B'])),'max', max(todouble(['fieldA'].['B'])),'avg', avg(todouble(['fieldA'].['B'])),'sum', sum(todouble(['fieldA'].['B'])),'sum_of_squares', sum(pow(todouble(['fieldA'].['B']), 2)),'variance_population', variancep(todouble(['fieldA'].['B'])),'variance_sampling', variance(todouble(['fieldA'].['B'])),'std_deviation_population', stdevp(todouble(['fieldA'].['B'])),'std_deviation_sampling', stdev(todouble(['fieldA'].['B'])))")]
         public string AggregationVisit_WithDynamicDoubleExtendedStatsAggWithoutSigma_ReturnsExtendedStatsAggregation()
         {
             var aggregateClause = new AggregationContainer()
@@ -401,7 +401,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%extended_stats']=pack('std_deviation', stdev(todouble(['fieldA'].['B'])),'average', avg(todouble(['fieldA'].['B'])),'std_deviation_bounds_upper', avg(todouble(['fieldA'].['B'])) + stdev(todouble(['fieldA'].['B'])) * 3,'std_deviation_bounds_lower', avg(todouble(['fieldA'].['B'])) - stdev(todouble(['fieldA'].['B'])) * 3)")]
+        [TestCase(ExpectedResult = "['A%extended_stats%3']=pack('count', count(),'min', min(todouble(['fieldA'].['B'])),'max', max(todouble(['fieldA'].['B'])),'avg', avg(todouble(['fieldA'].['B'])),'sum', sum(todouble(['fieldA'].['B'])),'sum_of_squares', sum(pow(todouble(['fieldA'].['B']), 2)),'variance_population', variancep(todouble(['fieldA'].['B'])),'variance_sampling', variance(todouble(['fieldA'].['B'])),'std_deviation_population', stdevp(todouble(['fieldA'].['B'])),'std_deviation_sampling', stdev(todouble(['fieldA'].['B'])))")]
         public string AggregationVisit_WithDynamicLongExtendedStatsAggWithSigma_ReturnsExtendedStatsAggregation()
         {
             var aggregateClause = new AggregationContainer()
@@ -415,7 +415,7 @@ namespace UnitTests.K2Bridge.Visitors
             return aggregateClause.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "['A%extended_stats']=pack('std_deviation', stdev(todouble(['fieldA'].['B'])),'average', avg(todouble(['fieldA'].['B'])),'std_deviation_bounds_upper', avg(todouble(['fieldA'].['B'])) + stdev(todouble(['fieldA'].['B'])) * 3,'std_deviation_bounds_lower', avg(todouble(['fieldA'].['B'])) - stdev(todouble(['fieldA'].['B'])) * 3)")]
+        [TestCase(ExpectedResult = "['A%extended_stats%3']=pack('count', count(),'min', min(todouble(['fieldA'].['B'])),'max', max(todouble(['fieldA'].['B'])),'avg', avg(todouble(['fieldA'].['B'])),'sum', sum(todouble(['fieldA'].['B'])),'sum_of_squares', sum(pow(todouble(['fieldA'].['B']), 2)),'variance_population', variancep(todouble(['fieldA'].['B'])),'variance_sampling', variance(todouble(['fieldA'].['B'])),'std_deviation_population', stdevp(todouble(['fieldA'].['B'])),'std_deviation_sampling', stdev(todouble(['fieldA'].['B'])))")]
         public string AggregationVisit_WithDynamicDoubleExtendedStatsAggWithSigma_ReturnsExtendedStatsAggregation()
         {
             var aggregateClause = new AggregationContainer()

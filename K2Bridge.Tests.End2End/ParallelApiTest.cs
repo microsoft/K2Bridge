@@ -4,6 +4,10 @@
 
 namespace K2Bridge.Tests.End2End
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
     using FluentAssertions.Json;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
@@ -206,10 +210,24 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
+        [Description("/_msearch visualization query with extended stats metrics and no bucket aggregation")]
+        public void CompareElasticKusto_WhenMSearchVizExtendedStats_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_ExtendedStats.json", roundingFloats: 3);
+        }
+
+        [Test]
         [Description("/_msearch visualization query with date histogram and aggregation metrics")]
         public void CompareElasticKusto_WhenMSearchVizDateHistogramMetrics_ResponsesAreEquivalent()
         {
             ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Metrics.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with extended stats metrics and aggregation metrics")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramExtendedStats_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_ExtendedStats.json", roundingFloats: 3);
         }
 
         [Test]
@@ -273,21 +291,21 @@ namespace K2Bridge.Tests.End2End
             k2.Should().BeEquivalentTo(es);
         }
 
-        private void ParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true)
+        private void ParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true, int? roundingFloats = null)
         {
-            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight);
-            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight);
+            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight, roundingFloats);
+            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight, roundingFloats);
             var t = es.Result.SelectToken("responses[0].hits.total.value");
             Assert.IsTrue(t.Value<int>() >= minResults);
             AssertJsonIdentical(k2.Result, es.Result);
         }
 
         // When comparing the Percentiles Payloads, we need to omit the values due to ticket #15795.
-        private void ApproximateParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true)
+        private void ApproximateParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true, int? roundingFloats = null)
         {
-            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight);
+            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight, roundingFloats);
             TestElasticClient.DeleteValuesToComparePercentiles(es.Result);
-            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight);
+            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight, roundingFloats);
             TestElasticClient.DeleteValuesToComparePercentiles(k2.Result);
 
             var t = es.Result.SelectToken("responses[0].hits.total.value");

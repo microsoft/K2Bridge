@@ -11,9 +11,55 @@ namespace K2Bridge.Utils
         /// Only used for percentiles metrics at the moment
         /// </summary>
         public const char MetadataSeparator = '%';
-        public const string Average = "average";
-        public const string StandardDeviation = "std_deviation";
-        public const string StandardDeviationBoundsUpper = "std_deviation_bounds_upper";
-        public const string StandardDeviationBoundsLower = "std_deviation_bounds_lower";
+
+        /// <summary>
+        /// Alias used to get a filed named count, from adx
+        /// </summary>
+        public const string Count = "count";
+
+        /// <summary>
+        /// Alias used to get a filed named avg, from adx
+        /// </summary>
+        public const string Average = "avg";
+
+        /// <summary>
+        /// Alias used to get a filed named min, from adx
+        /// </summary>
+        public const string Min = "min";
+
+        /// <summary>
+        /// Alias used to get a filed named max, from adx
+        /// </summary>
+        public const string Max = "max";
+
+        /// <summary>
+        /// Alias used to get a filed named sum, from adx
+        /// </summary>
+        public const string Sum = "sum";
+
+        /// <summary>
+        /// Alias used to get a filed named sum_of_squares, from adx
+        /// </summary>
+        public const string SumOfSquares = "sum_of_squares";
+
+        /// <summary>
+        /// Alias used to get a filed named variance_population, from adx
+        /// </summary>
+        public const string VariancePopulation = "variance_population";
+
+        /// <summary>
+        /// Alias used to get a filed named variance_sampling, from adx
+        /// </summary>
+        public const string VarianceSampling = "variance_sampling";
+
+        /// <summary>
+        /// Alias used to get a filed named std_deviation_population, from adx
+        /// </summary>
+        public const string StandardDeviationPopulation = "std_deviation_population";
+
+        /// <summary>
+        /// Alias used to get a filed named std_deviation_sampling, from adx
+        /// </summary>
+        public const string StandardDeviationSampling = "std_deviation_sampling";
     }
 }

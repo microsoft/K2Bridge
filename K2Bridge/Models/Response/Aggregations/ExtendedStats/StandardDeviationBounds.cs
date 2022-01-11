@@ -22,5 +22,29 @@ namespace K2Bridge.Models.Response.Aggregations
         /// </summary>
         [JsonProperty("lower")]
         public double? Lower { get; set; }
+
+        /// <summary>
+        /// Gets or sets the upper_population value for the StdDev upper bound.
+        /// </summary>
+        [JsonProperty("upper_population")]
+        public double? UpperPopulation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lower_population value for the StdDev lower bound.
+        /// </summary>
+        [JsonProperty("lower_population")]
+        public double? LowerPopulation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the upper_sampling value for the StdDev upper bound.
+        /// </summary>
+        [JsonProperty("upper_sampling")]
+        public double? UpperSampling { get; set; }
+
+        /// <summary>
+        /// Gets or sets the lower_sampling value for the StdDev lower bound.
+        /// </summary>
+        [JsonProperty("lower_sampling")]
+        public double? LowerSampling { get; set; }
     }
 }

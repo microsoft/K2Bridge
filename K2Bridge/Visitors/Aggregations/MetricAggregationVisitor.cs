@@ -41,17 +41,32 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(extendedStatsAggregation.Field, extendedStatsAggregation.Field, ExceptionMessage);
 
             var sep = AggregationsConstants.MetadataSeparator;
-            var key = $"['{extendedStatsAggregation.Key}{sep}extended_stats']";
-            var average = $"{KustoQLOperators.Avg}({EncodeKustoField(extendedStatsAggregation)})";
-            var standard_deviation = $"{KustoQLOperators.StDev}({EncodeKustoField(extendedStatsAggregation)})";
+            var key = $"['{extendedStatsAggregation.Key}{sep}extended_stats{sep}{extendedStatsAggregation.Sigma}']";
+
+            var count = $"{KustoQLOperators.Count}()";
+            var min = $"{KustoQLOperators.Min}({EncodeKustoField(extendedStatsAggregation)})";
+            var max = $"{KustoQLOperators.Max}({EncodeKustoField(extendedStatsAggregation)})";
+            var avg = $"{KustoQLOperators.Avg}({EncodeKustoField(extendedStatsAggregation)})";
+            var sum = $"{KustoQLOperators.Sum}({EncodeKustoField(extendedStatsAggregation)})";
+            var sum_of_squares = $"{KustoQLOperators.Sum}({KustoQLOperators.Pow}({EncodeKustoField(extendedStatsAggregation)}, 2))";
+            var variance_population = $"{KustoQLOperators.VariancePopulation}({EncodeKustoField(extendedStatsAggregation)})";
+            var variance_sampling = $"{KustoQLOperators.Variance}({EncodeKustoField(extendedStatsAggregation)})";
+            var standard_deviation_population = $"{KustoQLOperators.StDevPopulation}({EncodeKustoField(extendedStatsAggregation)})";
+            var standard_deviation_sampling = $"{KustoQLOperators.StDev}({EncodeKustoField(extendedStatsAggregation)})";
 
             var query = new StringBuilder();
 
             query.Append($"{key}={KustoQLOperators.Pack}(");
-            query.Append($"'{AggregationsConstants.StandardDeviation}', {standard_deviation},");
-            query.Append($"'{AggregationsConstants.Average}', {average},");
-            query.Append($"'{AggregationsConstants.StandardDeviationBoundsUpper}', {average} + {standard_deviation} * {extendedStatsAggregation.Sigma},");
-            query.Append($"'{AggregationsConstants.StandardDeviationBoundsLower}', {average} - {standard_deviation} * {extendedStatsAggregation.Sigma}");
+            query.Append($"'{AggregationsConstants.Count}', {count},");
+            query.Append($"'{AggregationsConstants.Min}', {min},");
+            query.Append($"'{AggregationsConstants.Max}', {max},");
+            query.Append($"'{AggregationsConstants.Average}', {avg},");
+            query.Append($"'{AggregationsConstants.Sum}', {sum},");
+            query.Append($"'{AggregationsConstants.SumOfSquares}', {sum_of_squares},");
+            query.Append($"'{AggregationsConstants.VariancePopulation}', {variance_population},");
+            query.Append($"'{AggregationsConstants.VarianceSampling}', {variance_sampling},");
+            query.Append($"'{AggregationsConstants.StandardDeviationPopulation}', {standard_deviation_population},");
+            query.Append($"'{AggregationsConstants.StandardDeviationSampling}', {standard_deviation_sampling}");
             query.Append($")");
 
             extendedStatsAggregation.KustoQL = query.ToString();

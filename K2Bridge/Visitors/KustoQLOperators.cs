@@ -28,10 +28,14 @@ namespace K2Bridge.Visitors
         public const string Materialize = "materialize";
         public const string DCount = "dcount";
         public const string StDev = "stdev";
+        public const string StDevPopulation = "stdevp";
         public const string Avg = "avg";
         public const string Min = "min";
         public const string Max = "max";
         public const string Sum = "sum";
+        public const string Pow = "pow";
+        public const string Variance = "variance";
+        public const string VariancePopulation = "variancep";
         public const string PercentilesArray = "percentiles_array";
         public const string IsNotNull = "isnotnull";
         public const string StartOfWeek = "startofweek";
