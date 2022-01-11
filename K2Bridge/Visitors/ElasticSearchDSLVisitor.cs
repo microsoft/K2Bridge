@@ -45,7 +45,7 @@ namespace K2Bridge.Visitors
             // Base query
             elasticSearchDSL.Query.Accept(this);
 
-            var queryStringBuilder = new StringBuilder();
+            var query = new StringBuilder();
 
             var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(elasticSearchDSL.IndexName, defaultDatabaseName);
 
@@ -54,26 +54,26 @@ namespace K2Bridge.Visitors
 
             if (elasticSearchDSL.Query.Bool != null)
             {
-                queryStringBuilder.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
+                query.Append($"{KustoQLOperators.Let} _data = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
 
                 // Aggregations
                 if (elasticSearchDSL.Aggregations?.Count > 0)
                 {
                     elasticSearchDSL.Aggregations.Accept(this);
-                    queryStringBuilder.Append(elasticSearchDSL.Aggregations.KustoQL);
+                    query.Append(elasticSearchDSL.Aggregations.KustoQL);
                 }
 
                 // We will need the "true" hits count for some aggregations, e.g. Range
                 // And this line must be added even there is no aggregation (default count metric)
                 // KQL ==> (_data | count | as hitsTotal);
-                queryStringBuilder.Append($"\n(_data | {KustoQLOperators.Count} | as hitsTotal);");
+                query.Append($"\n(_data | {KustoQLOperators.Count} | as hitsTotal);");
 
                 // Hits (projections...)
                 // The size is deserialized property
                 // therefore we check 'Size >= 0' to protect the query.
                 if (elasticSearchDSL.Size >= 0)
                 {
-                    queryStringBuilder.Append("\n(_data ");
+                    query.Append("\n(_data ");
 
                     if (elasticSearchDSL.Size > 0)
                     {
@@ -91,20 +91,20 @@ namespace K2Bridge.Visitors
 
                         if (orderingList.Count > 0)
                         {
-                            queryStringBuilder.Append($"| {KustoQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
+                            query.Append($"| {KustoQLOperators.OrderBy} {string.Join(", ", orderingList)} ");
                         }
                     }
 
-                    queryStringBuilder.Append($"| {KustoQLOperators.Limit} {elasticSearchDSL.Size} | as hits)");
+                    query.Append($"| {KustoQLOperators.Limit} {elasticSearchDSL.Size} | as hits)");
                 }
             }
             else
             {
                 // ViewSingleDocument query
-                queryStringBuilder.Append($"database(\"{databaseName}\").{tableName} {translatedQueryExpression} | as hits;");
+                query.Append($"database(\"{databaseName}\").{tableName} {translatedQueryExpression} | as hits;");
             }
 
-            elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
+            elasticSearchDSL.KustoQL = query.ToString();
         }
 
         private static string QuoteKustoField(string field) => string.Join(".", field.Split(".").Select(s => $"['{s}']"));
@@ -123,7 +123,8 @@ namespace K2Bridge.Visitors
             }
 
             // Dynamic fields need their types to be explicitly specified in the query if in aggregation
-            return ClauseFieldTypeProcessor.GetType(schemaRetriever, field).Result switch {
+            return ClauseFieldTypeProcessor.GetType(schemaRetriever, field).Result switch
+            {
                 ClauseFieldType.Date => $"{KustoQLOperators.ToDateTime}({quoted})",
                 ClauseFieldType.Numeric => $"{KustoQLOperators.ToDouble}({quoted})",
                 _ => $"{KustoQLOperators.ToStringOperator}({quoted})",
