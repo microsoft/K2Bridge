@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Models.Request.Aggregations
 {
+    using System.Linq;
     using System.Collections.Generic;
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
@@ -21,6 +22,9 @@ namespace K2Bridge.Models.Request.Aggregations
 
         [JsonProperty("sort")]
         public List<SortClause> Sort { get; set; }
+
+        [JsonIgnore]
+        public override string Field => DocValueFields?.First()?.Field;
 
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)
