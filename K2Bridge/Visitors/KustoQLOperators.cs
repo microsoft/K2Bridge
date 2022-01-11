@@ -63,9 +63,18 @@ namespace K2Bridge.Visitors
         public const string Equal = "==";
         public const string Case = "case";
         public const string Extend = "extend";
+        public const string ProjectAway = "project-away";
         public const string ProjectReorder = "project-reorder";
         public const string Union = "union";
-        public const string CommandSeparator = "\n| ";
+        public const string CommandSeparator = "|";
+        public const string NewLine = "\n";
+        public const string Top = "top";
+        public const string JoinInner = "join kind=inner";
+        public const string PartitionBy = "partition by";
+        public const string Pack = "pack";
+        public const string MakeList = "make_list";
+        public const string True = "true";
+        public const string TakeAny = "take_any";
 #pragma warning restore SA1600 // Elements should be documented
     }
 }
