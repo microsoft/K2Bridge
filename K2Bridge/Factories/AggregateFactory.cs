@@ -167,57 +167,57 @@ namespace K2Bridge.Factories
             var jObject = (JObject)row[columnName];
 
             var count = jObject[AggregationsConstants.Count].Value<long?>();
-            extendedStatsAggregate.Count = count ?? (double.IsNaN(count.Value) ? null : count);
+            extendedStatsAggregate.Count = count.HasValue ? double.IsNaN(count.Value) ? null : count : null;
 
             var min = jObject[AggregationsConstants.Min].Value<double?>();
-            extendedStatsAggregate.Min = min ?? (double.IsNaN(min.Value) ? null : min);
+            extendedStatsAggregate.Min = min.HasValue ? double.IsNaN(min.Value) ? null : min : null;
 
             var max = jObject[AggregationsConstants.Max].Value<double?>();
-            extendedStatsAggregate.Max = max ?? (double.IsNaN(max.Value) ? null : max);
+            extendedStatsAggregate.Max = max.HasValue ? double.IsNaN(max.Value) ? null : max : null;
 
             var avg = jObject[AggregationsConstants.Average].Value<double?>();
-            extendedStatsAggregate.Average = avg ?? (double.IsNaN(avg.Value) ? null : avg);
+            extendedStatsAggregate.Average = avg.HasValue ? double.IsNaN(avg.Value) ? null : avg : null;
 
             var sum = jObject[AggregationsConstants.Sum].Value<double?>();
-            extendedStatsAggregate.Sum = sum ?? (double.IsNaN(sum.Value) ? null : sum);
+            extendedStatsAggregate.Sum = sum.HasValue ? double.IsNaN(sum.Value) ? null : sum : null;
 
             var sumOfSquares = jObject[AggregationsConstants.SumOfSquares].Value<double?>();
-            extendedStatsAggregate.SumOfSquares = sumOfSquares ?? (double.IsNaN(sumOfSquares.Value) ? null : sumOfSquares);
+            extendedStatsAggregate.SumOfSquares = sumOfSquares.HasValue ? double.IsNaN(sumOfSquares.Value) ? null : sumOfSquares : null;
 
             var variancePopulation = jObject[AggregationsConstants.VariancePopulation].Value<double?>();
-            extendedStatsAggregate.VariancePopulation = variancePopulation ?? (double.IsNaN(variancePopulation.Value) ? null : variancePopulation);
+            extendedStatsAggregate.VariancePopulation = variancePopulation.HasValue ? double.IsNaN(variancePopulation.Value) ? null : variancePopulation : null;
             extendedStatsAggregate.Variance = extendedStatsAggregate.VariancePopulation;
 
             var varianceSampling = jObject[AggregationsConstants.VarianceSampling].Value<double?>();
-            extendedStatsAggregate.VarianceSampling = varianceSampling ?? (double.IsNaN(varianceSampling.Value) ? null : varianceSampling);
+            extendedStatsAggregate.VarianceSampling = varianceSampling.HasValue ? double.IsNaN(varianceSampling.Value) ? null : varianceSampling : null;
 
             var stdDeviationPopulation = jObject[AggregationsConstants.StandardDeviationPopulation].Value<double?>();
-            extendedStatsAggregate.StandardDeviationPopulation = stdDeviationPopulation ?? (double.IsNaN(stdDeviationPopulation.Value) ? null : stdDeviationPopulation);
+            extendedStatsAggregate.StandardDeviationPopulation = stdDeviationPopulation.HasValue ? double.IsNaN(stdDeviationPopulation.Value) ? null : stdDeviationPopulation : null;
             extendedStatsAggregate.StandardDeviation = extendedStatsAggregate.StandardDeviationPopulation;
 
             var stdDeviationSampling = jObject[AggregationsConstants.StandardDeviationSampling].Value<double?>();
-            extendedStatsAggregate.StandardDeviationSampling = stdDeviationSampling ?? (double.IsNaN(stdDeviationSampling.Value) ? null : stdDeviationSampling);
+            extendedStatsAggregate.StandardDeviationSampling = stdDeviationSampling.HasValue ? double.IsNaN(stdDeviationSampling.Value) ? null : stdDeviationSampling : null;
 
-            if (extendedStatsAggregate.StandardDeviationPopulation.HasValue)
+            if (extendedStatsAggregate.StandardDeviationPopulation.HasValue && extendedStatsAggregate.Average.HasValue)
             {
-                extendedStatsAggregate.StandardDeviationBounds.LowerPopulation = extendedStatsAggregate.Average - (extendedStatsAggregate.StandardDeviationPopulation.Value * sigma);
+                extendedStatsAggregate.StandardDeviationBounds.LowerPopulation = extendedStatsAggregate.Average.Value - (extendedStatsAggregate.StandardDeviationPopulation.Value * sigma);
             }
 
             extendedStatsAggregate.StandardDeviationBounds.Lower = extendedStatsAggregate.StandardDeviationBounds.LowerPopulation;
 
-            if (extendedStatsAggregate.StandardDeviationSampling.HasValue)
+            if (extendedStatsAggregate.StandardDeviationSampling.HasValue && extendedStatsAggregate.Average.HasValue)
             {
-                extendedStatsAggregate.StandardDeviationBounds.LowerSampling = extendedStatsAggregate.Average - (extendedStatsAggregate.StandardDeviationSampling.Value * sigma);
+                extendedStatsAggregate.StandardDeviationBounds.LowerSampling = extendedStatsAggregate.Average.Value - (extendedStatsAggregate.StandardDeviationSampling.Value * sigma);
             }
 
-            if (extendedStatsAggregate.StandardDeviationPopulation.HasValue)
+            if (extendedStatsAggregate.StandardDeviationPopulation.HasValue && extendedStatsAggregate.Average.HasValue)
             {
                 extendedStatsAggregate.StandardDeviationBounds.UpperPopulation = extendedStatsAggregate.Average + (extendedStatsAggregate.StandardDeviationPopulation.Value * sigma);
             }
 
             extendedStatsAggregate.StandardDeviationBounds.Upper = extendedStatsAggregate.StandardDeviationBounds.UpperPopulation;
 
-            if (extendedStatsAggregate.StandardDeviationSampling.HasValue)
+            if (extendedStatsAggregate.StandardDeviationSampling.HasValue && extendedStatsAggregate.Average.HasValue)
             {
                 extendedStatsAggregate.StandardDeviationBounds.UpperSampling = extendedStatsAggregate.Average + (extendedStatsAggregate.StandardDeviationSampling.Value * sigma);
             }

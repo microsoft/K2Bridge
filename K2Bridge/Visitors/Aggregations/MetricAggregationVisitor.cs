@@ -40,8 +40,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(extendedStatsAggregation, nameof(extendedStatsAggregation));
             EnsureClause.StringIsNotNullOrEmpty(extendedStatsAggregation.Field, extendedStatsAggregation.Field, ExceptionMessage);
 
-            var key = $"['{extendedStatsAggregation.Key}{AggregationsConstants.MetadataSeparator}extended_stats{AggregationsConstants.MetadataSeparator}{extendedStatsAggregation.Sigma}']";
-
+            var key = EncodeKustoField($"{extendedStatsAggregation.Key}{AggregationsConstants.MetadataSeparator}extended_stats{AggregationsConstants.MetadataSeparator}{extendedStatsAggregation.Sigma}");
             var count = $"{KustoQLOperators.Count}()";
             var min = $"{KustoQLOperators.Min}({EncodeKustoField(extendedStatsAggregation)})";
             var max = $"{KustoQLOperators.Max}({EncodeKustoField(extendedStatsAggregation)})";
