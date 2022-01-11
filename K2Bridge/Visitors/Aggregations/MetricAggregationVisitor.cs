@@ -83,6 +83,26 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(topHitsAggregation, nameof(topHitsAggregation));
             EnsureClause.StringIsNotNullOrEmpty(topHitsAggregation.Field, topHitsAggregation.Field, ExceptionMessage);
+
+            var aggregationDictionary = topHitsAggregation.Parent;
+            var primaryAggregation = aggregationDictionary?.Parent?.PrimaryAggregation;
+
+            // top 2 by timestamp asc
+            var sort = topHitsAggregation.Sort.First();
+            var topHitsExpression = $"{KustoQLOperators.Top} {topHitsAggregation.Size} by {sort.FieldName} {sort.Order}";
+
+            // ['4']=pack('field', AvgTicketPrice, 'order', timestamp)
+            var pack = $"{KustoQLOperators.Pack}('field', {EncodeKustoField(topHitsAggregation)}, 'order', {sort.FieldName})";
+            var key = $"{topHitsAggregation.Key}{AggregationsConstants.MetadataSeparator}{AggregationsConstants.TopHits}";
+            var projectExpression = $"{EncodeKustoField(topHitsAggregation.Key)}={pack}";
+
+            // ['4']=make_list(['4'])
+            var summarizeExpression = $"{EncodeKustoField(topHitsAggregation.Key)}={KustoQLOperators.MakeList}({EncodeKustoField(topHitsAggregation.Key)})";
+
+            var outputVariable = $"_tophits{topHitsAggregation.Key}";
+            var query = BuildPartitionQuery(topHitsAggregation.Parent, primaryAggregation?.Key, outputVariable, topHitsExpression, projectExpression, summarizeExpression);
+
+            topHitsAggregation.KustoQL = query;
         }
     }
 }
