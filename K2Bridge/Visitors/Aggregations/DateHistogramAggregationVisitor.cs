@@ -20,10 +20,14 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Metric, nameof(dateHistogramAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Field, nameof(dateHistogramAggregation.Field));
 
-            var extendExpression = $"{EncodeKustoField(dateHistogramAggregation.Field, true)}";
+            var subAggregations = dateHistogramAggregation.Parent.SubAggregations;
 
+            // Extend expression: ['2']=['timestamp']
+            var extendExpression = $"{EncodeKustoField(dateHistogramAggregation.Key)}={EncodeKustoField(dateHistogramAggregation.Field, true)}";
+
+            // Bucket expression: count() by ['2']=startofmonth(['timestamp'])| order by ['2'] asc
             var bucketExpression = new StringBuilder();
-            bucketExpression.Append($"{dateHistogramAggregation.Metric} by {EncodeKustoField(dateHistogramAggregation.Key)} = ");
+            bucketExpression.Append($"{dateHistogramAggregation.Metric} by {EncodeKustoField(dateHistogramAggregation.Key)}=");
 
             var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
             if (!string.IsNullOrEmpty(interval))
@@ -53,10 +57,10 @@ namespace K2Bridge.Visitors
 
             bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
 
-            var subAggregations = dateHistogramAggregation.Parent.SubAggregations;
-            var bucketKey = dateHistogramAggregation.Key;
-
-            var query = BuildBucketQuery(subAggregations, bucketKey, extendExpression, bucketExpression.ToString());
+            // Build final query using dateHistogramAggregation expressions
+            // let _extdata = _data | extend ['2']=['timestamp'];
+            // let _summarizablemetrics = _extdata | summarize  count() by ['2']=startofmonth(['timestamp'])| order by ['2'] asc;
+            var query = BuildBucketQuery(subAggregations, extendExpression, bucketExpression.ToString());
 
             dateHistogramAggregation.KustoQL = query;
         }
