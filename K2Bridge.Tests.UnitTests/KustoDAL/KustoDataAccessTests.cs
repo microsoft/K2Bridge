@@ -102,6 +102,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""boolean"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""boolean""
                         }
                       },
@@ -109,6 +110,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""integer"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""integer""
                         }
                       },
@@ -116,6 +118,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""long"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""long""
                         }
                       },
@@ -123,6 +126,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""double"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""double""
                         }
                       },
@@ -130,6 +134,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""keyword"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""keyword""
                         }
                       },
@@ -137,6 +142,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""date"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""date""
                         }
                       },
@@ -144,6 +150,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""object"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""object""
                         }
                       },
@@ -151,6 +158,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""integer"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""integer""
                         }
                       },
@@ -158,6 +166,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""keyword"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""keyword""
                         }
                       },
@@ -165,6 +174,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""object"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""object""
                         }
                       },
@@ -172,6 +182,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""object"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""object""
                         }
                       },
@@ -179,6 +190,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""keyword"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""keyword""
                         }
                       },
@@ -186,6 +198,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""string"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""string""
                         }
                       },
@@ -193,6 +206,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""string"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""string""
                         }
                       },
@@ -200,6 +214,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""double"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""double""
                         }
                       }
@@ -267,6 +282,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""boolean"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""boolean""
                         }
                       },
@@ -274,6 +290,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""integer"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""integer""
                         }
                       },
@@ -281,6 +298,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""long"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""long""
                         }
                       },
@@ -288,6 +306,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""double"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""double""
                         }
                       },
@@ -295,6 +314,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""keyword"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""keyword""
                         }
                       },
@@ -302,6 +322,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""date"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""date""
                         }
                       },
@@ -309,6 +330,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""object"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""object""
                         }
                       },
@@ -316,6 +338,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""integer"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""integer""
                         }
                       },
@@ -323,6 +346,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""keyword"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""keyword""
                         }
                       },
@@ -330,6 +354,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""object"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""object""
                         }
                       },
@@ -337,6 +362,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""object"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""object""
                         }
                       },
@@ -344,6 +370,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""keyword"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""keyword""
                         }
                       },
@@ -351,6 +378,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""string"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""string""
                         }
                       },
@@ -358,6 +386,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""string"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""string""
                         }
                       },
@@ -365,6 +394,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         ""double"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""double""
                         }
                       }
@@ -452,6 +482,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""integer"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""integer""
                           }
                         },
@@ -459,6 +490,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""object"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""object""
                           }
                         },
@@ -466,6 +498,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""keyword"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""keyword""
                           }
                         },
@@ -473,6 +506,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""object"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""object""
                           }
                         },
@@ -480,6 +514,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""integer"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""integer""
                           }
                         },
@@ -487,6 +522,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""keyword"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""keyword""
                           }
                         },
@@ -494,6 +530,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""object"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""object""
                           }
                         },
@@ -501,6 +538,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""keyword"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""keyword""
                           }
                         },
@@ -508,6 +546,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""integer"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""integer""
                           }
                         },
@@ -515,6 +554,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""object"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""object""
                           }
                         },
@@ -522,6 +562,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""keyword"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""keyword""
                           }
                         },
@@ -529,6 +570,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""keyword"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""keyword""
                           }
                         },
@@ -536,6 +578,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""integer"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""integer""
                           }
                         },
@@ -543,6 +586,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                           ""keyword"": {
                             ""aggregatable"": true,
                             ""searchable"": true,
+                            ""metadata_field"": false,
                             ""type"": ""keyword""
                           }
                         }
@@ -623,6 +667,7 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
                         ""integer"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""integer""
                         }
                       },
@@ -630,6 +675,7 @@ testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize bui
                         ""keyword"": {
                           ""aggregatable"": true,
                           ""searchable"": true,
+                          ""metadata_field"": false,
                           ""type"": ""keyword""
                         }
                       }

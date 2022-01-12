@@ -37,6 +37,19 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
+        private const string DateRangeAggregation = @"
+            {""aggs"": {
+                ""2"": {
+                    ""date_range"": {
+                        ""field"": ""timestamp"",
+                        ""ranges"": [{
+                            ""from"": ""2016-02-01"",
+                            ""to"": ""now/d""
+                        }]
+                    }
+                }
+            }}";
+
         private const string TermsAggregation = @"
             {""aggs"": {
                 ""2"": {
@@ -230,6 +243,32 @@ namespace UnitTests.K2Bridge.JsonConverters
                             {
                                 From = 0,
                                 To = 100,
+                            },
+                        },
+                        Metric = "count()",
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
+        private static readonly AggregationContainer ExpectedValidDateRangeAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new DateRangeAggregation
+                    {
+                        Field = "DestCountry",
+                        Key = "2",
+                        Keyed = false,
+                        Ranges = new List<DateRangeAggregationExpression>() {
+                            new DateRangeAggregationExpression()
+                            {
+                                From = "2016-02-01",
+                                To = "now/d",
                             },
                         },
                         Metric = "count()",

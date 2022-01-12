@@ -18,8 +18,8 @@ The following packages are installed on top of this base image.
 | dotnet-sdk-6.0 | latest |
 | dotnet-sdk-5.0 | latest |
 | default-jre | latest |
-| elasticsearch-oss| 7.10.2 |
-| kibana-oss | 7.10.2 |
+| elasticsearch| 7.16.2 |
+| kibana | 7.16.2 |
 
 Elasticsearch and Kibana are available at `/home/vscode`; and dev container will start using vscode non-root user. For reference, you cannot start elasticsearch using root user, an exception will occur.
 
@@ -30,9 +30,9 @@ Elasticsearch and Kibana are available at `/home/vscode`; and dev container will
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
 vscode ➜ ~ $ ls
-elasticsearch-7.10.2  kibana-7.10.2-linux-x86_64
-vscode ➜ ~ $ cd elasticsearch-7.10.2/
-vscode ➜ ~/elasticsearch-7.10.2 $ ./bin/elasticsearch
+elasticsearch-7.16.2  kibana-7.16.2-linux-x86_64
+vscode ➜ ~ $ cd elasticsearch-7.16.2/
+vscode ➜ ~/elasticsearch-7.16.2 $ ./bin/elasticsearch
 
 [...]
 [2021-11-10T10:29:41,395][INFO ][o.e.h.AbstractHttpServerTransport] [9f911f701eba] publish_address {127.0.0.1:9200}, bound_addresses {127.0.0.1:9200}
@@ -48,7 +48,7 @@ Open a web browser and target http://localhost:9200/. Similar json must be retur
   "cluster_name" : "elasticsearch",
   "cluster_uuid" : "IfhhAPkOT8m_zfIkUfHtWg",
   "version" : {
-    "number" : "7.10.2",
+    "number" : "7.16.2",
     "build_flavor" : "oss",
     "build_type" : "tar",
     "build_hash" : "747e1cc71def077253878a59143c1f785afa92b9",
@@ -70,9 +70,9 @@ Then start Kibana.
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
 vscode ➜ ~ $ ls
-elasticsearch-7.10.2  kibana-7.10.2-linux-x86_64
-vscode ➜ ~ $ cd kibana-7.10.2-linux-x86_64/
-vscode ➜ ~/kibana-7.10.2-linux-x86_64 $ ./bin/kibana
+elasticsearch-7.16.2  kibana-7.16.2-linux-x86_64
+vscode ➜ ~ $ cd kibana-7.16.2-linux-x86_64/
+vscode ➜ ~/kibana-7.16.2-linux-x86_64 $ ./bin/kibana
   log   [10:32:16.542] [info][plugins-service] Plugin "visTypeXy" is disabled.
   log   [10:32:16.711] [info][plugins-system] Setting up [40] plugins: [usageCollection,telemetryCollectionManager,telemetry,kibanaUsageCollection,securityOss,newsfeed,mapsLegacy,kibanaLegacy,share,legacyExport,embeddable,expressions,data,home,console,apmOss,management,indexPatternManagement,advancedSettings,savedObjects,dashboard,visualizations,inputControlVis,visTypeVega,visTypeTimelion,timelion,visTypeTable,visTypeMarkdown,tileMap,regionMap,visualize,esUiShared,charts,visTypeTimeseries,visTypeVislib,visTypeTagcloud,visTypeMetric,discover,savedObjectsManagement,bfetch]
   log   [10:32:17.005] [info][savedobjects-service] Waiting until all Elasticsearch nodes are compatible with Kibana before starting saved objects migrations...
@@ -95,8 +95,8 @@ Under Kibana's '*config*' directory, edit the *kibana.yml* file.
 
 ```bash
 vscode ➜ /workspaces/K2Bridge (feature/devcontainer ✗) $ cd $home
-vscode ➜ ~ $ cd kibana-7.10.2-linux-x86_64/
-vscode ➜ ~/kibana-7.10.2-linux-x86_64 $ code ./config/kibana.yml 
+vscode ➜ ~ $ cd kibana-7.16.2-linux-x86_64/
+vscode ➜ ~/kibana-7.16.2-linux-x86_64 $ code ./config/kibana.yml 
 ```
 
 And add the following line. Note that this assumes that the bridge will listen on port 8080. All requests will be forwarded to bridge. 

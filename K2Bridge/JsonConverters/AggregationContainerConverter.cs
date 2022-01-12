@@ -45,6 +45,8 @@ namespace K2Bridge.JsonConverters
                     "date_histogram" => property.Value.ToObject<DateHistogramAggregation>(serializer),
                     "terms" => property.Value.ToObject<TermsAggregation>(serializer),
                     "range" => property.Value.ToObject<RangeAggregation>(serializer),
+                    "filters" => property.Value.ToObject<FiltersAggregation>(serializer),
+                    "date_range" => property.Value.ToObject<DateRangeAggregation>(serializer),
                     "avg" => property.Value.ToObject<AverageAggregation>(serializer),
                     "cardinality" => property.Value.ToObject<CardinalityAggregation>(serializer),
                     "extended_stats" => property.Value.ToObject<ExtendedStatsAggregation>(serializer),
