@@ -25,7 +25,7 @@ namespace K2Bridge.Visitors
 
             // Add main aggregation query (summarize)
             // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=field
-            query.Append($"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {termsAggregation.SubAggregationsKustoQL}{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}");
+            query.Append($"({KustoTableNames.Data} | {KustoQLOperators.Summarize} {termsAggregation.SubAggregationsKustoQL}{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}");
 
             var orderBy = termsAggregation.Order?.SortField switch
             {
@@ -37,7 +37,7 @@ namespace K2Bridge.Visitors
             query.Append(orderBy);
 
             // Add limit
-            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}");
+            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size} | {KustoQLOperators.As} {KustoTableNames.Aggregation})");
 
             termsAggregation.KustoQL = query.ToString();
         }

@@ -30,7 +30,7 @@ namespace K2Bridge.Visitors
             // _data | extend ['_range'] = pack_array("range1", "range2", "range3"), ['_range_value']=pack_array(expr1, expr2, expr3)
 
             // Start of query, until first pack_array()
-            queryStringBuilder.Append($"{KustoTableNames.Data} | {KustoQLOperators.Extend} {EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}(");
+            queryStringBuilder.Append($"({KustoTableNames.Data} | {KustoQLOperators.Extend} {EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}(");
 
             // Insert range names
             foreach (var range in dateRangeAggregation.Ranges)
@@ -75,7 +75,7 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Append($" | {KustoQLOperators.Summarize} {dateRangeAggregation.SubAggregationsKustoQL}{dateRangeAggregation.Metric} by {EncodeKustoField(dateRangeAggregation.Key)}");
 
             // Order rows by key
-            queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc");
+            queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc | {KustoQLOperators.As} {KustoTableNames.Aggregation})");
 
             dateRangeAggregation.KustoQL = queryStringBuilder.ToString();
         }

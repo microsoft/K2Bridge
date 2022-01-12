@@ -20,7 +20,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Field, nameof(RangeAggregation.Field));
 
             // Start the union operator
-            rangeAggregation.KustoQL += $"{KustoQLOperators.Union} ";
+            rangeAggregation.KustoQL += $"({KustoQLOperators.Union} ";
 
             // Query expressions for each range
             // (_data | where foo >= 1 and bar < 10 | summarize ['3']=avg(baz), count() | extend ['2'] = '1-10')
@@ -60,7 +60,7 @@ namespace K2Bridge.Visitors
 
             // Re-order columns by ascending order
             // Make sure the aggregation column (with range names) is first
-            rangeAggregation.KustoQL += $" | {KustoQLOperators.ProjectReorder} {EncodeKustoField(rangeAggregation.Key)}, * asc";
+            rangeAggregation.KustoQL += $" | {KustoQLOperators.ProjectReorder} {EncodeKustoField(rangeAggregation.Key)}, * asc | {KustoQLOperators.As} {KustoTableNames.Aggregation})";
         }
     }
 }
