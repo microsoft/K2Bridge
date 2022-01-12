@@ -91,6 +91,41 @@ namespace K2Bridge.Tests.End2End
         }
 
         /// <summary>
+        /// Get all descendants tokens from a root token
+        /// </summary>
+        public static IEnumerable<JToken> GetAllDescendantsTokens(JToken rootToken)
+        {
+            var toSearch = new Stack<JToken>(rootToken.Children());
+            while (toSearch.Count > 0)
+            {
+                var inspected = toSearch.Pop();
+                yield return inspected;
+                foreach (var child in inspected)
+                {
+                    toSearch.Push(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Make a Math.Round operation on all float values in a json payload.
+        /// </summary>
+        public static void RoundFloats(JToken parent, string jsonPath, int? digits = null)
+        {
+            if (!digits.HasValue)
+            {
+                return;
+            }
+            var rootToken = parent.SelectToken(jsonPath);
+            foreach (JValue v in TestElasticClient.GetAllDescendantsTokens(rootToken).Where(x => x.Type == JTokenType.Float))
+            {
+                var originalMetricValue = (double)v.Value;
+                var normalizedMetricValue = Math.Round(originalMetricValue, digits.Value);
+                v.Value = normalizedMetricValue;
+            }
+        }
+
+        /// <summary>
         /// Queries the backend and parses the result as JSON.
         /// </summary>
         /// <param name="request">Request to backend.</param>
@@ -148,8 +183,9 @@ namespace K2Bridge.Tests.End2End
         /// <param name="indexName">Index name to query.</param>
         /// <param name="jsonQueryFile">File name containing query.</param>
         /// <param name="validateHighlight">Controls the validation of the highlight element.</param>
+        /// <param name="roundingFloats">If value is specified make a round operation on all floats</param>
         /// <returns>SearchAsync operation result.</returns>
-        public async Task<JToken> MSearch(string indexName, string jsonQueryFile, bool validateHighlight = true)
+        public async Task<JToken> MSearch(string indexName, string jsonQueryFile, bool validateHighlight = true, int? roundingFloats = null)
         {
             JObject query = JObject.Parse(File.ReadAllText(jsonQueryFile));
 
@@ -181,6 +217,9 @@ namespace K2Bridge.Tests.End2End
 
             // Normalize aggregate value (double) with fixed number of decimal
             NormalizeAggregateValue(result, "responses[*].aggregations..value");
+
+            // make a Math.Round on all floats values
+            RoundFloats(result, "responses[*].aggregations", roundingFloats);
 
             return result;
         }
