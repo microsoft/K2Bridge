@@ -12,21 +12,9 @@ namespace K2Bridge.Models.Response.Aggregations
     public class TopHitsAggregate : IAggregate
     {
         /// <summary>
-        /// Gets or sets the totalhits object.
-        /// </summary>
-        [JsonProperty("total")]
-        public TotalHits Total { get; set; }
-
-        /// <summary>
-        /// Gets or sets the MaxScore value.
-        /// </summary>
-        [JsonProperty("max_score")]
-        public double? MaxScore { get; set; }
-
-        /// <summary>
-        /// Gets the hits collection.
+        /// Gets or sets response hits.
         /// </summary>
         [JsonProperty("hits")]
-        public HitsCollection Hits { get; } = new HitsCollection();
+        public HitsCollection Hits { get; set; } = new HitsCollection();
     }
 }
