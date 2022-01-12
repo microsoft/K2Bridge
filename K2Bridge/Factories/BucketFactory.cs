@@ -169,7 +169,7 @@ namespace K2Bridge.Factories
 
             // Parse the range
             var splitRange = range
-                            .Split(AggregationsConstants.MetadataSeparator)
+                            .Split(KustoAggregations.MetadataSeparator)
                             .Select(s => string.IsNullOrEmpty(s) ? (DateTime?)null : DateTime.Parse(s).ToUniversalTime())
                             .ToArray();
             var from = splitRange[0];

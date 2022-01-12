@@ -18,7 +18,7 @@ namespace K2Bridge.Utils
         /// <summary>
         /// The aggregations data table name.
         /// </summary>
-        public const string Aggregation = "aggs";
+        public const string Aggregations = "aggs";
 
         /// <summary>
         /// The hits (raw items) data table name.

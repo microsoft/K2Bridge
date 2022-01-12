@@ -48,14 +48,14 @@ namespace K2Bridge.Visitors
                 query.Append(BuildBucketQuery(aggregationDictionary, extendExpression, bucketExpression));
 
                 // We project away the default key column if there are only ISummmarizable metrics
-                if (SubQueriesStack.Last().Equals(AggregationsConstants.SummarizableMetricsQuery))
+                if (SubQueriesStack.Last().Equals(KustoAggregations.SummarizableMetricsQuery))
                 {
                     projectAwayExpression = $" {KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(DefaultKey)}";
                 }
             }
 
             var lastQuery = SubQueriesStack.Last();
-            query.Append($"{KustoQLOperators.NewLine}({lastQuery}{projectAwayExpression} {KustoQLOperators.CommandSeparator} as aggs);");
+            query.Append($"{KustoQLOperators.NewLine}({lastQuery}{projectAwayExpression} {KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregations});");
 
             aggregationDictionary.KustoQL = query.ToString();
         }
@@ -78,7 +78,7 @@ namespace K2Bridge.Visitors
 
         public string BuildExtendDataQuery(AggregationDictionary aggregationDictionary, string extendExpression)
         {
-            var letExtData = AggregationsConstants.ExtDataQuery;
+            var letExtData = KustoAggregations.ExtDataQuery;
             SubQueriesStack.Add(letExtData);
 
             var query = $"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letExtData} = _data {KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {extendExpression};";
@@ -93,7 +93,7 @@ namespace K2Bridge.Visitors
                 return null;
             }
 
-            var letSummarizableMetrics = AggregationsConstants.SummarizableMetricsQuery;
+            var letSummarizableMetrics = KustoAggregations.SummarizableMetricsQuery;
             SubQueriesStack.Add(letSummarizableMetrics);
 
             // Collect all ISummarizable metrics
@@ -159,7 +159,7 @@ namespace K2Bridge.Visitors
             query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letQueryName} = _extdata");
 
             // If previous sub query was _extdata, table join is not needed
-            if (joinVariable.Equals(AggregationsConstants.ExtDataQuery))
+            if (joinVariable.Equals(KustoAggregations.ExtDataQuery))
             {
                 query.Append($"{KustoQLOperators.CommandSeparator}");
             }
@@ -200,7 +200,7 @@ namespace K2Bridge.Visitors
             }
 
             // We close the partition expression
-            if (!joinVariable.Equals(AggregationsConstants.ExtDataQuery))
+            if (!joinVariable.Equals(KustoAggregations.ExtDataQuery))
             {
                 query.Append($" )");
             }

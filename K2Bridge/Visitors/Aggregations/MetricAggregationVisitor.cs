@@ -67,7 +67,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(percentileAggregation, nameof(percentileAggregation));
             EnsureClause.StringIsNotNullOrEmpty(percentileAggregation.Field, percentileAggregation.Field, ExceptionMessage);
 
-            var sep = AggregationsConstants.MetadataSeparator;
+            var sep = KustoAggregations.MetadataSeparator;
 
             var valuesForColumnNames = string.Join(sep, percentileAggregation.Percents.ToList().Select(item => $"{item:0.0}"));
             var valuesForOperator = string.Join(',', percentileAggregation.Percents);
@@ -93,13 +93,13 @@ namespace K2Bridge.Visitors
 
             // ['4']=pack('field', AvgTicketPrice, 'order', timestamp)
             var pack = $"{KustoQLOperators.Pack}('field', {EncodeKustoField(topHitsAggregation)}, 'order', {sort.FieldName})";
-            var key = $"{topHitsAggregation.Key}{AggregationsConstants.MetadataSeparator}{AggregationsConstants.TopHits}";
+            var key = $"{topHitsAggregation.Key}{KustoAggregations.MetadataSeparator}{KustoAggregations.TopHits}";
             var projectExpression = $"{EncodeKustoField(topHitsAggregation.Key)}={pack}";
 
             // ['4']=make_list(['4'])
             var summarizeExpression = $"{EncodeKustoField(topHitsAggregation.Key)}={KustoQLOperators.MakeList}({EncodeKustoField(topHitsAggregation.Key)})";
 
-            var outputVariable = $"_tophits{topHitsAggregation.Key}";
+            var outputVariable = $"_{KustoAggregations.TopHits}{topHitsAggregation.Key}";
             var query = BuildPartitionQuery(topHitsAggregation.Parent, primaryAggregation?.Key, outputVariable, topHitsExpression, projectExpression, summarizeExpression);
 
             topHitsAggregation.KustoQL = query;

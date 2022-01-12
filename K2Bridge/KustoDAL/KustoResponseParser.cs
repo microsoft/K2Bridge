@@ -163,10 +163,10 @@ namespace K2Bridge.KustoDAL
             Logger.LogTrace("Reading response using reader.");
             var kustoResponse = ReadDataResponse(reader);
 
-            if (kustoResponse[KustoTableNames.Aggregation] != null)
+            if (kustoResponse[KustoTableNames.Aggregations] != null)
             {
                 var (key, aggregationType) = query.PrimaryAggregation;
-                var dataRowCollection = kustoResponse[KustoTableNames.Aggregation].TableData.Rows;
+                var dataRowCollection = kustoResponse[KustoTableNames.Aggregations].TableData.Rows;
 
                 Logger.LogTrace("Parsing aggregations");
 

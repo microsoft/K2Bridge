@@ -167,7 +167,7 @@ namespace K2Bridge.Factories
 
                 // Column Metadata (Separator %)
                 // Structure: key%metric%value1%value2%keyed
-                var columnMetadata = column.ColumnName.Split(AggregationsConstants.MetadataSeparator);
+                var columnMetadata = column.ColumnName.Split(KustoAggregations.MetadataSeparator);
 
                 if (columnMetadata.Length > 1)
                 {
