@@ -21,6 +21,8 @@ namespace K2Bridge.Visitors
             var gteExpr = rangeExpression.From.HasValue ? $"{field} >= {rangeExpression.From}" : null;
             var ltExpr = rangeExpression.To.HasValue ? $"{field} < {rangeExpression.To}" : null;
 
+            rangeExpression.BucketNameKustoQL = $"{rangeExpression.From ?? '*'}-{rangeExpression.To ?? '*'}";
+
             rangeExpression.KustoQL = (gteExpr, ltExpr) switch
             {
                 (null, null) => string.Empty,
