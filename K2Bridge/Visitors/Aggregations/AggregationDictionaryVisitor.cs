@@ -19,7 +19,7 @@ namespace K2Bridge.Visitors
     {
         internal string DefaultKey { get; set; } = Guid.NewGuid().ToString();
 
-        internal List<string> ParsedAggregationKeys { get; } = new List<string>();
+        internal List<string> ParsedMetricAggregationKeys { get; } = new List<string>();
 
         internal List<string> SubQueriesStack { get; } = new List<string>();
 
@@ -43,12 +43,12 @@ namespace K2Bridge.Visitors
             {
                 // This is not a bucket aggregation scenario
                 var extendExpression = $"{EncodeKustoField(DefaultKey)}={KustoQLOperators.True}";
-                var bucketExpression = $"by {EncodeKustoField(DefaultKey)}";
+                var bucketExpression = $"count() by {EncodeKustoField(DefaultKey)}";
 
                 query.Append(BuildBucketQuery(aggregationDictionary, extendExpression, bucketExpression));
 
                 // We project away the default key column if there are only ISummmarizable metrics
-                if (SubQueriesStack.Last().Equals(KustoAggregations.SummarizableMetricsQuery))
+                if (SubQueriesStack.Last().Equals(AggregationsSubQueries.SummarizableMetricsQuery))
                 {
                     projectAwayExpression = $" {KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(DefaultKey)}";
                 }
@@ -60,14 +60,16 @@ namespace K2Bridge.Visitors
             aggregationDictionary.KustoQL = query.ToString();
         }
 
-        public string BuildBucketQuery(AggregationDictionary aggregationDictionary, string extendExpression, string bucketExpression)
+        public string BuildBucketQuery(AggregationDictionary aggregationDictionary, string extendExpression, string bucketExpression, string bucketMetricKey = AggregationsColumns.Count)
         {
+            Ensure.IsNotNull(aggregationDictionary, nameof(aggregationDictionary));
+
             var query = new StringBuilder();
 
             var extendDataQuery = BuildExtendDataQuery(aggregationDictionary, extendExpression);
             query.Append(extendDataQuery);
 
-            var summarizableMetricsQuery = BuildSummarizableMetricsQuery(aggregationDictionary, bucketExpression);
+            var summarizableMetricsQuery = BuildSummarizableMetricsQuery(aggregationDictionary, bucketExpression, bucketMetricKey);
             query.Append(summarizableMetricsQuery);
 
             var nonSummarizableMetricsQuery = BuildNonSummarizableMetricsQuery(aggregationDictionary);
@@ -78,23 +80,20 @@ namespace K2Bridge.Visitors
 
         public string BuildExtendDataQuery(AggregationDictionary aggregationDictionary, string extendExpression)
         {
-            var letExtData = KustoAggregations.ExtDataQuery;
+            var letExtData = AggregationsSubQueries.ExtDataQuery;
             SubQueriesStack.Add(letExtData);
 
-            var query = $"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letExtData} = _data {KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {extendExpression};";
+            var query = $"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letExtData} = {KustoTableNames.Data} {KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {extendExpression};";
 
             return query;
         }
 
-        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary, string bucketExpression)
+        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary, string bucketExpression, string bucketMetricKey = AggregationsColumns.Count)
         {
-            if (!ContainsSummarizableMetrics(aggregationDictionary) && !IsBucketAggregation(aggregationDictionary))
-            {
-                return null;
-            }
-
-            var letSummarizableMetrics = KustoAggregations.SummarizableMetricsQuery;
+            var letSummarizableMetrics = AggregationsSubQueries.SummarizableMetricsQuery;
             SubQueriesStack.Add(letSummarizableMetrics);
+
+            ParsedMetricAggregationKeys.Add(bucketMetricKey);
 
             // Collect all ISummarizable metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
@@ -107,7 +106,7 @@ namespace K2Bridge.Visitors
                     aggregation.Accept(this);
                     summarizableMetrics.Add($"{aggregation.KustoQL}");
 
-                    ParsedAggregationKeys.Add(aggregation.Key);
+                    ParsedMetricAggregationKeys.Add(aggregation.Key);
                 }
             }
 
@@ -116,15 +115,11 @@ namespace K2Bridge.Visitors
 
             // Build summarizable metrics query
             // let _summarizablemetrics = _extdata | summarize ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letSummarizableMetrics} = _extdata {KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {summarizableMetricsExpression}");
+            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letSummarizableMetrics} = {AggregationsSubQueries.ExtDataQuery} ");
+            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {summarizableMetricsExpression},");
 
-            // Query completed by bucket aggregation expression
-            if (!string.IsNullOrEmpty(summarizableMetricsExpression) && IsBucketAggregation(aggregationDictionary))
-            {
-                query.Append($",");
-            }
-
-            query.Append($" {bucketExpression};");
+            // Query completed with bucketExpression
+            query.Append($"{bucketExpression};");
 
             return query.ToString();
         }
@@ -140,7 +135,7 @@ namespace K2Bridge.Visitors
                     aggregation.Accept(this);
                     query.Append($"{aggregation.KustoQL}");
 
-                    ParsedAggregationKeys.Add(aggregation.Key);
+                    ParsedMetricAggregationKeys.Add(aggregation.Key);
                 }
             }
 
@@ -156,20 +151,11 @@ namespace K2Bridge.Visitors
             SubQueriesStack.Add(letQueryName);
 
             // let _tophits = _extdata
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letQueryName} = _extdata");
-
-            // If previous sub query was _extdata, table join is not needed
-            if (joinVariable.Equals(KustoAggregations.ExtDataQuery))
-            {
-                query.Append($"{KustoQLOperators.CommandSeparator}");
-            }
-            else
-            {
-                // | join kind=inner _summarizablemetrics on ['1']
-                // | partition by ['1'] (
-                query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.JoinInner} {joinVariable} on {EncodeKustoField(key)}");
-                query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.PartitionBy} {EncodeKustoField(key)} (");
-            }
+            // | join kind=inner _summarizablemetrics on ['1']
+            // | partition by ['1'] (
+            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letQueryName} = {AggregationsSubQueries.ExtDataQuery}");
+            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.JoinInner} {joinVariable} on {EncodeKustoField(key)}");
+            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.PartitionBy} {EncodeKustoField(key)} (");
 
             // Query completed with aggregationExpression
             // top 2 by timestamp asc
@@ -200,12 +186,8 @@ namespace K2Bridge.Visitors
             }
 
             // We close the partition expression
-            if (!joinVariable.Equals(KustoAggregations.ExtDataQuery))
-            {
-                query.Append($" )");
-            }
+            query.Append($" );");
 
-            query.Append(";");
             return query.ToString();
         }
 
@@ -213,9 +195,9 @@ namespace K2Bridge.Visitors
         {
             string query = null;
 
-            if (ParsedAggregationKeys.Count > 0)
+            if (ParsedMetricAggregationKeys.Count > 0)
             {
-                var encodedKeys = ParsedAggregationKeys.Select(key => EncodeKustoField(key));
+                var encodedKeys = ParsedMetricAggregationKeys.Select(key => EncodeKustoField(key));
                 query = string.Join(',', encodedKeys);
             }
 
@@ -226,36 +208,13 @@ namespace K2Bridge.Visitors
         {
             string query = null;
 
-            if (ParsedAggregationKeys.Count > 0)
+            if (ParsedMetricAggregationKeys.Count > 0)
             {
-                var encodedKeys = ParsedAggregationKeys.Select(key => $"{KustoQLOperators.TakeAny}({EncodeKustoField(key)})");
+                var encodedKeys = ParsedMetricAggregationKeys.Select(key => $"{KustoQLOperators.TakeAny}({EncodeKustoField(key)})");
                 query = string.Join(',', encodedKeys);
             }
 
             return query;
-        }
-
-        public bool IsBucketAggregation(AggregationDictionary aggregationDictionary)
-        {
-            Ensure.IsNotNull(aggregationDictionary, nameof(aggregationDictionary));
-
-            return aggregationDictionary.Parent?.PrimaryAggregation is BucketAggregation;
-        }
-
-        public bool ContainsSummarizableMetrics(AggregationDictionary aggregationDictionary)
-        {
-            Ensure.IsNotNull(aggregationDictionary, nameof(aggregationDictionary));
-
-            foreach (var (_, aggregationContainer) in aggregationDictionary)
-            {
-                var aggregation = aggregationContainer.PrimaryAggregation;
-                if (aggregation is MetricAggregation && aggregation is ISummarizable)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }
