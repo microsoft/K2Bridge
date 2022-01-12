@@ -6,7 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
-    using K2Bridge.Models.Response;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="TermsAggregation"/> element.
@@ -32,7 +32,7 @@ namespace K2Bridge.Visitors
             var orderBy = termsAggregation.Order?.SortField switch
             {
                 "_key" => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}",
-                "_count" => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.Order.SortOrder}",
+                "_count" => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {AggregationsColumns.Count} {termsAggregation.Order.SortOrder}",
                 { } s => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(s)} {termsAggregation.Order.SortOrder}",
                 _ => string.Empty,
             };

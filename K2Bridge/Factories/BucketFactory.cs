@@ -30,7 +30,7 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var timestamp = row[primaryKey];
-            var count = row[BucketColumnNames.Count];
+            var count = row[AggregationsColumns.Count];
             var dateBucket = (DateTime)timestamp;
 
             var dhb = new DateHistogramBucket
@@ -57,7 +57,7 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var key = row[primaryKey];
-            var count = row[BucketColumnNames.Count];
+            var count = row[AggregationsColumns.Count];
 
             var tb = new TermsBucket
             {
@@ -82,10 +82,10 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var range = Convert.ToString(row[primaryKey]);
-            var count = row[BucketColumnNames.Count];
+            var count = row[AggregationsColumns.Count];
 
             // Ignore the row for "other" records, that did not match the ranges
-            if (range == BucketColumnNames.RangeDefaultBucket)
+            if (range == AggregationsColumns.RangeDefaultBucket)
             {
                 return null;
             }
@@ -130,7 +130,7 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var filter = Convert.ToString(row[primaryKey]);
-            var count = row[BucketColumnNames.Count];
+            var count = row[AggregationsColumns.Count];
 
             // Assemble the bucket
             var fb = new FiltersBucket
@@ -153,10 +153,10 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var range = Convert.ToString(row[primaryKey]);
-            var count = row[BucketColumnNames.Count];
+            var count = row[AggregationsColumns.Count];
 
             // Ignore the row for "other" records, that did not match the ranges
-            if (range == BucketColumnNames.RangeDefaultBucket)
+            if (range == AggregationsColumns.RangeDefaultBucket)
             {
                 return null;
             }
@@ -169,7 +169,7 @@ namespace K2Bridge.Factories
 
             // Parse the range
             var splitRange = range
-                            .Split(KustoAggregations.MetadataSeparator)
+                            .Split(AggregationsMetadata.Separator)
                             .Select(s => string.IsNullOrEmpty(s) ? (DateTime?)null : DateTime.Parse(s).ToUniversalTime())
                             .ToArray();
             var from = splitRange[0];

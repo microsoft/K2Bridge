@@ -24,7 +24,7 @@ namespace K2Bridge.Visitors
             var gteExpr = dateRangeExpression.From != null ? $"{EncodeKustoField(dateRangeExpression.Field)} >= {fromExpr}" : null;
             var ltExpr = dateRangeExpression.To != null ? $"{EncodeKustoField(dateRangeExpression.Field)} < {toExpr}" : null;
 
-            dateRangeExpression.BucketNameKustoQL = $"strcat({fromExpr}, '{KustoAggregations.MetadataSeparator}', {toExpr})";
+            dateRangeExpression.BucketNameKustoQL = $"strcat({fromExpr}, '{AggregationsMetadata.Separator}', {toExpr})";
 
             dateRangeExpression.KustoQL = (gteExpr, ltExpr) switch
             {

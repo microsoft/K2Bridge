@@ -7,26 +7,26 @@ namespace K2Bridge.Utils
     /// <summary>
     /// ColumnNames.
     /// </summary>
-    public class AggregationsColumns
+    public static class AggregationsColumns
     {
         /// <summary>
         /// Gets count column name.
         /// </summary>
-        public static string Count => "count_";
+        public const string Count = "count_";
 
         /// <summary>
         /// Gets Percentile column name.
         /// </summary>
-        public static string Percentile => "percentile";
+        public const string Percentile = "percentile";
 
         /// <summary>
         /// Gets TopHits column name.
         /// </summary>
-        public static string TopHits => "tophits";
+        public const string TopHits = "tophits";
 
         /// <summary>
         /// Gets name of the default bucket for values that don't match any range.
         /// </summary>
-        public static string RangeDefaultBucket => "default_bucket";
+        public const string RangeDefaultBucket = "default_bucket";
     }
 }

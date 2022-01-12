@@ -4,16 +4,16 @@
 
 namespace K2Bridge.Utils
 {
-    public class AggregationsSubQueries
+    public static class AggregationsSubQueries
     {
         /// <summary>
         /// Sub query name used in <see cref="BuildExtendDataQuery"/>.
         /// </summary>
-        public static string ExtDataQuery => "_extdata";
+        public const string ExtDataQuery = "_extdata";
 
         /// <summary>
         /// Sub query name used in <see cref="BuildSummarizableMetricsQuery"/>.
         /// </summary>
-        public static string SummarizableMetricsQuery => "_summarizablemetrics";
+        public const string SummarizableMetricsQuery = "_summarizablemetrics";
     }
 }

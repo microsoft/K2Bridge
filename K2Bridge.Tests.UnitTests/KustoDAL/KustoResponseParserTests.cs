@@ -444,19 +444,19 @@ namespace UnitTests.K2Bridge.KustoDAL
             resTable.Columns.Add(column2);
 
             var row1 = resTable.NewRow();
-            row1["2"] = $"{KustoAggregations.MetadataSeparator}2018-02-02T00:00:00.0000000Z";
+            row1["2"] = $"{AggregationsMetadata.Separator}2018-02-02T00:00:00.0000000Z";
             row1["count_"] = 1;
 
             resTable.Rows.Add(row1);
 
             var row2 = resTable.NewRow();
-            row2["2"] = $"2018-02-02T00:00:00.0000000Z{KustoAggregations.MetadataSeparator}2018-02-03T00:00:00.0000000Z";
+            row2["2"] = $"2018-02-02T00:00:00.0000000Z{AggregationsMetadata.Separator}2018-02-03T00:00:00.0000000Z";
             row2["count_"] = 2;
 
             resTable.Rows.Add(row2);
 
             var row3 = resTable.NewRow();
-            row3["2"] = $"2018-02-03T00:00:00.0000000Z{KustoAggregations.MetadataSeparator}";
+            row3["2"] = $"2018-02-03T00:00:00.0000000Z{AggregationsMetadata.Separator}";
             row3["count_"] = 3;
 
             resTable.Rows.Add(row3);

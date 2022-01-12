@@ -4,11 +4,11 @@
 
 namespace K2Bridge.Utils
 {
-    public class AggregationsMetadata
+    public static class AggregationsMetadata
     {
         /// <summary>
         /// Separator character used to join and split column metadata.
         /// </summary>
-        public static char Separator => '%';
+        public const char Separator = '%';
     }
 }
