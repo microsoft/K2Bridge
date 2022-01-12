@@ -18,7 +18,7 @@ namespace K2Bridge.Models.Response
         /// Gets the Total.
         /// </summary>
         [JsonProperty("total")]
-        public Total Total { get; private set; } = new Total();
+        public TotalHits Total { get; private set; } = new TotalHits();
 
         /// <summary>
         /// Gets or sets MaxScore.

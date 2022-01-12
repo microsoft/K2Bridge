@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Response
     /// <summary>
     /// Hits response.
     /// </summary>
-    public class Total
+    public class TotalHits
     {
         /// <summary>
         /// Gets the relation.
