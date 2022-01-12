@@ -5,9 +5,11 @@
 namespace K2Bridge.Factories
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Globalization;
     using System.Linq;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
@@ -154,29 +156,34 @@ namespace K2Bridge.Factories
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be added as aggregate.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        public static void AddAggregates(this AggregateDictionary aggregateDictionary, string primaryKey, DataRow row, ILogger logger)
+        public static void AddAggregates(this AggregateDictionary aggregateDictionary, string primaryKey, DataRow row, ILogger logger, QueryData query = default)
         {
             var columns = row.Table.Columns;
 
             foreach (DataColumn column in columns)
             {
-                if (column.ColumnName == BucketColumnNames.Count || column.ColumnName == primaryKey)
+                if (column.ColumnName == AggregationsColumns.Count || column.ColumnName == primaryKey)
                 {
                     continue;
                 }
 
                 // Column Metadata (Separator %)
                 // Structure: key%metric%value1%value2%keyed
-                var columnMetadata = column.ColumnName.Split(KustoAggregations.MetadataSeparator);
+                var columnMetadata = column.ColumnName.Split(AggregationsMetadata.Separator);
 
                 if (columnMetadata.Length > 1)
                 {
                     var metric = columnMetadata[1];
 
-                    if (metric == "percentile")
+                    if (metric == AggregationsColumns.Percentile)
                     {
                         var key = columnMetadata[0];
                         aggregateDictionary.Add(key, GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger));
+                    }
+                    else if (metric == AggregationsColumns.TopHits)
+                    {
+                        var key = columnMetadata[0];
+                        aggregateDictionary.Add(key, GetTopHitsAggregate(column.ColumnName, columnMetadata, row, logger, query));
                     }
                     else
                     {
@@ -250,6 +257,60 @@ namespace K2Bridge.Factories
             logger.LogTrace("Percentile aggregate returned for {}: {}", columnName, percentileAggregate);
 
             return percentileAggregate;
+        }
+
+        /// <summary>
+        /// Get tophits aggregate from a given <see cref="DataRow"/>.
+        /// </summary>
+        /// <param name="columnName">The column name.</param>
+        /// <param name="columnMetadata">The column metadata.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="TopHitsAggregate"/>.</returns>
+        private static TopHitsAggregate GetTopHitsAggregate(string columnName, string[] columnMetadata, DataRow row, ILogger logger, QueryData query)
+        {
+            logger.LogTrace("Get TopHits aggregate for {}", columnName);
+
+            var random = new Random();
+            var topHitsAggregate = new TopHitsAggregate() { };
+            var docCount = (long)row[AggregationsColumns.Count];
+
+            topHitsAggregate.Hits.SetTotal(docCount);
+            if (row[columnName] is JArray topHitsValues && topHitsValues.HasValues)
+            {
+                List<Hit> hits = new List<Hit>();
+
+                foreach (JObject jObject in topHitsValues)
+                {
+                    var hit = HitsFactory.Create(random.Next().ToString(), query.IndexName);
+                    var source = jObject.Properties().First();
+                    var sort = jObject.Properties().Last();
+
+                    if(sort.Value.Type == JTokenType.String)
+                    {
+                        hit.Sort.Add(TimeUtils.ToEpochMilliseconds(sort.Value.Value<DateTime>()));
+                    }
+                    else
+                    {
+                        hit.Sort.Add(sort.Value.Value<double>());
+                    }
+
+                    hit.AddSource(source.Name, source.Value);
+
+                    foreach (JProperty property in jObject.Properties())
+                    {
+                        hit.Fields.Add(property.Name, new List<object>() { property.Value });
+                    }
+
+                    hits.Add(hit);
+                }
+
+                topHitsAggregate.Hits.AddHits(hits);
+            }
+
+            logger.LogTrace("TopHits aggregate returned for {}: {}", columnName, topHitsAggregate);
+
+            return topHitsAggregate;
         }
 
         /// <summary>
