@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/vscode/devcontainers/base:0-ubuntu20.04
 
-ARG BUILD_ELASTIC_STACK_VERSION="7.10.2"
+ARG BUILD_ELASTIC_STACK_VERSION="7.16.2"
+ARG BUILD_KIBANA_VERSION="7.10.2"
 ARG BUILD_TERRAFORM_VERSION="1.0.9"
 ARG BUILD_MITMPROXY_VERSION="7.0.4"
 
@@ -43,19 +44,19 @@ WORKDIR $HOME
 # Install ElasticSearch
 ENV ELASTIC_STACK_VERSION=${BUILD_ELASTIC_STACK_VERSION}
 
-RUN wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
-RUN wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
-RUN shasum -a 512 -c elasticsearch-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
-RUN tar -xzf elasticsearch-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
-RUN rm elasticsearch-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
-RUN rm elasticsearch-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
+RUN wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
+RUN wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
+RUN shasum -a 512 -c elasticsearch-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
+RUN tar -xzf elasticsearch-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
+RUN rm elasticsearch-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
+RUN rm elasticsearch-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
 
 # Install Kibana
-RUN wget https://artifacts.elastic.co/downloads/kibana/kibana-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
-RUN wget https://artifacts.elastic.co/downloads/kibana/kibana-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
-RUN shasum -a 512 -c kibana-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
-RUN tar -xzf kibana-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
-RUN rm kibana-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz
-RUN rm kibana-oss-${ELASTIC_STACK_VERSION}-linux-x86_64.tar.gz.sha512
+RUN wget https://artifacts.elastic.co/downloads/kibana/kibana-oss-${BUILD_KIBANA_VERSION}-linux-x86_64.tar.gz
+RUN wget https://artifacts.elastic.co/downloads/kibana/kibana-oss-${BUILD_KIBANA_VERSION}-linux-x86_64.tar.gz.sha512
+RUN shasum -a 512 -c kibana-oss-${BUILD_KIBANA_VERSION}-linux-x86_64.tar.gz.sha512
+RUN tar -xzf kibana-oss-${BUILD_KIBANA_VERSION}-linux-x86_64.tar.gz
+RUN rm kibana-oss-${BUILD_KIBANA_VERSION}-linux-x86_64.tar.gz
+RUN rm kibana-oss-${BUILD_KIBANA_VERSION}-linux-x86_64.tar.gz.sha512
 
 CMD [ "sleep", "infinity" ]

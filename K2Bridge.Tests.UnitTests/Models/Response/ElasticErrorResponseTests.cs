@@ -4,9 +4,6 @@
 
 namespace UnitTests.K2Bridge.Models.Response
 {
-    using System;
-    using System.Data;
-    using global::K2Bridge.Models.Response;
     using global::K2Bridge.Models.Response.ElasticError;
     using NUnit.Framework;
     using UnitTests.K2Bridge.JsonConverters;

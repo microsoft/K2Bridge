@@ -15,7 +15,8 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase(ExpectedResult = "_data | summarize metric by ['key'] = ['field']\n| limit 10")]
         public string TermsVisit_WithNullOrder_ReturnsValidResponse()
         {
-            var termsAggregation = new TermsAggregation() {
+            var termsAggregation = new TermsAggregation()
+            {
                 Field = "field",
                 Key = "key",
                 Size = 10,
@@ -34,11 +35,13 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("1", ExpectedResult = "_data | summarize metric by ['key'] = ['field']\n| order by ['1'] desc\n| limit 10", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_ReturnsValidResponse(string sortFieldName)
         {
-            var termsAggregation = new TermsAggregation() {
+            var termsAggregation = new TermsAggregation()
+            {
                 Field = "field",
                 Key = "key",
                 Size = 10,
-                Order = new TermsOrder() {
+                Order = new TermsOrder()
+                {
                     SortField = sortFieldName,
                     SortOrder = "desc",
                 },
@@ -56,11 +59,13 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("1", ExpectedResult = "_data | summarize metric by ['key'] = tostring(['field'].['A'])\n| order by ['1'] desc\n| limit 10", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_DynamicString_ReturnsValidResponse(string sortFieldName)
         {
-            var termsAggregation = new TermsAggregation() {
+            var termsAggregation = new TermsAggregation()
+            {
                 Field = "field.A",
                 Key = "key",
                 Size = 10,
-                Order = new TermsOrder() {
+                Order = new TermsOrder()
+                {
                     SortField = sortFieldName,
                     SortOrder = "desc",
                 },
@@ -78,11 +83,13 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("1", ExpectedResult = "_data | summarize metric by ['key'] = todouble(['field'].['A'])\n| order by ['1'] desc\n| limit 10", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_DynamicLong_ReturnsValidResponse(string sortFieldName)
         {
-            var termsAggregation = new TermsAggregation() {
+            var termsAggregation = new TermsAggregation()
+            {
                 Field = "field.A",
                 Key = "key",
                 Size = 10,
-                Order = new TermsOrder() {
+                Order = new TermsOrder()
+                {
                     SortField = sortFieldName,
                     SortOrder = "desc",
                 },
@@ -100,11 +107,13 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("1", ExpectedResult = "_data | summarize metric by ['key'] = todouble(['field'].['A'])\n| order by ['1'] desc\n| limit 10", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_DynamicDouble_ReturnsValidResponse(string sortFieldName)
         {
-            var termsAggregation = new TermsAggregation() {
+            var termsAggregation = new TermsAggregation()
+            {
                 Field = "field.A",
                 Key = "key",
                 Size = 10,
-                Order = new TermsOrder() {
+                Order = new TermsOrder()
+                {
                     SortField = sortFieldName,
                     SortOrder = "desc",
                 },
@@ -122,11 +131,13 @@ namespace UnitTests.K2Bridge.Visitors
         [TestCase("1", ExpectedResult = "_data | summarize metric by ['key'] = todatetime(['field'].['A'])\n| order by ['1'] desc\n| limit 10", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_DynamicDate_ReturnsValidResponse(string sortFieldName)
         {
-            var termsAggregation = new TermsAggregation() {
+            var termsAggregation = new TermsAggregation()
+            {
                 Field = "field.A",
                 Key = "key",
                 Size = 10,
-                Order = new TermsOrder() {
+                Order = new TermsOrder()
+                {
                     SortField = sortFieldName,
                     SortOrder = "desc",
                 },

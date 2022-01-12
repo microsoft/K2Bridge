@@ -5,18 +5,13 @@
 namespace K2Bridge.Visitors
 {
     /// <summary>
-    /// Provides some constants to be used across the visitors classes.
+    /// Provides Kusto operators constants to be used across the visitors classes.
+    /// They are listed to group them in one place and to avoid hard coded strings.
     /// We are using KustoQL instead of the regular KQL since Kibana also has
     /// its own KQL term...
     /// </summary>
     public static class KustoQLOperators
     {
-        /// <summary>
-        /// These are Kusto operators that are used to create
-        /// a KQL query. They are listed to group them in one place
-        /// and in order to avoid hard coded strings in the different
-        /// visitors.
-        /// </summary>
 #pragma warning disable SA1600 // Elements should be documented
         public const string Count = "count";
         public const string And = "and";
@@ -75,6 +70,8 @@ namespace K2Bridge.Visitors
         public const string MakeList = "make_list";
         public const string True = "true";
         public const string TakeAny = "take_any";
+        public const string PackArray = "pack_array";
+        public const string MvExpand = "mv-expand";
 #pragma warning restore SA1600 // Elements should be documented
     }
 }

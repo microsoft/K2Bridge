@@ -14,6 +14,7 @@ namespace K2Bridge.KustoDAL
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Telemetry;
+    using K2Bridge.Utils;
     using Kusto.Data;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
@@ -24,9 +25,6 @@ namespace K2Bridge.KustoDAL
     /// </summary>
     public class KustoResponseParser : IResponseParser
     {
-        private const string AggregationTableName = "aggs";
-        private const string HitsTableName = "hits";
-        private const string HitsTotalTableName = "hitsTotal";
         private readonly Metrics metricsHistograms;
 
         private readonly bool outputBackendQuery;
@@ -56,10 +54,10 @@ namespace K2Bridge.KustoDAL
         {
             Ensure.IsNotNull(kustoResponseDataSet, nameof(kustoResponseDataSet));
 
-            if (kustoResponseDataSet[HitsTableName] != null)
+            if (kustoResponseDataSet[KustoTableNames.Hits] != null)
             {
                 using var highlighter = new LuceneHighlighter(query, Logger);
-                return HitsMapper.MapRowsToHits(kustoResponseDataSet[HitsTableName].TableData.Rows, query, highlighter);
+                return HitsMapper.MapRowsToHits(kustoResponseDataSet[KustoTableNames.Hits].TableData.Rows, query, highlighter);
             }
 
             return Enumerable.Empty<Hit>();
@@ -165,10 +163,10 @@ namespace K2Bridge.KustoDAL
             Logger.LogTrace("Reading response using reader.");
             var kustoResponse = ReadDataResponse(reader);
 
-            if (kustoResponse[AggregationTableName] != null)
+            if (kustoResponse[KustoTableNames.Aggregation] != null)
             {
                 var (key, aggregationType) = query.PrimaryAggregation;
-                var dataRowCollection = kustoResponse[AggregationTableName].TableData.Rows;
+                var dataRowCollection = kustoResponse[KustoTableNames.Aggregation].TableData.Rows;
 
                 Logger.LogTrace("Parsing aggregations");
 
@@ -187,7 +185,9 @@ namespace K2Bridge.KustoDAL
                     {
                         nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, dataRowCollection, Logger),
                         nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, dataRowCollection, Logger),
+                        nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, dataRowCollection, Logger),
                         nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, dataRowCollection, Logger),
+                        nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, dataRowCollection, Logger),
                         _ => null,
                     };
 
@@ -196,10 +196,10 @@ namespace K2Bridge.KustoDAL
             }
 
             // For Range aggregations, the calculated total hits is wrong, so we have an additional column with the expected count
-            if (kustoResponse[HitsTotalTableName] != null)
+            if (kustoResponse[KustoTableNames.HitsTotal] != null)
             {
                 // A single row with a single column
-                elasticResponse.SetTotal((long)kustoResponse[HitsTotalTableName].TableData.Rows[0][0]);
+                elasticResponse.SetTotal((long)kustoResponse[KustoTableNames.HitsTotal].TableData.Rows[0][0]);
             }
 
             // Read hits

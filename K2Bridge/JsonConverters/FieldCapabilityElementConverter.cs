@@ -4,7 +4,6 @@
 
 namespace K2Bridge.JsonConverters
 {
-    using System;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response.Metadata;
     using Newtonsoft.Json;
@@ -13,6 +12,8 @@ namespace K2Bridge.JsonConverters
     {
         private const string IsAggregatablePropetryName = "aggregatable";
         private const string IsSearchablePropetryName = "searchable";
+        private const string IsMetadataPropetryName = "metadata_field";
+
         private const string TypePropetryName = "type";
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -26,6 +27,8 @@ namespace K2Bridge.JsonConverters
             serializer.Serialize(writer, fieldCapabilityElement.IsAggregatable);
             writer.WritePropertyName(IsSearchablePropetryName);
             serializer.Serialize(writer, fieldCapabilityElement.IsSearchable);
+            writer.WritePropertyName(IsMetadataPropetryName);
+            serializer.Serialize(writer, fieldCapabilityElement.IsMetadataField);
             writer.WritePropertyName(TypePropetryName);
             serializer.Serialize(writer, fieldCapabilityElement.Type);
             writer.WriteEndObject();

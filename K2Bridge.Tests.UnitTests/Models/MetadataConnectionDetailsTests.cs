@@ -6,7 +6,6 @@ namespace UnitTests.K2Bridge.Models
 {
     using System;
     using global::K2Bridge.Factories;
-    using global::K2Bridge.Utils;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using NUnit.Framework;

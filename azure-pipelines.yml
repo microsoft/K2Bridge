@@ -347,8 +347,8 @@ stages:
         helm repo add elastic https://helm.elastic.co
         helm upgrade --install elasticsearchqa elastic/elasticsearch \
           --wait --timeout 45m \
-          --set image=docker.elastic.co/elasticsearch/elasticsearch-oss \
-          --set imageTag=7.10.2 \
+          --set image=docker.elastic.co/elasticsearch/elasticsearch \
+          --set imageTag=7.16.2 \
           --set clusterName=elasticsearchqa \
           --set replicas=1 \
           --set persistence.enabled=false \

@@ -26,7 +26,8 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
         [TestCase]
         public void Visit_WithInvalidQuery_ThrowsException()
         {
-            var query = new LuceneMatchAllDocsQuery {
+            var query = new LuceneMatchAllDocsQuery
+            {
                 LuceneQuery = null,
             };
             var visitor = new LuceneVisitor();
@@ -35,10 +36,11 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
                 Throws.TypeOf<IllegalClauseException>());
         }
 
-        [TestCase(ExpectedResult = null)]
+        [TestCase(ExpectedResult = "true")]
         public string Visit_WithValidQuery_ReturnsValidResponse()
         {
-            var query = new LuceneMatchAllDocsQuery {
+            var query = new LuceneMatchAllDocsQuery
+            {
                 LuceneQuery =
                     new Lucene.Net.Search.MatchAllDocsQuery(),
             };

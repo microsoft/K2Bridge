@@ -4,8 +4,6 @@
 
 namespace K2Bridge.RewriteRules
 {
-    using System.IO;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Rewrite;
 
     /// <summary>
