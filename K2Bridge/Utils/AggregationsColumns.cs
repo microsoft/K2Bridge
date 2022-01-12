@@ -2,17 +2,27 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response
+namespace K2Bridge.Utils
 {
     /// <summary>
     /// ColumnNames.
     /// </summary>
-    internal class BucketColumnNames
+    public class AggregationsColumns
     {
         /// <summary>
-        /// Gets Count.
+        /// Gets count column name.
         /// </summary>
         public static string Count => "count_";
+
+        /// <summary>
+        /// Gets Percentile column name.
+        /// </summary>
+        public static string Percentile => "percentile";
+
+        /// <summary>
+        /// Gets TopHits column name.
+        /// </summary>
+        public static string TopHits => "tophits";
 
         /// <summary>
         /// Gets name of the default bucket for values that don't match any range.
