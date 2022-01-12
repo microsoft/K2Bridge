@@ -175,7 +175,7 @@ namespace K2Bridge.KustoDAL
                     // This is not a bucket aggregation scenario
                     foreach (DataRow row in dataRowCollection)
                     {
-                        searchResponse.Aggregations.AddAggregates(key, row, Logger);
+                        searchResponse.Aggregations.AddAggregates(key, row, Logger, query);
                     }
                 }
                 else
