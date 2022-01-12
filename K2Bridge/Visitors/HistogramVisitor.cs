@@ -11,6 +11,9 @@ namespace K2Bridge.Visitors
 
     /// <content>
     /// A visitor for the <see cref="HistogramAggregation"/> element.
+    /// Sample KustoQL Query:
+    /// (_data | summarize count() by ['2'] = bin(['AvgTicketPrice'], 20)
+    /// | order by ['2'] asc | where ['count_'] between (50 .. 150) | as aggs);
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
