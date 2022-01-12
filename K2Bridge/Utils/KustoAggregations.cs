@@ -4,7 +4,7 @@
 
 namespace K2Bridge.Utils
 {
-    public static class AggregationsConstants
+    public static class KustoAggregations
     {
         /// <summary>
         /// Separator character used to join and split column metadata.
