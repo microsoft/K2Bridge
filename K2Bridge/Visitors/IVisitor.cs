@@ -100,6 +100,12 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
+        /// <param name="extendedStatsAggregation">The Extended Stats Aggregations to visit.</param>
+        void Visit(ExtendedStatsAggregation extendedStatsAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
         /// <param name="minAggregation">The Min Aggregations to visit.</param>
         void Visit(MinAggregation minAggregation);
 
