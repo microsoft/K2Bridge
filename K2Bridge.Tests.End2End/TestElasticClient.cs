@@ -112,15 +112,16 @@ namespace K2Bridge.Tests.End2End
         /// </summary>
         public static void RoundFloats(JToken parent, string jsonPath, int? digits = null)
         {
-            if (digits.HasValue)
+            if (!digits.HasValue)
             {
-                var rootToken = parent.SelectToken(jsonPath);
-                foreach (JValue v in TestElasticClient.GetAllDescendantsTokens(rootToken).Where(x => x.Type == JTokenType.Float))
-                {
-                    var originalMetricValue = (double)v.Value;
-                    var normalizedMetricValue = Math.Round(originalMetricValue, digits.Value);
-                    v.Value = normalizedMetricValue;
-                }
+                return;
+            }
+            var rootToken = parent.SelectToken(jsonPath);
+            foreach (JValue v in TestElasticClient.GetAllDescendantsTokens(rootToken).Where(x => x.Type == JTokenType.Float))
+            {
+                var originalMetricValue = (double)v.Value;
+                var normalizedMetricValue = Math.Round(originalMetricValue, digits.Value);
+                v.Value = normalizedMetricValue;
             }
         }
 
