@@ -15,6 +15,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             ""text"": {
                 ""aggregatable"": true,
                 ""searchable"": true,
+                ""metadata_field"": false,
                 ""type"": ""text""
             }
         }";
@@ -25,6 +26,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             Type = "text",
             IsAggregatable = true,
             IsSearchable = true,
+            IsMetadataField = false,
         };
 
         private static readonly object[] FieldCapsTestCases = {

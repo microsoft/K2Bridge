@@ -123,7 +123,7 @@ namespace K2Bridge.Tests.End2End
             const string fileName = "flights.json.gz";
             if (!File.Exists(fileName))
             {
-                await DownloadFile("https://github.com/elastic/kibana/raw/v7.10.2/src/plugins/home/server/services/sample_data/data_sets/flights/flights.json.gz", fileName);
+                await DownloadFile("https://github.com/elastic/kibana/raw/v7.16.2/src/plugins/home/server/services/sample_data/data_sets/flights/flights.json.gz", fileName);
             }
 
             await PopulateBothBackends($"{FLIGHTSDIR}/structure.json", fileName);

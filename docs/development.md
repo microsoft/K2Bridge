@@ -2,8 +2,8 @@
 
 ## Setting up a local environment
 
-1. Download [Elasticsearch](https://www.elastic.co/downloads/past-releases/elasticsearch-oss-6-8-6) (currently we support version 6.8.*), unpack and run.
-1. Download [Kibana](https://www.elastic.co/downloads/past-releases/kibana-oss-6-8-6) (currently we support version 6.8.*) and unpack
+1. Download [Elasticsearch](https://www.elastic.co/downloads/past-releases/elasticsearch-7-16-2) (currently we support version 7.16.*), unpack and run.
+1. Download [Kibana](https://www.elastic.co/downloads/past-releases/kibana-7-16-2) (currently we support version 7.16.*) and unpack
 1. Under Kibana's '*config*' directory, edit the *kibana.yml* file and add the following line. Note that this assumes that the bridge will listen on port 8080 which you'll set in the steps below.
 
     ```yaml
