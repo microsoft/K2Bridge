@@ -30,19 +30,23 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var timestamp = row[primaryKey];
-            Ensure.IsNotNull(timestamp, nameof(timestamp));
 
-            var count = row[BucketColumnNames.Count];
-            var dateBucket = (DateTime)timestamp;
+            var dhb = new DateHistogramBucket();
 
-            var dhb = new DateHistogramBucket
+            if (timestamp.GetType() != typeof(System.DBNull))
             {
-                DocCount = Convert.ToInt32(count),
-                Key = TimeUtils.ToEpochMilliseconds(dateBucket),
-                KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
-            };
+                var count = row[BucketColumnNames.Count];
+                var dateBucket = (DateTime)timestamp;
 
-            dhb.AddAggregates(primaryKey, row, logger);
+                dhb = new DateHistogramBucket
+                {
+                    DocCount = Convert.ToInt32(count),
+                    Key = TimeUtils.ToEpochMilliseconds(dateBucket),
+                    KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
+                };
+
+                dhb.AddAggregates(primaryKey, row, logger);
+            }
 
             return dhb;
         }
@@ -211,20 +215,24 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
+            var hb = new HistogramBucket();
+
             var key = row[0];
-            Ensure.IsNotNull(key, nameof(key));
-
-            var count = row[BucketColumnNames.Count];
-            var keyed = row.Table.Columns[0].ToString().Split(AggregationsConstants.MetadataSeparator)[1];
-
-            var hb = new HistogramBucket
+            if (key.GetType() != typeof(System.DBNull))
             {
-                DocCount = Convert.ToInt32(count),
-                Key = Convert.ToDouble(key),
-                Keyed = Convert.ToBoolean(keyed),
-            };
+                var count = row[BucketColumnNames.Count];
+                var keyed = row.Table.Columns[0].ToString().Split(AggregationsConstants.MetadataSeparator)[1];
 
-            hb.AddAggregates(primaryKey, row, logger);
+                hb = new HistogramBucket
+                {
+                    DocCount = Convert.ToInt32(count),
+                    Key = Convert.ToDouble(key),
+                    Keyed = Convert.ToBoolean(keyed),
+                };
+
+                hb.AddAggregates(primaryKey, row, logger);
+            }
+
             return hb;
         }
     }

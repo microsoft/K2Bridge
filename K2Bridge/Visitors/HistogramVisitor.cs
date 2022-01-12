@@ -31,12 +31,12 @@ namespace K2Bridge.Visitors
 
             histogramAggregation.KustoQL += $"bin({field}, {interval})";
 
-            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} ['{BucketColumnNames.Count}'] >= {histogramAggregation.MinimumDocumentCount}";
+            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(BucketColumnNames.Count)} >= {histogramAggregation.MinimumDocumentCount}";
 
             if (histogramAggregation.HardBounds != null)
             {
-                var min = Convert.ToInt32(histogramAggregation.HardBounds.Min) - interval;
-                var max = Convert.ToInt32(histogramAggregation.HardBounds.Max) + interval;
+                var min = Convert.ToInt32(histogramAggregation.HardBounds.Min);
+                var max = Convert.ToInt32(histogramAggregation.HardBounds.Max);
                 histogramAggregation.KustoQL += $" {KustoQLOperators.And} {histogramKey} between ({min} .. {max})";
             }
 
