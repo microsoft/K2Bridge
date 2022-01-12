@@ -21,10 +21,14 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Metric, nameof(TermsAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Field, nameof(TermsAggregation.Field));
 
-            var extendExpression = $"{EncodeKustoField(termsAggregation.Field, true)}";
+            var subAggregations = termsAggregation.Parent.SubAggregations;
 
+            // Extend expression: ['2']=['Carrier']
+            var extendExpression = $"{EncodeKustoField(termsAggregation.Key)}={EncodeKustoField(termsAggregation.Field, true)}";
+
+            // Bucket expression: count() by ['2']=['Carrier'] | order by count_ desc | limit 5
             var bucketExpression = new StringBuilder();
-            bucketExpression.Append($"{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}");
+            bucketExpression.Append($"{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)}={EncodeKustoField(termsAggregation.Field, true)} ");
 
             var orderBy = termsAggregation.Order?.SortField switch
             {
@@ -35,12 +39,12 @@ namespace K2Bridge.Visitors
             };
 
             bucketExpression.Append(orderBy);
-            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Limit} {termsAggregation.Size}");
+            bucketExpression.Append($" {KustoQLOperators.CommandSeparator} {KustoQLOperators.Limit} {termsAggregation.Size}");
 
-            var subAggregations = termsAggregation.Parent.SubAggregations;
-            var bucketKey = termsAggregation.Key;
-
-            var query = BuildBucketQuery(subAggregations, bucketKey, extendExpression, bucketExpression.ToString());
+            // Build final query using termsAggregation expressions
+            // let _extdata = _data | extend ['2']=['Carrier'];
+            // let _summarizablemetrics = _extdata | summarize  count() by ['2']=['Carrier'] | order by count_ desc | limit 5;
+            var query = BuildBucketQuery(subAggregations, extendExpression, bucketExpression.ToString());
 
             termsAggregation.KustoQL = query;
         }
