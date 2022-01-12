@@ -320,10 +320,17 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("/_msearch visualization query with histogram and median")]
+        [Description("/_msearch visualization query with histogram and percentile")]
         public void CompareElasticKusto_WhenMSearchVizHistogramPercentile_ResponsesAreEquivalent()
         {
             ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Percentile.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with histogram and median with hard bounds")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMedianWithHardBounds_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median_HardBounds.json");
         }
 
         private static void AssertJsonIdentical(JToken k2, JToken es)
