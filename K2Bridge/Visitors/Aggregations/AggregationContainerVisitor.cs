@@ -4,8 +4,10 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Collections.Generic;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the root <see cref="AggregationContainer"/> element.
@@ -24,23 +26,39 @@ namespace K2Bridge.Visitors
 
             if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
             {
-                // Get all sub aggregation metrics
-                // KQL ==> [key1]=metric(field1), [key2]=metric(field2), (will be appended with count())
-                var metrics = new StringBuilder();
-                if (aggregationContainer.SubAggregations?.Count > 0)
-                {
-                    foreach (var (_, subAgg) in aggregationContainer.SubAggregations)
-                    {
-                        subAgg.Accept(this);
-                        metrics.Append($"{subAgg.KustoQL}, ");
-                    }
-
-                    bucketAggregation.SubAggregationsKustoQL = metrics.ToString();
-                }
+                bucketAggregation.SubAggregationsKustoQL = BuildSummarizableMetricsQuery(aggregationContainer.SubAggregations);
             }
 
             aggregationContainer.PrimaryAggregation.Accept(this);
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
+        }
+
+        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary)
+        {
+            var query = new StringBuilder();
+
+            // Collect all metrics
+            // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
+            var summarizableMetrics = new List<string>();
+            foreach (var (_, aggregation) in aggregationDictionary)
+            {
+                aggregation.Accept(this);
+                summarizableMetrics.Add($"{aggregation.KustoQL}");
+            }
+
+            var summarizableMetricsExpression = string.Join(',', summarizableMetrics);
+
+            // Build summarizable metrics query
+            // let _summarizablemetrics = _extdata | summarize ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
+            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.SummarizableMetricsQuery} = {AggregationsSubQueries.ExtDataQuery} ");
+            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {summarizableMetricsExpression}");
+
+            if (!string.IsNullOrEmpty(summarizableMetricsExpression))
+            {
+                query.Append($",");
+            }
+
+            return query.ToString();
         }
     }
 }
