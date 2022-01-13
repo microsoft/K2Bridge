@@ -5,9 +5,10 @@
 namespace K2Bridge.Models.Request
 {
     /// <summary>
-    /// An interface which defines if a metric aggregation can be used with summarize operator.
+    /// An interface which defines if a metric aggregation can be used with partition operator.
     /// </summary>
-    internal interface ISummarizable
+    internal interface IPartitionable
     {
+        string PartitionKey { get; set; }
     }
 }
