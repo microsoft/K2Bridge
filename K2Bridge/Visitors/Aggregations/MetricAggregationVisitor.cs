@@ -24,6 +24,8 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(avgAggregation.Field, avgAggregation.Field, ExceptionMessage);
 
             avgAggregation.KustoQL = $"{EncodeKustoField(avgAggregation.Key)}={KustoQLOperators.Avg}({EncodeKustoField(avgAggregation)})";
+
+            ParsedMetricAggregationKeys.Add(avgAggregation.Key);
         }
 
         /// <inheritdoc/>
@@ -33,6 +35,8 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(cardinalityAggregation.Field, cardinalityAggregation.Field, ExceptionMessage);
 
             cardinalityAggregation.KustoQL = $"{EncodeKustoField(cardinalityAggregation.Key)}={KustoQLOperators.DCount}({EncodeKustoField(cardinalityAggregation)})";
+
+            ParsedMetricAggregationKeys.Add(cardinalityAggregation.Key);
         }
 
         /// <inheritdoc/>
@@ -42,6 +46,8 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(minAggregation.Field, minAggregation.Field, ExceptionMessage);
 
             minAggregation.KustoQL = $"{EncodeKustoField(minAggregation.Key)}={KustoQLOperators.Min}({EncodeKustoField(minAggregation)})";
+
+            ParsedMetricAggregationKeys.Add(minAggregation.Key);
         }
 
         /// <inheritdoc/>
@@ -51,6 +57,8 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(maxAggregation.Field, maxAggregation.Field, ExceptionMessage);
 
             maxAggregation.KustoQL = $"{EncodeKustoField(maxAggregation.Key)}={KustoQLOperators.Max}({EncodeKustoField(maxAggregation)})";
+
+            ParsedMetricAggregationKeys.Add(maxAggregation.Key);
         }
 
         /// <inheritdoc/>
@@ -60,6 +68,8 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(sumAggregation.Field, sumAggregation.Field, ExceptionMessage);
 
             sumAggregation.KustoQL = $"{EncodeKustoField(sumAggregation.Key)}={KustoQLOperators.Sum}({EncodeKustoField(sumAggregation)})";
+
+            ParsedMetricAggregationKeys.Add(sumAggregation.Key);
         }
 
         /// <inheritdoc/>
@@ -81,6 +91,8 @@ namespace K2Bridge.Visitors
             // Example: ['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)']
             var keyWithMetadata=$"['{string.Join(AggregationsMetadata.Separator, metadata)}']";
             percentileAggregation.KustoQL = $"{keyWithMetadata}={KustoQLOperators.PercentilesArray}({EncodeKustoField(percentileAggregation)}, {valuesForOperator})";
+
+            ParsedMetricAggregationKeys.Add(keyWithMetadata);
         }
 
         /// <inheritdoc/>
@@ -88,9 +100,6 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(topHitsAggregation, nameof(topHitsAggregation));
             EnsureClause.StringIsNotNullOrEmpty(topHitsAggregation.Field, topHitsAggregation.Field, ExceptionMessage);
-
-            var aggregationDictionary = topHitsAggregation.Parent;
-            var primaryAggregation = aggregationDictionary?.Parent?.PrimaryAggregation;
 
             // top 2 by timestamp asc
             var sort = topHitsAggregation.Sort.First();
@@ -104,10 +113,22 @@ namespace K2Bridge.Visitors
             var keyWithMetadata = $"{topHitsAggregation.Key}{AggregationsMetadata.Separator}{AggregationsColumns.TopHits}";
             var summarizeExpression = $"{EncodeKustoField(keyWithMetadata)}={KustoQLOperators.MakeList}({EncodeKustoField(topHitsAggregation.Key)})";
 
-            var subQueryName = $"_{AggregationsColumns.TopHits}{topHitsAggregation.Key}";
-            var query = BuildPartitionQuery(topHitsAggregation.Parent, primaryAggregation?.Key, subQueryName, topHitsExpression, projectExpression, summarizeExpression);
+            var partionQueryName = $"_{AggregationsColumns.TopHits}{topHitsAggregation.Key}";
+
+            var definition = new PartitionQueryDefinition()
+            {
+                AggregationExpression = topHitsExpression,
+                ProjectExpression = projectExpression,
+                SummarizeExpression = summarizeExpression,
+                PartitionKey = topHitsAggregation.PartitionKey,
+                PartionQueryName = partionQueryName,
+            };
+
+            var query = BuildPartitionQuery(definition);
 
             topHitsAggregation.KustoQL = query;
+
+            ParsedMetricAggregationKeys.Add(keyWithMetadata);
         }
     }
 }
