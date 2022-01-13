@@ -4,8 +4,11 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Collections.Generic;
     using System.Text;
+    using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the root <see cref="AggregationContainer"/> element.
@@ -22,8 +25,79 @@ namespace K2Bridge.Visitors
                 return;
             }
 
+            if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
+            {
+                ParsedMetricAggregationKeys.Add(bucketAggregation.Key);
+
+                bucketAggregation.SummarizableMetricsKustoQL = BuildSummarizableMetricsQuery(
+                    aggregationContainer.SubAggregations);
+
+                bucketAggregation.PartitionableMetricsKustoQL = BuildPartitionableMetricsQuery(
+                    aggregationContainer.SubAggregations,
+                    bucketAggregation.Key);
+
+            }
+
             aggregationContainer.PrimaryAggregation.Accept(this);
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
+        }
+
+        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary, string bucketMetricKey = AggregationsColumns.Count)
+        {
+            var letSummarizableMetrics = AggregationsSubQueries.SummarizableMetricsQuery;
+            SubQueriesStack.Add(letSummarizableMetrics);
+
+            ParsedMetricAggregationKeys.Add(bucketMetricKey);
+
+            // Collect all ISummarizable metrics
+            // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
+            var summarizableMetrics = new List<string>();
+            foreach (var (_, aggregationContainer) in aggregationDictionary)
+            {
+                var aggregation = aggregationContainer.PrimaryAggregation;
+                if (aggregation is ISummarizable)
+                {
+                    aggregation.Accept(this);
+                    summarizableMetrics.Add($"{aggregation.KustoQL}");
+                }
+            }
+
+            var query = new StringBuilder();
+            var summarizableMetricsExpression = string.Join(',', summarizableMetrics);
+
+            // Build summarizable metrics query
+            // let _summarizablemetrics = _extdata | summarize ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
+            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letSummarizableMetrics} = {AggregationsSubQueries.ExtDataQuery} ");
+
+            if (string.IsNullOrEmpty(summarizableMetricsExpression))
+            {
+                query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} ");
+            }
+            else
+            {
+                query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {summarizableMetricsExpression},");
+            }
+
+
+            return query.ToString();
+        }
+
+        public string BuildPartitionableMetricsQuery(AggregationDictionary aggregationDictionary, string partitionKey)
+        {
+            var query = new StringBuilder();
+            foreach (var (_, aggregationContainer) in aggregationDictionary)
+            {
+                var aggregation = aggregationContainer.PrimaryAggregation;
+                if (aggregation is IPartitionable)
+                {
+                    ((IPartitionable)aggregation).PartitionKey = partitionKey;
+
+                    aggregation.Accept(this);
+                    query.Append($"{aggregation.KustoQL}");
+                }
+            }
+
+            return query.ToString();
         }
     }
 }
