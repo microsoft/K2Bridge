@@ -4,7 +4,7 @@
 
 ### AKS
 
-You need an AKS cluster ([create an AKS cluster instructions](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal#create-an-aks-cluster)) or any other Kubernetes cluster (version 1.14 or newer - tested and verified up to version 1.16. and a minimum of 3 node count).  
+You need an AKS cluster ([create an AKS cluster instructions](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal#create-an-aks-cluster)) or any other Kubernetes cluster (version 1.21.2 or newer - tested and verified with version 1.21.2. and a minimum of 3 node count).  
 
 You need to be able to connect to your cluster from your machine.
 
