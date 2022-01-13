@@ -70,6 +70,12 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
+        /// <param name="defaultAggregation">The Bucket Aggregations to visit.</param>
+        void Visit(DefaultAggregation defaultAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
         /// <param name="dateHistogramAggregation">The Bucket Aggregations to visit.</param>
         void Visit(DateHistogramAggregation dateHistogramAggregation);
 
