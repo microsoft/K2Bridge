@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -21,6 +22,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(aggregationDictionary, nameof(aggregationDictionary));
 
             var query = new StringBuilder();
+            var projectAwayExpression = string.Empty;
             var (_, firstAggregationContainer) = aggregationDictionary.First();
 
             if (aggregationDictionary.Count == 1 && firstAggregationContainer.PrimaryAggregation is BucketAggregation)
@@ -28,23 +30,28 @@ namespace K2Bridge.Visitors
                 // This is a bucket aggregation scenario.
                 // We delegate the KQL syntax construction to the aggregation container.
                 firstAggregationContainer.Accept(this);
-                query.Append($"\n({firstAggregationContainer.KustoQL} | as aggs);");
+                query.Append(firstAggregationContainer.KustoQL);
             }
             else
             {
                 // This is not a bucket aggregation scenario.
-                // Get all metrics.
-                var metrics = new List<string>();
-                foreach (var (_, aggregationContainer) in aggregationDictionary)
-                {
-                    aggregationContainer.Accept(this);
-                    metrics.Add($"{aggregationContainer.KustoQL}");
-                }
+                string defaultKey = Guid.NewGuid().ToString();
 
-                // KQL ==> (_data | summarize [key1]=metric(field1), [key2]=metric(field2) | as aggs);
-                var metricsKustoQL = string.Join(',', metrics);
-                query.Append($"\n(_data | {KustoQLOperators.Summarize} {metricsKustoQL} | as aggs);");
+                var defaultAggregation = new AggregationContainer()
+                {
+                    PrimaryAggregation = new DefaultAggregation() { Key = defaultKey },
+                    SubAggregations = aggregationDictionary,
+                };
+
+                defaultAggregation.Accept(this);
+
+                // We project away the default key column
+                projectAwayExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(defaultKey)}";
             }
+
+            // (_summarizablemetrics | as aggs)
+            query.Append($"{KustoQLOperators.NewLine}({AggregationsSubQueries.SummarizableMetricsQuery}");
+            query.Append($"{projectAwayExpression} {KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregation});");
 
             aggregationDictionary.KustoQL = query.ToString();
         }
