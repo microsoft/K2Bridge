@@ -70,6 +70,7 @@ namespace K2Bridge.Visitors
         public const string MvExpand = "mv-expand";
         public const string CommandSeparator = "\n|";
         public const string NewLine = "\n";
+        public const string True = "true";
 #pragma warning restore SA1600 // Elements should be documented
     }
 }
