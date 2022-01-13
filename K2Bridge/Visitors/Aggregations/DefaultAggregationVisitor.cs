@@ -16,8 +16,8 @@ namespace K2Bridge.Visitors
         {
             Ensure.IsNotNull(defaultAggregation, nameof(DefaultAggregation));
 
-            var extendExpression = $"{EncodeKustoField(DefaultKey)}={KustoQLOperators.True}";
-            var bucketExpression = $"{defaultAggregation.Metric} by {EncodeKustoField(DefaultKey)}";
+            var extendExpression = $"{EncodeKustoField(defaultAggregation.Key)}={KustoQLOperators.True}";
+            var bucketExpression = $"{defaultAggregation.Metric} by {EncodeKustoField(defaultAggregation.Key)}";
 
             var definition = new BucketAggregationQueryDefinition()
             {
