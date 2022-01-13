@@ -24,7 +24,7 @@ namespace K2Bridge.Visitors
 
             // Add main aggregation query (summarize)
             // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=
-            query.Append($"({KustoTableNames.Data} | {KustoQLOperators.Summarize} {dateHistogramAggregation.SubAggregationsKustoQL}{dateHistogramAggregation.Metric} ");
+            query.Append($"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {dateHistogramAggregation.SubAggregationsKustoQL}{dateHistogramAggregation.Metric} ");
             query.Append($"by {EncodeKustoField(dateHistogramAggregation.Key)} = ");
 
             // Add group expression
@@ -55,8 +55,8 @@ namespace K2Bridge.Visitors
             }
 
             // Add order by
-            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc | {KustoQLOperators.As} {KustoTableNames.Aggregation});");
-            dateHistogramAggregation.KustoQL = query.ToString();
+            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
+            dateHistogramAggregation.KustoQL = WrapBucketAggregationKustoQuery(query.ToString());
         }
     }
 }

@@ -27,7 +27,7 @@ namespace K2Bridge.Visitors
             // _data | extend ['key'] = pack_array("k1", "k2", "k3"), ['_filter_value']=pack_array(expr1, expr2, expr3)
 
             // Start of query, until first pack_array()
-            queryStringBuilder.Append($"({KustoTableNames.Data} | {KustoQLOperators.Extend} {EncodeKustoField(filtersAggregation.Key)} = {KustoQLOperators.PackArray}(");
+            queryStringBuilder.Append($"{KustoTableNames.Data} | {KustoQLOperators.Extend} {EncodeKustoField(filtersAggregation.Key)} = {KustoQLOperators.PackArray}(");
 
             // Insert filters names
             foreach (var filter in filtersAggregation.Filters)
@@ -62,9 +62,9 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Append($" | {KustoQLOperators.Summarize} {filtersAggregation.SubAggregationsKustoQL}{filtersAggregation.Metric} by {EncodeKustoField(filtersAggregation.Key)}");
 
             // Order rows by key
-            queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc | {KustoQLOperators.As} {KustoTableNames.Aggregation});");
+            queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc");
 
-            filtersAggregation.KustoQL = queryStringBuilder.ToString();
+            filtersAggregation.KustoQL = WrapBucketAggregationKustoQuery(queryStringBuilder.ToString());
         }
     }
 }
