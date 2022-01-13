@@ -55,21 +55,20 @@ namespace K2Bridge.Visitors
 
             var query = new StringBuilder();
 
-            var extendDataQuery = BuildExtendDataQuery(definition.ExtendExpression);
-            query.Append(extendDataQuery);
-
-            var summarizableMetricsQuery = $"{bucketAggregation.SubAggregationsKustoQL} {definition.BucketExpression};";
-            query.Append(summarizableMetricsQuery);
+            query.Append(BuildExtendDataQuery(definition.ExtendExpression));
+            query.Append($"{bucketAggregation.SubAggregationsKustoQL} {definition.BucketExpression};");
 
             return query.ToString();
         }
 
         public string BuildExtendDataQuery(string extendExpression)
         {
-            var letExtData = AggregationsSubQueries.ExtDataQuery;
-            var query = $"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letExtData} = {KustoTableNames.Data} {KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {extendExpression};";
+            var query = new StringBuilder();
 
-            return query;
+            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.ExtDataQuery} = {KustoTableNames.Data}");
+            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {extendExpression};");
+
+            return query.ToString();
         }
     }
 }
