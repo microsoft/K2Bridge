@@ -8,6 +8,7 @@ namespace K2Bridge.Visitors
     using System.Linq;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the root <see cref="AggregationDictionary"/> element.
@@ -46,6 +47,29 @@ namespace K2Bridge.Visitors
             }
 
             aggregationDictionary.KustoQL = query.ToString();
+        }
+
+        public string BuildBucketAggregationQuery(BucketAggregation bucketAggregation, BucketAggregationQueryDefinition definition)
+        {
+            Ensure.IsNotNull(bucketAggregation, nameof(bucketAggregation));
+
+            var query = new StringBuilder();
+
+            var extendDataQuery = BuildExtendDataQuery(definition.ExtendExpression);
+            query.Append(extendDataQuery);
+
+            var summarizableMetricsQuery = $"{bucketAggregation.KustoQL}{definition.BucketExpression};";
+            query.Append(summarizableMetricsQuery);
+
+            return query.ToString();
+        }
+
+        public string BuildExtendDataQuery(string extendExpression)
+        {
+            var letExtData = AggregationsSubQueries.ExtDataQuery;
+            var query = $"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {letExtData} = {KustoTableNames.Data} {KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {extendExpression};";
+
+            return query;
         }
     }
 }
