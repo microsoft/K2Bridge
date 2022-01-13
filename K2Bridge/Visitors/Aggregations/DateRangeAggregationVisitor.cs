@@ -21,10 +21,9 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateRangeAggregation.Field, nameof(RangeAggregation.Field));
 
             string expandColumn = EncodeKustoField("_range_value");
-            var subAggregations = dateRangeAggregation.Parent.SubAggregations;
 
             // Extend expression:
-            // >> ['2']=pack_array("range1", "range2", "range3"), ['_range_value']=pack_array(expr1, expr2, expr3)
+            // >> ['2']=pack_array("range1", "range2", "range3"), ['_range_value'] = pack_array(expr1, expr2, expr3)
             // >> | mv-expand ['2'] to typeof(string), ['_range_value']
             // >> | where ['_range_value'] == true
             var extendExpression = new StringBuilder();
@@ -50,11 +49,11 @@ namespace K2Bridge.Visitors
                 rangeNames.Add(range.BucketNameKustoQL);
             }
 
-            extendExpression.Append($"{EncodeKustoField(dateRangeAggregation.Key)}={KustoQLOperators.PackArray}({string.Join(',', rangeNames)}),");
-            extendExpression.Append($"{expandColumn}={KustoQLOperators.PackArray}({string.Join(',', rangeExpressions)})");
+            extendExpression.Append($"{EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}({string.Join(',', rangeNames)}), ");
+            extendExpression.Append($"{expandColumn} = {KustoQLOperators.PackArray}({string.Join(',', rangeExpressions)}) ");
 
-            extendExpression.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.CommandSeparator} {KustoQLOperators.MvExpand} {EncodeKustoField(dateRangeAggregation.Key)} to typeof(string), {expandColumn}");
-            extendExpression.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.CommandSeparator} {KustoQLOperators.Where} {expandColumn} == {KustoQLOperators.True}");
+            extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.MvExpand} {EncodeKustoField(dateRangeAggregation.Key)} to typeof(string), {expandColumn} ");
+            extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Where} {expandColumn} == {KustoQLOperators.True}");
 
             // Bucket expression:
             // >> count() by ['2'] | order by ['2'] asc
@@ -64,7 +63,14 @@ namespace K2Bridge.Visitors
             bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc");
 
             // Build final query using dateRangeAggregation expressions
-            var query = BuildBucketQuery(subAggregations, extendExpression.ToString(), bucketExpression.ToString());
+            var definition = new BucketAggregationQueryDefinition()
+            {
+                ExtendExpression = extendExpression.ToString(),
+                BucketExpression = bucketExpression.ToString(),
+                BucketKey =  dateRangeAggregation.Key,
+            };
+
+            var query = BuildBucketAggregationQuery(dateRangeAggregation, definition);
 
             dateRangeAggregation.KustoQL = query;
         }
