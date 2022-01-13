@@ -24,11 +24,5 @@ namespace K2Bridge.Models.Request.Aggregations
         /// </summary>
         [JsonProperty("missing")]
         public virtual double? Missing { get; set; }
-
-        /// <summary>
-        ///  Gets or sets the parent aggregation dictionary.
-        /// </summary>
-        [JsonIgnore]
-        public virtual AggregationDictionary Parent { get; set; }
     }
 }
