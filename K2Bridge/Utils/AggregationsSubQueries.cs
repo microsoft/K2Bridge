@@ -10,5 +10,10 @@ namespace K2Bridge.Utils
         /// Query name used to identify extend data.
         /// </summary>
         public const string ExtDataQuery = "_extdata";
+
+        /// <summary>
+        /// Query name used to identify summarizable metrics.
+        /// </summary>
+        public const string SummarizableMetricsQuery = "_summarizablemetrics";
     }
 }
