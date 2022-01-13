@@ -58,7 +58,7 @@ namespace K2Bridge.Visitors
             var extendDataQuery = BuildExtendDataQuery(definition.ExtendExpression);
             query.Append(extendDataQuery);
 
-            var summarizableMetricsQuery = $"{bucketAggregation.KustoQL}{definition.BucketExpression};";
+            var summarizableMetricsQuery = $"{bucketAggregation.SubAggregationsKustoQL} {definition.BucketExpression};";
             query.Append(summarizableMetricsQuery);
 
             return query.ToString();
