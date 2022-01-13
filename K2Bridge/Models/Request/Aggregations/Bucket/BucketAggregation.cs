@@ -15,9 +15,13 @@ namespace K2Bridge.Models.Request.Aggregations
         public string Metric { get; set; } = "count()";
 
         /// <summary>
-        ///  Gets or sets the parent aggregation container.
+        /// Gets or sets the summarizable metrics part of the query, assembled by the sub aggregations.
         /// </summary>
-        //
-        public AggregationContainer Parent { get; set; }
+        public string SummarizableMetricsKustoQL { get; set; }
+
+        /// <summary>
+        /// Gets or sets the partionable metrics part of the query, assembled by the sub aggregations.
+        /// </summary>
+        public string PartitionableMetricsKustoQL { get; set; }
     }
 }

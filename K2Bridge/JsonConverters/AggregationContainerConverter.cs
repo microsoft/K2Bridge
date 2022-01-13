@@ -31,16 +31,6 @@ namespace K2Bridge.JsonConverters
             obj.PrimaryAggregation = GetPrimaryAggregation(primary, reader, serializer);
             obj.SubAggregations = jo["aggs"]?.ToObject<AggregationDictionary>(serializer) ?? new AggregationDictionary();
 
-            if (obj.PrimaryAggregation != null && obj.PrimaryAggregation is BucketAggregation bucketAggregation)
-            {
-                bucketAggregation.Parent = obj;
-            }
-
-            if (obj.SubAggregations != null)
-            {
-                obj.SubAggregations.Parent = obj;
-            }
-
             return obj;
         }
 
