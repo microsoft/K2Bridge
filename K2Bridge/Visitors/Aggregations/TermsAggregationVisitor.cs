@@ -37,7 +37,7 @@ namespace K2Bridge.Visitors
             query.Append(orderBy);
 
             // Add limit
-            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size} | {KustoQLOperators.As} {KustoTableNames.Aggregation})");
+            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size} | {KustoQLOperators.As} {KustoTableNames.Aggregation});");
 
             termsAggregation.KustoQL = query.ToString();
         }

@@ -62,7 +62,7 @@ namespace K2Bridge.Visitors
             queryStringBuilder.Append($" | {KustoQLOperators.Summarize} {filtersAggregation.SubAggregationsKustoQL}{filtersAggregation.Metric} by {EncodeKustoField(filtersAggregation.Key)}");
 
             // Order rows by key
-            queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc | {KustoQLOperators.As} {KustoTableNames.Aggregation})");
+            queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc | {KustoQLOperators.As} {KustoTableNames.Aggregation});");
 
             filtersAggregation.KustoQL = queryStringBuilder.ToString();
         }
