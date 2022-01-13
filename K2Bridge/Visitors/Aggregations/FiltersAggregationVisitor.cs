@@ -55,7 +55,6 @@ namespace K2Bridge.Visitors
             {
                 ExtendExpression = extendExpression.ToString(),
                 BucketExpression = bucketExpression.ToString(),
-                BucketKey =  filtersAggregation.Key,
             };
 
             var query = BuildBucketAggregationQuery(filtersAggregation, definition);

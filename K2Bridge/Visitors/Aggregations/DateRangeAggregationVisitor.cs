@@ -67,7 +67,6 @@ namespace K2Bridge.Visitors
             {
                 ExtendExpression = extendExpression.ToString(),
                 BucketExpression = bucketExpression.ToString(),
-                BucketKey =  dateRangeAggregation.Key,
             };
 
             var query = BuildBucketAggregationQuery(dateRangeAggregation, definition);

@@ -61,7 +61,6 @@ namespace K2Bridge.Visitors
             {
                 ExtendExpression = extendExpression,
                 BucketExpression = bucketExpression.ToString(),
-                BucketKey = dateHistogramAggregation.Key,
             };
 
             var query = BuildBucketAggregationQuery(dateHistogramAggregation, definition);

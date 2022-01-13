@@ -23,7 +23,6 @@ namespace K2Bridge.Visitors
             {
                 ExtendExpression = extendExpression,
                 BucketExpression = bucketExpression,
-                BucketKey = DefaultKey,
             };
 
             var query = BuildBucketAggregationQuery(defaultAggregation, definition);
