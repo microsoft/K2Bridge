@@ -129,7 +129,9 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var filter = Convert.ToString(row[primaryKey]);
+            var encodedKey = row.Table.Columns[0].ColumnName;
+
+            var filter = Convert.ToString(row[encodedKey]);
             var count = row[BucketColumnNames.Count];
 
             // Assemble the bucket
@@ -139,7 +141,7 @@ namespace K2Bridge.Factories
                 DocCount = Convert.ToInt32(count),
             };
 
-            fb.AddAggregates(primaryKey, row, logger);
+            fb.AddAggregates(encodedKey, row, logger);
 
             return fb;
         }
