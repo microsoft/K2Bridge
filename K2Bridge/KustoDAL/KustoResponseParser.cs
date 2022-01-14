@@ -173,6 +173,12 @@ namespace K2Bridge.KustoDAL
                 if (string.IsNullOrWhiteSpace(aggregationType))
                 {
                     // This is not a bucket aggregation scenario
+                    if (dataRowCollection.Count == 0)
+                    {
+                        var table = kustoResponse[KustoTableNames.Aggregation].TableData;
+                        dataRowCollection.Add(table.NewRow());
+                    }
+
                     foreach (DataRow row in dataRowCollection)
                     {
                         searchResponse.Aggregations.AddAggregates(key, row, Logger);
