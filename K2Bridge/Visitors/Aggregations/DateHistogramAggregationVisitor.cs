@@ -59,7 +59,7 @@ namespace K2Bridge.Visitors
             // let _extdata = _data
             // | extend ['10'] = startofmonth(['timestamp']);
             // let _summarizablemetrics = _extdata
-            // | summarize ['2']=avg(['DistanceMiles']), count() by ['10']
+            // | summarize count() by ['10']
             // | order by ['10'] asc;
             var definition = new BucketAggregationQueryDefinition()
             {
