@@ -45,7 +45,7 @@ namespace UnitTests.K2Bridge.Visitors
             return histogramAggregation.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 0 and ['key%False'] between (50 .. 150)\n| order by ['key%False'] asc")]
+        [TestCase(ExpectedResult = "\n| where ['field'] between (50 .. 150);\n(_data | summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 0\n| order by ['key%False'] asc")]
         public string HistogramVisitWithHardBounds_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new HistogramAggregation()

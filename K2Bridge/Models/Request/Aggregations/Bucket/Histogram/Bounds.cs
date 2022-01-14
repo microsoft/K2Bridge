@@ -17,12 +17,12 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets the field to target.
         /// </summary>
         [JsonProperty("min")]
-        public long? Min { get; set; }
+        public long Min { get; set; }
 
         /// <summary>
         /// Gets or sets the field to target.
         /// </summary>
         [JsonProperty("max")]
-        public long? Max { get; set; }
+        public long Max { get; set; }
     }
 }

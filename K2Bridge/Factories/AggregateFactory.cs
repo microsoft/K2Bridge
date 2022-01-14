@@ -235,12 +235,6 @@ namespace K2Bridge.Factories
                         var key = columnMetadata[0];
                         aggregateDictionary.Add(key, GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger));
                     }
-                    /*
-                    else
-                    {
-                        throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid.");
-                    }
-                    */
                 }
                 else
                 {

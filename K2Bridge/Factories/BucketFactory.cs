@@ -31,15 +31,17 @@ namespace K2Bridge.Factories
 
             var timestamp = row[primaryKey];
 
+            var dhb = new DateHistogramBucket();
+
             if (timestamp.GetType() == typeof(System.DBNull))
             {
-                return null;
+                return dhb;
             }
 
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
-            var dhb = new DateHistogramBucket
+            dhb = new DateHistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
@@ -216,15 +218,18 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var key = row[0];
+
+            var hb = new HistogramBucket();
+
             if (key.GetType() == typeof(System.DBNull))
             {
-                return null;
+                return hb;
             }
 
             var count = row[BucketColumnNames.Count];
             var keyed = row.Table.Columns[0].ToString().Split(AggregationsConstants.MetadataSeparator)[1];
 
-            var hb = new HistogramBucket
+            hb = new HistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = Convert.ToDouble(key),
