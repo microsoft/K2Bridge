@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Collections.Generic;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Models.Response;
@@ -21,50 +22,53 @@ namespace K2Bridge.Visitors
 
             var expandColumn = EncodeKustoField("_filter_value");
 
-            var queryStringBuilder = new StringBuilder();
+            // Extend expression:
+            // >> ['2']=pack_array('k1', 'k2', 'k3'), ['_filter_value']=pack_array(expr1, expr2, expr3)
+            // >> | mv-expand ['2'] to typeof(string), ['_filter_value']
+            // >> | where ['_filter_value'] == true
+            var extendExpression = new StringBuilder();
 
-            // Part 1:
-            // _data | extend ['key'] = pack_array("k1", "k2", "k3"), ['_filter_value']=pack_array(expr1, expr2, expr3)
+            var filterNames = new List<string>();
+            var filterExpressions = new List<string>();
 
-            // Start of query, until first pack_array()
-            queryStringBuilder.Append($"{KustoTableNames.Data} | {KustoQLOperators.Extend} {EncodeKustoField(filtersAggregation.Key)} = {KustoQLOperators.PackArray}(");
-
-            // Insert filters names
-            foreach (var filter in filtersAggregation.Filters)
+            foreach (var (key, value) in filtersAggregation.Filters)
             {
-                queryStringBuilder.Append($"'{filter.Key}',");
-            }
+                filterNames.Add($"'{key}'");
 
-            // Remove final comma
-            queryStringBuilder.Remove(queryStringBuilder.Length - 1, 1);
-
-            // Close the first pack_array() and start the second pack_array()
-            queryStringBuilder.Append($"), {expandColumn} = {KustoQLOperators.PackArray}(");
-
-            // Insert filters expressions
-            foreach (var (_, value) in filtersAggregation.Filters)
-            {
                 value.BoolQuery.Accept(this);
-                queryStringBuilder.Append($"{value.BoolQuery.KustoQL},");
+                filterExpressions.Add(value.BoolQuery.KustoQL);
             }
 
-            // Remove final comma
-            queryStringBuilder.Remove(queryStringBuilder.Length - 1, 1);
+            extendExpression.Append($"{EncodeKustoField(filtersAggregation.Key)} = {KustoQLOperators.PackArray}({string.Join(',', filterNames)}), ");
+            extendExpression.Append($"{expandColumn} = {KustoQLOperators.PackArray}({string.Join(',', filterExpressions)})");
 
-            // End part 1
-            queryStringBuilder.Append(')');
+            extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.MvExpand} {EncodeKustoField(filtersAggregation.Key)} to typeof(string), {expandColumn}");
+            extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Where} {expandColumn} == {KustoQLOperators.True}");
 
-            // Part 2 is expansion and filtering of rows
-            queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(filtersAggregation.Key)} to typeof(string), {expandColumn}");
-            queryStringBuilder.Append($" | {KustoQLOperators.Where} {expandColumn} == true");
+            // Bucket expression:
+            // >> count() by ['2'] | order by ['2'] asc
+            var bucketExpression = new StringBuilder();
 
-            // Part 3 is the summarize part for metrics
-            queryStringBuilder.Append($" | {KustoQLOperators.Summarize} {filtersAggregation.SubAggregationsKustoQL}{filtersAggregation.Metric} by {EncodeKustoField(filtersAggregation.Key)}");
+            bucketExpression.Append($"{filtersAggregation.Metric} by {EncodeKustoField(filtersAggregation.Key)}");
+            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc");
 
-            // Order rows by key
-            queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc");
+            // Build final query using filtersAggregation expressions
+            // let _extdata = _data
+            // | extend ['2'] = pack_array('k1'), ['_filter_value'] = pack_array(expr1)
+            // | mv-expand ['2'] to typeof(string), ['_filter_value']
+            // | where ['_filter_value'] == true;
+            // let _summarizablemetrics = _extdata
+            // | summarize count() by ['2']
+            // | order by ['2'] asc;"
+            var definition = new BucketAggregationQueryDefinition()
+            {
+                ExtendExpression = extendExpression.ToString(),
+                BucketExpression = bucketExpression.ToString(),
+            };
 
-            filtersAggregation.KustoQL = queryStringBuilder.ToString();
+            var query = BuildBucketAggregationQuery(filtersAggregation, definition);
+
+            filtersAggregation.KustoQL = query;
         }
     }
 }
