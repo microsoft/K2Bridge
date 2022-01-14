@@ -333,6 +333,20 @@ namespace K2Bridge.Tests.End2End
             ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median_HardBounds.json");
         }
 
+        [Test]
+        [Description("/_msearch visualization query with histogram and median with extended bounds")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMedianWithExtendedBounds_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median_ExtendedBounds.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with histogram and median with min doc count = 0")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMedianWithMinDocCount0_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median_MinDocCountZero.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);
