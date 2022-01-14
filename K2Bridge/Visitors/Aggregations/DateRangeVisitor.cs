@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
@@ -24,60 +25,64 @@ namespace K2Bridge.Visitors
 
             string expandColumn = EncodeKustoField("_range_value");
 
-            var queryStringBuilder = new StringBuilder();
+            // Extend expression:
+            // >> ['2']=pack_array("range1", "range2", "range3"), ['_range_value'] = pack_array(expr1, expr2, expr3)
+            // >> | mv-expand ['2'] to typeof(string), ['_range_value']
+            // >> | where ['_range_value'] == true
+            var extendExpression = new StringBuilder();
 
-            // Part 1:
-            // _data | extend ['_range'] = pack_array("range1", "range2", "range3"), ['_range_value']=pack_array(expr1, expr2, expr3)
+            var rangeNames = new List<string>();
+            var rangeExpressions = new List<string>();
 
-            // Start of query, until first pack_array()
-            queryStringBuilder.Append($"{KustoTableNames.Data} | {KustoQLOperators.Extend} {EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}(");
-
-            // Insert range names
             foreach (var range in dateRangeAggregation.Ranges)
             {
                 range.Field = dateRangeAggregation.Field;
                 range.Accept(this);
 
-                queryStringBuilder.Append($"{range.BucketNameKustoQL},");
-            }
-
-            // Remove final comma
-            queryStringBuilder.Remove(queryStringBuilder.Length - 1, 1);
-
-            // Close the first pack_array() and start the second pack_array()
-            queryStringBuilder.Append($"), {expandColumn} = {KustoQLOperators.PackArray}(");
-
-            // Insert range expressions
-            foreach (var range in dateRangeAggregation.Ranges)
-            {
                 if (string.IsNullOrEmpty(range.KustoQL))
                 {
                     // This is then "open" range, -infinity to +infinity
-                    queryStringBuilder.Append("true,");
+                    rangeExpressions.Add(KustoQLOperators.True);
                 }
                 else
                 {
-                    queryStringBuilder.Append($"{range.KustoQL},");
+                    rangeExpressions.Add(range.KustoQL);
                 }
+
+                rangeNames.Add(range.BucketNameKustoQL);
             }
 
-            // Remove final comma
-            queryStringBuilder.Remove(queryStringBuilder.Length - 1, 1);
 
-            // End part 1
-            queryStringBuilder.Append(")");
+            extendExpression.Append($"{EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}({string.Join(',', rangeNames)}), ");
+            extendExpression.Append($"{expandColumn} = {KustoQLOperators.PackArray}({string.Join(',', rangeExpressions)})");
 
-            // Part 2 is expansion and filtering of rows
-            queryStringBuilder.Append($" | {KustoQLOperators.MvExpand} {EncodeKustoField(dateRangeAggregation.Key)} to typeof(string), {expandColumn}");
-            queryStringBuilder.Append($" | {KustoQLOperators.Where} {expandColumn} == true");
+            extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.MvExpand} {EncodeKustoField(dateRangeAggregation.Key)} to typeof(string), {expandColumn}");
+            extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Where} {expandColumn} == {KustoQLOperators.True}");
 
-            // Part 3 is the summarize part for metrics
-            queryStringBuilder.Append($" | {KustoQLOperators.Summarize} {dateRangeAggregation.SubAggregationsKustoQL}{dateRangeAggregation.Metric} by {EncodeKustoField(dateRangeAggregation.Key)}");
+            // Bucket expression:
+            // >> count() by ['2'] | order by ['2'] asc
+            var bucketExpression = new StringBuilder();
 
-            // Order rows by key
-            queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc");
+            bucketExpression.Append($"{dateRangeAggregation.Metric} by {EncodeKustoField(dateRangeAggregation.Key)}");
+            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc");
 
-            dateRangeAggregation.KustoQL = queryStringBuilder.ToString();
+            // Build final query using dateRangeAggregation expressions
+            // let _extdata = _data
+            // | extend ['2'] = pack_array("range1", "range2", "range3"), ['_range_value'] = pack_array(expr1, expr2, expr3)
+            // | mv-expand ['2'] to typeof(string), ['_range_value']
+            // | where ['_range_value'] == true;
+            // let _summarizablemetrics = _extdata
+            // | summarize count() by ['2']
+            // | order by ['2'] asc;"
+            var definition = new BucketAggregationQueryDefinition()
+            {
+                ExtendExpression = extendExpression.ToString(),
+                BucketExpression = bucketExpression.ToString(),
+            };
+
+            var query = BuildBucketAggregationQuery(dateRangeAggregation, definition);
+
+            dateRangeAggregation.KustoQL = query;
         }
     }
 }
