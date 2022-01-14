@@ -35,6 +35,11 @@ namespace K2Bridge.Models.Request.Aggregations
         [JsonProperty("key")]
         public string Key { get; set; }
 
+        /// <summary>
+        /// Gets or sets the KustoQL expression for bucket name.
+        /// </summary>
+        public string BucketNameKustoQL { get; set; }
+
         /// <inheritdoc/>
         public void Accept(IVisitor visitor)
         {
