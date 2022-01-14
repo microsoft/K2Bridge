@@ -24,7 +24,6 @@ namespace K2Bridge.Visitors
             var extendExpression = new StringBuilder();
             extendExpression.Append($"{EncodeKustoField(dateHistogramAggregation.Key)} = ");
 
-            // Add group expression
             var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
             var field = EncodeKustoField(dateHistogramAggregation.Field, true);
             if (!string.IsNullOrEmpty(interval))
