@@ -47,11 +47,7 @@ namespace K2Bridge.Visitors
             }
 
             var summarizableMetricsExpression = string.Join(',', summarizableMetrics);
-
-            // Build summarizable metrics query
-            // let _summarizablemetrics = _extdata | summarize ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.SummarizableMetricsQuery} = {AggregationsSubQueries.ExtDataQuery} ");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {summarizableMetricsExpression}");
+            query.Append($"{summarizableMetricsExpression}");
 
             if (!string.IsNullOrEmpty(summarizableMetricsExpression))
             {

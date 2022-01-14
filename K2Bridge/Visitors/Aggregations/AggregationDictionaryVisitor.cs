@@ -44,6 +44,7 @@ namespace K2Bridge.Visitors
                 };
 
                 defaultAggregation.Accept(this);
+                query.Append(defaultAggregation.KustoQL);
 
                 // We project away the default key column
                 projectAwayExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(defaultKey)}";
@@ -51,7 +52,8 @@ namespace K2Bridge.Visitors
 
             // (_summarizablemetrics | as aggs)
             query.Append($"{KustoQLOperators.NewLine}({AggregationsSubQueries.SummarizableMetricsQuery}");
-            query.Append($"{projectAwayExpression} {KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregation});");
+            query.Append($"{projectAwayExpression}");
+            query.Append($"{KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregation});");
 
             aggregationDictionary.KustoQL = query.ToString();
         }
@@ -62,18 +64,12 @@ namespace K2Bridge.Visitors
 
             var query = new StringBuilder();
 
-            query.Append(BuildExtendDataQuery(definition.ExtendExpression));
-            query.Append($"{bucketAggregation.SubAggregationsKustoQL} {definition.BucketExpression};");
-
-            return query.ToString();
-        }
-
-        public string BuildExtendDataQuery(string extendExpression)
-        {
-            var query = new StringBuilder();
-
             query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.ExtDataQuery} = {KustoTableNames.Data}");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {extendExpression};");
+            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {definition.ExtendExpression};");
+
+            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.SummarizableMetricsQuery} = {AggregationsSubQueries.ExtDataQuery}");
+            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {bucketAggregation.SubAggregationsKustoQL}");
+            query.Append($"{definition.BucketExpression};");
 
             return query.ToString();
         }
