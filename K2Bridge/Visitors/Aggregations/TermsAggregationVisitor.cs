@@ -21,25 +21,39 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Metric, nameof(TermsAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Field, nameof(TermsAggregation.Field));
 
-            var query = new StringBuilder();
+            // Extend expression: ['2']=['Carrier']
+            var extendExpression = $"{EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}";
 
-            // Add main aggregation query (summarize)
-            // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=field
-            query.Append($"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {termsAggregation.SubAggregationsKustoQL}{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}");
+            // Bucket expression: count() by ['2']=['Carrier'] | order by count_ desc | limit 5
+            var bucketExpression = new StringBuilder();
+            bucketExpression.Append($"{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)}");
 
             var orderBy = termsAggregation.Order?.SortField switch
             {
-                "_key" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}",
-                "_count" => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {BucketColumnNames.Count} {termsAggregation.Order.SortOrder}",
-                { } s => $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(s)} {termsAggregation.Order.SortOrder}",
+                "_key" => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}",
+                "_count" => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(BucketColumnNames.Count)} {termsAggregation.Order.SortOrder}",
+                { } s => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(s)} {termsAggregation.Order.SortOrder}",
                 _ => string.Empty,
             };
-            query.Append(orderBy);
 
-            // Add limit
-            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}");
+            bucketExpression.Append(orderBy);
+            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Limit} {termsAggregation.Size}");
 
-            termsAggregation.KustoQL = query.ToString();
+            // Build final query using termsAggregation expressions
+            // let _extdata = _data
+            // | extend ['10'] = ['Carrier'];
+            // let _summarizablemetrics = _extdata
+            // | summarize ['2']=avg(['DistanceMiles']),['11']=max(['dayOfWeek']),count() by ['10'] = ['Carrier']
+            // | order by ['count_'] desc\n| limit 5;"
+            var definition = new BucketAggregationQueryDefinition()
+            {
+                ExtendExpression = extendExpression,
+                BucketExpression = bucketExpression.ToString(),
+            };
+
+            var query = BuildBucketAggregationQuery(termsAggregation, definition);
+
+            termsAggregation.KustoQL = query;
         }
     }
 }
