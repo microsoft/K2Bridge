@@ -25,6 +25,11 @@ namespace K2Bridge.Visitors
                 BucketExpression = bucketExpression,
             };
 
+            // Build final query using defaultAggregation expressions
+            // let _extdata = _data
+            // | extend ['Guid'] = True;
+            // let _summarizablemetrics = _extdata
+            // | summarize count() by ['Guid'];
             var query = BuildBucketAggregationQuery(defaultAggregation, definition);
 
             defaultAggregation.KustoQL = query;
