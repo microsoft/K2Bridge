@@ -20,15 +20,13 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Metric, nameof(dateHistogramAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(dateHistogramAggregation.Field, nameof(dateHistogramAggregation.Field));
 
-            var query = new StringBuilder();
-
-            // Add main aggregation query (summarize)
-            // KQL ==> _data | summarize ['key1']=metric(field1), ['key2']=metric(field2), count() by ['key']=
-            query.Append($"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {dateHistogramAggregation.SubAggregationsKustoQL}{dateHistogramAggregation.Metric} ");
-            query.Append($"by {EncodeKustoField(dateHistogramAggregation.Key)} = ");
+            // Extend expression: ['10'] = startofmonth(['timestamp'])
+            var extendExpression = new StringBuilder();
+            extendExpression.Append($"{EncodeKustoField(dateHistogramAggregation.Key)} = ");
 
             // Add group expression
             var interval = dateHistogramAggregation.FixedInterval ?? dateHistogramAggregation.CalendarInterval;
+            var field = EncodeKustoField(dateHistogramAggregation.Field, true);
             if (!string.IsNullOrEmpty(interval))
             {
                 // https://www.elastic.co/guide/en/elasticsearch/reference/master/search-aggregations-bucket-datehistogram-aggregation.html#calendar_and_fixed_intervals
@@ -36,7 +34,6 @@ namespace K2Bridge.Visitors
                 // If its calendar_interval, it can contain complete words like 'year', 'month' etc, so we need to check for that explicitly.
                 // We also check if its a known character, if not, just use the value in the bin as-is.
                 var period = interval[^1];
-                var field = EncodeKustoField(dateHistogramAggregation.Field, true);
                 var groupExpression = period switch
                 {
                     'w' => $"{KustoQLOperators.StartOfWeek}({field})",
@@ -47,16 +44,33 @@ namespace K2Bridge.Visitors
                     _ when interval.Contains("year", System.StringComparison.OrdinalIgnoreCase) => $"{KustoQLOperators.StartOfYear}({field})",
                     _ => $"bin({field}, {interval})",
                 };
-                query.Append(groupExpression);
+                extendExpression.Append(groupExpression);
             }
             else
             {
-                query.Append(dateHistogramAggregation.Field);
+                extendExpression.Append(field);
             }
 
-            // Add order by
-            query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
-            dateHistogramAggregation.KustoQL = query.ToString();
+            // Bucket expression: count() by ['10'] | order by ['10'] asc
+            var bucketExpression = new StringBuilder();
+            bucketExpression.Append($"{dateHistogramAggregation.Metric} by {EncodeKustoField(dateHistogramAggregation.Key)}");
+            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
+
+            // Build final query using dateHistogramAggregation expressions
+            // let _extdata = _data
+            // | extend ['10'] = startofmonth(['timestamp']);
+            // let _summarizablemetrics = _extdata
+            // | summarize ['2']=avg(['DistanceMiles']), count() by ['10']
+            // | order by ['10'] asc;
+            var definition = new BucketAggregationQueryDefinition()
+            {
+                ExtendExpression = extendExpression.ToString(),
+                BucketExpression = bucketExpression.ToString(),
+            };
+
+            var query = BuildBucketAggregationQuery(dateHistogramAggregation, definition);
+
+            dateHistogramAggregation.KustoQL = query;
         }
     }
 }
