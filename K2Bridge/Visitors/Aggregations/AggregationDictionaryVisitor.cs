@@ -50,12 +50,15 @@ namespace K2Bridge.Visitors
                 defaultAggregation.Accept(this);
                 query.Append(defaultAggregation.KustoQL);
 
-                // We project away the default key column
-                projectAwayExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(defaultKey)}";
+                // We project away the default key column (<guid>) if there are only ISummmarizable metrics
+                if (SubQueriesStack.Last().Equals(AggregationsSubQueries.SummarizableMetricsQuery))
+                {
+                    projectAwayExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(defaultKey)}";
+                }
             }
 
             // (_summarizablemetrics | as aggs)
-            query.Append($"{KustoQLOperators.NewLine}({AggregationsSubQueries.SummarizableMetricsQuery}");
+            query.Append($"{KustoQLOperators.NewLine}({SubQueriesStack.Last()}");
             query.Append($"{projectAwayExpression}");
             query.Append($"{KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregation});");
 

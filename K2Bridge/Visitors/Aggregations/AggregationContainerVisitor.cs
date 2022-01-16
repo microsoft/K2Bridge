@@ -43,6 +43,7 @@ namespace K2Bridge.Visitors
         {
             var query = new StringBuilder();
 
+            SubQueriesStack.Add(AggregationsSubQueries.SummarizableMetricsQuery);
             VisitedMetrics.Add(bucketMetricKey);
 
             // Collect all ISummarizable metrics
