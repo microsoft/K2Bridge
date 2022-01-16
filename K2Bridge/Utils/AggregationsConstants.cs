@@ -61,5 +61,20 @@ namespace K2Bridge.Utils
         /// Alias used to get a filed named std_deviation_sampling, from adx
         /// </summary>
         public const string StandardDeviationSampling = "std_deviation_sampling";
+
+        /// <summary>
+        /// Gets ExtendedStats column name.
+        /// </summary>
+        public const string ExtendedStats = "extended_stats";
+
+        /// <summary>
+        /// Gets Percentile column name.
+        /// </summary>
+        public const string Percentile = "percentile";
+
+        /// <summary>
+        /// Gets TopHits column name.
+        /// </summary>
+        public const string TopHits = "tophits";
     }
 }
