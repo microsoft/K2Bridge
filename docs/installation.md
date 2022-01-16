@@ -90,6 +90,7 @@ If you need to build the image, please follow the [build instructions](./build.m
         helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=7.16_latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
         ```
 
+        Note: Instead of client id + secret, it is possible to use managed identity.
         The complete set of configuration options can be found [here](./configuration.md).
 
     * Deploy Kibana  

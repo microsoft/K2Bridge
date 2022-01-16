@@ -75,6 +75,8 @@ spec:
               value: "{{ .Values.settings.collectTelemetry }}"
             - name: enableQueryLogging
               value: "{{ .Values.settings.enableQueryLogging }}"
+            - name: useManagedIdentity
+              value: "{{ .Values.settings.useManagedIdentity }}"
           volumeMounts:
             - name: appsettings-volume
               mountPath: /app/settings
