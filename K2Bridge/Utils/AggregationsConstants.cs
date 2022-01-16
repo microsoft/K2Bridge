@@ -76,10 +76,5 @@ namespace K2Bridge.Utils
         /// Gets TopHits column metadata name.
         /// </summary>
         public const string TopHits = "tophits";
-
-        /// <summary>
-        /// Gets count (default bucket metric key).
-        /// </summary>
-        public const string CountKey = "count_";
     }
 }
