@@ -27,6 +27,9 @@ namespace K2Bridge.Visitors
 
             if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
             {
+                VisitedMetrics.Add(EncodeKustoField(bucketAggregation.Key));
+                VisitedMetrics.Add(EncodeKustoField(bucketAggregation.MetricKey));
+
                 bucketAggregation.SummarizableMetricsKustoQL = BuildSummarizableMetricsQuery(
                     aggregationContainer.SubAggregations);
 
@@ -39,12 +42,9 @@ namespace K2Bridge.Visitors
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
 
-        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary, string bucketMetricKey = AggregationsConstants.CountKey)
+        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary)
         {
             var query = new StringBuilder();
-
-            SubQueriesStack.Add(AggregationsSubQueries.SummarizableMetricsQuery);
-            VisitedMetrics.Add(bucketMetricKey);
 
             // Collect all ISummarizable metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)

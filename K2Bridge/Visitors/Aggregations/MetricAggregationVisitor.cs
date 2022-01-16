@@ -25,7 +25,7 @@ namespace K2Bridge.Visitors
 
             avgAggregation.KustoQL = $"{EncodeKustoField(avgAggregation.Key)}={KustoQLOperators.Avg}({EncodeKustoField(avgAggregation)})";
 
-            VisitedMetrics.Add(avgAggregation.Key);
+            VisitedMetrics.Add(EncodeKustoField(avgAggregation.Key));
         }
 
         /// <inheritdoc/>
@@ -36,7 +36,7 @@ namespace K2Bridge.Visitors
 
             cardinalityAggregation.KustoQL = $"{EncodeKustoField(cardinalityAggregation.Key)}={KustoQLOperators.DCount}({EncodeKustoField(cardinalityAggregation)})";
 
-            VisitedMetrics.Add(cardinalityAggregation.Key);
+            VisitedMetrics.Add(EncodeKustoField(cardinalityAggregation.Key));
         }
 
         /// <inheritdoc/>
@@ -91,7 +91,7 @@ namespace K2Bridge.Visitors
 
             minAggregation.KustoQL = $"{EncodeKustoField(minAggregation.Key)}={KustoQLOperators.Min}({EncodeKustoField(minAggregation)})";
 
-            VisitedMetrics.Add(minAggregation.Key);
+            VisitedMetrics.Add(EncodeKustoField(minAggregation.Key));
         }
 
         /// <inheritdoc/>
@@ -102,7 +102,7 @@ namespace K2Bridge.Visitors
 
             maxAggregation.KustoQL = $"{EncodeKustoField(maxAggregation.Key)}={KustoQLOperators.Max}({EncodeKustoField(maxAggregation)})";
 
-            VisitedMetrics.Add(maxAggregation.Key);
+            VisitedMetrics.Add(EncodeKustoField(maxAggregation.Key));
         }
 
         /// <inheritdoc/>
@@ -113,7 +113,7 @@ namespace K2Bridge.Visitors
 
             sumAggregation.KustoQL = $"{EncodeKustoField(sumAggregation.Key)}={KustoQLOperators.Sum}({EncodeKustoField(sumAggregation)})";
 
-            VisitedMetrics.Add(sumAggregation.Key);
+            VisitedMetrics.Add(EncodeKustoField(sumAggregation.Key));
         }
 
         /// <inheritdoc/>
@@ -161,7 +161,7 @@ namespace K2Bridge.Visitors
             metadata.Add(AggregationsConstants.TopHits);
 
             var keyWithMetadata = EncodeKustoField(string.Join(AggregationsConstants.MetadataSeparator, metadata));
-            var summarizeExpression = $"{EncodeKustoField(keyWithMetadata)}={KustoQLOperators.MakeList}({EncodeKustoField(topHitsAggregation.Key)})";
+            var summarizeExpression = $"{keyWithMetadata}={KustoQLOperators.MakeList}({EncodeKustoField(topHitsAggregation.Key)})";
 
             var partionQueryName = $"_{AggregationsConstants.TopHits}{topHitsAggregation.Key}";
 

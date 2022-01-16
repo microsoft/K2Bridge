@@ -18,7 +18,7 @@ namespace K2Bridge.Visitors
     {
         internal List<string> VisitedMetrics { get; } = new List<string>();
 
-        internal List<string> SubQueriesStack { get; } = new List<string>();
+        internal List<string> SubQueriesStack { get; } = new List<string>() { AggregationsSubQueries.SummarizableMetricsQuery };
 
         /// <inheritdoc/>
         public void Visit(AggregationDictionary aggregationDictionary)
@@ -50,11 +50,8 @@ namespace K2Bridge.Visitors
                 defaultAggregation.Accept(this);
                 query.Append(defaultAggregation.KustoQL);
 
-                // We project away the default key column (<guid>) if there are only ISummmarizable metrics
-                if (SubQueriesStack.Last().Equals(AggregationsSubQueries.SummarizableMetricsQuery))
-                {
-                    projectAwayExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(defaultKey)}";
-                }
+                // We project away the default key column (<guid>)
+                projectAwayExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(defaultKey)}";
             }
 
             // (_summarizablemetrics | as aggs)
@@ -141,8 +138,7 @@ namespace K2Bridge.Visitors
 
             if (VisitedMetrics.Count > 0)
             {
-                var encodedKeys = VisitedMetrics.Select(key => EncodeKustoField(key));
-                query = string.Join(',', encodedKeys);
+                query = string.Join(',', VisitedMetrics);
             }
 
             return query;
@@ -158,7 +154,7 @@ namespace K2Bridge.Visitors
 
             if (VisitedMetrics.Count > 0)
             {
-                var encodedKeys = VisitedMetrics.Select(key => $"{KustoQLOperators.TakeAny}({EncodeKustoField(key)})");
+                var encodedKeys = VisitedMetrics.Select(key => $"{KustoQLOperators.TakeAny}({key})");
                 query = string.Join(',', encodedKeys);
             }
 
