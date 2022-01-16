@@ -6,6 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
     using System.Text;
+    using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
 
     /// <content>
@@ -36,13 +37,17 @@ namespace K2Bridge.Visitors
         {
             var query = new StringBuilder();
 
-            // Collect all metrics
+            // Collect all ISummarizable metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
             var summarizableMetrics = new List<string>();
-            foreach (var (_, aggregation) in aggregationDictionary)
+            foreach (var (_, aggregationContainer) in aggregationDictionary)
             {
-                aggregation.Accept(this);
-                summarizableMetrics.Add($"{aggregation.KustoQL}");
+                var aggregation = aggregationContainer.PrimaryAggregation;
+                if (aggregation is ISummarizable)
+                {
+                    aggregation.Accept(this);
+                    summarizableMetrics.Add($"{aggregation.KustoQL}");
+                }
             }
 
             var summarizableMetricsExpression = string.Join(',', summarizableMetrics);
