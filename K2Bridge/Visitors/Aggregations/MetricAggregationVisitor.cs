@@ -113,5 +113,11 @@ namespace K2Bridge.Visitors
             var key = $"['{percentileAggregation.Key}{sep}percentile{sep}{valuesForColumnNames}{sep}{percentileAggregation.Keyed}']";
             percentileAggregation.KustoQL = $"{key}={KustoQLOperators.PercentilesArray}({EncodeKustoField(percentileAggregation)}, {valuesForOperator})";
         }
+
+        /// <inheritdoc/>
+        public void Visit(TopHitsAggregation topHitsAggregation)
+        {
+
+        }
     }
 }
