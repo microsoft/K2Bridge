@@ -72,8 +72,10 @@ namespace K2Bridge.Visitors
             query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {definition.ExtendExpression};");
 
             query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.SummarizableMetricsQuery} = {AggregationsSubQueries.ExtDataQuery}");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {bucketAggregation.SubAggregationsKustoQL}");
+            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {bucketAggregation.SummarizableMetricsKustoQL}");
             query.Append($"{definition.BucketExpression};");
+
+            query.Append($"{bucketAggregation.PartitionableMetricsKustoQL}");
 
             return query.ToString();
         }

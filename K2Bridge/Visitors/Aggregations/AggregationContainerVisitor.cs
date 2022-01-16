@@ -8,6 +8,7 @@ namespace K2Bridge.Visitors
     using System.Text;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the root <see cref="AggregationContainer"/> element.
@@ -26,16 +27,23 @@ namespace K2Bridge.Visitors
 
             if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
             {
-                bucketAggregation.SubAggregationsKustoQL = BuildSummarizableMetricsQuery(aggregationContainer.SubAggregations);
+                bucketAggregation.SummarizableMetricsKustoQL = BuildSummarizableMetricsQuery(
+                    aggregationContainer.SubAggregations);
+
+                bucketAggregation.PartitionableMetricsKustoQL = BuildPartitionableMetricsQuery(
+                    aggregationContainer.SubAggregations,
+                    bucketAggregation.Key);
             }
 
             aggregationContainer.PrimaryAggregation.Accept(this);
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
 
-        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary)
+        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary, string bucketMetricKey = AggregationsConstants.CountKey)
         {
             var query = new StringBuilder();
+
+            VisitedMetrics.Add(bucketMetricKey);
 
             // Collect all ISummarizable metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
@@ -56,6 +64,25 @@ namespace K2Bridge.Visitors
             if (!string.IsNullOrEmpty(summarizableMetricsExpression))
             {
                 query.Append($",");
+            }
+
+            return query.ToString();
+        }
+
+        public string BuildPartitionableMetricsQuery(AggregationDictionary aggregationDictionary, string partitionKey)
+        {
+            // Collect all additional queries built from IPartitionable metrics
+            var query = new StringBuilder();
+            foreach (var (_, aggregationContainer) in aggregationDictionary)
+            {
+                var aggregation = aggregationContainer.PrimaryAggregation;
+                if (aggregation is IPartitionable)
+                {
+                    ((IPartitionable)aggregation).PartitionKey = partitionKey;
+
+                    aggregation.Accept(this);
+                    query.Append($"{aggregation.KustoQL}");
+                }
             }
 
             return query.ToString();

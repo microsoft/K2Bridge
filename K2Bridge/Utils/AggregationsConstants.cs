@@ -63,18 +63,23 @@ namespace K2Bridge.Utils
         public const string StandardDeviationSampling = "std_deviation_sampling";
 
         /// <summary>
-        /// Gets ExtendedStats column name.
+        /// Gets ExtendedStats column metadata name.
         /// </summary>
         public const string ExtendedStats = "extended_stats";
 
         /// <summary>
-        /// Gets Percentile column name.
+        /// Gets Percentile column metadata name.
         /// </summary>
         public const string Percentile = "percentile";
 
         /// <summary>
-        /// Gets TopHits column name.
+        /// Gets TopHits column metadata name.
         /// </summary>
         public const string TopHits = "tophits";
+
+        /// <summary>
+        /// Gets count (default bucket metric key).
+        /// </summary>
+        public const string CountKey = "count_";
     }
 }
