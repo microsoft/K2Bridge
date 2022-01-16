@@ -99,6 +99,7 @@ namespace K2Bridge.Tests.End2End
                   ""boolean"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""boolean""
                   }}
                 }},
@@ -106,6 +107,7 @@ namespace K2Bridge.Tests.End2End
                   ""date"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""date""
                   }}
                 }},
@@ -113,6 +115,7 @@ namespace K2Bridge.Tests.End2End
                   ""string"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""string""
                   }}
                 }},
@@ -120,6 +123,7 @@ namespace K2Bridge.Tests.End2End
                   ""integer"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""integer""
                   }}
                 }},
@@ -127,6 +131,7 @@ namespace K2Bridge.Tests.End2End
                   ""long"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""long""
                   }}
                 }},
@@ -134,6 +139,7 @@ namespace K2Bridge.Tests.End2End
                   ""double"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""double""
                   }}
                 }},
@@ -141,6 +147,7 @@ namespace K2Bridge.Tests.End2End
                   ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""keyword""
                   }}
                 }},
@@ -148,6 +155,7 @@ namespace K2Bridge.Tests.End2End
                   ""string"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""string""
                   }}
                 }},
@@ -155,6 +163,7 @@ namespace K2Bridge.Tests.End2End
                   ""double"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""double""
                   }}
                 }},
@@ -162,6 +171,7 @@ namespace K2Bridge.Tests.End2End
                   ""object"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""object""
                   }}
                 }},
@@ -169,6 +179,7 @@ namespace K2Bridge.Tests.End2End
                   ""long"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""long""
                   }}
                 }},
@@ -176,6 +187,7 @@ namespace K2Bridge.Tests.End2End
                   ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""keyword""
                   }}
                 }},

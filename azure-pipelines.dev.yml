@@ -36,7 +36,7 @@ variables:
 - name: TELEMETRY_KEY
   value: "00000000-0000-0000-0000-000000000000"
 - name: K2_TAG
-  value: 7.10_latest
+  value: 7.16_latest
 - name: IMAGE_TAG
   value: "$(SEMANTIC_VERSION)"
 

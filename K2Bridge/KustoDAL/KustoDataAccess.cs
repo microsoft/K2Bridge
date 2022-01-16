@@ -246,7 +246,7 @@ namespace K2Bridge.KustoDAL
         private void AddSingleDynamicField(FieldCapabilityResponse response, string name, JToken type)
         {
             var newField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(name, CombineValues(type));
-            Logger.LogDebug("Added dynamic field @{newField} ", newField);
+            Logger.LogDebug("Added dynamic field '{@NewFieldName}' '{@NewFieldType}' ", newField.Name, newField.Type);
             response.AddField(newField);
         }
 

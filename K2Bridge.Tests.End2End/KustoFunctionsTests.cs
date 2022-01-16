@@ -51,6 +51,7 @@ namespace K2Bridge.Tests.End2End
                   ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""keyword""
                   }}
                 }},
@@ -58,6 +59,7 @@ namespace K2Bridge.Tests.End2End
                   ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""keyword""
                   }}
                 }},
@@ -65,6 +67,7 @@ namespace K2Bridge.Tests.End2End
                   ""date"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""date""
                   }}
                 }}

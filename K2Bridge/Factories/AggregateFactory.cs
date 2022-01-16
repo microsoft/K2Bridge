@@ -178,6 +178,11 @@ namespace K2Bridge.Factories
                         var key = columnMetadata[0];
                         aggregateDictionary.Add(key, GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger));
                     }
+                    else if (metric == "extended_stats")
+                    {
+                        var key = columnMetadata[0];
+                        aggregateDictionary.Add(key, GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger));
+                    }
                     else
                     {
                         throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid.");
@@ -189,6 +194,88 @@ namespace K2Bridge.Factories
                     aggregateDictionary.Add(key, GetValueAggregate(key, row, logger));
                 }
             }
+        }
+
+        /// <summary>
+        /// Get extended stats for standard deviation aggregate from a given <see cref="DataRow"/>.
+        /// </summary>
+        /// <param name="columnName">The column name.</param>
+        /// <param name="columnMetadata">The column metadata parsed.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="ExtendedStatsAggregate"></returns>
+        private static ExtendedStatsAggregate GetExtendedStatsAggregate(string columnName, string[] columnMetadata, DataRow row, ILogger logger)
+        {
+            logger.LogTrace("Get extended stats for standard deviation aggregate for {}", columnName);
+
+            var extendedStatsAggregate = new ExtendedStatsAggregate();
+
+            if (row[columnName] == DBNull.Value)
+            {
+                return extendedStatsAggregate;
+            }
+
+            var sigma = Convert.ToInt32(columnMetadata[2]);
+
+            var jObject = (JObject)row[columnName];
+
+            var count = jObject[AggregationsConstants.Count]?.Value<long?>();
+            extendedStatsAggregate.Count = count.HasValue && !double.IsNaN(count.Value) ? count : null;
+
+            var min = jObject[AggregationsConstants.Min]?.Value<double?>();
+            extendedStatsAggregate.Min = min.HasValue && !double.IsNaN(min.Value) ? min : null;
+
+            var max = jObject[AggregationsConstants.Max]?.Value<double?>();
+            extendedStatsAggregate.Max = max.HasValue && !double.IsNaN(max.Value) ? max : null;
+
+            var avg = jObject[AggregationsConstants.Average]?.Value<double?>();
+            extendedStatsAggregate.Average = avg.HasValue && !double.IsNaN(avg.Value) ? avg : null;
+
+            var sum = jObject[AggregationsConstants.Sum]?.Value<double?>();
+            extendedStatsAggregate.Sum = sum.HasValue && !double.IsNaN(sum.Value) ? sum : null;
+
+            var sumOfSquares = jObject[AggregationsConstants.SumOfSquares]?.Value<double?>();
+            extendedStatsAggregate.SumOfSquares = sumOfSquares.HasValue && !double.IsNaN(sumOfSquares.Value) ? sumOfSquares : null;
+
+            var variancePopulation = jObject[AggregationsConstants.VariancePopulation]?.Value<double?>();
+            extendedStatsAggregate.VariancePopulation = variancePopulation.HasValue && !double.IsNaN(variancePopulation.Value) ? variancePopulation : null;
+            extendedStatsAggregate.Variance = extendedStatsAggregate.VariancePopulation;
+
+            var varianceSampling = jObject[AggregationsConstants.VarianceSampling]?.Value<double?>();
+            extendedStatsAggregate.VarianceSampling = varianceSampling.HasValue && !double.IsNaN(varianceSampling.Value) ? varianceSampling : null;
+
+            var stdDeviationPopulation = jObject[AggregationsConstants.StandardDeviationPopulation]?.Value<double?>();
+            extendedStatsAggregate.StandardDeviationPopulation = stdDeviationPopulation.HasValue && !double.IsNaN(stdDeviationPopulation.Value) ? stdDeviationPopulation : null;
+            extendedStatsAggregate.StandardDeviation = extendedStatsAggregate.StandardDeviationPopulation;
+
+            var stdDeviationSampling = jObject[AggregationsConstants.StandardDeviationSampling]?.Value<double?>();
+            extendedStatsAggregate.StandardDeviationSampling = stdDeviationSampling.HasValue && !double.IsNaN(stdDeviationSampling.Value) ? stdDeviationSampling : null;
+
+            if (extendedStatsAggregate.StandardDeviationPopulation.HasValue && extendedStatsAggregate.Average.HasValue)
+            {
+                extendedStatsAggregate.StandardDeviationBounds.LowerPopulation = extendedStatsAggregate.Average.Value - (extendedStatsAggregate.StandardDeviationPopulation.Value * sigma);
+            }
+
+            extendedStatsAggregate.StandardDeviationBounds.Lower = extendedStatsAggregate.StandardDeviationBounds.LowerPopulation;
+
+            if (extendedStatsAggregate.StandardDeviationSampling.HasValue && extendedStatsAggregate.Average.HasValue)
+            {
+                extendedStatsAggregate.StandardDeviationBounds.LowerSampling = extendedStatsAggregate.Average.Value - (extendedStatsAggregate.StandardDeviationSampling.Value * sigma);
+            }
+
+            if (extendedStatsAggregate.StandardDeviationPopulation.HasValue && extendedStatsAggregate.Average.HasValue)
+            {
+                extendedStatsAggregate.StandardDeviationBounds.UpperPopulation = extendedStatsAggregate.Average + (extendedStatsAggregate.StandardDeviationPopulation.Value * sigma);
+            }
+
+            extendedStatsAggregate.StandardDeviationBounds.Upper = extendedStatsAggregate.StandardDeviationBounds.UpperPopulation;
+
+            if (extendedStatsAggregate.StandardDeviationSampling.HasValue && extendedStatsAggregate.Average.HasValue)
+            {
+                extendedStatsAggregate.StandardDeviationBounds.UpperSampling = extendedStatsAggregate.Average + (extendedStatsAggregate.StandardDeviationSampling.Value * sigma);
+            }
+
+            return extendedStatsAggregate;
         }
 
         /// <summary>
