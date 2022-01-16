@@ -181,7 +181,7 @@ namespace K2Bridge.KustoDAL
 
                     foreach (DataRow row in dataRowCollection)
                     {
-                        searchResponse.Aggregations.AddAggregates(key, row, Logger);
+                        searchResponse.Aggregations.AddAggregates(key, row, Logger, query);
                     }
                 }
                 else
