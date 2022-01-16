@@ -39,7 +39,7 @@ namespace K2Bridge.Visitors
             // Add limit
             query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Limit} {termsAggregation.Size}");
 
-            termsAggregation.KustoQL = query.ToString();
+            termsAggregation.KustoQL = WrapBucketAggregationKustoQuery(query.ToString());
         }
     }
 }

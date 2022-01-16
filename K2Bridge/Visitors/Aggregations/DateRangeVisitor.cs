@@ -77,7 +77,7 @@ namespace K2Bridge.Visitors
             // Order rows by key
             queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc");
 
-            dateRangeAggregation.KustoQL = queryStringBuilder.ToString();
+            dateRangeAggregation.KustoQL = WrapBucketAggregationKustoQuery(queryStringBuilder.ToString());
         }
     }
 }
