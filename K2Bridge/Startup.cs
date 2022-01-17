@@ -81,12 +81,7 @@ namespace K2Bridge
 
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
-            var dynamicSamplePercentage = GetConfigOptional<double>("dynamicSamplePercentage");
-            if (dynamicSamplePercentage is <= 0 or > 100)
-            {
-                throw new ArgumentException(
-                    $"dynamicSamplePercentage must be between 0 and 100, but was {dynamicSamplePercentage}");
-            }
+            var maxDynamicSamples = GetConfigOptional<ulong>("maxDynamicSamples");
 
             services.AddMemoryCache();
 
@@ -96,7 +91,7 @@ namespace K2Bridge
                     s.GetRequiredService<IQueryExecutor>(),
                     s.GetRequiredService<RequestContext>(),
                     s.GetRequiredService<ILogger<KustoDataAccess>>(),
-                    dynamicSamplePercentage));
+                    maxDynamicSamples));
 
             services.AddTransient<ISchemaRetrieverFactory, SchemaRetrieverFactory>(
                 s => new SchemaRetrieverFactory(

@@ -31,14 +31,14 @@ namespace K2Bridge.KustoDAL
         /// <param name="kustoClient">Query Executor.</param>
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <param name="logger">A logger.</param>
-        /// <param name="dynamicSamplePercentage">Percentage of table to sample when building a dynamic field. When empty, queries the entire table.</param>
-        public KustoDataAccess(IMemoryCache cache, IQueryExecutor kustoClient, RequestContext requestContext, ILogger<KustoDataAccess> logger, double? dynamicSamplePercentage = null)
+        /// <param name="maxDynamicSamples">Maximum amount of entries form the table to sample when building a dynamic field. When empty, queries the entire table.</param>
+        public KustoDataAccess(IMemoryCache cache, IQueryExecutor kustoClient, RequestContext requestContext, ILogger<KustoDataAccess> logger, ulong? maxDynamicSamples = null)
         {
             this.cache = cache;
             Kusto = kustoClient;
             RequestContext = requestContext;
             Logger = logger;
-            DynamicSamplePercentage = dynamicSamplePercentage;
+            MaxDynamicSamples = maxDynamicSamples;
         }
 
         private IQueryExecutor Kusto { get; set; }
@@ -47,7 +47,7 @@ namespace K2Bridge.KustoDAL
 
         private ILogger Logger { get; set; }
 
-        private double? DynamicSamplePercentage { get; }
+        private ulong? MaxDynamicSamples { get; }
 
         /// <summary>
         /// Executes a query to Kusto for Fields Caps.
@@ -199,11 +199,8 @@ namespace K2Bridge.KustoDAL
         /// <exception cref="InvalidOperationException">When parsing the json response yields an unexpected type.</exception>
         private async Task HandleDynamicField(FieldCapabilityResponse response, string tableName, FieldCapabilityElement fieldCapabilityElement)
         {
-            var query = DynamicSamplePercentage.HasValue ?
-                $@"{KustoQLOperators.Let} percentage = {DynamicSamplePercentage} / 100.0;
-{KustoQLOperators.Let} table_count = {KustoQLOperators.ToScalar}({tableName} | {KustoQLOperators.Count});
-{tableName} | {KustoQLOperators.Sample} {KustoQLOperators.ToInt}({KustoQLOperators.Floor}(table_count * percentage, 1)) | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})" :
-                $"{tableName} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
+            var sample = MaxDynamicSamples.HasValue ? $" | {KustoQLOperators.Sample} {MaxDynamicSamples.Value}" : string.Empty;
+            var query = $"{tableName}{sample} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
             var (_, result) = await Kusto.ExecuteQueryAsync(new QueryData(query, tableName), RequestContext);
             result.Read();
             var jsonResult = result[0];
