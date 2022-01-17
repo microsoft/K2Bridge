@@ -11,7 +11,7 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class HistogramAggregationVisitorTests
     {
-        [TestCase(ExpectedResult = "(_data \n| summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 0\n| order by ['key%False'] asc | as aggs);")]
+        [TestCase(ExpectedResult = "_data \n| summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 0\n| order by ['key%False'] asc ")]
         public string HistogramVisit_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new HistogramAggregation()
@@ -28,7 +28,7 @@ namespace UnitTests.K2Bridge.Visitors
             return histogramAggregation.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "(_data \n| summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 1\n| order by ['key%False'] asc | as aggs);")]
+        [TestCase(ExpectedResult = "_data \n| summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['count_'] >= 1\n| order by ['key%False'] asc ")]
         public string HistogramVisitWithMinDocCount_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new HistogramAggregation()
@@ -45,7 +45,7 @@ namespace UnitTests.K2Bridge.Visitors
             return histogramAggregation.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "(_data \n| summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['key%False'] between (50 .. 150)\n| where ['count_'] >= 0\n| order by ['key%False'] asc | as aggs);")]
+        [TestCase(ExpectedResult = "_data \n| summarize count() by ['key%False'] = bin(['field'], 20)\n| where ['key%False'] between (50 .. 150)\n| where ['count_'] >= 0\n| order by ['key%False'] asc ")]
         public string HistogramVisitWithHardBounds_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new HistogramAggregation()

@@ -29,7 +29,7 @@ namespace K2Bridge.Visitors
 
             var histogramKey = EncodeKustoField($"{histogramAggregation.Key}{AggregationsConstants.MetadataSeparator}{histogramAggregation.Keyed}");
 
-            histogramAggregation.KustoQL = $"({KustoTableNames.Data} ";
+            histogramAggregation.KustoQL = $"{KustoTableNames.Data} ";
 
             histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Summarize} {histogramAggregation.SubAggregationsKustoQL}" +
             $"{histogramAggregation.Metric} by {histogramKey} = ";
@@ -47,7 +47,7 @@ namespace K2Bridge.Visitors
             }
 
             histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(BucketColumnNames.Count)} >= {histogramAggregation.MinimumDocumentCount}";
-            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc | as {KustoTableNames.Aggregation});";
+            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc ";
         }
     }
 }
