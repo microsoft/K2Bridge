@@ -5,6 +5,7 @@
 namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
@@ -30,11 +31,13 @@ namespace K2Bridge.Visitors
                 VisitedMetrics.Add(EncodeKustoField(bucketAggregation.Key));
                 VisitedMetrics.Add(EncodeKustoField(bucketAggregation.MetricKey));
 
+                var primaryAggregations = aggregationContainer.SubAggregations.Values.Select(x => x.PrimaryAggregation).ToList();
+
                 bucketAggregation.SummarizableMetricsKustoQL = BuildSummarizableMetricsQuery(
-                    aggregationContainer.SubAggregations);
+                    primaryAggregations);
 
                 bucketAggregation.PartitionableMetricsKustoQL = BuildPartitionableMetricsQuery(
-                    aggregationContainer.SubAggregations,
+                    primaryAggregations,
                     bucketAggregation.Key);
             }
 
@@ -42,21 +45,18 @@ namespace K2Bridge.Visitors
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
 
-        private string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary)
+        private string BuildSummarizableMetricsQuery(IEnumerable<Aggregation> primaryAggregations)
         {
-            var query = new StringBuilder();
-
             // Collect all ISummarizable metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
+            var query = new StringBuilder();
+            var aggregations = primaryAggregations.Where(x => x is ISummarizable);
+
             var summarizableMetrics = new List<string>();
-            foreach (var (_, aggregationContainer) in aggregationDictionary)
+            foreach (var aggregation in aggregations)
             {
-                var aggregation = aggregationContainer.PrimaryAggregation;
-                if (aggregation is ISummarizable)
-                {
-                    aggregation.Accept(this);
-                    summarizableMetrics.Add($"{aggregation.KustoQL}");
-                }
+                aggregation.Accept(this);
+                summarizableMetrics.Add($"{aggregation.KustoQL}");
             }
 
             var summarizableMetricsExpression = string.Join(',', summarizableMetrics);
@@ -70,20 +70,18 @@ namespace K2Bridge.Visitors
             return query.ToString();
         }
 
-        private string BuildPartitionableMetricsQuery(AggregationDictionary aggregationDictionary, string partitionKey)
+        private string BuildPartitionableMetricsQuery(IEnumerable<Aggregation> primaryAggregations, string partitionKey)
         {
             // Collect all additional queries built from IPartitionable metrics
             var query = new StringBuilder();
-            foreach (var (_, aggregationContainer) in aggregationDictionary)
-            {
-                var aggregation = aggregationContainer.PrimaryAggregation;
-                if (aggregation is IPartitionable)
-                {
-                    ((IPartitionable)aggregation).PartitionKey = partitionKey;
+            var aggregations = primaryAggregations.Where(x => x is IPartitionable);
 
-                    aggregation.Accept(this);
-                    query.Append($"{aggregation.KustoQL}");
-                }
+            foreach (var aggregation in aggregations)
+            {
+                ((IPartitionable)aggregation).PartitionKey = partitionKey;
+
+                aggregation.Accept(this);
+                query.Append($"{aggregation.KustoQL}");
             }
 
             return query.ToString();
