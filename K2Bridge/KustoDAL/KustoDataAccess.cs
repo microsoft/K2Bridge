@@ -249,7 +249,12 @@ namespace K2Bridge.KustoDAL
 
         private string CombineValues(JToken property)
         {
-            return property is JArray ? "string" : property.ToString();
+            return property switch
+            {
+                JArray => "string",
+                { Type: JTokenType.Null } => "dynamic",
+                _ => property.ToString(),
+            };
         }
 
         private void MapResolveIndexList(IEnumerable<string> kustoResults, ResolveIndexResponse response)

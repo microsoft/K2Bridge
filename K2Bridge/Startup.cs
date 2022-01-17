@@ -278,6 +278,11 @@ namespace K2Bridge
                 return double.TryParse(config, out var result) ? new T?((T)(object)result) : null;
             }
 
+            if (type == typeof(ulong))
+            {
+                return ulong.TryParse(config, out var result) ? new T?((T)(object)result) : null;
+            }
+
             if (type == typeof(Guid))
             {
                 return Guid.TryParse(config, out var result) ? new T?((T)(object)result) : null;
