@@ -57,13 +57,25 @@ namespace K2Bridge.KustoDAL
         /// <returns>A new instance of <see cref="KustoConnectionStringBuilder"/>.</returns>
         public static KustoConnectionStringBuilder CreateKustoConnectionStringBuilder(IConnectionDetails connectionDetails)
         {
-            var conn = new KustoConnectionStringBuilder(
-                connectionDetails.ClusterUrl,
-                connectionDetails.DefaultDatabaseName)
-                .WithAadApplicationKeyAuthentication(
-                    connectionDetails.AadClientId,
-                    connectionDetails.AadClientSecret,
-                    connectionDetails.AadTenantId);
+            KustoConnectionStringBuilder conn;
+
+            if (connectionDetails.UseManagedIdentity)
+            {
+                conn = new KustoConnectionStringBuilder(
+                    connectionDetails.ClusterUrl,
+                    connectionDetails.DefaultDatabaseName)
+                    .WithAadUserManagedIdentity(connectionDetails.AadClientId);
+            }
+            else
+            {
+                conn = new KustoConnectionStringBuilder(
+                    connectionDetails.ClusterUrl,
+                    connectionDetails.DefaultDatabaseName)
+                    .WithAadApplicationKeyAuthentication(
+                        connectionDetails.AadClientId,
+                        connectionDetails.AadClientSecret,
+                        connectionDetails.AadTenantId);
+            }
 
             // Sending both name and version this way for better visibility in Kusto audit logs.
             conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion}";

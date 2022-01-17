@@ -33,5 +33,10 @@ namespace K2Bridge.Models
         /// Gets the AAD tenant ID.
         /// </summary>
         string AadTenantId { get; }
+
+        /// <summary>
+        /// Gets a boolean indicating if we need to use a Managed Identity.
+        /// </summary>
+        bool UseManagedIdentity { get; }
     }
 }

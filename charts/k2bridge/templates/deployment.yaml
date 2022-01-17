@@ -62,11 +62,13 @@ spec:
               value: "{{ .Values.settings.adxDefaultDatabaseName }}"
             - name: aadClientId
               value: "{{ .Values.settings.aadClientId }}"
+            {{ if .Values.settings.aadClientSecret }}
             - name: aadClientSecret
               valueFrom:
                 secretKeyRef:
                   name: {{ include "k2bridge.fullname" . }}-kusto-credentials
                   key: aadClientSecret
+            {{ end }}
             - name: aadTenantId
               value: "{{ .Values.settings.aadTenantId }}"
             - name: instrumentationKey
@@ -77,6 +79,8 @@ spec:
               value: "{{ .Values.settings.enableQueryLogging }}"
             - name: maxDynamicSamples
               value: "{{ .Values.settings.maxDynamicSamples }}"
+            - name: useManagedIdentity
+              value: "{{ .Values.settings.useManagedIdentity }}"
           volumeMounts:
             - name: appsettings-volume
               mountPath: /app/settings
