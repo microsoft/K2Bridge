@@ -181,13 +181,13 @@ namespace K2Bridge.Factories
         /// <param name="rowCollection">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetHistogramAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, ILogger logger)
         {
             logger.LogTrace("Get histogram aggregate for {}", key);
 
             var histogramAggregate = new BucketAggregate();
 
-            foreach (DataRow row in rowCollection)
+            foreach (DataRow row in dataTable.Rows)
             {
                 var bucket = BucketFactory.CreateHistogramBucket(key, row, logger);
                 if (bucket != null)
