@@ -37,7 +37,7 @@ namespace K2Bridge.Visitors
                 histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(histogramAggregation.Field)} between ({min} .. {max});\n(";
             }
 
-            histogramAggregation.KustoQL += $"{KustoTableNames.Data} | {KustoQLOperators.Summarize} {histogramAggregation.SubAggregationsKustoQL}" +
+            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Summarize} {histogramAggregation.SubAggregationsKustoQL}" +
             $"{histogramAggregation.Metric} by {histogramKey} = ";
 
             var interval = Convert.ToInt32(histogramAggregation.Interval);
