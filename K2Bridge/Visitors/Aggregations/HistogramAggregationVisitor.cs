@@ -28,7 +28,7 @@ namespace K2Bridge.Visitors
 
             var histogramKey = EncodeKustoField($"{histogramAggregation.Key}{AggregationsConstants.MetadataSeparator}{histogramAggregation.Keyed}");
 
-            histogramAggregation.KustoQL = String.Empty;
+            histogramAggregation.KustoQL = $"({KustoTableNames.Data} ";
 
             if (histogramAggregation.HardBounds != null)
             {
