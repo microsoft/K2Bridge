@@ -34,7 +34,7 @@ namespace K2Bridge.Visitors
             {
                 var min = Convert.ToInt32(histogramAggregation.HardBounds.Min);
                 var max = Convert.ToInt32(histogramAggregation.HardBounds.Max);
-                histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(histogramAggregation.Field)} between ({min} .. {max});\n(";
+                histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(histogramAggregation.Field)} between ({min} .. {max})";
             }
 
             histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Summarize} {histogramAggregation.SubAggregationsKustoQL}" +
