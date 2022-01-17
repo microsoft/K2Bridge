@@ -252,7 +252,8 @@ namespace K2Bridge.KustoDAL
             return property switch
             {
                 JArray => "string",
-                { Type: JTokenType.Null } => "dynamic",
+
+                // { Type: JTokenType.Null } => "dynamic",
                 _ => property.ToString(),
             };
         }
