@@ -169,37 +169,28 @@ namespace K2Bridge.Factories
                 }
 
                 // Column Metadata (Separator %)
-                // Structure: key%metric%value1%value2%keyed
                 var columnMetadata = column.ColumnName.Split(AggregationsConstants.MetadataSeparator);
+                string key;
 
-                if (columnMetadata.Length > 1)
+                if (columnMetadata.Length <= 1)
                 {
-                    var metric = columnMetadata[1];
-
-                    if (metric == AggregationsConstants.Percentile)
-                    {
-                        var key = columnMetadata[0];
-                        aggregateDictionary.Add(key, GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger));
-                    }
-                    else if (metric == AggregationsConstants.ExtendedStats)
-                    {
-                        var key = columnMetadata[0];
-                        aggregateDictionary.Add(key, GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger));
-                    }
-                    else if (metric == AggregationsConstants.TopHits)
-                    {
-                        var key = columnMetadata[0];
-                        aggregateDictionary.Add(key, GetTopHitsAggregate(column.ColumnName, columnMetadata, row, logger, query));
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid.");
-                    }
+                    key = column.ColumnName;
+                    aggregateDictionary.Add(key, GetValueAggregate(key, row, logger));
                 }
                 else
                 {
-                    var key = column.ColumnName;
-                    aggregateDictionary.Add(key, GetValueAggregate(key, row, logger));
+                    key = columnMetadata[0];
+                    var metric = columnMetadata[1];
+
+                    IAggregate aggregate = metric switch
+                    {
+                        AggregationsConstants.Percentile => GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger),
+                        AggregationsConstants.ExtendedStats => GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger),
+                        AggregationsConstants.TopHits => GetTopHitsAggregate(column.ColumnName, columnMetadata, row, logger, query),
+                        _ => throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid."),
+                    };
+
+                    aggregateDictionary.Add(key, aggregate);
                 }
             }
         }
