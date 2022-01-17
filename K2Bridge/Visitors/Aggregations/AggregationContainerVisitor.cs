@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Collections.Generic;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
 
@@ -24,23 +25,35 @@ namespace K2Bridge.Visitors
 
             if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
             {
-                // Get all sub aggregation metrics
-                // KQL ==> [key1]=metric(field1), [key2]=metric(field2), (will be appended with count())
-                var metrics = new StringBuilder();
-                if (aggregationContainer.SubAggregations?.Count > 0)
-                {
-                    foreach (var (_, subAgg) in aggregationContainer.SubAggregations)
-                    {
-                        subAgg.Accept(this);
-                        metrics.Append($"{subAgg.KustoQL}, ");
-                    }
-
-                    bucketAggregation.SubAggregationsKustoQL = metrics.ToString();
-                }
+                bucketAggregation.SubAggregationsKustoQL = BuildSummarizableMetricsQuery(aggregationContainer.SubAggregations);
             }
 
             aggregationContainer.PrimaryAggregation.Accept(this);
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
+        }
+
+        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary)
+        {
+            var query = new StringBuilder();
+
+            // Collect all metrics
+            // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
+            var summarizableMetrics = new List<string>();
+            foreach (var (_, aggregation) in aggregationDictionary)
+            {
+                aggregation.Accept(this);
+                summarizableMetrics.Add($"{aggregation.KustoQL}");
+            }
+
+            var summarizableMetricsExpression = string.Join(',', summarizableMetrics);
+            query.Append($"{summarizableMetricsExpression}");
+
+            if (!string.IsNullOrEmpty(summarizableMetricsExpression))
+            {
+                query.Append($",");
+            }
+
+            return query.ToString();
         }
     }
 }
