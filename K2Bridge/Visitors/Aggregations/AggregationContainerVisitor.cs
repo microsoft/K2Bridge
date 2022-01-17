@@ -9,7 +9,6 @@ namespace K2Bridge.Visitors
     using System.Text;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
-    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the root <see cref="AggregationContainer"/> element.
@@ -47,7 +46,7 @@ namespace K2Bridge.Visitors
 
         private string BuildSummarizableMetricsQuery(IEnumerable<Aggregation> primaryAggregations)
         {
-            // Collect all ISummarizable metrics
+            // Collect all SummarizableMetricAggregation metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
             var query = new StringBuilder();
             var aggregations = primaryAggregations.Where(x => x is SummarizableMetricAggregation);
@@ -72,13 +71,13 @@ namespace K2Bridge.Visitors
 
         private string BuildPartitionableMetricsQuery(IEnumerable<Aggregation> primaryAggregations, string partitionKey)
         {
-            // Collect all additional queries built from IPartitionable metrics
+            // Collect all additional queries built from PartitionableMetricAggregation metrics
             var query = new StringBuilder();
-            var aggregations = primaryAggregations.Where(x => x is IPartitionable);
+            var aggregations = primaryAggregations.Where(x => x is PartitionableMetricAggregation);
 
             foreach (var aggregation in aggregations)
             {
-                ((IPartitionable)aggregation).PartitionKey = partitionKey;
+                ((PartitionableMetricAggregation)aggregation).PartitionKey = partitionKey;
 
                 aggregation.Accept(this);
                 query.Append($"{aggregation.KustoQL}");

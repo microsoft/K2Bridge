@@ -12,7 +12,7 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// A top_hits metric aggregator keeps track of the most relevant document being aggregated.
     /// </summary>
-    internal class TopHitsAggregation : MetricAggregation, IPartitionable
+    internal class TopHitsAggregation : PartitionableMetricAggregation
     {
         [JsonProperty("docvalue_fields")]
         public List<DocValueField> DocValueFields { get; set; }
@@ -25,9 +25,6 @@ namespace K2Bridge.Models.Request.Aggregations
 
         [JsonIgnore]
         public override string Field => DocValueFields?.First()?.Field;
-
-        [JsonIgnore]
-        public string PartitionKey { get; set; }
 
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)
