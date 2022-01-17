@@ -42,7 +42,7 @@ namespace K2Bridge.Visitors
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
 
-        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary)
+        private string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary)
         {
             var query = new StringBuilder();
 
@@ -70,7 +70,7 @@ namespace K2Bridge.Visitors
             return query.ToString();
         }
 
-        public string BuildPartitionableMetricsQuery(AggregationDictionary aggregationDictionary, string partitionKey)
+        private string BuildPartitionableMetricsQuery(AggregationDictionary aggregationDictionary, string partitionKey)
         {
             // Collect all additional queries built from IPartitionable metrics
             var query = new StringBuilder();
