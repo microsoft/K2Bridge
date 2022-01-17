@@ -14,6 +14,7 @@ data:
   adxDefaultDatabaseName: "{{ .Values.settings.adxDefaultDatabaseName }}"
   aadClientId: "{{ .Values.settings.aadClientId }}"
   aadTenantId: "{{ .Values.settings.aadTenantId }}"
+  useManagedIdentity: "{{ .Values.settings.useManagedIdentity }}"
 
 ---
 
