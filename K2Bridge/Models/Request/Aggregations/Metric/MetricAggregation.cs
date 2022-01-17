@@ -23,6 +23,6 @@ namespace K2Bridge.Models.Request.Aggregations
         /// Gets or sets the value to use when the aggregation finds a missing value in a document.
         /// </summary>
         [JsonProperty("missing")]
-        public virtual double? Missing { get; set; }
+        public double? Missing { get; set; }
     }
 }
