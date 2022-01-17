@@ -130,10 +130,5 @@ namespace K2Bridge.Visitors
                 _ => $"{KustoQLOperators.ToStringOperator}({quoted})",
             };
         }
-
-        private string WrapBucketAggregationKustoQuery(string statement)
-        {
-            return $"({statement} | {KustoQLOperators.As} {KustoTableNames.Aggregation});";
-        }
     }
 }

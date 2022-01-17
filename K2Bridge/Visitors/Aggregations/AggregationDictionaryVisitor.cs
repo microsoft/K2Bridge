@@ -27,7 +27,7 @@ namespace K2Bridge.Visitors
                 // This is a bucket aggregation scenario.
                 // We delegate the KQL syntax construction to the aggregation container.
                 firstAggregationContainer.Accept(this);
-                query.Append($"\n{firstAggregationContainer.KustoQL}");
+                query.Append($"\n({firstAggregationContainer.KustoQL} | as aggs);");
             }
             else
             {
