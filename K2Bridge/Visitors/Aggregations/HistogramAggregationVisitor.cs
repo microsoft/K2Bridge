@@ -13,10 +13,10 @@ namespace K2Bridge.Visitors
     /// A visitor for the <see cref="HistogramAggregation"/> element.
     /// Sample KustoQL Query:
     /// (_data
-    /// | where ['AvgTicketPrice'] between (50 .. 150)
-    /// | summarize count() by ['key%False'] = bin(['AvgTicketPrice'], 20)
-    /// | where ['count_'] >= 0
-    /// | order by ['key%False'] asc | as aggs);
+    /// | summarize count() by ['2%False'] = bin(['AvgTicketPrice'], 20)
+    /// | where ['2%False'] between (50 .. 150)
+    /// | where ['count_'] >= 1
+    /// | order by ['2%False'] asc | as aggs);
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
@@ -31,13 +31,6 @@ namespace K2Bridge.Visitors
 
             histogramAggregation.KustoQL = $"({KustoTableNames.Data} ";
 
-            if (histogramAggregation.HardBounds != null)
-            {
-                var min = Convert.ToInt32(histogramAggregation.HardBounds.Min);
-                var max = Convert.ToInt32(histogramAggregation.HardBounds.Max);
-                histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(histogramAggregation.Field)} between ({min} .. {max})";
-            }
-
             histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Summarize} {histogramAggregation.SubAggregationsKustoQL}" +
             $"{histogramAggregation.Metric} by {histogramKey} = ";
 
@@ -45,6 +38,14 @@ namespace K2Bridge.Visitors
             var field = EncodeKustoField(histogramAggregation.Field, true);
 
             histogramAggregation.KustoQL += $"bin({field}, {interval})";
+
+            if (histogramAggregation.HardBounds != null)
+            {
+                var min = Convert.ToInt32(histogramAggregation.HardBounds.Min);
+                var max = Convert.ToInt32(histogramAggregation.HardBounds.Max);
+                histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {histogramKey} between ({min} .. {max})";
+            }
+
             histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(BucketColumnNames.Count)} >= {histogramAggregation.MinimumDocumentCount}";
             histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc | as {KustoTableNames.Aggregation});";
         }

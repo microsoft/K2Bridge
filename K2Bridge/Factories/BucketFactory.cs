@@ -33,7 +33,7 @@ namespace K2Bridge.Factories
 
             var dhb = new DateHistogramBucket();
 
-            if (timestamp.GetType() == typeof(System.DBNull))
+            if (timestamp is DBNull)
             {
                 return dhb;
             }
@@ -221,7 +221,7 @@ namespace K2Bridge.Factories
 
             var hb = new HistogramBucket();
 
-            if (key.GetType() == typeof(System.DBNull))
+            if (key is DBNull)
             {
                 return hb;
             }
