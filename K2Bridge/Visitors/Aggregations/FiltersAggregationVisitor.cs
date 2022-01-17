@@ -29,14 +29,13 @@ namespace K2Bridge.Visitors
             // _data | extend ['key'] = pack_array("k1", "k2", "k3"), ['_filter_value']=pack_array(expr1, expr2, expr3)
 
             // Assemble a column name that includes the key, and the different filters, base64-encoded
+            // This name will be used in the query, instead of filtersAggregation.Key
             var columnName = filtersAggregation.Key;
             foreach (var filter in filtersAggregation.Filters)
             {
                 columnName += AggregationsConstants.MetadataSeparator;
                 columnName += Convert.ToBase64String(Encoding.Default.GetBytes(filter.Key)).Replace('=', '-');
             }
-
-
 
             // Start of query, until first pack_array()
             queryStringBuilder.Append($"{KustoTableNames.Data} | {KustoQLOperators.Extend} {packColumn} = {KustoQLOperators.PackArray}(");
