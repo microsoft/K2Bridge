@@ -598,7 +598,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public async Task GetFieldCaps_WithPercentage_ReturnCorrectQuery()
         {
-            const double percentage = 30.5;
+            const ulong samples = 10;
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
                 new Dictionary<string, object> {
                     { "ColumnName", name },
@@ -624,12 +624,10 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
 
-            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, percentage);
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, samples);
             await kusto.GetFieldCapsAsync("testIndexName");
 
-            calls[0].QueryCommandText.Should().Be(@"let percentage = 30.5 / 100.0;
-let table_count = toscalar(testIndexName | count);
-testIndexName | sample toint(floor(table_count * percentage, 1)) | summarize buildschema(mydynamic)");
+            calls[0].QueryCommandText.Should().Be(@"testIndexName | sample 10 | summarize buildschema(mydynamic)");
         }
 
         [Test]
