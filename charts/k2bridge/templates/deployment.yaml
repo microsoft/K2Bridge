@@ -63,6 +63,8 @@ spec:
             {{ if .Values.settings.aadClientId }}
             - name: aadClientId
               value: "{{ .Values.settings.aadClientId }}"
+            {{ end }}
+            {{ if .Values.settings.aadClientSecret }}
             - name: aadClientSecret
               valueFrom:
                 secretKeyRef:

@@ -74,9 +74,14 @@ If you need to build the image, please follow the [build instructions](./build.m
         ```sh
         ADX_URL=[YOUR_ADX_CLUSTER_URL e.g. https://mycluster.westeurope.kusto.windows.net]
         ADX_DATABASE=[YOUR_ADX_DATABASE_NAME]
+        ADX_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
+        ```
+
+        Optional - provide ADX SP client Id + Client secret
+
+        ```sh
         ADX_CLIENT_ID=[SERVICE_PRINCIPAL_CLIENT_ID]
         ADX_CLIENT_SECRET=[SERVICE_PRINCIPAL_CLIENT_SECRET]
-        ADX_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
         ```
 
         Optional - enable ApplicationInsights telemetry
@@ -89,6 +94,11 @@ If you need to build the image, please follow the [build instructions](./build.m
         ```sh
         helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=7.16_latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
         ```
+
+        OR (if managed identity was set)
+
+        ```sh
+        helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.useManagedIdentity=true --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=7.16_latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
 
         Note: Instead of client id + secret, it is possible to use managed identity.
         The complete set of configuration options can be found [here](./configuration.md).
