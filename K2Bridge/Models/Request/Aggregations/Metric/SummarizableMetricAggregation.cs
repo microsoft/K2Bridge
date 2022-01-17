@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Request
     /// <summary>
     /// A base class which defines a metric aggregation can be used with summarize operator.
     /// </summary>
-    internal abstract class SummarizableMetricAggregagation : MetricAggregation
+    internal abstract class SummarizableMetricAggregation : MetricAggregation
     {
     }
 }
