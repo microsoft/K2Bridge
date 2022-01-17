@@ -60,6 +60,7 @@ spec:
               value: "{{ .Values.settings.adxClusterUrl }}"
             - name: adxDefaultDatabaseName
               value: "{{ .Values.settings.adxDefaultDatabaseName }}"
+            {{ if .Values.settings.aadClientId }}
             - name: aadClientId
               value: "{{ .Values.settings.aadClientId }}"
             - name: aadClientSecret
@@ -67,6 +68,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "k2bridge.fullname" . }}-kusto-credentials
                   key: aadClientSecret
+            {{ end }}
             - name: aadTenantId
               value: "{{ .Values.settings.aadTenantId }}"
             - name: instrumentationKey

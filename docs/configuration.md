@@ -13,7 +13,7 @@
 |                                   ADX cluster URL                                   | settings.adxClusterUrl          |                     NONE                     |    X     |                                                                                                                      |
 |                                   ADX default DB                                    | settings.adxDefaultDatabaseName |                     NONE                     |    X     |                                                                                                                      |
 |                                Managed Identity                                | settings.useManagedIdentity            |                     false                     |    V*     | 'Read' permissions set is all that K2 requires                                                                       |
-|                                AAD client ID for ADX                                | settings.aadClientId            |                     NONE                     |    V*     | 'Read' permissions set is all that K2 requires                                                                       |
+|                                AAD client ID for ADX                                | settings.aadClientId            |                     NONE                     |    X     | 'Read' permissions set is all that K2 requires                                                                       |
 |                                  AAD client secret                                  | settings.aadClientSecret        |                     NONE                     |    V*     |                                                                                                                      |
 |                                    AAD tenant ID                                    | settings.aadTenantId            |                     NONE                     |    X     |                                                                                                                      |
 |                       ApplicationInsights instrumentation key                       | settings.instrumentationKey     |                     NONE                     |    V     | won't work without setting collectTelemetry to 'true'                                                                |
@@ -22,4 +22,4 @@
 |             Percentage of table to aggregate to generate dynamic columns             | settings.dynamicSamplePercentage     |                       100                       |     V     | Must be between 0-100.                                                                                                |
 
 
-V* - Either ClientId + Secret OR useManagedIdentity must be set.
+V* - Either clientId + Secret OR clientId + useManagedIdentity must be set.
