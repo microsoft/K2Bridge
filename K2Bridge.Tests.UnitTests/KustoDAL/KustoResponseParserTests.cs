@@ -212,7 +212,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public void ParseElasticResponse_WithFiltersAggs_ReturnsElasticResponseWithAggs()
         {
-            using var aggsTable = GetTermsAggsTable();
+            using var aggsTable = GetFiltersAggsTable();
             aggsTable.TableName = "aggs";
 
             var timeTaken = new TimeSpan(17);
@@ -230,6 +230,29 @@ namespace UnitTests.K2Bridge.KustoDAL
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
             Assert.AreEqual(2, aggregate.Buckets.Count());
+        }
+
+        [Test]
+        public void ParseElasticResponse_WithFiltersNoMatchAggs_ReturnsElasticResponseWithAggs()
+        {
+            using var aggsTable = GetFiltersNoMatchAggsTable();
+            aggsTable.TableName = "aggs";
+
+            var timeTaken = new TimeSpan(17);
+            var query = new QueryData("query", "index");
+
+            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(FiltersAggregation));
+            query.PrimaryAggregation = primaryAggregation;
+
+            var reader = aggsTable.CreateDataReader();
+            var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
+
+            var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
+            Assert.AreEqual(1, result.Responses.Count());
+
+            var elasticResult = result.Responses.ToList()[0];
+            var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
+            Assert.AreEqual(3, aggregate.Buckets.Count());
         }
 
         [Test]
@@ -486,6 +509,68 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             resTable.Rows.Add(row2);
 
+            return resTable;
+        }
+
+        private static DataTable GetFiltersAggsTable()
+        {
+            DataTable resTable = new DataTable();
+
+            // Encoded column name with two filters
+            // Base64("a") = YQ--
+            // Base64("b") = Yg--
+            var encodedColumnName = "2%YQ--%Yg--";
+
+            var column1 = new DataColumn(encodedColumnName);
+            var column2 = new DataColumn("count_");
+
+            resTable.Columns.Add(column1);
+            resTable.Columns.Add(column2);
+
+            var row1 = resTable.NewRow();
+            row1[encodedColumnName] = "a";
+            row1["count_"] = 1;
+
+            resTable.Rows.Add(row1);
+
+            var row2 = resTable.NewRow();
+            row2[encodedColumnName] = "b";
+            row2["count_"] = 2;
+
+            resTable.Rows.Add(row2);
+
+            return resTable;
+        }
+
+        private static DataTable GetFiltersNoMatchAggsTable()
+        {
+            DataTable resTable = new DataTable();
+
+            // Encoded column name with three filters
+            // Base64("a") = YQ--
+            // Base64("b") = Yg--
+            // Base64("c") = Yw--
+            var encodedColumnName = "2%YQ--%Yg--%Yw--";
+
+            var column1 = new DataColumn(encodedColumnName);
+            var column2 = new DataColumn("count_");
+
+            resTable.Columns.Add(column1);
+            resTable.Columns.Add(column2);
+
+            var row1 = resTable.NewRow();
+            row1[encodedColumnName] = "a";
+            row1["count_"] = 1;
+
+            resTable.Rows.Add(row1);
+
+            var row2 = resTable.NewRow();
+            row2[encodedColumnName] = "b";
+            row2["count_"] = 2;
+
+            resTable.Rows.Add(row2);
+
+            // Nota bene: "c" is missing from results
             return resTable;
         }
     }

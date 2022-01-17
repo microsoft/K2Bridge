@@ -5,9 +5,11 @@
 namespace K2Bridge.Factories
 {
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Globalization;
     using System.Linq;
+    using System.Text;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
@@ -20,19 +22,19 @@ namespace K2Bridge.Factories
     internal static class AggregateFactory
     {
         /// <summary>
-        /// Get date histogram aggregate from a given <see cref="DataRowCollection"/>.
+        /// Get date histogram aggregate from a given <see cref="DataTable"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>
-        public static BucketAggregate GetDateHistogramAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        public static BucketAggregate GetDateHistogramAggregate(string key, DataTable dataTable, ILogger logger)
         {
             logger.LogTrace("Get date histogram aggregate for {}", key);
 
             var dateHistogramAggregate = new BucketAggregate();
 
-            foreach (DataRow row in rowCollection)
+            foreach (DataRow row in dataTable.Rows)
             {
                 var bucket = BucketFactory.CreateDateHistogramBucket(key, row, logger);
                 if (bucket != null)
@@ -45,19 +47,19 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Get range aggregate from a given <see cref="DataRowCollection"/>.
+        /// Get range aggregate from a given <see cref="DataTable"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>
-        public static BucketAggregate GetRangeAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        public static BucketAggregate GetRangeAggregate(string key, DataTable dataTable, ILogger logger)
         {
             logger.LogTrace("Get range aggregate for {}", key);
 
             var rangeAggregate = new BucketAggregate() { Keyed = true };
 
-            foreach (DataRow row in rowCollection)
+            foreach (DataRow row in dataTable.Rows)
             {
                 var bucket = BucketFactory.CreateRangeBucket(key, row, logger);
                 if (bucket != null)
@@ -70,19 +72,19 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Get date range aggregate from a given <see cref="DataRowCollection"/>.
+        /// Get date range aggregate from a given <see cref="DataTable"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetDateRangeAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        public static BucketAggregate GetDateRangeAggregate(string key, DataTable dataTable, ILogger logger)
         {
             logger.LogTrace("Get date range aggregate for {}", key);
 
             var rangeAggregate = new BucketAggregate();
 
-            foreach (DataRow row in rowCollection)
+            foreach (DataRow row in dataTable.Rows)
             {
                 var bucket = BucketFactory.CreateDateRangeBucket(key, row, logger);
                 if (bucket != null)
@@ -95,19 +97,19 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Get terms aggregate from a given <see cref="DataRowCollection"/>.
+        /// Get terms aggregate from a given <see cref="DataTable"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="TermsAggregate"/>.</returns>
-        public static TermsAggregate GetTermsAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        public static TermsAggregate GetTermsAggregate(string key, DataTable dataTable, ILogger logger)
         {
             logger.LogTrace("Get terms aggregate for {}", key);
 
             var termsAggregate = new TermsAggregate() { SumOtherDocCount = 0 };
 
-            foreach (DataRow row in rowCollection)
+            foreach (DataRow row in dataTable.Rows)
             {
                 var bucket = BucketFactory.CreateTermsBucket(key, row, logger);
                 if (bucket != null)
@@ -120,13 +122,13 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Get filters aggregate from a given <see cref="DataRowCollection"/>.
+        /// Get filters aggregate from a given <see cref="DataTable"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetFiltersAggregate(string key, DataRowCollection rowCollection, ILogger logger)
+        public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, ILogger logger)
         {
             logger.LogTrace("Get filters aggregate for {}", key);
 
@@ -135,13 +137,38 @@ namespace K2Bridge.Factories
                 Keyed = true,
             };
 
-            foreach (DataRow row in rowCollection)
+            var outputBuckets = new HashSet<string>();
+
+            foreach (DataRow row in dataTable.Rows)
             {
                 var bucket = BucketFactory.CreateFiltersBucket(key, row, logger);
                 if (bucket != null)
                 {
                     filtersAggregate.Buckets.Add(bucket);
+                    outputBuckets.Add((string)bucket.Key);
                 }
+            }
+
+            // Find any missing buckets
+            var encodedKey = dataTable.Columns[0].ColumnName;
+            var expectedBuckets = encodedKey
+                .Replace('-', '=')
+                .Split(AggregationsConstants.MetadataSeparator)[1..]
+                .Select(x => Encoding.Default.GetString(Convert.FromBase64String(x)))
+                .ToHashSet<string>();
+
+            expectedBuckets.ExceptWith(outputBuckets);
+
+            // Add missing buckets
+            foreach (var missingBucket in expectedBuckets)
+            {
+                // Add a fake bucket
+                var fb = new FiltersBucket
+                {
+                    Key = missingBucket,
+                    DocCount = 0,
+                };
+                filtersAggregate.Buckets.Add(fb);
             }
 
             return filtersAggregate;
