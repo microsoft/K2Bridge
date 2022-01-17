@@ -18,11 +18,12 @@ namespace K2Bridge.Factories
         /// <param name="config">Configuration element.</param>
         /// <returns>A Kusto Connection Details Object.</returns>
         internal static KustoConnectionDetails MakeFromConfiguration(IConfigurationRoot config) =>
-            new (
+            new(
                 config["adxClusterUrl"],
                 config["adxDefaultDatabaseName"],
                 config["aadClientId"],
                 config["aadClientSecret"],
-                config["aadTenantId"]);
+                config["aadTenantId"],
+                config.GetValue<bool>("useManagedIdentity"));
     }
 }
