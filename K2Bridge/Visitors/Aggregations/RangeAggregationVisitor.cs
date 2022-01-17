@@ -61,8 +61,6 @@ namespace K2Bridge.Visitors
             // Re-order columns by ascending order
             // Make sure the aggregation column (with range names) is first
             rangeAggregation.KustoQL += $" | {KustoQLOperators.ProjectReorder} {EncodeKustoField(rangeAggregation.Key)}, * asc";
-
-            rangeAggregation.KustoQL = WrapBucketAggregationKustoQuery(rangeAggregation.KustoQL);
         }
     }
 }
