@@ -66,6 +66,7 @@ namespace K2Bridge.Visitors
         public const string Extend = "extend";
         public const string ProjectAway = "project-away";
         public const string ProjectReorder = "project-reorder";
+        public const string ProjectRename = "project-rename";
         public const string Union = "union";
         public const string PackArray = "pack_array";
         public const string MvExpand = "mv-expand";

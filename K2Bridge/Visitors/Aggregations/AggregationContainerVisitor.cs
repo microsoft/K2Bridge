@@ -37,7 +37,7 @@ namespace K2Bridge.Visitors
         {
             var query = new StringBuilder();
 
-            // Collect all ISummarizable metrics
+            // Collect all SummarizableMetricAggregation metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
             var summarizableMetrics = new List<string>();
             foreach (var (_, aggregationContainer) in aggregationDictionary)

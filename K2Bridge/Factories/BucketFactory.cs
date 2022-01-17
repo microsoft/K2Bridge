@@ -129,7 +129,12 @@ namespace K2Bridge.Factories
         {
             Ensure.IsNotNull(row, nameof(row));
 
-            var filter = Convert.ToString(row[primaryKey]);
+            // We can't use primaryKey here since the Kusto column name contains the encoded filters
+            // Instead, we pick the column name by index (first column)
+            var encodedKey = row.Table.Columns[0].ColumnName;
+
+            // Access the column data  via its name
+            var filter = Convert.ToString(row[encodedKey]);
             var count = row[BucketColumnNames.Count];
 
             // Assemble the bucket
@@ -139,7 +144,8 @@ namespace K2Bridge.Factories
                 DocCount = Convert.ToInt32(count),
             };
 
-            fb.AddAggregates(primaryKey, row, logger);
+            // Pass the encoded column name so that it is correctly identified when adding other aggs
+            fb.AddAggregates(encodedKey, row, logger);
 
             return fb;
         }
