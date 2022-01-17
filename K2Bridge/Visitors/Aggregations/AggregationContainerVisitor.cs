@@ -43,7 +43,7 @@ namespace K2Bridge.Visitors
             foreach (var (_, aggregationContainer) in aggregationDictionary)
             {
                 var aggregation = aggregationContainer.PrimaryAggregation;
-                if (aggregation is ISummarizable)
+                if (aggregation is SummarizableMetricAggregagation)
                 {
                     aggregation.Accept(this);
                     summarizableMetrics.Add($"{aggregation.KustoQL}");

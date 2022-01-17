@@ -10,7 +10,7 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// A single-value metrics aggregation that provides an interval of plus/minus two standard deviations from the mean
     /// </summary>
-    internal class ExtendedStatsAggregation : MetricAggregation, ISummarizable
+    internal class ExtendedStatsAggregation : SummarizableMetricAggregagation
     {
         /// <summary>
         /// Gets or sets Sigma field
