@@ -60,10 +60,8 @@ spec:
               value: "{{ .Values.settings.adxClusterUrl }}"
             - name: adxDefaultDatabaseName
               value: "{{ .Values.settings.adxDefaultDatabaseName }}"
-            {{ if .Values.settings.aadClientId }}
             - name: aadClientId
               value: "{{ .Values.settings.aadClientId }}"
-            {{ end }}
             {{ if .Values.settings.aadClientSecret }}
             - name: aadClientSecret
               valueFrom:
