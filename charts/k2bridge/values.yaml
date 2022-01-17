@@ -24,6 +24,7 @@ settings:
   instrumentationKey: "08f41044-7f85-4718-bd9b-51ecb72da320"
   collectTelemetry: false
   enableQueryLogging: true
+  useManagedIdentity: false
 
 service:
   type: ClusterIP
