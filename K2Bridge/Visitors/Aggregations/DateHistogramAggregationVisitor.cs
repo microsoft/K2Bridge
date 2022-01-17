@@ -56,7 +56,7 @@ namespace K2Bridge.Visitors
 
             // Add order by
             query.Append($"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
-            dateHistogramAggregation.KustoQL = WrapBucketAggregationKustoQuery(query.ToString());
+            dateHistogramAggregation.KustoQL = query.ToString();
         }
     }
 }

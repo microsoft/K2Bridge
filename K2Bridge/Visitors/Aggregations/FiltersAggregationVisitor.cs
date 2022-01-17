@@ -64,7 +64,7 @@ namespace K2Bridge.Visitors
             // Order rows by key
             queryStringBuilder.Append($" | {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc");
 
-            filtersAggregation.KustoQL = WrapBucketAggregationKustoQuery(queryStringBuilder.ToString());
+            filtersAggregation.KustoQL = queryStringBuilder.ToString();
         }
     }
 }
