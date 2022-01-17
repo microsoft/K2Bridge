@@ -16,7 +16,7 @@ namespace K2Bridge.Visitors
     /// | where ['AvgTicketPrice'] between (50 .. 150)
     /// | summarize count() by ['key%False'] = bin(['AvgTicketPrice'], 20)
     /// | where ['count_'] >= 0
-    /// | order by ['key%False'] asc ) as aggs;
+    /// | order by ['key%False'] asc | as aggs);
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
@@ -46,7 +46,7 @@ namespace K2Bridge.Visitors
 
             histogramAggregation.KustoQL += $"bin({field}, {interval})";
             histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(BucketColumnNames.Count)} >= {histogramAggregation.MinimumDocumentCount}";
-            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc) as {KustoTableNames.Aggregation};";
+            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc | as {KustoTableNames.Aggregation});";
         }
     }
 }
