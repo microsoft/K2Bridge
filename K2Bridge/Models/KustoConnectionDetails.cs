@@ -28,7 +28,7 @@ namespace K2Bridge.Models
             Ensure.IsNotNullOrEmpty(clusterUrl, "Kusto Cluster URL is empty or null");
             Ensure.IsNotNullOrEmpty(defaultDatabaseName, "Kusto default database name is empty or null");
             Ensure.IsNotNullOrEmpty(aadClientId, "Kusto AAD Client ID is empty or null");
-            
+
             if (!useManagedIdentity)
             {
               Ensure.IsNotNullOrEmpty(aadClientSecret, "Kusto AAD Client Secret is empty or null");

@@ -61,8 +61,6 @@ namespace K2Bridge.KustoDAL
 
             if (connectionDetails.UseManagedIdentity)
             {
-                Logger.LogInformation("Using AAD managed identity");
-
                 conn = new KustoConnectionStringBuilder(
                     connectionDetails.ClusterUrl,
                     connectionDetails.DefaultDatabaseName)
@@ -70,8 +68,6 @@ namespace K2Bridge.KustoDAL
             }
             else
             {
-                Logger.LogInformation("Using AAD Client ID + secret");
-
                 conn = new KustoConnectionStringBuilder(
                     connectionDetails.ClusterUrl,
                     connectionDetails.DefaultDatabaseName)
