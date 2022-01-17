@@ -50,7 +50,7 @@ namespace K2Bridge.Visitors
             // Collect all ISummarizable metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
             var query = new StringBuilder();
-            var aggregations = primaryAggregations.Where(x => x is ISummarizable);
+            var aggregations = primaryAggregations.Where(x => x is SummarizableMetricAggregagation);
 
             var summarizableMetrics = new List<string>();
             foreach (var aggregation in aggregations)

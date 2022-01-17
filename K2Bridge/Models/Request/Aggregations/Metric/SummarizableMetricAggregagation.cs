@@ -4,10 +4,12 @@
 
 namespace K2Bridge.Models.Request
 {
+    using K2Bridge.Models.Request.Aggregations;
+
     /// <summary>
-    /// An interface which defines if a metric aggregation can be used with summarize operator.
+    /// A base class which defines a metric aggregation can be used with summarize operator.
     /// </summary>
-    internal interface ISummarizable
+    internal abstract class SummarizableMetricAggregagation : MetricAggregation
     {
     }
 }
