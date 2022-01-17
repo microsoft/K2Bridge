@@ -45,7 +45,7 @@ namespace K2Bridge.Visitors
 
             histogramAggregation.KustoQL += $"bin({field}, {interval})";
             histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.Where} {EncodeKustoField(BucketColumnNames.Count)} >= {histogramAggregation.MinimumDocumentCount}";
-            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc";
+            histogramAggregation.KustoQL += $"{KustoQLOperators.CommandSeparator}{KustoQLOperators.OrderBy} {histogramKey} asc) as {KustoTableNames.Aggregation};";
         }
     }
 }
