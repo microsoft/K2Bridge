@@ -37,7 +37,6 @@ namespace K2Bridge.Visitors
             // | where ['AvgTicketPrice'] >= bin(50,20) and ['AvgTicketPrice'] < bin(150,20)+20;
             var extendExpression = new StringBuilder();
             extendExpression.Append($"{histogramKey} = bin({field}, {interval})");
-            extendExpression.Append($"{KustoQLOperators.CommandSeparator}");
 
             if (histogramAggregation.HardBounds != null)
             {
