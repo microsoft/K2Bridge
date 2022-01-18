@@ -73,11 +73,11 @@ namespace K2Bridge.Visitors
         {
             // Collect all additional queries built from PartitionableMetricAggregation metrics
             var query = new StringBuilder();
-            var aggregations = primaryAggregations.Where(x => x is PartitionableMetricAggregation);
+            var aggregations = primaryAggregations.OfType<PartitionableMetricAggregation>();
 
             foreach (var aggregation in aggregations)
             {
-                ((PartitionableMetricAggregation)aggregation).PartitionKey = partitionKey;
+                aggregation.PartitionKey = partitionKey;
 
                 aggregation.Accept(this);
                 query.Append($"{aggregation.KustoQL}");
