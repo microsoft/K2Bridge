@@ -79,6 +79,8 @@ spec:
               value: "{{ .Values.settings.enableQueryLogging }}"
             - name: maxDynamicSamples
               value: "{{ .Values.settings.maxDynamicSamples }}"
+            - name: maxDynamicSamplesIngestionTimeHours
+              value: "{{ .Values.settings.maxDynamicSamplesIngestionTimeHours }}"
             - name: useManagedIdentity
               value: "{{ .Values.settings.useManagedIdentity }}"
           volumeMounts:
