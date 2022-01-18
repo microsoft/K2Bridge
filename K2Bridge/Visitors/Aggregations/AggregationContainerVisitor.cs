@@ -5,7 +5,9 @@
 namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
+    using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
 
     /// <content>
@@ -25,21 +27,24 @@ namespace K2Bridge.Visitors
 
             if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
             {
-                bucketAggregation.SubAggregationsKustoQL = BuildSummarizableMetricsQuery(aggregationContainer.SubAggregations);
+                var primaryAggregations = aggregationContainer.SubAggregations.Values.Select(x => x.PrimaryAggregation).ToList();
+
+                bucketAggregation.SubAggregationsKustoQL = BuildSummarizableMetricsQuery(primaryAggregations);
             }
 
             aggregationContainer.PrimaryAggregation.Accept(this);
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
 
-        public string BuildSummarizableMetricsQuery(AggregationDictionary aggregationDictionary)
+        public string BuildSummarizableMetricsQuery(IEnumerable<Aggregation> primaryAggregations)
         {
             var query = new StringBuilder();
+            var aggregations = primaryAggregations.OfType<SummarizableMetricAggregation>();
 
-            // Collect all metrics
+            // Collect all SummarizableMetricAggregation metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
             var summarizableMetrics = new List<string>();
-            foreach (var (_, aggregation) in aggregationDictionary)
+            foreach (var aggregation in aggregations)
             {
                 aggregation.Accept(this);
                 summarizableMetrics.Add($"{aggregation.KustoQL}");

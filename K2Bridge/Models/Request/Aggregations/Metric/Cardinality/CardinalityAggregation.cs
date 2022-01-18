@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// A single-value metrics aggregation that calculates an approximate count of distinct values.
     /// </summary>
-    internal class CardinalityAggregation : MetricAggregation
+    internal class CardinalityAggregation : SummarizableMetricAggregation
     {
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)

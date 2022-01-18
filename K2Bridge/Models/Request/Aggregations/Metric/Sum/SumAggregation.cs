@@ -9,7 +9,7 @@ namespace K2Bridge.Models.Request.Aggregations
     /// <summary>
     /// A single-value metrics aggregation that computes the sum of numeric values that are extracted from the aggregated documents.
     /// </summary>
-    internal class SumAggregation : MetricAggregation
+    internal class SumAggregation : SummarizableMetricAggregation
     {
         /// <inheritdoc/>
         public override void Accept(IVisitor visitor)
