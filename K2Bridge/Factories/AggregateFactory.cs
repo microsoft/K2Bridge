@@ -388,9 +388,9 @@ namespace K2Bridge.Factories
                 var docCount = (long)row[BucketColumnNames.Count];
                 topHitsAggregate.Hits.SetTotal(docCount);
 
-                if (row[columnName] is JArray topHitsValues && topHitsValues.HasValues)
+                if (row[columnName] is JArray { HasValues: true } topHitsValues)
                 {
-                    List<Hit> hits = new List<Hit>();
+                    var hits = new List<Hit>();
 
                     foreach (JObject jObject in topHitsValues)
                     {
