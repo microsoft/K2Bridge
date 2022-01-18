@@ -199,7 +199,7 @@ namespace K2Bridge.KustoDAL
         /// <exception cref="InvalidOperationException">When parsing the json response yields an unexpected type.</exception>
         private async Task HandleDynamicField(FieldCapabilityResponse response, string tableName, FieldCapabilityElement fieldCapabilityElement)
         {
-            var sample = MaxDynamicSamples.HasValue ? $" | {KustoQLOperators.Sample} {MaxDynamicSamples.Value}" : string.Empty;
+            var sample = MaxDynamicSamples.HasValue ? $" | {KustoQLOperators.Where} ingestion_time() > ago(4h) | {KustoQLOperators.Sample} {MaxDynamicSamples.Value}" : string.Empty;
             var query = $"{tableName}{sample} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
             var (_, result) = await Kusto.ExecuteQueryAsync(new QueryData(query, tableName), RequestContext);
             result.Read();
