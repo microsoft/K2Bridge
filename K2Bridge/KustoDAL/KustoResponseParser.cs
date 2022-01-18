@@ -166,20 +166,19 @@ namespace K2Bridge.KustoDAL
             if (kustoResponse[KustoTableNames.Aggregation] != null)
             {
                 var (key, aggregationType) = query.PrimaryAggregation;
-                var dataRowCollection = kustoResponse[KustoTableNames.Aggregation].TableData.Rows;
+                var tableData = kustoResponse[KustoTableNames.Aggregation].TableData;
 
                 Logger.LogTrace("Parsing aggregations");
 
                 if (string.IsNullOrWhiteSpace(aggregationType))
                 {
                     // This is not a bucket aggregation scenario
-                    if (dataRowCollection.Count == 0)
+                    if (tableData.Rows.Count == 0)
                     {
-                        var table = kustoResponse[KustoTableNames.Aggregation].TableData;
-                        dataRowCollection.Add(table.NewRow());
+                        tableData.Rows.Add(tableData.NewRow());
                     }
 
-                    foreach (DataRow row in dataRowCollection)
+                    foreach (DataRow row in tableData.Rows)
                     {
                         searchResponse.Aggregations.AddAggregates(key, row, Logger, query);
                     }
@@ -189,11 +188,11 @@ namespace K2Bridge.KustoDAL
                     // This a bucket aggregation scenario
                     IAggregate bucketAggregate = aggregationType switch
                     {
-                        nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, dataRowCollection, Logger),
-                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, dataRowCollection, Logger),
-                        nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, dataRowCollection, Logger),
-                        nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, dataRowCollection, Logger),
-                        nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, dataRowCollection, Logger),
+                        nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, tableData, Logger),
+                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, tableData, Logger),
+                        nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, tableData, Logger),
+                        nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, tableData, Logger),
+                        nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, tableData, Logger),
                         _ => null,
                     };
 

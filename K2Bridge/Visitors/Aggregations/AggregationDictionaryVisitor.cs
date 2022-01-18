@@ -55,8 +55,8 @@ namespace K2Bridge.Visitors
             }
 
             // (_summarizablemetrics | as aggs)
-            query.Append($"{KustoQLOperators.NewLine}({SubQueriesStack.Last()}");
-            query.Append($"{projectAwayExpression}");
+            query.Append($"{KustoQLOperators.NewLine}({AggregationsSubQueries.SummarizableMetricsQuery}");
+            query.Append(projectAwayExpression);
             query.Append($"{KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregation});");
 
             aggregationDictionary.KustoQL = query.ToString();

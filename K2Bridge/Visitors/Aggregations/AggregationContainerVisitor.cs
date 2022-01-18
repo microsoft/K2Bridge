@@ -44,13 +44,13 @@ namespace K2Bridge.Visitors
             aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
         }
 
-        private string BuildSummarizableMetricsQuery(IEnumerable<Aggregation> primaryAggregations)
+        public string BuildSummarizableMetricsQuery(IEnumerable<Aggregation> primaryAggregations)
         {
+            var query = new StringBuilder();
+            var aggregations = primaryAggregations.OfType<SummarizableMetricAggregation>();
+
             // Collect all SummarizableMetricAggregation metrics
             // ['2']=max(AvgTicketPrice), ['3']=avg(DistanceKilometers)
-            var query = new StringBuilder();
-            var aggregations = primaryAggregations.Where(x => x is SummarizableMetricAggregation);
-
             var summarizableMetrics = new List<string>();
             foreach (var aggregation in aggregations)
             {

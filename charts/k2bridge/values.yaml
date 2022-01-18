@@ -25,6 +25,7 @@ settings:
   collectTelemetry: false
   enableQueryLogging: true
   useManagedIdentity: false
+  # maxDynamicSamples: <number>
 
 service:
   type: ClusterIP
