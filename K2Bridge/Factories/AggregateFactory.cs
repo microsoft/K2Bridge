@@ -10,6 +10,7 @@ namespace K2Bridge.Factories
     using System.Globalization;
     using System.Linq;
     using System.Text;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
