@@ -31,7 +31,7 @@ namespace K2Bridge.Utils
         public const string HitsTotal = "hitsTotal";
 
         /// <summary>
-        /// The metadata.
+        /// The metadata table.
         /// </summary>
         public const string Metadata = "metadata";
 
@@ -39,5 +39,16 @@ namespace K2Bridge.Utils
         /// The data type for the metadata columns.
         /// </summary>
         public const string MetadataColumnType = "string";
+
+        /// <summary>
+        /// The metadata key column name.
+        /// </summary>
+        public const string MetadataKey = "key";
+
+        /// <summary>
+        /// The metadata value column name.
+        /// </summary>
+        public const string MetadataValue = "value";
+
     }
 }

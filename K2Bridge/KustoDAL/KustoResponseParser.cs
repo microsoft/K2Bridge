@@ -169,11 +169,7 @@ namespace K2Bridge.KustoDAL
                 var tableData = kustoResponse[KustoTableNames.Aggregation].TableData;
 
                 // Not all aggregations return a metadata table
-                DataTable metadataTableData = null;
-                if (kustoResponse[KustoTableNames.Metadata] != null)
-                {
-                    metadataTableData = kustoResponse[KustoTableNames.Metadata].TableData;
-                }
+                var metadataTableData = kustoResponse[KustoTableNames.Metadata]?.TableData;
 
                 Logger.LogTrace("Parsing aggregations");
 

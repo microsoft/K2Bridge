@@ -71,7 +71,6 @@ namespace K2Bridge.Visitors
             query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {bucketAggregation.SubAggregationsKustoQL}");
             query.Append($"{definition.BucketExpression};");
 
-            // Create a table named "metadata", with one column per aggregation and dynamic value.
             if (definition.Metadata != null)
             {
                 query.Append(BuildMetadataQuery(definition.Metadata));
@@ -82,32 +81,32 @@ namespace K2Bridge.Visitors
 
         /// <summary>
         /// Given a metadata dictionary, generates a Kusto QL statement creating the metadata table:
-        /// datatable(['2']:string) [dynamic(['val1','val2', 'val3'])] | as metadata;
+        /// datatable(['key']:string, ['value']:string) ['2', 'val1', '2', 'val2', '2', 'val3'] | as metadata;
+        /// The table has two columns, key and value.
+        /// The key is the aggregation key, e.g. '2'.
+        /// The value is an expected bucket name, e.g. 'val1'.
         /// </summary>
         /// <param name="metadata">A metadata dictionary.</param>
         /// <returns>A string containing the Kusto QL statement.</returns>
-        public string BuildMetadataQuery(Dictionary<string, string> metadata)
+        public string BuildMetadataQuery(Dictionary<string, List<string>> metadata)
         {
             var query = new StringBuilder();
 
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Datatable}(");
+            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Datatable}({KustoTableNames.MetadataKey}:{KustoTableNames.MetadataColumnType}, {KustoTableNames.MetadataValue}:{KustoTableNames.MetadataColumnType}) [");
 
-            // Column definitions
-            var columns = new List<string>();
-            foreach (var (key, _) in metadata)
-            {
-                columns.Add($"['{key}']:{KustoTableNames.MetadataColumnType}");
-            }
-            query.Append(string.Join(',', columns));
-            query.Append(") [");
-
-            // Values
             var values = new List<string>();
-            foreach (var (_, value) in metadata)
+
+            // Keys
+            foreach (var (key, valueList) in metadata)
             {
-                values.Add($"{KustoQLOperators.Dynamic}([{value}])");
+                // Values
+                foreach (var value in valueList)
+                {
+                    values.Add($"'{key}',{value}");
+                }
             }
             query.Append(string.Join(',', values));
+
             query.Append(']');
 
             query.Append($" | as {KustoTableNames.Metadata};");

@@ -21,6 +21,6 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Gets or sets the metadata.
         /// </summary>
-        public Dictionary<string, string> Metadata { get; set; }
+        public Dictionary<string, List<string>> Metadata { get; set; }
     }
 }

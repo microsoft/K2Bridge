@@ -60,13 +60,13 @@ namespace K2Bridge.Visitors
             // let _summarizablemetrics = _extdata
             // | summarize count() by ['2']
             // | order by ['2'] asc;"
-            // datatable(['2']:string) [dynamic(['k1'])] | as metadata;
+            // datatable(key:string, value:string) ['2','k1'] | as metadata;
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression.ToString(),
                 BucketExpression = bucketExpression.ToString(),
-                Metadata = new Dictionary<string, string> {
-                    { filtersAggregation.Key, string.Join(',', filterNames) },
+                Metadata = new Dictionary<string, List<string>> {
+                    { filtersAggregation.Key, filterNames },
                 },
             };
 

@@ -75,9 +75,9 @@ namespace K2Bridge.Factories
             }
 
             // Get expected bucket names from metadata row
-            var metadataJson = (string)metadataTable.Rows[0][key];
-            var expectedBuckets = JsonConvert.DeserializeObject<List<string>>(metadataJson).ToHashSet<string>();
+            var expectedBuckets = GetExpectedBuckets(key, metadataTable);
 
+            // Remove bucket names already returned
             expectedBuckets.ExceptWith(outputBuckets);
 
             // Add missing buckets
@@ -174,9 +174,9 @@ namespace K2Bridge.Factories
             }
 
             // Get expected bucket names from metadata row
-            var metadataJson = (string)metadataTable.Rows[0][key];
-            var expectedBuckets = JsonConvert.DeserializeObject<List<string>>(metadataJson).ToHashSet<string>();
+            var expectedBuckets = GetExpectedBuckets(key, metadataTable);
 
+            // Remove bucket names already returned
             expectedBuckets.ExceptWith(outputBuckets);
 
             // Add missing buckets
@@ -190,6 +190,28 @@ namespace K2Bridge.Factories
             }
 
             return filtersAggregate;
+        }
+
+        /// <summary>
+        /// Gets the expected bucket names for a given key from the metadata table.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="metadataTable">The metadata table.</param>
+        /// <returns>A HashSet<string> of expected bucket names.</returns>
+        public static HashSet<string> GetExpectedBuckets(string key, DataTable metadataTable)
+        {
+            var expectedBuckets = new HashSet<string>();
+
+            var reader = metadataTable.CreateDataReader();
+            while (reader.Read())
+            {
+                if (reader.GetString(KustoTableNames.MetadataKey) == key)
+                {
+                    expectedBuckets.Add(reader.GetString(KustoTableNames.MetadataValue));
+                }
+            }
+
+            return expectedBuckets;
         }
 
         /// <summary>

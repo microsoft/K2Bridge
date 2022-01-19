@@ -77,8 +77,8 @@ namespace K2Bridge.Visitors
             {
                 ExtendExpression = extendExpression.ToString(),
                 BucketExpression = bucketExpression.ToString(),
-                Metadata = new Dictionary<string, string> {
-                    { rangeAggregation.Key, string.Join(',', rangeNames) },
+                Metadata = new Dictionary<string, List<string>> {
+                    { rangeAggregation.Key, rangeNames },
                 },
             };
 

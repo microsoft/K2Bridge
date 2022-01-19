@@ -539,28 +539,40 @@ namespace UnitTests.K2Bridge.KustoDAL
         {
             DataTable resTable = ds.Tables.Add(tableName);
 
-            var column1 = new DataColumn("2");
-
+            var column1 = new DataColumn("key");
             resTable.Columns.Add(column1);
 
-            var row1 = resTable.NewRow();
-            row1["2"] = @"[""%100"",""100%200"",""200%""]";
+            var column2 = new DataColumn("value");
+            resTable.Columns.Add(column2);
 
-            resTable.Rows.Add(row1);
+            string[] values = { "%100", "100%200", "200%" };
+            foreach (var v in values)
+            {
+                var row = resTable.NewRow();
+                row["key"] = "2";
+                row["value"] = v;
+                resTable.Rows.Add(row);
+            }
         }
 
         private static void GetNegativeRangeMetadataTable(DataSet ds, string tableName)
         {
             DataTable resTable = ds.Tables.Add(tableName);
 
-            var column1 = new DataColumn("2");
-
+            var column1 = new DataColumn("key");
             resTable.Columns.Add(column1);
 
-            var row1 = resTable.NewRow();
-            row1["2"] = @"[""%-100"",""-100%-200"",""-200%""]";
+            var column2 = new DataColumn("value");
+            resTable.Columns.Add(column2);
 
-            resTable.Rows.Add(row1);
+            string[] values = { "%-100", "-100%-200", "-200%" };
+            foreach (var v in values)
+            {
+                var row = resTable.NewRow();
+                row["key"] = "2";
+                row["value"] = v;
+                resTable.Rows.Add(row);
+            }
         }
 
         private static void GetOverlappingRangeAggsTable(DataSet ds, string tableName)
@@ -590,14 +602,20 @@ namespace UnitTests.K2Bridge.KustoDAL
         {
             DataTable resTable = ds.Tables.Add(tableName);
 
-            var column1 = new DataColumn("2");
-
+            var column1 = new DataColumn("key");
             resTable.Columns.Add(column1);
 
-            var row1 = resTable.NewRow();
-            row1["2"] = @"[""1000%20000"",""5000%10000""]";
+            var column2 = new DataColumn("value");
+            resTable.Columns.Add(column2);
 
-            resTable.Rows.Add(row1);
+            string[] values = { "1000%20000", "5000%10000" };
+            foreach (var v in values)
+            {
+                var row = resTable.NewRow();
+                row["key"] = "2";
+                row["value"] = v;
+                resTable.Rows.Add(row);
+            }
         }
 
         private static DataTable GetDateRangeAggsTable()
@@ -714,14 +732,20 @@ namespace UnitTests.K2Bridge.KustoDAL
         {
             DataTable resTable = ds.Tables.Add(tableName);
 
-            var column1 = new DataColumn("2");
-
+            var column1 = new DataColumn("key");
             resTable.Columns.Add(column1);
 
-            var row1 = resTable.NewRow();
-            row1["2"] = @"[""a"",""b"",""c""]";
+            var column2 = new DataColumn("value");
+            resTable.Columns.Add(column2);
 
-            resTable.Rows.Add(row1);
+            string[] values = { "a", "b", "c" };
+            foreach (var v in values)
+            {
+                var row = resTable.NewRow();
+                row["key"] = "2";
+                row["value"] = v;
+                resTable.Rows.Add(row);
+            }
         }
     }
 }
