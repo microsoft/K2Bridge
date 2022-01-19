@@ -32,13 +32,15 @@ namespace K2Bridge.KustoDAL
         /// <param name="requestContext">An object that represents properties of the entire request process.</param>
         /// <param name="logger">A logger.</param>
         /// <param name="maxDynamicSamples">Maximum amount of entries form the table to sample when building a dynamic field. When empty, queries the entire table.</param>
-        public KustoDataAccess(IMemoryCache cache, IQueryExecutor kustoClient, RequestContext requestContext, ILogger<KustoDataAccess> logger, ulong? maxDynamicSamples = null)
+        /// <param name="maxDynamicSamplesIngestionTimeHours"></param>
+        public KustoDataAccess(IMemoryCache cache, IQueryExecutor kustoClient, RequestContext requestContext, ILogger<KustoDataAccess> logger, ulong? maxDynamicSamples = null, ulong? maxDynamicSamplesIngestionTimeHours = null)
         {
             this.cache = cache;
             Kusto = kustoClient;
             RequestContext = requestContext;
             Logger = logger;
             MaxDynamicSamples = maxDynamicSamples;
+            MaxDynamicSamplesIngestionTimeHours = maxDynamicSamplesIngestionTimeHours;
         }
 
         private IQueryExecutor Kusto { get; set; }
@@ -48,6 +50,8 @@ namespace K2Bridge.KustoDAL
         private ILogger Logger { get; set; }
 
         private ulong? MaxDynamicSamples { get; }
+
+        private ulong? MaxDynamicSamplesIngestionTimeHours { get; }
 
         /// <summary>
         /// Executes a query to Kusto for Fields Caps.
@@ -200,7 +204,8 @@ namespace K2Bridge.KustoDAL
         private async Task HandleDynamicField(FieldCapabilityResponse response, string tableName, FieldCapabilityElement fieldCapabilityElement)
         {
             var sample = MaxDynamicSamples.HasValue ? $" | {KustoQLOperators.Sample} {MaxDynamicSamples.Value}" : string.Empty;
-            var query = $"{tableName}{sample} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
+            var ingestionTime = MaxDynamicSamplesIngestionTimeHours.HasValue ? $" | {KustoQLOperators.Where} {KustoQLOperators.IngestionTime}() > {KustoQLOperators.Ago}({MaxDynamicSamplesIngestionTimeHours.Value}{KustoQLOperators.HoursMark})" : string.Empty;
+            var query = $"{tableName}{ingestionTime}{sample} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
             var (_, result) = await Kusto.ExecuteQueryAsync(new QueryData(query, tableName), RequestContext);
             result.Read();
             var jsonResult = result[0];

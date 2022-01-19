@@ -596,7 +596,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         }
 
         [Test]
-        public async Task GetFieldCaps_WithPercentage_ReturnCorrectQuery()
+        public async Task GetFieldCaps_WithMaxSamples_ReturnCorrectQuery()
         {
             const ulong samples = 10;
             Func<string, string, Dictionary<string, object>> column = (name, type) =>
@@ -628,6 +628,77 @@ namespace UnitTests.K2Bridge.KustoDAL
             await kusto.GetFieldCapsAsync("testIndexName");
 
             calls[0].QueryCommandText.Should().Be(@"testIndexName | sample 10 | summarize buildschema(mydynamic)");
+        }
+
+        [Test]
+        public async Task GetFieldCaps_WithMaxHours_ReturnCorrectQuery()
+        {
+            const ulong hours = 4;
+            Func<string, string, Dictionary<string, object>> column = (name, type) =>
+                new Dictionary<string, object> {
+                    { "ColumnName", name },
+                    { "ColumnType", type },
+                };
+
+            var testData = new List<Dictionary<string, object>>() {
+                column("myint", "System.Int32"),
+                column("mydynamic", "System.Object"),
+            };
+            using IDataReader testReader = new DataReaderMock(testData);
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult(testReader));
+
+            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                new Dictionary<string, object>() {
+                    { "result", JToken.Parse("{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}") },
+                },
+            });
+
+            // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
+            var calls = new List<QueryData>();
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
+
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, maxDynamicSamplesIngestionTimeHours: hours);
+            await kusto.GetFieldCapsAsync("testIndexName");
+
+            calls[0].QueryCommandText.Should().Be(@"testIndexName | where ingestion_time() > ago(4h) | summarize buildschema(mydynamic)");
+        }
+
+        [Test]
+        public async Task GetFieldCaps_WithMaxSamplesAndMaxHours_ReturnCorrectQuery()
+        {
+            const ulong hours = 4;
+            const ulong samples = 10;
+            Func<string, string, Dictionary<string, object>> column = (name, type) =>
+                new Dictionary<string, object> {
+                    { "ColumnName", name },
+                    { "ColumnType", type },
+                };
+
+            var testData = new List<Dictionary<string, object>>() {
+                column("myint", "System.Int32"),
+                column("mydynamic", "System.Object"),
+            };
+            using IDataReader testReader = new DataReaderMock(testData);
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult(testReader));
+
+            using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
+                new Dictionary<string, object>() {
+                    { "result", JToken.Parse("{\"a\": [\"int\", \"string\"], \"b\": {\"`indexer`\": \"int\"}, \"c\": {\"d\": [{\"e\": \"string\"}, \"int\"]}}") },
+                },
+            });
+
+            // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
+            var calls = new List<QueryData>();
+            mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+                .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
+
+            var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, samples, hours);
+            await kusto.GetFieldCapsAsync("testIndexName");
+
+            calls[0].QueryCommandText.Should().Be(@"testIndexName | where ingestion_time() > ago(4h) | sample 10 | summarize buildschema(mydynamic)");
         }
 
         [Test]

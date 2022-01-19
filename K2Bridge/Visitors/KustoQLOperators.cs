@@ -73,6 +73,9 @@ namespace K2Bridge.Visitors
         public const string CommandSeparator = "\n|";
         public const string NewLine = "\n";
         public const string True = "true";
+        public const string Ago = "ago";
+        public const string IngestionTime = "ingestion_time";
+        public const string HoursMark = "h";
 #pragma warning restore SA1600 // Elements should be documented
     }
 }
