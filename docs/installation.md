@@ -62,7 +62,7 @@ If you need to build the image, please follow the [build instructions](./build.m
 
 1. Deploy
 
-    * Recommended - create a kubernetis namespace.  
+    * Recommended - create a kubernetes namespace.  
          This namespace is later passed to `helm install` via the `-n` switch.
 
       ```sh

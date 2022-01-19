@@ -56,6 +56,7 @@ namespace K2Bridge
 
             // Log startup message with version as soon as possible
             Log.Logger.Information($"***** Starting K2Bridge {AssemblyVersion} *****");
+            Log.Logger.Information($"***** (Supporting Kibana/Elastic v7.16) *****");
 
             CreateWebHostBuilder(args).Build().Run();
         }
