@@ -10,6 +10,7 @@ namespace K2Bridge.Factories
     using System.Globalization;
     using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
@@ -21,6 +22,8 @@ namespace K2Bridge.Factories
     /// </summary>
     internal static class AggregateFactory
     {
+        private static string HISTOGRAM_METRIC_BOOLEAN_REGEX = "(True|False)";
+
         /// <summary>
         /// Get date histogram aggregate from a given <see cref="DataTable"/>.
         /// </summary>
@@ -175,7 +178,32 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Add aggregates to current <see cref="AggregateDictionary"/> instance from a given <see cref="DataRow"/>.
+        /// Get histogram aggregate from a given <see cref="DataRowCollection"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="BucketAggregate"></returns>
+        public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, ILogger logger)
+        {
+            logger.LogTrace("Get histogram aggregate for {}", key);
+
+            var histogramAggregate = new BucketAggregate();
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var bucket = BucketFactory.CreateHistogramBucket(key, row, logger);
+                if (bucket != null)
+                {
+                    histogramAggregate.Buckets.Add(bucket);
+                }
+            }
+
+            return histogramAggregate;
+        }
+
+        /// <summary>
+        /// Add aggregates to current <see cref="AggregateDictionary"> instance from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>
         /// <param name="primaryKey">The primary aggregation key.</param>
@@ -210,7 +238,7 @@ namespace K2Bridge.Factories
                         var key = columnMetadata[0];
                         aggregateDictionary.Add(key, GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger));
                     }
-                    else
+                    else if (!Regex.Match(metric, HISTOGRAM_METRIC_BOOLEAN_REGEX).Success)
                     {
                         throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid.");
                     }
