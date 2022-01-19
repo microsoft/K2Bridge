@@ -30,12 +30,6 @@ namespace K2Bridge.JsonConverters
                 serializer.Serialize(writer, histogramBucket.Key);
             }
 
-            if (histogramBucket.KeyAsString is not null)
-            {
-                writer.WritePropertyName("key_as_string");
-                serializer.Serialize(writer, histogramBucket.KeyAsString);
-            }
-
             foreach (var (key, aggregate) in histogramBucket)
             {
                 writer.WritePropertyName(key);

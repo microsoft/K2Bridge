@@ -14,11 +14,11 @@ namespace K2Bridge.Visitors
     /// A visitor for the <see cref="HistogramAggregation"/> element.
     /// Sample KustoQL Query:
     /// let _extdata = _data
-    /// | extend ['2%False'] = bin(['AvgTicketPrice'], 20)
+    /// | extend ['2'] = bin(['AvgTicketPrice'], 20)
     /// | where ['AvgTicketPrice'] >= bin(50,20) and ['AvgTicketPrice'] < bin(150,20)+20;
     /// let _summarizablemetrics = _extdata
-    /// | summarize count() by ['2%False']
-    /// | order by ['2%False'] asc;
+    /// | summarize count() by ['2']
+    /// | order by ['2'] asc;
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
@@ -31,11 +31,10 @@ namespace K2Bridge.Visitors
 
             var interval = Convert.ToInt32(histogramAggregation.Interval);
             var field = EncodeKustoField(histogramAggregation.Field, true);
-
-            var histogramKey = EncodeKustoField($"{histogramAggregation.Key}{AggregationsConstants.MetadataSeparator}{histogramAggregation.Keyed}");
+            var histogramKey = EncodeKustoField(histogramAggregation.Key);
 
             // Extend expression:
-            // | extend ['2%False'] = bin(['AvgTicketPrice'], 20)
+            // | extend ['2'] = bin(['AvgTicketPrice'], 20)
             // | where ['AvgTicketPrice'] >= bin(50,20) and ['AvgTicketPrice'] < bin(150,20)+20;
             var extendExpression = new StringBuilder();
             extendExpression.Append($"{histogramKey} = bin({field}, {interval})");
@@ -48,18 +47,18 @@ namespace K2Bridge.Visitors
                 extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Where} {field} >= bin({min}, {interval}) and {field} < bin({max}, {interval})+{interval}");
             }
 
-            // Bucket expression: count() by ['2%False'] | order by ['2%False'] asc
+            // Bucket expression: count() by ['2'] | order by ['2'] asc
             var bucketExpression = new StringBuilder();
             bucketExpression.Append($"{histogramAggregation.Metric} by {histogramKey}");
             bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {histogramKey} asc");
 
             // Build final query using histogramAggregation expressions
             // let _extdata = _data
-            // | extend ['2%False'] = bin(['AvgTicketPrice'], 20)
+            // | extend ['2'] = bin(['AvgTicketPrice'], 20)
             // | where ['AvgTicketPrice'] >= bin(50,20) and ['AvgTicketPrice'] < bin(150,20)+20;
             // let _summarizablemetrics = _extdata
-            // | summarize count() by ['2%False']
-            // | order by ['2%False'] asc;
+            // | summarize count() by ['2']
+            // | order by ['2'] asc;
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression.ToString(),
