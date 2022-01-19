@@ -16,13 +16,8 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        // List of visited metrics
-        // Each time a metric aggregation is parsed, its key is added to the list
-        // Helps to propagate all previous aggregations results in BuildPartitionQuery
-        internal List<string> VisitedMetrics { get; } = new List<string>();
-
         // List of sub query names
-        // Each time a new sub query is created in BuildPartitionQuery, it's name is added to the list
+        // Each time a new sub query is created, it's name is added to the list
         // The last name of the stack is returned as aggs table
         internal List<string> SubQueriesStack { get; } = new List<string>() { AggregationsSubQueries.SummarizableMetricsQuery };
 
@@ -66,88 +61,6 @@ namespace K2Bridge.Visitors
             query.Append($"{KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregation});");
 
             aggregationDictionary.KustoQL = query.ToString();
-        }
-
-        public string BuildBucketAggregationQuery(BucketAggregation bucketAggregation, BucketAggregationQueryDefinition definition)
-        {
-            Ensure.IsNotNull(bucketAggregation, nameof(bucketAggregation));
-
-            var query = new StringBuilder();
-
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.ExtDataQuery} = {KustoTableNames.Data}");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {definition.ExtendExpression};");
-
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.SummarizableMetricsQuery} = {AggregationsSubQueries.ExtDataQuery}");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {bucketAggregation.SummarizableMetricsKustoQL}");
-            query.Append($"{definition.BucketExpression};");
-
-            query.Append($"{bucketAggregation.PartitionableMetricsKustoQL}");
-
-            return query.ToString();
-        }
-
-        public string BuildPartitionQuery(PartitionQueryDefinition definition)
-        {
-            var query = new StringBuilder();
-
-            string joinVariable = SubQueriesStack.Last();
-            SubQueriesStack.Add(definition.PartionQueryName);
-
-            // let _tophits = _extdata
-            // | join kind=inner _summarizablemetrics on ['1']
-            // | partition by ['1'] (
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {definition.PartionQueryName} = {AggregationsSubQueries.ExtDataQuery}");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.JoinInner} {joinVariable} on {EncodeKustoField(definition.PartitionKey)}");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.PartitionBy} {EncodeKustoField(definition.PartitionKey)} (");
-
-            // Query completed with aggregationExpression
-            // top 2 by timestamp asc
-            query.Append($"{definition.AggregationExpression}");
-
-            // Project all parsed metrics with encoded keys and add projectExpression
-            // | project ['2'], ['3'], ['count_'], ['4']=pack('field', AvgTicketPrice, 'order', timestamp)
-            var encodedKeys = GetVisitedMetricsEncodedKeys();
-            if (string.IsNullOrWhiteSpace(encodedKeys))
-            {
-                query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Project} {definition.ProjectExpression}");
-            }
-            else
-            {
-                query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Project} {encodedKeys}, {definition.ProjectExpression}");
-            }
-
-            // Summarize all parsed metrics with encoded keys and add summarizeExpression
-            // | summarize take_any(['2']), take_any(['3']), take_any(['count_']), ['4']=make_list(['4'])
-            var encodedKeysTakeAny = GetVisitedMetricsEncodedKeysTakeAny();
-            if (string.IsNullOrWhiteSpace(encodedKeysTakeAny))
-            {
-                query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {definition.SummarizeExpression}");
-            }
-            else
-            {
-                query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {encodedKeysTakeAny}, {definition.SummarizeExpression}");
-            }
-
-            // We close the partition expression
-            query.Append($" );");
-
-            return query.ToString();
-        }
-
-        /// <summary>
-        /// Gets the list of all metrics keys already visited
-        /// ['2'], ['3'], ['count_']
-        /// </summary>
-        public string GetVisitedMetricsEncodedKeys() => string.Join(',', VisitedMetrics);
-
-        /// <summary>
-        /// Gets the list of all metrics keys already visited with take_any operator
-        /// take_any(['2']), take_any(['3']), take_any(['count_'])
-        /// </summary>
-        public string GetVisitedMetricsEncodedKeysTakeAny()
-        {
-            var encodedKeys = VisitedMetrics.Select(key => $"{KustoQLOperators.TakeAny}({key})");
-            return string.Join(',', encodedKeys);;
         }
     }
 }
