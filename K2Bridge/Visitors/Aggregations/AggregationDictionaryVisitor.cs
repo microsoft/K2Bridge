@@ -132,17 +132,7 @@ namespace K2Bridge.Visitors
         /// Gets the list of all metrics keys already visited
         /// ['2'], ['3'], ['count_']
         /// </summary>
-        public string GetVisitedMetricsEncodedKeys()
-        {
-            string query = null;
-
-            if (VisitedMetrics.Count > 0)
-            {
-                query = string.Join(',', VisitedMetrics);
-            }
-
-            return query;
-        }
+        public string GetVisitedMetricsEncodedKeys() => string.Join(',', VisitedMetrics);
 
         /// <summary>
         /// Gets the list of all metrics keys already visited with take_any operator
@@ -150,15 +140,8 @@ namespace K2Bridge.Visitors
         /// </summary>
         public string GetVisitedMetricsEncodedKeysTakeAny()
         {
-            string query = null;
-
-            if (VisitedMetrics.Count > 0)
-            {
-                var encodedKeys = VisitedMetrics.Select(key => $"{KustoQLOperators.TakeAny}({key})");
-                query = string.Join(',', encodedKeys);
-            }
-
-            return query;
+            var encodedKeys = VisitedMetrics.Select(key => $"{KustoQLOperators.TakeAny}({key})");
+            return string.Join(',', encodedKeys);;
         }
     }
 }
