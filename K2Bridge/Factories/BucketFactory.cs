@@ -92,7 +92,7 @@ namespace K2Bridge.Factories
 
             // Parse the range
             var splitRange = range
-                            .Split('-')
+                            .Split(AggregationsConstants.MetadataSeparator)
                             .Select(s => string.IsNullOrEmpty(s) ? (double?)null : double.Parse(s))
                             .ToArray();
             var from = splitRange[0];
