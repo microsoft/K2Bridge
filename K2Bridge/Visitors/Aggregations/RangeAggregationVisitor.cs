@@ -7,6 +7,7 @@ namespace K2Bridge.Visitors
     using System.Collections.Generic;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="RangeAggregation"/> element.
@@ -71,10 +72,14 @@ namespace K2Bridge.Visitors
             // let _summarizablemetrics = _extdata
             // | summarize count() by ['2']
             // | order by ['2'] asc;"
+            // datatable(['2']:string) [dynamic(['range1','range2', 'range3'])] | as metadata;
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression.ToString(),
                 BucketExpression = bucketExpression.ToString(),
+                Metadata = new Dictionary<string, string> {
+                    { rangeAggregation.Key, string.Join(',', rangeNames) },
+                },
             };
 
             var query = BuildBucketAggregationQuery(rangeAggregation, definition);

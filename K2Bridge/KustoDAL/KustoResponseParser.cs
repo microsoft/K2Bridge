@@ -168,6 +168,13 @@ namespace K2Bridge.KustoDAL
                 var (key, aggregationType) = query.PrimaryAggregation;
                 var tableData = kustoResponse[KustoTableNames.Aggregation].TableData;
 
+                // Not all aggregations return a metadata table
+                DataTable metadataTableData = null;
+                if (kustoResponse[KustoTableNames.Metadata] != null)
+                {
+                    metadataTableData = kustoResponse[KustoTableNames.Metadata].TableData;
+                }
+
                 Logger.LogTrace("Parsing aggregations");
 
                 if (string.IsNullOrWhiteSpace(aggregationType))
@@ -189,10 +196,10 @@ namespace K2Bridge.KustoDAL
                     IAggregate bucketAggregate = aggregationType switch
                     {
                         nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, tableData, Logger),
-                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, tableData, Logger),
+                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, tableData, metadataTableData, Logger),
                         nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, tableData, Logger),
                         nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, tableData, Logger),
-                        nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, tableData, Logger),
+                        nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, tableData, metadataTableData, Logger),
                         _ => null,
                     };
 

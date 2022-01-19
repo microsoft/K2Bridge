@@ -109,7 +109,7 @@ namespace K2Bridge.Factories
             // Assemble the bucket
             var rb = new RangeBucket
             {
-                DocCount = Convert.ToInt32(count),
+                DocCount = count == DBNull.Value ? 0 : Convert.ToInt32(count),
                 Key = key,
                 From = from,
                 To = to,
@@ -141,7 +141,7 @@ namespace K2Bridge.Factories
             var fb = new FiltersBucket
             {
                 Key = filter,
-                DocCount = Convert.ToInt32(count),
+                DocCount = count == DBNull.Value ? 0 : Convert.ToInt32(count),
             };
 
             // Pass the encoded column name so that it is correctly identified when adding other aggs

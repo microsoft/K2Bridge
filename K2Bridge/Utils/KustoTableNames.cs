@@ -29,5 +29,15 @@ namespace K2Bridge.Utils
         /// The overall hits count data table name.
         /// </summary>
         public const string HitsTotal = "hitsTotal";
+
+        /// <summary>
+        /// The metadata.
+        /// </summary>
+        public const string Metadata = "metadata";
+
+        /// <summary>
+        /// The data type for the metadata columns.
+        /// </summary>
+        public const string MetadataColumnType = "string";
     }
 }

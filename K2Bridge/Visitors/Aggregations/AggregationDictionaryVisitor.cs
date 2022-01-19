@@ -5,6 +5,7 @@
 namespace K2Bridge.Visitors
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
@@ -69,6 +70,47 @@ namespace K2Bridge.Visitors
             query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.SummarizableMetricsQuery} = {AggregationsSubQueries.ExtDataQuery}");
             query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {bucketAggregation.SubAggregationsKustoQL}");
             query.Append($"{definition.BucketExpression};");
+
+            // Create a table named "metadata", with one column per aggregation and dynamic value.
+            if (definition.Metadata != null)
+            {
+                query.Append(BuildMetadataQuery(definition.Metadata));
+            }
+
+            return query.ToString();
+        }
+
+        /// <summary>
+        /// Given a metadata dictionary, generates a Kusto QL statement creating the metadata table:
+        /// datatable(['2']:string) [dynamic(['val1','val2', 'val3'])] | as metadata;
+        /// </summary>
+        /// <param name="metadata">A metadata dictionary.</param>
+        /// <returns>A string containing the Kusto QL statement.</returns>
+        public string BuildMetadataQuery(Dictionary<string, string> metadata)
+        {
+            var query = new StringBuilder();
+
+            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Datatable}(");
+
+            // Column definitions
+            var columns = new List<string>();
+            foreach (var (key, _) in metadata)
+            {
+                columns.Add($"['{key}']:{KustoTableNames.MetadataColumnType}");
+            }
+            query.Append(string.Join(',', columns));
+            query.Append(") [");
+
+            // Values
+            var values = new List<string>();
+            foreach (var (_, value) in metadata)
+            {
+                values.Add($"{KustoQLOperators.Dynamic}([{value}])");
+            }
+            query.Append(string.Join(',', values));
+            query.Append(']');
+
+            query.Append($" | as {KustoTableNames.Metadata};");
 
             return query.ToString();
         }

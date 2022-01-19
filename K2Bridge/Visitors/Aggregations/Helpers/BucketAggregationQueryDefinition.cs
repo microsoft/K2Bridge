@@ -4,6 +4,8 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Collections.Generic;
+
     internal class BucketAggregationQueryDefinition
     {
         /// <summary>
@@ -15,5 +17,10 @@ namespace K2Bridge.Visitors
         /// Gets or sets the bucket expression.
         /// </summary>
         public string BucketExpression { get; set; }
+
+        /// <summary>
+        /// Gets or sets the metadata.
+        /// </summary>
+        public Dictionary<string, string> Metadata { get; set; }
     }
 }

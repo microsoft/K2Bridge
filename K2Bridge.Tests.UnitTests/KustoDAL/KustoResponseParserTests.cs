@@ -166,8 +166,9 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public void ParseElasticResponse_WithRangeAggs_ReturnsElasticResponseWithAggs()
         {
-            using var aggsTable = GetRangeAggsTable();
-            aggsTable.TableName = "aggs";
+            var ds = new DataSet();
+            GetRangeAggsTable(ds, "aggs");
+            GetRangeMetadataTable(ds, "metadata");
 
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
@@ -175,7 +176,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
-            var reader = aggsTable.CreateDataReader();
+            var reader = ds.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
             var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
@@ -212,8 +213,9 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public void ParseElasticResponse_WithFiltersAggs_ReturnsElasticResponseWithAggs()
         {
-            using var aggsTable = GetFiltersAggsTable();
-            aggsTable.TableName = "aggs";
+            var ds = new DataSet();
+            GetFiltersAggsTable(ds, "aggs");
+            GetFiltersMetadataTable(ds, "metadata");
 
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
@@ -221,7 +223,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(FiltersAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
-            var reader = aggsTable.CreateDataReader();
+            var reader = ds.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
             var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
@@ -229,14 +231,15 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(2, aggregate.Buckets.Count());
+            Assert.AreEqual(3, aggregate.Buckets.Count());
         }
 
         [Test]
         public void ParseElasticResponse_WithFiltersNoMatchAggs_ReturnsElasticResponseWithAggs()
         {
-            using var aggsTable = GetFiltersNoMatchAggsTable();
-            aggsTable.TableName = "aggs";
+            var ds = new DataSet();
+            GetFiltersNoMatchAggsTable(ds, "aggs");
+            GetFiltersMetadataTable(ds, "metadata");
 
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
@@ -244,7 +247,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(FiltersAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
-            var reader = aggsTable.CreateDataReader();
+            var reader = ds.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
             var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
@@ -258,8 +261,9 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public void ParseElasticResponse_WithOverlappingRangeAggs_ReturnsElasticResponseWithAggs()
         {
-            using var aggsTable = GetOverlappingRangeAggsTable();
-            aggsTable.TableName = "aggs";
+            var ds = new DataSet();
+            GetOverlappingRangeAggsTable(ds, "aggs");
+            GetOverlappingRangeMetadataTable(ds, "metadata");
 
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
@@ -267,7 +271,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
-            var reader = aggsTable.CreateDataReader();
+            var reader = ds.CreateDataReader();
             var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
 
             var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
@@ -276,6 +280,30 @@ namespace UnitTests.K2Bridge.KustoDAL
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
             Assert.AreEqual(2, aggregate.Buckets.Count());
+        }
+
+        [Test]
+        public void ParseElasticResponse_WithRangeNoMatchAggs_ReturnsElasticResponseWithAggs()
+        {
+            var ds = new DataSet();
+            GetRangeNoMatchAggsTable(ds, "aggs");
+            GetRangeMetadataTable(ds, "metadata");
+
+            var timeTaken = new TimeSpan(17);
+            var query = new QueryData("query", "index");
+
+            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
+            query.PrimaryAggregation = primaryAggregation;
+
+            var reader = ds.CreateDataReader();
+            var stubLogger = new Mock<ILogger<KustoResponseParser>>().Object;
+
+            var result = new KustoResponseParser(stubLogger, false, stubMetric).Parse(reader, query, timeTaken);
+            Assert.AreEqual(1, result.Responses.Count());
+
+            var elasticResult = result.Responses.ToList()[0];
+            var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
+            Assert.AreEqual(3, aggregate.Buckets.Count());
         }
 
         [Test]
@@ -400,9 +428,9 @@ namespace UnitTests.K2Bridge.KustoDAL
             return resTable;
         }
 
-        private static DataTable GetRangeAggsTable()
+        private static void GetRangeAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = new DataTable();
+            DataTable resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -427,13 +455,50 @@ namespace UnitTests.K2Bridge.KustoDAL
             row3["count_"] = 3;
 
             resTable.Rows.Add(row3);
-
-            return resTable;
         }
 
-        private static DataTable GetOverlappingRangeAggsTable()
+        private static void GetRangeNoMatchAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = new DataTable();
+            DataTable resTable = ds.Tables.Add(tableName);
+
+            var column1 = new DataColumn("2");
+            var column2 = new DataColumn("count_");
+
+            resTable.Columns.Add(column1);
+            resTable.Columns.Add(column2);
+
+            var row1 = resTable.NewRow();
+            row1["2"] = "-100";
+            row1["count_"] = 1;
+
+            resTable.Rows.Add(row1);
+
+            var row3 = resTable.NewRow();
+            row3["2"] = "200-";
+            row3["count_"] = 3;
+
+            resTable.Rows.Add(row3);
+
+            // Nota bene: '100-200' bucket is missing
+        }
+
+        private static void GetRangeMetadataTable(DataSet ds, string tableName)
+        {
+            DataTable resTable = ds.Tables.Add(tableName);
+
+            var column1 = new DataColumn("2");
+
+            resTable.Columns.Add(column1);
+
+            var row1 = resTable.NewRow();
+            row1["2"] = @"[""-100"",""100-200"",""200-""]";
+
+            resTable.Rows.Add(row1);
+        }
+
+        private static void GetOverlappingRangeAggsTable(DataSet ds, string tableName)
+        {
+            DataTable resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -452,8 +517,20 @@ namespace UnitTests.K2Bridge.KustoDAL
             row2["count_"] = 20;
 
             resTable.Rows.Add(row2);
+        }
 
-            return resTable;
+        private static void GetOverlappingRangeMetadataTable(DataSet ds, string tableName)
+        {
+            DataTable resTable = ds.Tables.Add(tableName);
+
+            var column1 = new DataColumn("2");
+
+            resTable.Columns.Add(column1);
+
+            var row1 = resTable.NewRow();
+            row1["2"] = @"[""1000-20000"",""5000-10000""]";
+
+            resTable.Rows.Add(row1);
         }
 
         private static DataTable GetDateRangeAggsTable()
@@ -512,66 +589,72 @@ namespace UnitTests.K2Bridge.KustoDAL
             return resTable;
         }
 
-        private static DataTable GetFiltersAggsTable()
+        private static void GetFiltersAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = new DataTable();
+            DataTable resTable = ds.Tables.Add(tableName);
 
-            // Encoded column name with two filters
-            // Base64("a") = YQ--
-            // Base64("b") = Yg--
-            var encodedColumnName = "2%YQ--%Yg--";
-
-            var column1 = new DataColumn(encodedColumnName);
+            var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
 
             resTable.Columns.Add(column1);
             resTable.Columns.Add(column2);
 
             var row1 = resTable.NewRow();
-            row1[encodedColumnName] = "a";
+            row1["2"] = "a";
             row1["count_"] = 1;
 
             resTable.Rows.Add(row1);
 
             var row2 = resTable.NewRow();
-            row2[encodedColumnName] = "b";
+            row2["2"] = "b";
             row2["count_"] = 2;
 
             resTable.Rows.Add(row2);
 
-            return resTable;
+            var row3 = resTable.NewRow();
+            row3["2"] = "c";
+            row3["count_"] = 3;
+
+            resTable.Rows.Add(row3);
         }
 
-        private static DataTable GetFiltersNoMatchAggsTable()
+        private static void GetFiltersNoMatchAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = new DataTable();
+            DataTable resTable = ds.Tables.Add(tableName);
 
-            // Encoded column name with three filters
-            // Base64("a") = YQ--
-            // Base64("b") = Yg--
-            // Base64("c") = Yw--
-            var encodedColumnName = "2%YQ--%Yg--%Yw--";
-
-            var column1 = new DataColumn(encodedColumnName);
+            var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
 
             resTable.Columns.Add(column1);
             resTable.Columns.Add(column2);
 
             var row1 = resTable.NewRow();
-            row1[encodedColumnName] = "a";
+            row1["2"] = "a";
             row1["count_"] = 1;
 
             resTable.Rows.Add(row1);
 
             var row2 = resTable.NewRow();
-            row2[encodedColumnName] = "b";
+            row2["2"] = "b";
             row2["count_"] = 2;
 
             resTable.Rows.Add(row2);
 
             // Nota bene: "c" is missing from results
-            return resTable;
+        }
+
+        private static void GetFiltersMetadataTable(DataSet ds, string tableName)
+        {
+            DataTable resTable = ds.Tables.Add(tableName);
+
+            var column1 = new DataColumn("2");
+
+            resTable.Columns.Add(column1);
+
+            var row1 = resTable.NewRow();
+            row1["2"] = @"[""a"",""b"",""c""]";
+
+            resTable.Rows.Add(row1);
         }
     }
 }

@@ -73,6 +73,9 @@ namespace K2Bridge.Visitors
         public const string CommandSeparator = "\n|";
         public const string NewLine = "\n";
         public const string True = "true";
+        public const string Datatable = "datatable";
+        public const string Dynamic = "dynamic";
+
 #pragma warning restore SA1600 // Elements should be documented
     }
 }
