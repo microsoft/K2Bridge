@@ -1,0 +1,56 @@
+{
+    "aggs": {
+        "2": {
+            "histogram": {
+                "field": "AvgTicketPrice",
+                "interval": 20,
+                "min_doc_count": 0
+            },
+            "aggs": {
+                "1": {
+                    "percentiles": {
+                        "field": "AvgTicketPrice",
+                        "percents": [
+                            50
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "size": 0,
+    "stored_fields": [
+        "*"
+    ],
+    "script_fields": {},
+    "docvalue_fields": [
+        {
+            "field": "timestamp",
+            "format": "date_time"
+        }
+    ],
+    "_source": {
+        "excludes": []
+    },
+    "query": {
+        "bool": {
+            "must": [],
+            "filter": [
+                {
+                    "match_all": {}
+                },
+                {
+                    "range": {
+                        "timestamp": {
+                            "gte": "2018-02-01T11:00:00.000Z",
+                            "lte": "2018-02-10T11:00:00.000Z",
+                            "format": "strict_date_optional_time"
+                        }
+                    }
+                }
+            ],
+            "should": [],
+            "must_not": []
+        }
+    }
+}
