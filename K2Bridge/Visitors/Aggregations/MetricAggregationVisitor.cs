@@ -149,7 +149,7 @@ namespace K2Bridge.Visitors
 
             // top 2 by timestamp asc
             var sort = topHitsAggregation.Sort.First();
-            var topHitsExpression = $"{KustoQLOperators.Top} {topHitsAggregation.Size} by {sort.FieldName} {sort.Order}";
+            var topHitsExpression = $"{KustoQLOperators.Top} {topHitsAggregation.Size} by {EncodeKustoField(sort.FieldName)} {sort.Order}";
 
             // ['4']=pack('field', AvgTicketPrice, 'order', timestamp)
             var data = new Dictionary<string, string>();

@@ -62,7 +62,7 @@ namespace K2Bridge.Visitors
             }
 
             // We close the partition expression
-            query.Append($" );");
+            query.Append($");");
 
             return query.ToString();
         }
