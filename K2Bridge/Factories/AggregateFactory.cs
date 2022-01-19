@@ -23,8 +23,9 @@ namespace K2Bridge.Factories
     /// </summary>
     internal static class AggregateFactory
     {
-        public delegate KeyedBucket CreateBucketDelegate(string primaryKey, DataRow row, ILogger logger);
         private static string HISTOGRAM_METRIC_BOOLEAN_REGEX = "(True|False)";
+
+        public delegate KeyedBucket CreateBucketDelegate(string primaryKey, DataRow row, ILogger logger);
 
         /// <summary>
         /// Get date histogram aggregate from a given <see cref="DataTable"/>.
