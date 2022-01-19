@@ -40,7 +40,7 @@ You need to be able to connect to your cluster from your machine.
 
 1. Deploy
 
-    * Recommended - create a kubernetis namespace.  
+    * Recommended - create a kubernetes namespace.  
          This namespace is later passed to `helm install` via the `-n` switch.
 
       ```sh
