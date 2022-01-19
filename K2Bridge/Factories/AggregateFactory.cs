@@ -200,11 +200,13 @@ namespace K2Bridge.Factories
 
                 if (columnMetadata.Length <= 1)
                 {
+                    // ColumnName contains only the key (this is a value aggregate)
                     key = column.ColumnName;
                     aggregateDictionary.Add(key, GetValueAggregate(key, row, logger));
                 }
                 else
                 {
+                    // ColumnName contains key + metadata (metric used to select aggregate type)
                     key = columnMetadata[0];
                     var metric = columnMetadata[1];
 

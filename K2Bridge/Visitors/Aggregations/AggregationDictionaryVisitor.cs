@@ -16,8 +16,14 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
+        // List of visited metrics
+        // Each time a metric aggregation is parsed, its key is added to the list
+        // Helps to propagate all previous aggregations results in BuildPartitionQuery
         internal List<string> VisitedMetrics { get; } = new List<string>();
 
+        // List of sub query names
+        // Each time a new sub query is created in BuildPartitionQuery, it's name is added to the list
+        // The last name of the stack is returned as aggs table
         internal List<string> SubQueriesStack { get; } = new List<string>() { AggregationsSubQueries.SummarizableMetricsQuery };
 
         /// <inheritdoc/>
