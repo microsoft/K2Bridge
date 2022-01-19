@@ -176,7 +176,32 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Add aggregates to current <see cref="AggregateDictionary"/> instance from a given <see cref="DataRow"/>.
+        /// Get histogram aggregate from a given <see cref="DataRowCollection"/>.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <returns><see cref="BucketAggregate"></returns>
+        public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, ILogger logger)
+        {
+            logger.LogTrace("Get histogram aggregate for {}", key);
+
+            var histogramAggregate = new BucketAggregate();
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var bucket = BucketFactory.CreateHistogramBucket(key, row, logger);
+                if (bucket != null)
+                {
+                    histogramAggregate.Buckets.Add(bucket);
+                }
+            }
+
+            return histogramAggregate;
+        }
+
+        /// <summary>
+        /// Add aggregates to current <see cref="AggregateDictionary"> instance from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>
         /// <param name="primaryKey">The primary aggregation key.</param>

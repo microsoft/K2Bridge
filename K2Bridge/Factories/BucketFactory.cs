@@ -30,10 +30,18 @@ namespace K2Bridge.Factories
             Ensure.IsNotNull(row, nameof(row));
 
             var timestamp = row[primaryKey];
+
+            var dhb = new DateHistogramBucket();
+
+            if (timestamp is DBNull)
+            {
+                return dhb;
+            }
+
             var count = row[BucketColumnNames.Count];
             var dateBucket = (DateTime)timestamp;
 
-            var dhb = new DateHistogramBucket
+            dhb = new DateHistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = TimeUtils.ToEpochMilliseconds(dateBucket),
@@ -198,6 +206,37 @@ namespace K2Bridge.Factories
             drb.AddAggregates(primaryKey, row, logger);
 
             return drb;
+        }
+
+        /// <summary>
+        /// Create a new <see cref="HistogramBucket" from a given <see cref="DataRow"/>/>.
+        /// </summary>
+        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <returns>A new HistogramBucket.</returns>
+        public static HistogramBucket CreateHistogramBucket(string primaryKey, DataRow row, ILogger logger)
+        {
+            Ensure.IsNotNull(row, nameof(row));
+
+            var key = row[0];
+
+            var hb = new HistogramBucket();
+
+            if (key is DBNull)
+            {
+                return hb;
+            }
+
+            var count = row[BucketColumnNames.Count];
+
+            hb = new HistogramBucket
+            {
+                DocCount = Convert.ToInt32(count),
+                Key = Convert.ToDouble(key),
+            };
+
+            hb.AddAggregates(primaryKey, row, logger);
+
+            return hb;
         }
     }
 }

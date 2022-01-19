@@ -78,6 +78,9 @@ namespace K2Bridge.Visitors
         public const string TakeAny = "take_any";
         public const string JoinInner = "join kind=inner";
         public const string PartitionBy = "partition by";
+        public const string Ago = "ago";
+        public const string IngestionTime = "ingestion_time";
+        public const string HoursMark = "h";
 #pragma warning restore SA1600 // Elements should be documented
     }
 }

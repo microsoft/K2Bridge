@@ -184,6 +184,20 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         [TestCase]
+        public void HistogramAggVisit_WithInvalidClause_ThrowsIllegalClauseException()
+        {
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+
+            Assert.That(
+                () => visitor.Visit(new HistogramAggregation()),
+                Throws.TypeOf<IllegalClauseException>());
+
+            Assert.That(
+                () => visitor.Visit((HistogramAggregation)null),
+                Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [TestCase]
         public void BoolQueryVisit_WithInvalidClause_ThrowsIllegalClauseException()
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());

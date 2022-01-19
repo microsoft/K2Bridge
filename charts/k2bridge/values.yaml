@@ -26,6 +26,7 @@ settings:
   enableQueryLogging: true
   useManagedIdentity: false
   # maxDynamicSamples: <number>
+  # maxDynamicSamplesIngestionTimeHours: <number>
 
 service:
   type: ClusterIP
