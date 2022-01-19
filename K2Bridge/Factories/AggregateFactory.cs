@@ -395,23 +395,26 @@ namespace K2Bridge.Factories
                     foreach (JObject jObject in topHitsValues)
                     {
                         var hit = HitsFactory.Create(random.Next().ToString(), query.IndexName);
-                        var source = jObject.Properties().First();
-                        var sort = jObject.Properties().Last();
 
-                        if (sort.Value.Type == JTokenType.String)
+                        var sourceField = jObject[AggregationsConstants.SourceField].Value<string>();
+                        var sourceValue = jObject[AggregationsConstants.SourceValue];
+
+                        var sortValue = jObject[AggregationsConstants.SortValue];
+
+                        // Add fields
+                        hit.Fields.Add(sourceField, new List<object>() { sourceValue });
+
+                        // Add source
+                        hit.AddSource(sourceField, sourceValue);
+
+                        // Add sort (with date conversion to timestamp)
+                        if (sortValue.Type == JTokenType.String)
                         {
-                            hit.Sort.Add(TimeUtils.ToEpochMilliseconds(sort.Value.Value<DateTime>()));
+                            hit.Sort.Add(TimeUtils.ToEpochMilliseconds(sortValue.Value<DateTime>()));
                         }
                         else
                         {
-                            hit.Sort.Add(sort.Value.Value<double>());
-                        }
-
-                        hit.AddSource(source.Name, source.Value);
-
-                        foreach (JProperty property in jObject.Properties())
-                        {
-                            hit.Fields.Add(property.Name, new List<object>() { property.Value });
+                            hit.Sort.Add(sortValue.Value<double>());
                         }
 
                         hits.Add(hit);

@@ -152,8 +152,13 @@ namespace K2Bridge.Visitors
             var topHitsExpression = $"{KustoQLOperators.Top} {topHitsAggregation.Size} by {sort.FieldName} {sort.Order}";
 
             // ['4']=pack('field', AvgTicketPrice, 'order', timestamp)
-            var pack = $"{KustoQLOperators.Pack}('{topHitsAggregation.Field}', {EncodeKustoField(topHitsAggregation)}, '{sort.FieldName}', {EncodeKustoField(sort.FieldName)})";
-            var projectExpression = $"{EncodeKustoField(topHitsAggregation.Key)}={pack}";
+            var data = new Dictionary<string, string>();
+            data.Add($"'{AggregationsConstants.SourceField}'", $"'{topHitsAggregation.Field}'");
+            data.Add($"'{AggregationsConstants.SourceValue}'", EncodeKustoField(topHitsAggregation.Field));
+            data.Add($"'{AggregationsConstants.SortValue}'", EncodeKustoField(sort.FieldName));
+
+            var packedData = string.Join(',', data.Select(item => $"{item.Key},{item.Value}"));
+            var projectExpression = $"{EncodeKustoField(topHitsAggregation.Key)}={KustoQLOperators.Pack}({packedData})";
 
             // ['4']=make_list(['4'])
             var metadata = new List<string>();

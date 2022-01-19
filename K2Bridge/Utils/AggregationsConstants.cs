@@ -63,6 +63,21 @@ namespace K2Bridge.Utils
         public const string StandardDeviationSampling = "std_deviation_sampling";
 
         /// <summary>
+        /// Alias used to get a filed named source_field, from adx
+        /// </summary>
+        public const string SourceField = "source_field";
+
+        /// <summary>
+        /// Alias used to get a filed named source_value, from adx
+        /// </summary>
+        public const string SourceValue = "source_value";
+
+        /// <summary>
+        /// Alias used to get a filed named sort_value, from adx
+        /// </summary>
+        public const string SortValue = "sort_value";
+
+        /// <summary>
         /// Gets ExtendedStats column metadata name.
         /// </summary>
         public const string ExtendedStats = "extended_stats";
