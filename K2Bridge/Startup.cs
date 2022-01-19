@@ -82,6 +82,7 @@ namespace K2Bridge
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
             var maxDynamicSamples = GetConfigOptional<ulong>("maxDynamicSamples");
+            var maxDynamicSamplesIngestionTimeHours = GetConfigOptional<ulong>("maxDynamicSamplesIngestionTimeHours");
 
             services.AddMemoryCache();
 
@@ -91,7 +92,8 @@ namespace K2Bridge
                     s.GetRequiredService<IQueryExecutor>(),
                     s.GetRequiredService<RequestContext>(),
                     s.GetRequiredService<ILogger<KustoDataAccess>>(),
-                    maxDynamicSamples));
+                    maxDynamicSamples,
+                    maxDynamicSamplesIngestionTimeHours));
 
             services.AddTransient<ISchemaRetrieverFactory, SchemaRetrieverFactory>(
                 s => new SchemaRetrieverFactory(

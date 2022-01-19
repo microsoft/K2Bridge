@@ -196,6 +196,7 @@ namespace K2Bridge.KustoDAL
                         nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, tableData, Logger),
                         nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, tableData, Logger),
                         nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, tableData, metadataTableData, Logger),
+                        nameof(Models.Request.Aggregations.HistogramAggregation) => AggregateFactory.GetHistogramAggregate(key, tableData, Logger),
                         _ => null,
                     };
 
