@@ -19,6 +19,7 @@ namespace K2Bridge.KustoDAL
     internal class KustoQueryExecutor : IQueryExecutor
     {
         private const string KustoApplicationNameForTracing = "K2Bridge";
+        private const string SupportedElasticVersionForTracing = "v6.8";
         private const string ControlCommandActivityName = "ExecuteControlCommand";
         private const string QueryActivityName = "ExecuteQuery";
         private static readonly string AssemblyVersion = typeof(KustoQueryExecutor).Assembly.GetName().Version.ToString();
@@ -66,7 +67,7 @@ namespace K2Bridge.KustoDAL
                     connectionDetails.AadTenantId);
 
             // Sending both name and version this way for better visibility in Kusto audit logs.
-            conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion}";
+            conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion} ({SupportedElasticVersionForTracing})";
 
             return conn;
         }
