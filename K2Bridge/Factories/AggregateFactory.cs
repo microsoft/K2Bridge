@@ -10,6 +10,7 @@ namespace K2Bridge.Factories
     using System.Globalization;
     using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
@@ -21,6 +22,8 @@ namespace K2Bridge.Factories
     /// </summary>
     internal static class AggregateFactory
     {
+        private static string HISTOGRAM_METRIC_REGEX = "\\d+%?(True|False)";
+
         /// <summary>
         /// Get date histogram aggregate from a given <see cref="DataTable"/>.
         /// </summary>
@@ -234,6 +237,10 @@ namespace K2Bridge.Factories
                     {
                         var key = columnMetadata[0];
                         aggregateDictionary.Add(key, GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger));
+                    }
+                    else if (!Regex.Match(metric, HISTOGRAM_METRIC_REGEX).Success)
+                    {
+                        throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid.");
                     }
                 }
                 else

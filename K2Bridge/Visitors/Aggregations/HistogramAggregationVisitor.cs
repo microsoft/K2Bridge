@@ -13,10 +13,12 @@ namespace K2Bridge.Visitors
     /// <content>
     /// A visitor for the <see cref="HistogramAggregation"/> element.
     /// Sample KustoQL Query:
-    /// | where ['AvgTicketPrice'] >= bin(50,20) and ['AvgTicketPrice'] < bin(150,20)+20
-    /// (_data | summarize count() by ['2%False'] = bin(['AvgTicketPrice'], 20)
-    /// | where ['count_'] >= 1
-    /// | order by ['2%False'] asc | as aggs);
+    /// let _extdata = _data
+    /// | extend ['2%False'] = bin(['AvgTicketPrice'], 20)
+    /// | where ['AvgTicketPrice'] >= bin(50,20) and ['AvgTicketPrice'] < bin(150,20)+20;
+    /// let _summarizablemetrics = _extdata
+    /// | summarize count() by ['2%False']
+    /// | order by ['2%False'] asc;
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
@@ -51,7 +53,7 @@ namespace K2Bridge.Visitors
             bucketExpression.Append($"{histogramAggregation.Metric} by {histogramKey}");
             bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {histogramKey} asc");
 
-            // Build final query using dateHistogramAggregation expressions
+            // Build final query using histogramAggregation expressions
             // let _extdata = _data
             // | extend ['2%False'] = bin(['AvgTicketPrice'], 20)
             // | where ['AvgTicketPrice'] >= bin(50,20) and ['AvgTicketPrice'] < bin(150,20)+20;
