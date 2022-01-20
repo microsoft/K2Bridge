@@ -227,13 +227,11 @@ namespace K2Bridge.Factories
             }
 
             var count = row[BucketColumnNames.Count];
-            var keyed = row.Table.Columns[0].ToString().Split(AggregationsConstants.MetadataSeparator)[1];
 
             hb = new HistogramBucket
             {
                 DocCount = Convert.ToInt32(count),
                 Key = Convert.ToDouble(key),
-                Keyed = Convert.ToBoolean(keyed),
             };
 
             hb.AddAggregates(primaryKey, row, logger);
