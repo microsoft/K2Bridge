@@ -28,6 +28,11 @@ namespace K2Bridge.Visitors
 
             query.Append($"{bucketAggregation.PartitionableMetricsKustoQL}");
 
+            if (definition.Metadata != null)
+            {
+                query.Append(BuildMetadataQuery(definition.Metadata));
+            }
+
             return query.ToString();
         }
     }

@@ -63,27 +63,6 @@ namespace K2Bridge.Visitors
             aggregationDictionary.KustoQL = query.ToString();
         }
 
-        public string BuildBucketAggregationQuery(BucketAggregation bucketAggregation, BucketAggregationQueryDefinition definition)
-        {
-            Ensure.IsNotNull(bucketAggregation, nameof(bucketAggregation));
-
-            var query = new StringBuilder();
-
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.ExtDataQuery} = {KustoTableNames.Data}");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Extend} {definition.ExtendExpression};");
-
-            query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.SummarizableMetricsQuery} = {AggregationsSubQueries.ExtDataQuery}");
-            query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {bucketAggregation.SubAggregationsKustoQL}");
-            query.Append($"{definition.BucketExpression};");
-
-            if (definition.Metadata != null)
-            {
-                query.Append(BuildMetadataQuery(definition.Metadata));
-            }
-
-            return query.ToString();
-        }
-
         /// <summary>
         /// Given a metadata dictionary, generates a Kusto QL statement creating the metadata table:
         /// datatable(['key']:string, ['value']:string) ['2', 'val1', '2', 'val2', '2', 'val3'] | as metadata;
