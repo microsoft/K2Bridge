@@ -77,8 +77,21 @@ namespace K2Bridge.Factories
                 }
             }
 
+            // Get expected bucket names from metadata table
+            var expectedBuckets = GetExpectedBuckets(key, metadataTable);
+
+            // Remove bucket names already returned
+            expectedBuckets.ExceptWith(outputBuckets);
+
             // Add missing buckets
-            AddMissingBuckets(key, dataTable, metadataTable, outputBuckets, rangeAggregate, BucketFactory.CreateRangeBucket, logger);
+            foreach (var missingBucket in expectedBuckets)
+            {
+                // Add a fake bucket
+                var fakeRow = dataTable.NewRow();
+                fakeRow[key] = missingBucket;
+                var fb = BucketFactory.CreateRangeBucket(key, fakeRow, logger);
+                rangeAggregate.Buckets.Add(fb);
+            }
 
             return rangeAggregate;
         }
@@ -163,15 +176,7 @@ namespace K2Bridge.Factories
                 }
             }
 
-            // Add missing buckets
-            AddMissingBuckets(key, dataTable, metadataTable, outputBuckets, filtersAggregate, BucketFactory.CreateFiltersBucket, logger);
-
-            return filtersAggregate;
-        }
-
-        public static void AddMissingBuckets(string key, DataTable dataTable, DataTable metadataTable, HashSet<string> outputBuckets, BucketAggregate aggregate, CreateBucketDelegate createBucket, ILogger logger)
-        {
-            // Get expected bucket names from metadata row
+            // Get expected bucket names from metadata table
             var expectedBuckets = GetExpectedBuckets(key, metadataTable);
 
             // Remove bucket names already returned
@@ -183,9 +188,11 @@ namespace K2Bridge.Factories
                 // Add a fake bucket
                 var fakeRow = dataTable.NewRow();
                 fakeRow[key] = missingBucket;
-                var fb = createBucket(key, fakeRow, logger);
-                aggregate.Buckets.Add(fb);
+                var fb = BucketFactory.CreateFiltersBucket(key, fakeRow, logger);
+                filtersAggregate.Buckets.Add(fb);
             }
+
+            return filtersAggregate;
         }
 
         /// <summary>
