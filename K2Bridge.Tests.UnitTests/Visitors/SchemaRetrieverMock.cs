@@ -12,13 +12,21 @@ namespace UnitTests.K2Bridge.Visitors
 
     public static class SchemaRetrieverMock
     {
-        public static ISchemaRetrieverFactory CreateMockSchemaRetriever(string name = "dayOfWeek", string type = "string")
+        public static ISchemaRetrieverFactory CreateMockSchemaRetriever(string name = "dayOfWeek", string type = "string", string dynamicVariantPath = ".a.b")
         {
             var response = new FieldCapabilityResponse();
             response.AddField(
                 new FieldCapabilityElement
                 {
                     Name = name,
+                    Type = type,
+                });
+
+            // Dynamic variant
+            response.AddField(
+                new FieldCapabilityElement
+                {
+                    Name = name + dynamicVariantPath,
                     Type = type,
                 });
             var responseTask = Task.FromResult(response);
