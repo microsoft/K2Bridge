@@ -74,7 +74,6 @@ namespace K2Bridge.Visitors
         public const string NewLine = "\n";
         public const string True = "true";
         public const string Datatable = "datatable";
-        public const string Dynamic = "dynamic";
         public const string Ago = "ago";
         public const string IngestionTime = "ingestion_time";
         public const string HoursMark = "h";
