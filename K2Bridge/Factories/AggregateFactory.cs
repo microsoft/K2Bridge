@@ -274,23 +274,22 @@ namespace K2Bridge.Factories
                     // ColumnName contains only the key (this is a value aggregate)
                     key = column.ColumnName;
                     aggregateDictionary.Add(key, GetValueAggregate(key, row, logger));
+                    continue;
                 }
-                else
+
+                // ColumnName contains key + metadata (metric used to select aggregate type)
+                key = columnMetadata[0];
+                var metric = columnMetadata[1];
+
+                IAggregate aggregate = metric switch
                 {
-                    // ColumnName contains key + metadata (metric used to select aggregate type)
-                    key = columnMetadata[0];
-                    var metric = columnMetadata[1];
+                    AggregationsConstants.Percentile => GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger),
+                    AggregationsConstants.ExtendedStats => GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger),
+                    AggregationsConstants.TopHits => GetTopHitsAggregate(column.ColumnName, columnMetadata, row, logger, query),
+                    _ => throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid."),
+                };
 
-                    IAggregate aggregate = metric switch
-                    {
-                        AggregationsConstants.Percentile => GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger),
-                        AggregationsConstants.ExtendedStats => GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger),
-                        AggregationsConstants.TopHits => GetTopHitsAggregate(column.ColumnName, columnMetadata, row, logger, query),
-                        _ => throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid."),
-                    };
-
-                    aggregateDictionary.Add(key, aggregate);
-                }
+                aggregateDictionary.Add(key, aggregate);
             }
         }
 
