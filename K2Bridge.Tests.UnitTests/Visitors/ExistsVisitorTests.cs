@@ -11,7 +11,7 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class ExistsVisitorTests
     {
-        [TestCase(ExpectedResult = "isnotnull(MyField)")]
+        [TestCase(ExpectedResult = "isnotnull(['MyField'])")]
         public string ExistsVisit_WithValidInput_ReturnsIsNotNullResponse()
         {
             var existsClause = new ExistsClause
