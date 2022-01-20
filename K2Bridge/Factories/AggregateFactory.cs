@@ -28,9 +28,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>
-        public static BucketAggregate GetDateHistogramAggregate(string key, DataTable dataTable, ILogger logger)
+        public static BucketAggregate GetDateHistogramAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get date histogram aggregate for {}", key);
 
@@ -38,7 +39,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateDateHistogramBucket(key, row, logger);
+                var bucket = BucketFactory.CreateDateHistogramBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     dateHistogramAggregate.Buckets.Add(bucket);
@@ -53,9 +54,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>
-        public static BucketAggregate GetRangeAggregate(string key, DataTable dataTable, DataTable metadataTable, ILogger logger)
+        public static BucketAggregate GetRangeAggregate(string key, DataTable dataTable, DataTable metadataTable, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(metadataTable, nameof(DataTable));
 
@@ -67,7 +69,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateRangeBucket(key, row, logger);
+                var bucket = BucketFactory.CreateRangeBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     rangeAggregate.Buckets.Add(bucket);
@@ -87,7 +89,7 @@ namespace K2Bridge.Factories
                 // Add a fake bucket
                 var fakeRow = dataTable.NewRow();
                 fakeRow[key] = missingBucket;
-                var fb = BucketFactory.CreateRangeBucket(key, fakeRow, logger);
+                var fb = BucketFactory.CreateRangeBucket(key, fakeRow, query, logger);
                 rangeAggregate.Buckets.Add(fb);
             }
 
@@ -99,9 +101,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetDateRangeAggregate(string key, DataTable dataTable, ILogger logger)
+        public static BucketAggregate GetDateRangeAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get date range aggregate for {}", key);
 
@@ -109,7 +112,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateDateRangeBucket(key, row, logger);
+                var bucket = BucketFactory.CreateDateRangeBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     rangeAggregate.Buckets.Add(bucket);
@@ -124,9 +127,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="TermsAggregate"/>.</returns>
-        public static TermsAggregate GetTermsAggregate(string key, DataTable dataTable, ILogger logger)
+        public static TermsAggregate GetTermsAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get terms aggregate for {}", key);
 
@@ -134,7 +138,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateTermsBucket(key, row, logger);
+                var bucket = BucketFactory.CreateTermsBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     termsAggregate.Buckets.Add(bucket);
@@ -149,9 +153,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, DataTable metadataTable, ILogger logger)
+        public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, DataTable metadataTable, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(metadataTable, nameof(DataTable));
 
@@ -166,7 +171,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateFiltersBucket(key, row, logger);
+                var bucket = BucketFactory.CreateFiltersBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     filtersAggregate.Buckets.Add(bucket);
@@ -186,7 +191,7 @@ namespace K2Bridge.Factories
                 // Add a fake bucket
                 var fakeRow = dataTable.NewRow();
                 fakeRow[key] = missingBucket;
-                var fb = BucketFactory.CreateFiltersBucket(key, fakeRow, logger);
+                var fb = BucketFactory.CreateFiltersBucket(key, fakeRow, query, logger);
                 filtersAggregate.Buckets.Add(fb);
             }
 
@@ -219,10 +224,11 @@ namespace K2Bridge.Factories
         /// Get histogram aggregate from a given <see cref="DataRowCollection"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, ILogger logger)
+        public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get histogram aggregate for {}", key);
 
@@ -230,7 +236,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateHistogramBucket(key, row, logger);
+                var bucket = BucketFactory.CreateHistogramBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     histogramAggregate.Buckets.Add(bucket);
@@ -246,9 +252,9 @@ namespace K2Bridge.Factories
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be added as aggregate.</param>
-        /// <param name="logger">ILogger object for logging.</param>
         /// <param name="query">QueryData containing query information.</param>
-        public static void AddAggregates(this AggregateDictionary aggregateDictionary, string primaryKey, DataRow row, ILogger logger, QueryData query = default)
+        /// <param name="logger">ILogger object for logging.</param>
+        public static void AddAggregates(this AggregateDictionary aggregateDictionary, string primaryKey, DataRow row, QueryData query, ILogger logger)
         {
             var columns = row.Table.Columns;
 
