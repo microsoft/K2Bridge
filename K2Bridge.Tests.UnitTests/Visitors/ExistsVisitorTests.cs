@@ -23,5 +23,18 @@ namespace UnitTests.K2Bridge.Visitors
             visitor.Visit(existsClause);
             return existsClause.KustoQL;
         }
+
+        [TestCase(ExpectedResult = "isnotnull(['MyField'].['@1'].['b'])")]
+        public string ExistsVisit_WithValidDynamicInput_ReturnsIsNotNullResponse()
+        {
+            var existsClause = new ExistsClause
+            {
+                FieldName = "MyField.@1.b",
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(existsClause);
+            return existsClause.KustoQL;
+        }
     }
 }

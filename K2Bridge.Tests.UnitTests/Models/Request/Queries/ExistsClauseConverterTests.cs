@@ -13,13 +13,16 @@ namespace UnitTests.K2Bridge.Models.Request.Queries
     public class ExistsClauseConverterTests
     {
         private const string FieldName = "FieldName";
-        private static readonly object[] BadInputCases = {
+        private const string DynamicFieldName = "FieldName.@1.b";
+        private static readonly object[] BadInputCases =
+        {
             "{ \"field\": [\"FieldName\" , \"OtherField\"] }",
             "{ \"field\": [\"FieldName\"] , \"field2\": [\"FieldName2\"] }",
             "{ \"field\": [\"FieldName\"] }",
         };
 
         private readonly string validExistsClause = $"{{ \"field\": \"{FieldName}\" }}";
+        private readonly string validExistsClauseDynamic = $"{{ \"field\": \"{DynamicFieldName}\" }}";
         private readonly string errorMessage = $"{nameof(FieldName)} was not parsed correctly";
 
         [Test]
@@ -30,8 +33,20 @@ namespace UnitTests.K2Bridge.Models.Request.Queries
 
             // Assert
             Assert.IsInstanceOf<ExistsClause>(parsed);
-            Assert.IsTrue(parsed.FieldName == FieldName, errorMessage);
+            Assert.AreEqual(FieldName, parsed.FieldName, errorMessage);
         }
+
+        [Test]
+        public void DeserializeObject_WithValidInput_ReturnsObjectWithCorrectFieldNameDynamic()
+        {
+            // Act
+            var parsed = JsonConvert.DeserializeObject<ExistsClause>(validExistsClauseDynamic);
+
+            // Assert
+            Assert.IsInstanceOf<ExistsClause>(parsed);
+            Assert.AreEqual(DynamicFieldName, parsed.FieldName, errorMessage);
+        }
+
 
         [TestCaseSource(nameof(BadInputCases))]
         public void DeserializeObject_WithInvalidInput_ThrowsInvalidCastException(string input)
