@@ -4,7 +4,7 @@
             "terms": {
                 "field": "Carrier",
                 "order": {
-                    "_count": "desc"
+                    "_key": "desc"
                 },
                 "size": 10
             },
