@@ -27,7 +27,6 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(aggregationDictionary, nameof(aggregationDictionary));
 
             var query = new StringBuilder();
-            var projectAwayExpression = string.Empty;
             var (_, firstAggregationContainer) = aggregationDictionary.First();
 
             if (aggregationDictionary.Count == 1 && firstAggregationContainer.PrimaryAggregation is BucketAggregation)
@@ -50,15 +49,7 @@ namespace K2Bridge.Visitors
 
                 defaultAggregation.Accept(this);
                 query.Append(defaultAggregation.KustoQL);
-
-                // We project away the default key column (<guid>)
-                projectAwayExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(defaultKey)}";
             }
-
-            // (_summarizablemetrics | as aggs)
-            query.Append($"{KustoQLOperators.NewLine}({SubQueriesStack.Last()}");
-            query.Append(projectAwayExpression);
-            query.Append($"{KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregation});");
 
             aggregationDictionary.KustoQL = query.ToString();
         }

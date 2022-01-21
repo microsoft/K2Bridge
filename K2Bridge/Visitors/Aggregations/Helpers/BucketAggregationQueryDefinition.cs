@@ -19,6 +19,21 @@ namespace K2Bridge.Visitors
         public string BucketExpression { get; set; }
 
         /// <summary>
+        /// Gets or sets the order by expression.
+        /// </summary>
+        public string OrderByExpression { get; set; }
+
+        /// <summary>
+        /// Gets or sets the limit expression.
+        /// </summary>
+        public string LimitExpression { get; set; }
+
+        /// <summary>
+        /// Gets or sets the project away expression.
+        /// </summary>
+        public string ProjectAwayExpression { get; set; }
+
+        /// <summary>
         /// Gets or sets the metadata.
         /// </summary>
         public Dictionary<string, List<string>> Metadata { get; set; }

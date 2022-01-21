@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System.Linq;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Utils;
@@ -24,9 +25,15 @@ namespace K2Bridge.Visitors
 
             query.Append($"{KustoQLOperators.NewLine}{KustoQLOperators.Let} {AggregationsSubQueries.SummarizableMetricsQuery} = {AggregationsSubQueries.ExtDataQuery}");
             query.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Summarize} {bucketAggregation.SummarizableMetricsKustoQL}");
-            query.Append($"{definition.BucketExpression};");
+            query.Append($"{definition.BucketExpression}{definition.OrderByExpression}{definition.LimitExpression};");
 
             query.Append($"{bucketAggregation.PartitionableMetricsKustoQL}");
+
+            // (_summarizablemetrics | as aggs)
+            query.Append($"{KustoQLOperators.NewLine}({SubQueriesStack.Last()}");
+            query.Append(definition.ProjectAwayExpression);
+            query.Append(definition.OrderByExpression);
+            query.Append($"{KustoQLOperators.CommandSeparator} as {KustoTableNames.Aggregation});");
 
             if (definition.Metadata != null)
             {
