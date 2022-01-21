@@ -239,9 +239,9 @@ namespace K2Bridge.Tests.End2End
 
         [Test]
         [Description("/_msearch visualization with tophits and and aggregation metrics")]
-        public void CompareElasticKusto_WhenMSearchVizDateHistogramTopHits_ResponsesAreEquivalent()
+        public void CompareElasticKusto_WhenMSearchVizTermsTopHits_ResponsesAreEquivalent()
         {
-            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_TopHits.json");
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Terms_TopHits.json");
         }
 
         [Test]

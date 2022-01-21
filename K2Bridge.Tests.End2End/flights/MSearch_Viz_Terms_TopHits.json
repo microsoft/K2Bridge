@@ -1,11 +1,12 @@
 {
     "aggs": {
         "2": {
-            "date_histogram": {
-                "field": "timestamp",
-                "calendar_interval": "1d",
-                "time_zone": "UTC",
-                "min_doc_count": 1
+            "terms": {
+                "field": "Carrier",
+                "order": {
+                    "_count": "desc"
+                },
+                "size": 10
             },
             "aggs": {
                 "1": {
