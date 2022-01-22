@@ -5,6 +5,7 @@
 namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="RangeAggregationExpression"/> element.
@@ -21,7 +22,7 @@ namespace K2Bridge.Visitors
             var gteExpr = rangeExpression.From.HasValue ? $"{field} >= {rangeExpression.From}" : null;
             var ltExpr = rangeExpression.To.HasValue ? $"{field} < {rangeExpression.To}" : null;
 
-            rangeExpression.BucketNameKustoQL = $"'{rangeExpression.From}-{rangeExpression.To}'";
+            rangeExpression.BucketNameKustoQL = $"'{rangeExpression.From}{AggregationsConstants.MetadataSeparator}{rangeExpression.To}'";
 
             rangeExpression.KustoQL = (gteExpr, ltExpr) switch
             {
