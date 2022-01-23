@@ -15,6 +15,7 @@ namespace K2Bridge.Factories
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
@@ -54,11 +55,15 @@ namespace K2Bridge.Factories
         /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>
-        public static BucketAggregate GetRangeAggregate(string key, DataTable dataTable, ILogger logger)
+        public static BucketAggregate GetRangeAggregate(string key, DataTable dataTable, DataTable metadataTable, ILogger logger)
         {
+            Ensure.IsNotNull(metadataTable, nameof(DataTable));
+
             logger.LogTrace("Get range aggregate for {}", key);
 
             var rangeAggregate = new BucketAggregate() { Keyed = true };
+
+            var outputBuckets = new HashSet<string>();
 
             foreach (DataRow row in dataTable.Rows)
             {
@@ -66,7 +71,24 @@ namespace K2Bridge.Factories
                 if (bucket != null)
                 {
                     rangeAggregate.Buckets.Add(bucket);
+                    outputBuckets.Add(Convert.ToString(row[key]));
                 }
+            }
+
+            // Get expected bucket names from metadata table
+            var expectedBuckets = GetExpectedBuckets(key, metadataTable);
+
+            // Remove bucket names already returned
+            expectedBuckets.ExceptWith(outputBuckets);
+
+            // Add missing buckets
+            foreach (var missingBucket in expectedBuckets)
+            {
+                // Add a fake bucket
+                var fakeRow = dataTable.NewRow();
+                fakeRow[key] = missingBucket;
+                var fb = BucketFactory.CreateRangeBucket(key, fakeRow, logger);
+                rangeAggregate.Buckets.Add(fb);
             }
 
             return rangeAggregate;
@@ -129,8 +151,10 @@ namespace K2Bridge.Factories
         /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, ILogger logger)
+        public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, DataTable metadataTable, ILogger logger)
         {
+            Ensure.IsNotNull(metadataTable, nameof(DataTable));
+
             logger.LogTrace("Get filters aggregate for {}", key);
 
             var filtersAggregate = new BucketAggregate()
@@ -150,29 +174,45 @@ namespace K2Bridge.Factories
                 }
             }
 
-            // Find any missing buckets
-            var encodedKey = dataTable.Columns[0].ColumnName;
-            var expectedBuckets = encodedKey
-                .Replace('-', '=')
-                .Split(AggregationsConstants.MetadataSeparator)[1..]
-                .Select(x => Encoding.Default.GetString(Convert.FromBase64String(x)))
-                .ToHashSet<string>();
+            // Get expected bucket names from metadata table
+            var expectedBuckets = GetExpectedBuckets(key, metadataTable);
 
+            // Remove bucket names already returned
             expectedBuckets.ExceptWith(outputBuckets);
 
             // Add missing buckets
             foreach (var missingBucket in expectedBuckets)
             {
                 // Add a fake bucket
-                var fb = new FiltersBucket
-                {
-                    Key = missingBucket,
-                    DocCount = 0,
-                };
+                var fakeRow = dataTable.NewRow();
+                fakeRow[key] = missingBucket;
+                var fb = BucketFactory.CreateFiltersBucket(key, fakeRow, logger);
                 filtersAggregate.Buckets.Add(fb);
             }
 
             return filtersAggregate;
+        }
+
+        /// <summary>
+        /// Gets the expected bucket names for a given key from the metadata table.
+        /// </summary>
+        /// <param name="key">The aggregation key.</param>
+        /// <param name="metadataTable">The metadata table.</param>
+        /// <returns>A HashSet<string> of expected bucket names.</returns>
+        public static HashSet<string> GetExpectedBuckets(string key, DataTable metadataTable)
+        {
+            var expectedBuckets = new HashSet<string>();
+
+            var reader = metadataTable.CreateDataReader();
+            while (reader.Read())
+            {
+                if (reader.GetString(KustoTableNames.MetadataKey) == key)
+                {
+                    expectedBuckets.Add(reader.GetString(KustoTableNames.MetadataValue));
+                }
+            }
+
+            return expectedBuckets;
         }
 
         /// <summary>
