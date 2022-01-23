@@ -92,6 +92,20 @@ namespace K2Bridge.Visitors
             }
         }
 
+        /// <summary>
+        /// Checks whether the given string is a 'simple' pharse.
+        /// a simple pharse is a phrase that does not contains any
+        /// special keywords such as 'AND', 'OR', ':' and more.
+        /// These keywords indicates that its not a simple phrase, its
+        /// a Lucene expression.
+        /// </summary>
+        /// <param name="phrase">The phrase to check.</param>
+        /// <returns>true if the given phrase is 'simple'.</returns>
+        private static bool IsSimplePhrase(string phrase)
+        {
+            return string.IsNullOrEmpty(phrase) || !SpecialStrings.Any(s => phrase.Contains(s, StringComparison.OrdinalIgnoreCase));
+        }
+
         private async Task<bool> GetIsFieldNumeric(string fieldName)
         {
             Ensure.IsNotNullOrEmpty(fieldName, nameof(fieldName));
@@ -137,25 +151,6 @@ namespace K2Bridge.Visitors
             esQuery.Accept(this);
 
             return esQuery.KustoQL;
-        }
-
-        /// <summary>
-        /// Checks whether the given string is a 'simple' pharse.
-        /// a simple pharse is a phrase that does not contains any
-        /// special keywords such as 'AND', 'OR', ':' and more.
-        /// These keywords indicates that its not a simple phrase, its
-        /// a Lucene expression.
-        /// </summary>
-        /// <param name="phrase">The phrase to check.</param>
-        /// <returns>true if the given phrase is 'simple'.</returns>
-        private static bool IsSimplePhrase(string phrase)
-        {
-            if (string.IsNullOrEmpty(phrase))
-            {
-                return true;
-            }
-
-            return !SpecialStrings.Any(s => phrase.Contains(s, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

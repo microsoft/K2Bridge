@@ -169,6 +169,15 @@ namespace K2Bridge.KustoDAL
             return response;
         }
 
+        private static string CombineValues(JToken property)
+        {
+            return property switch
+            {
+                JArray or { Type: JTokenType.Null } => "string",
+                _ => property.ToString(),
+            };
+        }
+
         private async Task MapFieldCaps(IDataReader kustoResults, FieldCapabilityResponse response, string tableName)
         {
             while (kustoResults.Read())
@@ -250,15 +259,6 @@ namespace K2Bridge.KustoDAL
             var newField = FieldCapabilityElementFactory.CreateFromNameAndKustoShorthandType(name, CombineValues(type));
             Logger.LogDebug("Added dynamic field '{@NewFieldName}' '{@NewFieldType}' ", newField.Name, newField.Type);
             response.AddField(newField);
-        }
-
-        private static string CombineValues(JToken property)
-        {
-            return property switch
-            {
-                JArray or { Type: JTokenType.Null } => "string",
-                _ => property.ToString(),
-            };
         }
 
         private void MapResolveIndexList(IEnumerable<string> kustoResults, ResolveIndexResponse response)
