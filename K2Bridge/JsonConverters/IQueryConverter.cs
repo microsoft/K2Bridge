@@ -50,7 +50,7 @@ namespace K2Bridge.JsonConverters
             return token != null ? token.ToObject<List<IQuery>>(serializer) : new List<IQuery>();
         }
 
-        private BoolQuery DeserializeBoolQuery(JToken token, JsonSerializer serializer)
+        private static BoolQuery DeserializeBoolQuery(JToken token, JsonSerializer serializer)
         {
             return new BoolQuery
             {

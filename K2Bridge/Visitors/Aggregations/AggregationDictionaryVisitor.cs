@@ -88,7 +88,7 @@ namespace K2Bridge.Visitors
         /// </summary>
         /// <param name="metadata">A metadata dictionary.</param>
         /// <returns>A string containing the Kusto QL statement.</returns>
-        public string BuildMetadataQuery(Dictionary<string, List<string>> metadata)
+        public static string BuildMetadataQuery(Dictionary<string, List<string>> metadata)
         {
             var query = new StringBuilder();
 

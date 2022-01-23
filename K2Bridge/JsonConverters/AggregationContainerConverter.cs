@@ -34,7 +34,7 @@ namespace K2Bridge.JsonConverters
             return obj;
         }
 
-        private Aggregation GetPrimaryAggregation(JProperty property, JsonReader reader, JsonSerializer serializer)
+        private static Aggregation GetPrimaryAggregation(JProperty property, JsonReader reader, JsonSerializer serializer)
         {
             Aggregation aggregation = null;
 

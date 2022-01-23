@@ -148,7 +148,7 @@ namespace K2Bridge.Visitors
         /// </summary>
         /// <param name="phrase">The phrase to check.</param>
         /// <returns>true if the given phrase is 'simple'.</returns>
-        private bool IsSimplePhrase(string phrase)
+        private static bool IsSimplePhrase(string phrase)
         {
             if (string.IsNullOrEmpty(phrase))
             {

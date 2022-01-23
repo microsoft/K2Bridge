@@ -252,7 +252,7 @@ namespace K2Bridge.KustoDAL
             response.AddField(newField);
         }
 
-        private string CombineValues(JToken property)
+        private static string CombineValues(JToken property)
         {
             return property switch
             {

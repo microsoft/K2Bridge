@@ -33,7 +33,7 @@ namespace K2Bridge.RewriteRules
         /// </summary>
         /// <param name="requestPath">A request path for examination.</param>
         /// <returns>The same path with trailing slash (if needed).</returns>
-        internal PathString RewritePath(PathString requestPath)
+        internal static PathString RewritePath(PathString requestPath)
         {
             var result = requestPath;
 

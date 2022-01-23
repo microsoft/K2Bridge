@@ -27,7 +27,7 @@ namespace K2Bridge.RewriteRules
             }
         }
 
-        private string GetIndexNameFromPath(PathString pathString)
+        private static string GetIndexNameFromPath(PathString pathString)
         {
             var segments = pathString.ToString().Split('/', System.StringSplitOptions.RemoveEmptyEntries);
             return segments[0];
