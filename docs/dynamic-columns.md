@@ -2,7 +2,7 @@
 
 In kusto, columns of the type "dynamic" are special.  
 They can contain within themselves arbitrarily nested data structures, that can be different from row to row.
-Within kusto queries, you can access dynamic fields by using the dot notation.
+Within Kusto queries, you can access dynamic fields by using the dot notation.
 
 For example, given a table T with the colmun "dyn" the values:
 ```
