@@ -1,6 +1,6 @@
 ﻿# Dynamic Columns
 
-In kusto, columns of the type "dynamic" are special.  
+In ADX (Kusto), columns of the type "dynamic" are special.  
 They can contain within themselves arbitrarily nested data structures, that can be different from row to row.
 Within Kusto queries, you can access dynamic fields by using the dot notation.
 
