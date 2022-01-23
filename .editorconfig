@@ -68,9 +68,10 @@ dotnet_diagnostic.IDE0005.severity = warning    # Using directive is unnecessary
 dotnet_diagnostic.CA1848.severity = none        # Do not encourage LoggerMessage delegates in every instance
 dotnet_diagnostic.CA2254.severity = suggestion  # Logging template should not vary between calls
 
-dotnet_diagnostic.IDE0005.severity = warning    # Using directive is unnecessary.
-dotnet_diagnostic.CA1848.severity = none        # Do not encourage LoggerMessage delegates in every instance
-dotnet_diagnostic.CA2254.severity = suggestion  # Logging template should not vary between calls
+# IDE0065: Misplaced using directive
+csharp_using_directive_placement = inside_namespace
+
+# csharp_style_namespace_declarations = file_scoped:warning
 
 # Newline options
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-formatting-conventions#new-line-options
