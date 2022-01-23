@@ -54,7 +54,7 @@ namespace K2Bridge.KustoDAL
             {
                 var msg = $"Failed getting table schema for {IndexName}";
                 Logger.LogError(msg);
-                throw new Exception(msg);
+                throw new QueryException(msg);
             }
 
             return response.Fields.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Type);
