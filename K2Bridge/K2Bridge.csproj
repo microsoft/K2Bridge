@@ -12,7 +12,7 @@
     <NoWarn>$(NoWarn);NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Flurl" Version="3.0.2" />
+    <PackageReference Include="Flurl" Version="3.0.3" />
     <PackageReference Include="Lucene.Net" Version="3.0.3" />
     <PackageReference Include="Lucene.Net.Contrib" Version="3.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
