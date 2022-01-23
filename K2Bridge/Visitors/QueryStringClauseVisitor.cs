@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -25,7 +25,7 @@ namespace K2Bridge.Visitors
         /// A list of strings that when found, means the search term is a Lucene term.
         /// </summary>
         private static readonly List<string> SpecialStrings =
-            new () { " ", "AND", "OR", "NOT", "\"", ":", "(", ")", "[", "]", "{", "}", "*", "&&", "+", "-", "|", "?", "\\", "^", "~" };
+            new() { " ", "AND", "OR", "NOT", "\"", ":", "(", ")", "[", "]", "{", "}", "*", "&&", "+", "-", "|", "?", "\\", "^", "~" };
 
         /// <inheritdoc/>
         public void Visit(QueryStringClause queryStringClause)
@@ -49,7 +49,7 @@ namespace K2Bridge.Visitors
                     if (isNumeric)
                     {
                         // Check to see whether this Phrase contains just a numeric or >=, <=, > or > examples
-                        if (decimal.TryParse(queryStringClause.Phrase, out decimal _))
+                        if (decimal.TryParse(queryStringClause.Phrase, out var _))
                         {
                             queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Equal} {queryStringClause.Phrase}";
                         }
@@ -113,10 +113,10 @@ namespace K2Bridge.Visitors
                     Lucene.Net.Util.Version.LUCENE_30,
                     queryStringClause.Default,
                     analyzer)
-                    {
-                        AllowLeadingWildcard = queryStringClause.Wildcard,
-                        LowercaseExpandedTerms = false,
-                    };
+                {
+                    AllowLeadingWildcard = queryStringClause.Wildcard,
+                    LowercaseExpandedTerms = false,
+                };
 
             // escaping special charachters from the pharse before parsing.
             // we would call QueryParser.Escape() method, but it escapes all charachters and

@@ -44,7 +44,7 @@ namespace K2Bridge.Visitors
                         case ClauseFieldType.Text:
                             throw new NotSupportedException("Text Range is not supported.");
                         case ClauseFieldType.Unknown:
-                            throw new Exception($"Field name {rangeClause.FieldName} has an unknown type.");
+                            throw new IllegalClauseException($"Field name {rangeClause.FieldName} has an unknown type.");
                         default:
                             throw new IllegalClauseException();
                     }
@@ -62,7 +62,7 @@ namespace K2Bridge.Visitors
                 { GTValue: "*" } or { GTEValue: "*" } => (null, null),
                 { GTValue: { } gt } => (">", valueConverter(gt)),
                 { GTEValue: { } gte } => (">=", valueConverter(gte)),
-                _ => throw new Exception("Invalid range clause."),
+                _ => throw new ArgumentException("Invalid range clause."),
             };
 
             var (ltOperator, ltValue) = rangeClause switch
@@ -71,7 +71,7 @@ namespace K2Bridge.Visitors
                 { LTValue: "*" } or { LTEValue: "*" } => (null, null),
                 { LTValue: { } lt } => ("<", valueConverter(lt)),
                 { LTEValue: { } lte } => ("<=", valueConverter(lte)),
-                _ => throw new Exception("Invalid range clause."),
+                _ => throw new ArgumentException("Invalid range clause."),
             };
 
             var field = EncodeKustoField(rangeClause.FieldName);

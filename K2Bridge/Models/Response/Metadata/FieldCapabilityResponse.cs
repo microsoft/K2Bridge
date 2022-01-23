@@ -12,8 +12,8 @@ namespace K2Bridge.Models.Response.Metadata
     /// </summary>
     public class FieldCapabilityResponse
     {
-        private readonly Dictionary<string, FieldCapabilityElement> fields = new ();
-        private readonly List<string> indices = new ();
+        private readonly Dictionary<string, FieldCapabilityElement> fields = new();
+        private readonly List<string> indices = new();
 
         /// <summary>
         /// Gets all fields.

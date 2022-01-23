@@ -35,7 +35,7 @@ namespace K2Bridge.RewriteRules
         /// <returns>The same path with trailing slash (if needed).</returns>
         internal PathString RewritePath(PathString requestPath)
         {
-            PathString result = requestPath;
+            var result = requestPath;
 
             var segments = requestPath.ToString().Split('/');
             var lastSegment = segments[^1];

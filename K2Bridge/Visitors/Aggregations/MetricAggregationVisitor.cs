@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -65,7 +65,7 @@ namespace K2Bridge.Visitors
             query.Append($"'{AggregationsConstants.VarianceSampling}', {varianceSampling},");
             query.Append($"'{AggregationsConstants.StandardDeviationPopulation}', {standardDeviationPopulation},");
             query.Append($"'{AggregationsConstants.StandardDeviationSampling}', {standardDeviationSampling}");
-            query.Append(")");
+            query.Append(')');
 
             extendedStatsAggregation.KustoQL = query.ToString();
         }

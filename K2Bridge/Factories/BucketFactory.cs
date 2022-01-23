@@ -112,7 +112,7 @@ namespace K2Bridge.Factories
             var fromKey = from?.ToString("0.0##########", CultureInfo.InvariantCulture) ?? "*";
             var toKey = to?.ToString("0.0##########", CultureInfo.InvariantCulture) ?? "*";
 
-            string key = $"{fromKey}-{toKey}";
+            var key = $"{fromKey}-{toKey}";
 
             // Assemble the bucket
             var rb = new RangeBucket
@@ -158,6 +158,7 @@ namespace K2Bridge.Factories
             return fb;
         }
 
+        /// <summary>
         /// Create a new <see cref="DateRangeBucket"/> from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="row">The row to be transformed to bucket.</param>

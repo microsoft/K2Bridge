@@ -4,14 +4,19 @@
 
 namespace K2Bridge.Visitors
 {
-    using System;
     using System.Text.RegularExpressions;
 
-    /// <content>
+    /// <summary>
     /// Parser for the Date Math expressions.
-    /// </content>
+    /// </summary>
     public class DateMathParser
     {
+        /// <summary>
+        /// Converts a date expression from Kibana syntax to Kusto/ADX.
+        /// </summary>
+        /// <param name="expr">A Kibana date expression to process.</param>
+        /// <returns>A KustoQL string with the processed date expression.</returns>
+        /// <exception cref="IllegalClauseException">In case of unknown date/time expressions.</exception>
         public static string ParseDateMath(string expr)
         {
             // See Wiki or ES docs for details on date math syntax
@@ -19,7 +24,8 @@ namespace K2Bridge.Visitors
                 @"^
                         (?: (?<anchor>now) | (?: (?<anchor>.+?) (?:\|\||$)) )
                         (?: (?<rangeSign>[+-]) (?<rangeValue>\d+) (?<rangeUnit>[a-zA-Z]))*
-                        (?: (?:\/ (?<rounding>y|M|w|d|h|H|m|s)))?", RegexOptions.IgnorePatternWhitespace);
+                        (?: (?:\/ (?<rounding>y|M|w|d|h|H|m|s)))?",
+                RegexOptions.IgnorePatternWhitespace);
             var match = rgx.Match(expr);
 
             var kexpr = string.Empty;
@@ -31,14 +37,7 @@ namespace K2Bridge.Visitors
 
             // The date literal, ie.g. YYYY-MM-DD or "now"
             var anchor = match.Groups["anchor"].Value;
-            if (anchor.Equals("now"))
-            {
-                kexpr = "now()";
-            }
-            else
-            {
-                kexpr = $"make_datetime('{anchor}')";
-            }
+            kexpr = anchor.Equals("now", System.StringComparison.Ordinal) ? "now()" : $"make_datetime('{anchor}')";
 
             // Date operation, e.g. -1M, +3d, etc.
             for (var i = 0; i < match.Groups["rangeSign"].Captures.Count; i++)

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -16,8 +16,8 @@ namespace K2Bridge.Visitors
     {
         // The following regexes look for the '?' or '*' chars which are
         // not followed by an escape character
-        private static readonly Regex SingleCharPattern = new (@"(?<!\\)\?");
-        private static readonly Regex MultiCharPattern = new (@"(?<!\\)\*");
+        private static readonly Regex SingleCharPattern = new(@"(?<!\\)\?");
+        private static readonly Regex MultiCharPattern = new(@"(?<!\\)\*");
 
         /// <inheritdoc/>
         public void Visit(MatchPhraseClause matchPhraseClause)
@@ -33,7 +33,8 @@ namespace K2Bridge.Visitors
                 {
                     DateTime dt => $"{KustoQLOperators.ToDateTime}(\"{dt.ToUniversalTime():o}\")",
                     uint or int or short or ushort or long or ulong or float or double => matchPhraseClause.Phrase,
-                    object o => $"\"{matchPhraseClause.Phrase.ToString().EscapeSlashes()}\"",
+                    object => $"\"{matchPhraseClause.Phrase.ToString().EscapeSlashes()}\"",
+                    _ => throw new NotImplementedException(),
                 };
 
                 matchPhraseClause.KustoQL = $"{EncodeKustoField(matchPhraseClause.FieldName)} {KustoQLOperators.Equal} {parsedPhrase}";

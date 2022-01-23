@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -724,7 +724,8 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Verify(exec => exec.ExecuteQueryAsync(
                 It.Is<QueryData>(d =>
                     d.IndexName == "testIndexName"
-                    && d.QueryCommandText == "testIndexName | getschema | project ColumnName, ColumnType=DataType"), It.IsAny<RequestContext>()));
+                    && d.QueryCommandText == "testIndexName | getschema | project ColumnName, ColumnType=DataType"),
+                It.IsAny<RequestContext>()));
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {
@@ -774,7 +775,8 @@ namespace UnitTests.K2Bridge.KustoDAL
                 + " | distinct TableName, DatabaseName"
                 + " | search TableName: 'testIndex'"
                 + " | search DatabaseName: ''"
-                + " |  project strcat(DatabaseName, \":\", TableName)", It.IsAny<RequestContext>()));
+                + " |  project strcat(DatabaseName, \":\", TableName)",
+                It.IsAny<RequestContext>()));
 
             Assert.IsNotNull(indexResponse);
             var itr = indexResponse.Indices.GetEnumerator();
@@ -803,7 +805,8 @@ namespace UnitTests.K2Bridge.KustoDAL
                 + " | where Parameters == '()'"
                 + " | distinct Name"
                 + " | search Name: 'testIndex'"
-                + " | project strcat(\"\", \":\", Name)", It.IsAny<RequestContext>()));
+                + " | project strcat(\"\", \":\", Name)",
+                It.IsAny<RequestContext>()));
 
             Assert.IsNotNull(indexResponse);
             var itr = indexResponse.Indices.GetEnumerator();
@@ -860,7 +863,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         { "1", "somevalue1" },
                     },
                 });
-            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, StringComparison.OrdinalIgnoreCase)), It.IsAny<RequestContext>()))
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, OrdinalIgnoreCase)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync(indexName);

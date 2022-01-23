@@ -55,7 +55,7 @@ namespace K2Bridge.JsonConverters
                     "sum" => property.Value.ToObject<SumAggregation>(serializer),
                     "percentiles" => property.Value.ToObject<PercentileAggregation>(serializer),
                     "histogram" => property.Value.ToObject<HistogramAggregation>(serializer),
-                    _ => aggregation
+                    _ => aggregation,
                 };
             }
 

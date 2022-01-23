@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -47,15 +47,15 @@ namespace K2Bridge.Visitors
             foreach (var aggregation in aggregations)
             {
                 aggregation.Accept(this);
-                summarizableMetrics.Add($"{aggregation.KustoQL}");
+                summarizableMetrics.Add(aggregation.KustoQL);
             }
 
             var summarizableMetricsExpression = string.Join(',', summarizableMetrics);
-            query.Append($"{summarizableMetricsExpression}");
+            query.Append(summarizableMetricsExpression);
 
             if (!string.IsNullOrEmpty(summarizableMetricsExpression))
             {
-                query.Append($",");
+                query.Append(',');
             }
 
             return query.ToString();

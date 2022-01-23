@@ -55,7 +55,7 @@ namespace K2Bridge.Telemetry
 
             var typeName = logEvent.Exception.GetType().Name;
             using var sourceContext = new StringWriter();
-            if (logEvent.Properties.TryGetValue("SourceContext", out LogEventPropertyValue prop))
+            if (logEvent.Properties.TryGetValue("SourceContext", out var prop))
             {
                 prop.Render(sourceContext, SerilogRawFormat);
             }

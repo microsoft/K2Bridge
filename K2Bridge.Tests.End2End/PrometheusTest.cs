@@ -60,22 +60,24 @@ namespace K2Bridge.Tests.End2End
                 responseData.Contains(
                 $"# HELP {metrics.AdxQueryDurationMetric.Name} {metrics.AdxQueryDurationMetric.Help}\n"
                 + $"# TYPE {metrics.AdxQueryDurationMetric.Name} histogram\n",
-                Ordinal), responseData);
+                Ordinal),
+                responseData);
 
             Assert.True(
                 responseData.Contains(
                 $"# HELP {metrics.AdxNetQueryDurationMetric.Name} {metrics.AdxNetQueryDurationMetric.Help}\n"
                 + $"# TYPE {metrics.AdxNetQueryDurationMetric.Name} histogram\n",
-                Ordinal), responseData);
+                Ordinal),
+                responseData);
 
             Assert.True(
                 responseData.Contains(
                 $"# HELP {metrics.AdxQueryBytesMetric.Name} {metrics.AdxQueryBytesMetric.Help}\n"
                 + $"# TYPE {metrics.AdxQueryBytesMetric.Name} histogram\n",
-                Ordinal), responseData);
+                Ordinal),
+                responseData);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
         private TelemetryClient GetMockTelemetryClient()
         {
             return new TelemetryClient(

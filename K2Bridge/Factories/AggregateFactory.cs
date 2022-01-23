@@ -10,12 +10,10 @@ namespace K2Bridge.Factories
     using System.Globalization;
     using System.Linq;
     using System.Text;
-    using System.Text.RegularExpressions;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
@@ -71,7 +69,7 @@ namespace K2Bridge.Factories
                 if (bucket != null)
                 {
                     rangeAggregate.Buckets.Add(bucket);
-                    outputBuckets.Add(Convert.ToString(row[key]));
+                    _ = outputBuckets.Add(Convert.ToString(row[key]));
                 }
             }
 
@@ -100,7 +98,7 @@ namespace K2Bridge.Factories
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns><see cref="BucketAggregate"></returns>
+        /// <returns><see cref="BucketAggregate"/> returned.</returns>
         public static BucketAggregate GetDateRangeAggregate(string key, DataTable dataTable, ILogger logger)
         {
             logger.LogTrace("Get date range aggregate for {}", key);
@@ -150,7 +148,7 @@ namespace K2Bridge.Factories
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns><see cref="BucketAggregate"></returns>
+        /// <returns><see cref="BucketAggregate"/> returned.</returns>
         public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, DataTable metadataTable, ILogger logger)
         {
             Ensure.IsNotNull(metadataTable, nameof(DataTable));
@@ -170,7 +168,7 @@ namespace K2Bridge.Factories
                 if (bucket != null)
                 {
                     filtersAggregate.Buckets.Add(bucket);
-                    outputBuckets.Add((string)bucket.Key);
+                    _ = outputBuckets.Add((string)bucket.Key);
                 }
             }
 
@@ -198,7 +196,7 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="metadataTable">The metadata table.</param>
-        /// <returns>A HashSet<string> of expected bucket names.</returns>
+        /// <returns>A HashSet of expected bucket names.</returns>
         public static HashSet<string> GetExpectedBuckets(string key, DataTable metadataTable)
         {
             var expectedBuckets = new HashSet<string>();
@@ -208,7 +206,7 @@ namespace K2Bridge.Factories
             {
                 if (reader.GetString(KustoTableNames.MetadataKey) == key)
                 {
-                    expectedBuckets.Add(reader.GetString(KustoTableNames.MetadataValue));
+                    _ = expectedBuckets.Add(reader.GetString(KustoTableNames.MetadataValue));
                 }
             }
 
@@ -219,9 +217,8 @@ namespace K2Bridge.Factories
         /// Get histogram aggregate from a given <see cref="DataRowCollection"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="rowCollection">The row collection be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns><see cref="BucketAggregate"></returns>
+        /// <returns><see cref="BucketAggregate"/> returned.</returns>
         public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, ILogger logger)
         {
             logger.LogTrace("Get histogram aggregate for {}", key);
@@ -241,7 +238,7 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Add aggregates to current <see cref="AggregateDictionary"> instance from a given <see cref="DataRow"/>.
+        /// Add aggregates to current <see cref="AggregateDictionary"/> instance from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>
         /// <param name="primaryKey">The primary aggregation key.</param>
@@ -296,7 +293,7 @@ namespace K2Bridge.Factories
         /// <param name="columnMetadata">The column metadata parsed.</param>
         /// <param name="row">The row to be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns><see cref="ExtendedStatsAggregate"></returns>
+        /// <returns><see cref="ExtendedStatsAggregate"/> returned.</returns>
         private static ExtendedStatsAggregate GetExtendedStatsAggregate(string columnName, string[] columnMetadata, DataRow row, ILogger logger)
         {
             logger.LogTrace("Get extended stats for standard deviation aggregate for {}", columnName);
@@ -395,7 +392,7 @@ namespace K2Bridge.Factories
                 {
                     var percentileItem = value.Type switch
                     {
-                        // If token type is a string, we assume this is is date time
+                        // If token type is a string, we assume it is date time
                         JTokenType.String => new PercentileItem()
                         {
                             Percentile = double.Parse(percent, CultureInfo.InvariantCulture),
@@ -446,11 +443,11 @@ namespace K2Bridge.Factories
             var valueAggregate = new ValueAggregate() { Value = null };
             var rowValue = row[key];
 
-            if (rowValue.GetType() != typeof(System.DBNull))
+            if (rowValue.GetType() != typeof(DBNull))
             {
                 valueAggregate = rowValue switch
                 {
-                    System.DateTime dateValue => new ValueAggregate() { Value = TimeUtils.ToEpochMilliseconds(dateValue), ValueAsString = dateValue.ToString("yyyy-MM-ddTHH:mm:ss.fffK") },
+                    DateTime dateValue => new ValueAggregate() { Value = TimeUtils.ToEpochMilliseconds(dateValue), ValueAsString = dateValue.ToString("yyyy-MM-ddTHH:mm:ss.fffK") },
                     _ => new ValueAggregate() { Value = Convert.ToDouble(rowValue) },
                 };
             }

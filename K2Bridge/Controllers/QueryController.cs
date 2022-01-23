@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -174,7 +174,7 @@ namespace K2Bridge.Controllers
         /// <param name="func">The function to run.</param>
         /// <param name="indexName">index name where action is running on.</param>
         /// <returns>A tuple of either the result of running the function or an elastic error response if there's an exception.</returns>
-        private async Task<(TResult result, ElasticErrorResponse errorResponse)> TryAsyncFuncReturnsElasticError<TResult>(
+        private async Task<(TResult Result, ElasticErrorResponse ErrorResponse)> TryAsyncFuncReturnsElasticError<TResult>(
             Func<Task<TResult>> func,
             string indexName)
         {
@@ -198,7 +198,7 @@ namespace K2Bridge.Controllers
         /// <param name="func">The async function to run.</param>
         /// <param name="indexName">index name where action is running on.</param>
         /// <returns>A tuple of either the result of running the function or an elastic error response if there's an exception.</returns>
-        private (TResult result, ElasticErrorResponse errorResponse) TryFuncReturnsElasticError<TResult>(
+        private (TResult Result, ElasticErrorResponse ErrorResponse) TryFuncReturnsElasticError<TResult>(
             Func<TResult> func,
             string indexName)
         {
@@ -235,7 +235,7 @@ namespace K2Bridge.Controllers
                 var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out encodingData);
                 if (hasEncodingHeader ?? false)
                 {
-                    logger.LogWarning("Unsupported encoding was requested: {encodingData}", encodingData);
+                    logger.LogWarning("Unsupported encoding was requested: {EncodingData}", encodingData);
                 }
             }
         }

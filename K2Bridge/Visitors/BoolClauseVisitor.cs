@@ -16,8 +16,8 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        private static readonly Regex OperatorsRegex = new ($"^[^ ]+ ({KustoQLOperators.Has}|{KustoQLOperators.Contains}|{KustoQLOperators.HasPrefix})|({KustoQLOperators.Equal})");
-        private static readonly Regex DynamicRegex = new ("^((\\.)|[^ !=])+");
+        private static readonly Regex OperatorsRegex = new($"^[^ ]+ ({KustoQLOperators.Has}|{KustoQLOperators.Contains}|{KustoQLOperators.HasPrefix})|({KustoQLOperators.Equal})");
+        private static readonly Regex DynamicRegex = new("^((\\.)|[^ !=])+");
 
         /// <inheritdoc/>
         public void Visit(BoolQuery boolQuery)
