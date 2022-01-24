@@ -74,11 +74,12 @@ namespace K2Bridge.Visitors
                 _ => throw new Exception("Invalid range clause."),
             };
 
-            var gtQuery = gtOperator != null ? $"{EncodeKustoField(rangeClause.FieldName)} {gtOperator} {gtValue}" : null;
-            var ltQuery = ltOperator != null ? $"{EncodeKustoField(rangeClause.FieldName)} {ltOperator} {ltValue}" : null;
+            var field = EncodeKustoField(rangeClause.FieldName);
+            var gtQuery = gtOperator != null ? $"{field} {gtOperator} {gtValue}" : null;
+            var ltQuery = ltOperator != null ? $"{field} {ltOperator} {ltValue}" : null;
             rangeClause.KustoQL = (gtQuery, ltQuery) switch
             {
-                (null, null) => string.Empty,
+                (null, null) => $"{KustoQLOperators.IsNotNull}({field})",
                 (null, _) => ltQuery,
                 (_, null) => gtQuery,
                 (_, _) => $"{gtQuery} {KustoQLOperators.And} {ltQuery}",
