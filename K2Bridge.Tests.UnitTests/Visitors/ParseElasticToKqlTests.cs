@@ -290,7 +290,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             QueryExists,
-            ExpectedResult = "where (isnotnull(TEST_FIELD))",
+            ExpectedResult = "where (isnotnull(['TEST_FIELD']))",
             TestName = "QueryAccept_WithSingleExists_ReturnsExpectedResult")]
         public string TestExistsClause(string queryString)
         {
