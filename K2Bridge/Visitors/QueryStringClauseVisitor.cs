@@ -42,6 +42,7 @@ namespace K2Bridge.Visitors
 
             // Depends on the exact request there are 3 possible options for the phrase:
             // wildcard, prefix and simple equality
+            var parsedFieldName = queryStringClause.ParsedFieldName == "*" ? queryStringClause.ParsedFieldName : EncodeKustoField(queryStringClause.ParsedFieldName);
             switch (queryStringClause.ParsedType)
             {
                 case QueryStringClause.Subtype.Term:
@@ -51,22 +52,22 @@ namespace K2Bridge.Visitors
                         // Check to see whether this Phrase contains just a numeric or >=, <=, > or > examples
                         if (decimal.TryParse(queryStringClause.Phrase, out decimal _))
                         {
-                            queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Equal} {queryStringClause.Phrase}";
+                            queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.Equal} {queryStringClause.Phrase}";
                         }
                         else
                         {
-                            queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {queryStringClause.Phrase}";
+                            queryStringClause.KustoQL = $"{parsedFieldName} {queryStringClause.Phrase}";
                         }
                     }
                     else
                     {
-                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Has} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
+                        queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.Has} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
                     }
 
                     break;
 
                 case QueryStringClause.Subtype.Phrase:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
+                    queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
                     break;
 
                 case QueryStringClause.Subtype.Wildcard:
@@ -78,10 +79,10 @@ namespace K2Bridge.Visitors
                     var phrase = SingleCharPattern.Replace(queryStringClause.Phrase.EscapeSlashes(), @"(.)");
                     phrase = MultiCharPattern.Replace(phrase, @"(.)*");
 
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
+                    queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
                     break;
                 case QueryStringClause.Subtype.Prefix:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
+                    queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
                     break;
                 case QueryStringClause.Subtype.MatchAll:
                     queryStringClause.KustoQL = "true";
