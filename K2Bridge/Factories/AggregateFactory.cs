@@ -15,7 +15,6 @@ namespace K2Bridge.Factories
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
@@ -23,6 +22,11 @@ namespace K2Bridge.Factories
     /// </summary>
     internal static class AggregateFactory
     {
+        /// <summary>
+        ///  Gets pseudo-random number generator.
+        /// </summary>
+        private static readonly Random Random = new();
+
         /// <summary>
         /// Get date histogram aggregate from a given <see cref="DataTable"/>.
         /// </summary>
@@ -449,7 +453,6 @@ namespace K2Bridge.Factories
         {
             logger.LogTrace("Get TopHits aggregate for {}", columnName);
 
-            var random = new Random();
             var topHitsAggregate = new TopHitsAggregate() { };
 
             topHitsAggregate.Hits.SetTotal(0);
@@ -466,7 +469,7 @@ namespace K2Bridge.Factories
 
                     foreach (JObject jObject in topHitsValues)
                     {
-                        var hit = HitsFactory.Create(random.Next().ToString(), query.IndexName);
+                        var hit = HitsFactory.Create(Random.Next().ToString(), query.IndexName);
 
                         var sourceField = jObject[AggregationsConstants.SourceField].Value<string>();
                         var sourceValue = jObject[AggregationsConstants.SourceValue];
