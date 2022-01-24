@@ -36,3 +36,4 @@ The following metric aggregations ("Metrics" in the Kibana UI) have been impleme
 - Standard Deviation
 - Sum
 - Unique Count
+- Top Hits
