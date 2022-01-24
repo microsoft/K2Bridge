@@ -16,7 +16,7 @@ let _extdata = _data
 | extend ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] = true;
 
 let _summarizablemetrics = _extdata
-| summarize ['2']=avg(DistanceKilometers),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
+| summarize ['2']=avg(['DistanceKilometers']),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
 
 (_summarizablemetrics 
 | project-away ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] 
@@ -66,7 +66,7 @@ let _extdata = _data
 | extend ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] = true;
 
 let _summarizablemetrics = _extdata
-| summarize ['2']=dcount(DistanceKilometers),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
+| summarize ['2']=dcount(['DistanceKilometers']),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
 
 (_summarizablemetrics 
 | project-away ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] 
@@ -97,7 +97,7 @@ let _extdata = _data
 | extend ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] = true;
 
 let _summarizablemetrics = _extdata
-| summarize ['2']=max(DistanceKilometers),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
+| summarize ['2']=max(['DistanceKilometers']),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
 
 (_summarizablemetrics 
 | project-away ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] 
@@ -122,7 +122,7 @@ let _extdata = _data
 | extend ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] = true;
 
 let _summarizablemetrics = _extdata
-| summarize ['2']=min(DistanceKilometers),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
+| summarize ['2']=min(['DistanceKilometers']),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
 
 (_summarizablemetrics 
 | project-away ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] 
@@ -134,6 +134,29 @@ let _summarizablemetrics = _extdata
 A multi-value metrics aggregation that calculates one or more percentiles over numeric values extracted from the aggregated documents.
 
 [Percentiles aggregation (Elasticsearch)](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-aggregation.html)
+
+This aggregation is mapped on [percentile_array() (aggregation function)](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/percentiles-aggfunction) when translated to Kusto Query Language.
+
+Example of Kusto Query Language built by K2Bridge:
+
+```
+let _data = kibana_data_flights
+| where (['timestamp'] >= todatetime("2018-02-01T11:00:00.0000000Z") and ['timestamp'] <= todatetime("2018-02-02T11:00:00.0000000Z"));
+
+let _extdata = _data
+| extend ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] = true;
+
+let _summarizablemetrics = _extdata
+| summarize ['2%percentile%1.0%5.0%25.0%50.0%75.0%95.0%99.0%False']=percentiles_array(['DistanceKilometers'], 1,5,25,50,75,95,99),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
+
+(_summarizablemetrics 
+| project-away ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] 
+| as aggs);
+```
+
+For this aggregation, some metadata are passed in the column name to build the response. It includes percentile values requested and if response must be [Keyed](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-percentile-aggregation.html#_keyed_response_6). We plan to move these metadata into a dedicated table in a future release.
+
+Median aggregation is just a specific version of percentiles aggregation where value targeted is 50.
 
 # Sum aggregation
 
@@ -153,7 +176,7 @@ let _extdata = _data
 | extend ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] = true;
 
 let _summarizablemetrics = _extdata
-| summarize ['2']=sum(DistanceKilometers),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
+| summarize ['2']=sum(['DistanceKilometers']),count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
 
 (_summarizablemetrics 
 | project-away ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] 
