@@ -19,7 +19,7 @@ namespace UnitTests.K2Bridge.Visitors
     public class RangeClauseVisitorTests
     {
         // Numeric RangeClause Query Tests
-        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
         [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "['MyField'] < 10", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
         [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "['MyField'] <= 10", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
         [TestCase(RangeType.Exclusive, RangeType.Wildcard, ExpectedResult = "['MyField'] > 0", TestName = "Visit_WithValidRangeBetweenNumbers_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
@@ -33,7 +33,7 @@ namespace UnitTests.K2Bridge.Visitors
             return RangeClauseToKQL(CreateRangeClause("0", "10", minRange, maxRange));
         }
 
-        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
         [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "['MyField'] < 10.10", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
         [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "['MyField'] <= 10.10", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
         [TestCase(RangeType.Exclusive, RangeType.Wildcard, ExpectedResult = "['MyField'] > 0", TestName = "Visit_WithValidRangeBetweenIntAndDecimal_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
@@ -47,7 +47,7 @@ namespace UnitTests.K2Bridge.Visitors
             return RangeClauseToKQL(CreateRangeClause("0", "10.10", minRange, maxRange));
         }
 
-        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
         [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "['MyField'] < 20.20", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
         [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "['MyField'] <= 20.20", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
         [TestCase(RangeType.Exclusive, RangeType.Wildcard, ExpectedResult = "['MyField'] > 10.10", TestName = "Visit_WithValidRangeBetweenDecimals_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
@@ -62,7 +62,7 @@ namespace UnitTests.K2Bridge.Visitors
         }
 
         // Time RangeClause Query Tests
-        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
         [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "['MyField'] < unixtime_milliseconds_todatetime(10)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
         [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "['MyField'] <= unixtime_milliseconds_todatetime(10)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
         [TestCase(RangeType.Exclusive, RangeType.Wildcard, ExpectedResult = "['MyField'] > unixtime_milliseconds_todatetime(0)", TestName = "Visit_WithValidRangeBetweenInts_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
@@ -76,7 +76,7 @@ namespace UnitTests.K2Bridge.Visitors
             return RangeClauseToKQL(CreateTimeRangeClause("0", "10", minRange, maxRange));
         }
 
-        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
         [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "['MyField'] < unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
         [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "['MyField'] <= unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
         [TestCase(RangeType.Exclusive, RangeType.Wildcard, ExpectedResult = "['MyField'] > unixtime_milliseconds_todatetime(0)", TestName = "Visit_WithValidTimeRangeBetweenNumbers_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
@@ -90,7 +90,7 @@ namespace UnitTests.K2Bridge.Visitors
             return RangeClauseToKQL(CreateTimeRangeClause("0", "10.10", minRange, maxRange));
         }
 
-        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
         [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "['MyField'] < unixtime_milliseconds_todatetime(20.20)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
         [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "['MyField'] <= unixtime_milliseconds_todatetime(20.20)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
         [TestCase(RangeType.Exclusive, RangeType.Wildcard, ExpectedResult = "['MyField'] > unixtime_milliseconds_todatetime(10.10)", TestName = "Visit_WithValidTimeRangeBetweenDecimals_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
@@ -104,7 +104,7 @@ namespace UnitTests.K2Bridge.Visitors
             return RangeClauseToKQL(CreateTimeRangeClause("10.10", "20.20", minRange, maxRange));
         }
 
-        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
         [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "['MyField'] < todatetime(\"2020-02-22T10:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
         [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "['MyField'] <= todatetime(\"2020-02-22T10:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
         [TestCase(RangeType.Exclusive, RangeType.Wildcard, ExpectedResult = "['MyField'] > todatetime(\"2020-01-01T00:00:00.0000000\")", TestName = "Visit_ValidDateRange_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]

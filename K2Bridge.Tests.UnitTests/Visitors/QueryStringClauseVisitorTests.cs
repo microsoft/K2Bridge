@@ -51,7 +51,7 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(queryClause);
         }
 
-        [TestCase(ExpectedResult = "(* has \"shouldBeFirst\") and (* has \"shouldBeSecond\") and (this.that has \"shouldBeThird\") and (that.this contains \"should be fourth\")")]
+        [TestCase(ExpectedResult = "(* has \"shouldBeFirst\") and (* has \"shouldBeSecond\") and (['this'].['that'] has \"shouldBeThird\") and (['that'].['this'] contains \"should be fourth\")")]
         public string Visit_WithDynamicFields_ReturnsSortedResponse()
         {
             var queryClause = CreateQueryStringClause("this.that:shouldBeThird AND shouldBeFirst AND that.this:\"should be fourth\" AND shouldBeSecond", true);

@@ -64,22 +64,17 @@ dotnet_analyzer_diagnostic.severity = suggestion
 # Default severity for analyzer diagnostics with category 'Style' (escalated to build warnings)
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 
+dotnet_diagnostic.IDE0005.severity = warning    # Using directive is unnecessary.
+dotnet_diagnostic.CA1848.severity = none        # Do not encourage LoggerMessage delegates in every instance
+dotnet_diagnostic.CA2254.severity = suggestion  # Logging template should not vary between calls
 
 # IDE0065: Misplaced using directive
 csharp_using_directive_placement = inside_namespace
-
-# IDE0005: Using directive is unnecessary.
-dotnet_diagnostic.IDE0005.severity = warning
 
 # Newline options
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-formatting-conventions#new-line-options
 csharp_new_line_before_open_brace = all
 
-# C# Style Rules
-# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/language-rules#c-style-rules
-
-# CA1848: Use the LoggerMessage delegates
-dotnet_diagnostic.CA1848.severity = suggestion
 
 [*.{cs,csx,cake}]
 # 'var' preferences

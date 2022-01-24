@@ -19,7 +19,7 @@ namespace K2Bridge.Tests.End2End
                             ""root_cause"": [
                             {
                                 ""type"": ""SemanticException"",
-                                ""reason"": ""Semantic error: 'where' operator: Failed to resolve scalar expression named 'dayOfWe'. Query: 'let _data = database(""A"").kibana_sample_data_flights | where (['timestamp'] >= unixtime_milliseconds_todatetime(1517954400000) and ['timestamp'] <= unixtime_milliseconds_todatetime(1518127199999)) and (dayOfWe has \""1\"");let _extdata =_data | extend ['2'] = startofmonth(['timestamp']); let _summarizablemetrics = _extdata | summarize count() by ['2'] | order by ['2'] asc;(_summarizablemetrics | as aggs);(_data | count | as hitsTotal);(_data | order by ['timestamp'] desc | limit 500 | as hits)'"",
+                                ""reason"": ""Semantic error: 'where' operator: Failed to resolve scalar expression named '[\""dayOfWe\""]'. Query: 'let _data = database(""A"").kibana_sample_data_flights | where (['timestamp'] >= unixtime_milliseconds_todatetime(1517954400000) and ['timestamp'] <= unixtime_milliseconds_todatetime(1518127199999)) and (['dayOfWe'] has \""1\"");let _extdata =_data | extend ['2'] = startofmonth(['timestamp']); let _summarizablemetrics = _extdata | summarize count() by ['2'] | order by ['2'] asc;(_summarizablemetrics | as aggs);(_data | count | as hitsTotal);(_data | order by ['timestamp'] desc | limit 500 | as hits)'"",
                                 ""index_uuid"": ""kibana_sample_data_flights"",
                                 ""index"": ""kibana_sample_data_flights""
                             }
