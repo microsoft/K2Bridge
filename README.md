@@ -18,7 +18,7 @@ _Action item:_ Use the provided helm chart to update the deployment with the new
 
 ---
 
-[![Build Status](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_apis/build/status/K2bridge-Dev-CICD?branchName=master)](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_build/latest?definitionId=169&branchName=master)
+[![Build Status](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_apis/build/status/K2bridge-Dev-CICD?branchName=kibana6.8)](https://dev.azure.com/csedevil/Kibana-kusto-bridge/_build/latest?definitionId=169&branchName=kibana6.8)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
 ## Description
