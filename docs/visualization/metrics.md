@@ -185,7 +185,9 @@ let _summarizablemetrics = _extdata
 
 # Top hits aggregation
 
-In the current implementation, when used within visualization chart, this aggregation is similar to [Top metrics aggregation](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-metrics.html). The top_metrics aggregation selects metrics from the document with the largest or smallest "sort" value.
+In the current implementation, when used within visualization chart, this aggregation is similar to [Top metrics aggregation](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-metrics.html). The top_metrics aggregation selects metrics from the document with the largest or smallest "sort" value. 
+
+For each bucket, this metric returns the first or last N records by the selected sort value. N is specified by the size value. And, from these returned records, we project the field.
 
 This aggregation is mapped on [top operator](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/topoperator) when translated to Kusto Query Language.
 
