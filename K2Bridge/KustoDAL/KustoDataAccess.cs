@@ -85,7 +85,7 @@ namespace K2Bridge.KustoDAL
                 }
 
                 Logger.LogDebug("Getting schema for function '{@indexName}'", indexName);
-                string functionQuery = $"{tableName} | {KustoQLOperators.GetSchema} | project ColumnName, ColumnType=DataType";
+                string functionQuery = $"{tableName.QuoteKustoTable()} | {KustoQLOperators.GetSchema} | project ColumnName, ColumnType=DataType";
                 var functionQueryData = new QueryData(functionQuery, tableName, null, null);
                 var (timeTaken, reader) = await Kusto.ExecuteQueryAsync(functionQueryData, RequestContext);
                 await MapFieldCaps(reader, response, tableName);
@@ -205,7 +205,7 @@ namespace K2Bridge.KustoDAL
         {
             var sample = MaxDynamicSamples.HasValue ? $" | {KustoQLOperators.Sample} {MaxDynamicSamples.Value}" : string.Empty;
             var ingestionTime = MaxDynamicSamplesIngestionTimeHours.HasValue ? $" | {KustoQLOperators.Where} {KustoQLOperators.IngestionTime}() > {KustoQLOperators.Ago}({MaxDynamicSamplesIngestionTimeHours.Value}{KustoQLOperators.HoursMark})" : string.Empty;
-            var query = $"{tableName}{ingestionTime}{sample} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
+            var query = $"{tableName.QuoteKustoTable()}{ingestionTime}{sample} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
             var (_, result) = await Kusto.ExecuteQueryAsync(new QueryData(query, tableName), RequestContext);
             result.Read();
             var jsonResult = result[0];

@@ -16,8 +16,8 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class ElasticSearchDSLVisitorTests
     {
-        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").myindex | where (['dayOfWeek'] == 1);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
-        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").myindex | where (['dayOfWeek'].['a'].['b'] == 1);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'] == 1);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'].['a'].['b'] == 1);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
         public string Visit_WithNumericFieldType_GeneratesQueryWithEqual(string fieldName)
         {
             var queryClause = CreateQueryStringClause(fieldName + ":1", false);
@@ -40,8 +40,8 @@ namespace UnitTests.K2Bridge.Visitors
             return dsl.KustoQL;
         }
 
-        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").myindex | where (['dayOfWeek'] >2);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
-        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").myindex | where (['dayOfWeek'].['a'].['b'] >2);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'] >2);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'].['a'].['b'] >2);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
         public string Visit_WithGreaterThanExpression_ExpectedResults(string fieldName)
         {
             var queryClause = CreateQueryStringClause(fieldName + ":>2", false);
@@ -64,8 +64,8 @@ namespace UnitTests.K2Bridge.Visitors
             return dsl.KustoQL;
         }
 
-        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").myindex | where (['dayOfWeek'] has \"1\");\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
-        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").myindex | where (['dayOfWeek'].['a'].['b'] has \"1\");\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'] has \"1\");\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'].['a'].['b'] has \"1\");\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
         public string Visit_WithStringFieldType_GeneratesQueryWithHas(string fieldName)
         {
             var queryClause = CreateQueryStringClause(fieldName + ":1", false);
@@ -102,7 +102,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl, "defaultDBName");
 
-            Assert.AreEqual(dsl.KustoQL, "let _data = database(\"defaultDBName\").someindex " + string.Empty + ";\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)");
+            Assert.AreEqual(dsl.KustoQL, "let _data = database(\"defaultDBName\").['someindex'] " + string.Empty + ";\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)");
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl, "defaultDBName");
 
-            Assert.True(dsl.KustoQL.Contains("let _data = database(\"defaultDBName\").someindex", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("let _data = database(\"defaultDBName\").['someindex']", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]

@@ -5,6 +5,7 @@
 namespace K2Bridge.Utils
 {
     using System;
+    using System.Linq;
 
     /// <summary>
     /// String extensions methods.
@@ -16,6 +17,15 @@ namespace K2Bridge.Utils
             Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null");
 
             return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string QuoteKustoTable(this string table) => $"['{table}']";
+
+        public static string EscapeSlashesAndQuotes(this string str)
+        {
+            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null or empty");
+
+            return str.EscapeSlashes().Replace(@"""", @"\""", StringComparison.OrdinalIgnoreCase);;
         }
     }
 }
