@@ -1,12 +1,12 @@
 # CI/CD Azure DevOps deployment pipeline.
 # The following variables can be optionally set for each pipeline run:
 # - RUN_FLAG_TERRAFORM: Set to 1 to have `terraform apply`. By default
-#   `terraform apply` only runs on the master branch.
+#   `terraform apply` only runs on the main branch.
 # - RUN_FLAG_PROMOTE: Set to 1 to promote the Docker image to `<supported_kibana_version>_latest` tag if
-#   tests are successful. By default this is only done on the master branch.
+#   tests are successful. By default this is only done on the main branch.
 # - RUN_SET_NAMESPACE: Set to a string to deploy to the given AKS namespace,
 #   and not delete the namespace after the build. By default the build deploys to
-#   the `master` AKS namespace if run on the master branch, and otherwise to a
+#   the `main` AKS namespace if run on the main branch, and otherwise to a
 #   temporary AKS namespace that is deleted at the end of the build.
 # - RUN_CREATE_DEMO_KUSTO: Set to 1 to cause the ADX db creation. this is for
 #   just for the demo ADX db and should be set only once after a deletion of
@@ -249,8 +249,8 @@ stages:
   - job: Deploy_K2Bridge
     displayName: Deploy K2Bridge
     variables:
-      ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
-        NOT_MASTER_ES_CONFIG: "--set elasticsearch.replicas=2 --set elasticsearch.minimumMasterNodes=2"
+      ${{ if ne(variables['Build.SourceBranchName'], 'main') }}:
+        NOT_MAIN_ES_CONFIG: "--set elasticsearch.replicas=2 --set elasticsearch.minimumMasterNodes=2"
     steps:
 
     - template: infrastructure/setup-k8s-clients-template.yml
@@ -297,7 +297,7 @@ stages:
           --set settings.collectTelemetry="$COLLECT_TELEMETRY" \
           --set settings.instrumentationKey="$TELEMETRY_KEY" \
           --set settings.enableQueryLogging=true \
-          ${NOT_MASTER_ES_CONFIG:-} #defaults to an empty string
+          ${NOT_MAIN_ES_CONFIG:-} #defaults to an empty string
         # List charts after deploying (for job log)
         helm list
       displayName: Install Helm chart
@@ -410,7 +410,7 @@ stages:
   dependsOn: integration_tests
   # Do not delete AKS namespace:
   # - if pipeline was canceled or failed before a Kubernetes namespace was generated
-  # - if deploying on master branch
+  # - if deploying on main branch
   # - if namespace was manually set with RUN_SET_NAMESPACE
   condition: and(always(), not(variables['RUN_SET_NAMESPACE']), not(variables['IS_DEMO_PIPELINE']))
   jobs:
@@ -439,7 +439,7 @@ stages:
 
   - job: Promote
     displayName: Promote Latest Image
-    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['Build.SourceBranch'], 'refs/heads/dev-vnext'), variables['RUN_FLAG_PROMOTE']))
+    condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.SourceBranch'], 'refs/heads/kibana6.8'), eq(variables['Build.SourceBranch'], 'refs/heads/dev-vnext'), variables['RUN_FLAG_PROMOTE']))
     steps:
 
     - task: AzureCLI@1

@@ -3,15 +3,15 @@
 trigger:
   branches:
     include:
-    - master
-    - development
+    - main
+    - kibana6.8
     - dev-vnext
 
 pr:
   branches:
     include:
-    - master
-    - development
+    - main
+    - kibana6.8
     - dev-vnext
   paths:
     exclude:
