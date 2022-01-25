@@ -23,8 +23,8 @@ steps:
     set -eu  # fail on error
 
     KUBERNETES_NAMESPACE="build$(Build.BuildId)"
-    if [ "$(Build.SourceBranch)" = "refs/heads/master" ]; then
-      KUBERNETES_NAMESPACE="master"
+    if [ "$(Build.SourceBranch)" = "refs/heads/main" ]; then
+      KUBERNETES_NAMESPACE="main"
     fi
     if [ "$(RUN_SET_NAMESPACE)" != "" ]; then
       KUBERNETES_NAMESPACE="$(RUN_SET_NAMESPACE)"
