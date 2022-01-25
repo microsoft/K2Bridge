@@ -37,7 +37,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
                 Throws.TypeOf<IllegalClauseException>());
         }
 
-        [TestCase(ExpectedResult = "City contains \"TelAviv\"")]
+        [TestCase(ExpectedResult = "['City'] contains \"TelAviv\"")]
         public string Visit_WithValidTermPhraseQuery_ReturnsValidReponse()
         {
             var query = new Lucene.Net.Search.PhraseQuery();
@@ -60,7 +60,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
             return ((QueryStringClause)es).KustoQL;
         }
 
-        [TestCase(ExpectedResult = "City has \"TelAviv\"")]
+        [TestCase(ExpectedResult = "['City'] has \"TelAviv\"")]
         public string Visit_WithValidTermQuery_ReturnsValidReponse()
         {
             var query = new Lucene.Net.Search.TermQuery(new Lucene.Net.Index.Term("City", "TelAviv"));

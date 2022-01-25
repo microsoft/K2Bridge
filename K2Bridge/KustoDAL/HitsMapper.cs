@@ -9,11 +9,13 @@ namespace K2Bridge.KustoDAL
     using System.Data;
     using System.Data.SqlTypes;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Xml;
     using K2Bridge.Factories;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Provides parsing for hit rows in Data Explorer response objects.
@@ -78,10 +80,32 @@ namespace K2Bridge.KustoDAL
                 var columnName = columns[columnIndex].ColumnName;
                 var columnValue = GetTypedValueFromColumn(columns[columnIndex], row[columnName]);
                 hit.AddSource(columnName, columnValue);
-                var highlightValue = highlighter.GetHighlightedValue(columnName, columnValue);
-                if (!string.IsNullOrEmpty(highlightValue))
+
+                // We need to flatten the dynamic field in order to highlight them properly.
+                IEnumerable<(string columnName, object columnValue)> subColumns;
+                if (columnValue is JObject j)
                 {
-                    hit.AddColumnHighlight(columnName, new List<string> { highlightValue });
+                    subColumns = j.Descendants()
+                        .OfType<JValue>()
+                        .Select(jv =>
+                        {
+                            // The Regex removes the array notation from the column name. my.field[0].a[1].b -> my.field.a.b
+                            var fixedPath = Regex.Replace(jv.Path, @"\[\d+\]", string.Empty);
+                            return (columnName + "." + fixedPath, jv.Value);
+                        });
+                }
+                else
+                {
+                    subColumns = new[] { (columnName, columnValue) };
+                }
+
+                foreach (var (name, value) in subColumns)
+                {
+                    var highlightValue = highlighter.GetHighlightedValue(name, value);
+                    if (!string.IsNullOrEmpty(highlightValue))
+                    {
+                        hit.AddColumnHighlight(name, new List<string> { highlightValue });
+                    }
                 }
             }
 
