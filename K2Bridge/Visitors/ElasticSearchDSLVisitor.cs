@@ -54,7 +54,7 @@ namespace K2Bridge.Visitors
 
             if (elasticSearchDSL.Query.Bool != null)
             {
-                queryStringBuilder.Append($"{KustoQLOperators.Let} {KustoTableNames.Data} = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
+                queryStringBuilder.Append($"{KustoQLOperators.Let} {KustoTableNames.Data} = database(\"{databaseName}\").{tableName.QuoteKustoTable()} {translatedQueryExpression};");
 
                 // Aggregations
                 if (elasticSearchDSL.Aggregations?.Count > 0)
@@ -101,7 +101,7 @@ namespace K2Bridge.Visitors
             else
             {
                 // ViewSingleDocument query
-                queryStringBuilder.Append($"database(\"{databaseName}\").{tableName} {translatedQueryExpression} | as {KustoTableNames.Hits};");
+                queryStringBuilder.Append($"database(\"{databaseName}\").{tableName.QuoteKustoTable()} {translatedQueryExpression} | as {KustoTableNames.Hits};");
             }
 
             elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
