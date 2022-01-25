@@ -54,7 +54,12 @@ namespace K2Bridge
                 var elasticSearchDsl = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
 
                 // deserialize the headers and extract the index name
-                var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
+                var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(
+                    header,
+                    new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.None,
+                    });
 
                 Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
 
