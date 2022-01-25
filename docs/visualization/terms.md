@@ -5,7 +5,7 @@ A multi-bucket value source based aggregation where buckets are dynamically buil
 ![](images/terms.png)
 
 ```
-let _data = database("metrics").kibana_sample_data_flights
+let _data = database("metrics").['kibana_sample_data_flights']
 | where (
     ['timestamp'] >= todatetime("2018-01-01T00:00:00.0000000Z") 
     and ['timestamp'] <= todatetime("2018-02-12T00:00:00.0000000Z")
