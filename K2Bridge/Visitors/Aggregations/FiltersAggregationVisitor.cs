@@ -33,7 +33,7 @@ namespace K2Bridge.Visitors
 
             foreach (var (key, value) in filtersAggregation.Filters)
             {
-                filterNames.Add($"'{key}'");
+                filterNames.Add($"'{key.EscapeSlashesAndQuotes()}'");
 
                 value.BoolQuery.Accept(this);
                 filterExpressions.Add(value.BoolQuery.KustoQL);

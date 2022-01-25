@@ -13,6 +13,7 @@ namespace K2Bridge
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Telemetry;
     using K2Bridge.Visitors;
+    using Lucene.Net.QueryParsers;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
@@ -55,7 +56,8 @@ namespace K2Bridge
                 var elasticSearchDsl = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
 
                 // deserialize the headers and extract the index name
-                var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(header);
+                // Todo: Consolidate json (de)serializations framework
+                var headerDictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(header);
 
                 Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
 
@@ -78,7 +80,7 @@ namespace K2Bridge
                                 elasticSearchDsl.HighlightText.Add("*", queryStringClause.Phrase);
                                 break;
                             case MatchPhraseClause matchPhraseClause:
-                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase.ToString());
+                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, QueryParser.Escape(matchPhraseClause.Phrase.ToString()));
                                 break;
                         }
                     }

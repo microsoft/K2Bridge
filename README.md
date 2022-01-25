@@ -54,7 +54,7 @@ For example:
 .create function MyAzureMonitorConnectionFunction() {
     cluster('https://ade.loganalytics.io/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.OperationalInsights/workspaces/<workspace-name>')
     .database('<workspace-name>')
-    .<tablename>
+    .['<tablename>']
 }
 ```
 

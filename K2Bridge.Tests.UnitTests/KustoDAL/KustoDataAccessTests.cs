@@ -222,7 +222,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                   }
                   "));
 
-            calls[0].QueryCommandText.Should().Be("testIndexName | summarize buildschema(mydynamic)");
+            calls[0].QueryCommandText.Should().Be("['testIndexName'] | summarize buildschema(mydynamic)");
         }
 
         [Test]
@@ -403,7 +403,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                   "));
 
             calls.Should().HaveCount(1);
-            calls[0].QueryCommandText.Should().Be("testIndexName | summarize buildschema(mydynamic)");
+            calls[0].QueryCommandText.Should().Be("['testIndexName'] | summarize buildschema(mydynamic)");
 
             memoryCache.Get<FieldCapabilityResponse>("testIndexName").Should().NotBeNull();
             var response2 = await kusto.GetFieldCapsAsync("testIndexName");
@@ -627,7 +627,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, samples);
             await kusto.GetFieldCapsAsync("testIndexName");
 
-            calls[0].QueryCommandText.Should().Be(@"testIndexName | sample 10 | summarize buildschema(mydynamic)");
+            calls[0].QueryCommandText.Should().Be(@"['testIndexName'] | sample 10 | summarize buildschema(mydynamic)");
         }
 
         [Test]
@@ -662,7 +662,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, maxDynamicSamplesIngestionTimeHours: hours);
             await kusto.GetFieldCapsAsync("testIndexName");
 
-            calls[0].QueryCommandText.Should().Be(@"testIndexName | where ingestion_time() > ago(4h) | summarize buildschema(mydynamic)");
+            calls[0].QueryCommandText.Should().Be(@"['testIndexName'] | where ingestion_time() > ago(4h) | summarize buildschema(mydynamic)");
         }
 
         [Test]
@@ -698,7 +698,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, samples, hours);
             await kusto.GetFieldCapsAsync("testIndexName");
 
-            calls[0].QueryCommandText.Should().Be(@"testIndexName | where ingestion_time() > ago(4h) | sample 10 | summarize buildschema(mydynamic)");
+            calls[0].QueryCommandText.Should().Be(@"['testIndexName'] | where ingestion_time() > ago(4h) | sample 10 | summarize buildschema(mydynamic)");
         }
 
         [Test]
@@ -724,7 +724,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Verify(exec => exec.ExecuteQueryAsync(
                 It.Is<QueryData>(d =>
                     d.IndexName == "testIndexName"
-                    && d.QueryCommandText == "testIndexName | getschema | project ColumnName, ColumnType=DataType"), It.IsAny<RequestContext>()));
+                    && d.QueryCommandText == "['testIndexName'] | getschema | project ColumnName, ColumnType=DataType"), It.IsAny<RequestContext>()));
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {

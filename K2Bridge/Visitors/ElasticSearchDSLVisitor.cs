@@ -54,7 +54,7 @@ namespace K2Bridge.Visitors
 
             if (elasticSearchDSL.Query.Bool != null)
             {
-                queryStringBuilder.Append($"{KustoQLOperators.Let} {KustoTableNames.Data} = database(\"{databaseName}\").{tableName} {translatedQueryExpression};");
+                queryStringBuilder.Append($"{KustoQLOperators.Let} {KustoTableNames.Data} = database(\"{databaseName}\").{tableName.QuoteKustoTable()} {translatedQueryExpression};");
 
                 // Aggregations
                 if (elasticSearchDSL.Aggregations?.Count > 0)
@@ -101,15 +101,15 @@ namespace K2Bridge.Visitors
             else
             {
                 // ViewSingleDocument query
-                queryStringBuilder.Append($"database(\"{databaseName}\").{tableName} {translatedQueryExpression} | as {KustoTableNames.Hits};");
+                queryStringBuilder.Append($"database(\"{databaseName}\").{tableName.QuoteKustoTable()} {translatedQueryExpression} | as {KustoTableNames.Hits};");
             }
 
             elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
         }
 
-        private static string QuoteKustoField(string field) => string.Join(".", field.Split(".").Select(s => $"['{s}']"));
+        private static string QuoteKustoField(string field) => field == null ? null : string.Join(".", field.Split(".").Select(s => $"['{s}']"));
 
-        private static bool IsFieldDynamic(string field) => field.Contains('.');
+        private static bool IsFieldDynamic(string field) => field?.Contains('.') ?? false;
 
         // Aggregations always need to be wrapped in a type
         private string EncodeKustoField(MetricAggregation agg) => EncodeKustoField(agg.Field, true);

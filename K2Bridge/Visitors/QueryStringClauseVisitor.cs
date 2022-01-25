@@ -42,6 +42,7 @@ namespace K2Bridge.Visitors
 
             // Depends on the exact request there are 3 possible options for the phrase:
             // wildcard, prefix and simple equality
+            var parsedFieldName = queryStringClause.ParsedFieldName == "*" ? queryStringClause.ParsedFieldName : EncodeKustoField(queryStringClause.ParsedFieldName);
             switch (queryStringClause.ParsedType)
             {
                 case QueryStringClause.Subtype.Term:
@@ -51,22 +52,22 @@ namespace K2Bridge.Visitors
                         // Check to see whether this Phrase contains just a numeric or >=, <=, > or > examples
                         if (decimal.TryParse(queryStringClause.Phrase, out decimal _))
                         {
-                            queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Equal} {queryStringClause.Phrase}";
+                            queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.Equal} {queryStringClause.Phrase}";
                         }
                         else
                         {
-                            queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {queryStringClause.Phrase}";
+                            queryStringClause.KustoQL = $"{parsedFieldName} {queryStringClause.Phrase}";
                         }
                     }
                     else
                     {
-                        queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Has} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
+                        queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.Has} \"{queryStringClause.Phrase.EscapeSlashesAndQuotes()}\"";
                     }
 
                     break;
 
                 case QueryStringClause.Subtype.Phrase:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
+                    queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.Contains} \"{queryStringClause.Phrase.EscapeSlashesAndQuotes()}\"";
                     break;
 
                 case QueryStringClause.Subtype.Wildcard:
@@ -75,13 +76,13 @@ namespace K2Bridge.Visitors
                     // to be consistent with the way ES works
                     // for example consider the following queries:
                     // TelA* => TelA[.\S]*
-                    var phrase = SingleCharPattern.Replace(queryStringClause.Phrase.EscapeSlashes(), @"(.)");
+                    var phrase = SingleCharPattern.Replace(queryStringClause.Phrase.EscapeSlashesAndQuotes(), @"(.)");
                     phrase = MultiCharPattern.Replace(phrase, @"(.)*");
 
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
+                    queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.MatchRegex} \"{phrase}\"";
                     break;
                 case QueryStringClause.Subtype.Prefix:
-                    queryStringClause.KustoQL = $"{queryStringClause.ParsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase.EscapeSlashes()}\"";
+                    queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.HasPrefix} \"{queryStringClause.Phrase.EscapeSlashesAndQuotes()}\"";
                     break;
                 case QueryStringClause.Subtype.MatchAll:
                     queryStringClause.KustoQL = "true";
@@ -118,14 +119,8 @@ namespace K2Bridge.Visitors
                         LowercaseExpandedTerms = false,
                     };
 
-            // escaping special charachters from the pharse before parsing.
-            // we would call QueryParser.Escape() method, but it escapes all charachters and
-            // in our case we only have to worry about backslash.
-            // implementation is based on: https://github.com/apache/lucenenet/blob/0eaf76540b8de326d1aa9ca24f4b5d6425a9ae38/src/Lucene.Net.QueryParser/Classic/QueryParserBase.cs
-            var escapedPhrase = queryStringClause.Phrase.Replace(@"\", @"\\\", StringComparison.OrdinalIgnoreCase);
-
-            // we parse and get the Lucene.Net query model
-            var query = queryParser.Parse(escapedPhrase);
+           // We don't need to escape the phrase here, we want to keep it as-is so we can use escape sequences in lucene (such as \")
+           var query = queryParser.Parse(queryStringClause.Phrase);
 
             // We make our own 'visitable' Lucence.Net query model
             var luceneQuery = VisitableLuceneQueryFactory.Make(query);
