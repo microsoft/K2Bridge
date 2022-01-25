@@ -188,3 +188,37 @@ let _summarizablemetrics = _extdata
 A top_hits metric aggregator keeps track of the most relevant document being aggregated. This aggregator is intended to be used as a sub aggregator, so that the top matching documents can be aggregated per bucket.
 
 [Top hits aggregation (Elasticsearch)](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-hits-aggregation.html)
+
+Note: In the current implementation, when used within visualization chart, this aggregation is similar to [Top metrics aggregation](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-metrics.html). The top_metrics aggregation selects metrics from the document with the largest or smallest "sort" value. 
+
+This aggregation is mapped on [top operator](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/topoperator) when translated to Kusto Query Language.
+
+Compared to others metrics aggregation, top hits cannot be translated in Kusto with the help of [summarize operator](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/summarizeoperator). An additional sub query is performed for each top hits metric requested.
+
+As we need to select top hits for each individual buckets requested, [top operator](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/topoperator) expression is embedded inside a [partition](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/partitionoperator). The partition operator partitions the records of its input table into multiple subtables according to values in a key column, runs a subquery on each subtable, and produces a single output table that is the union of the results of all subqueries.
+
+Example of Kusto Query Language built by K2Bridge:
+
+```
+let _data = kibana_data_flights
+| where (['timestamp'] >= todatetime("2018-02-01T11:00:00.0000000Z") and ['timestamp'] <= todatetime("2018-02-02T11:00:00.0000000Z"));
+
+let _extdata = _data
+| extend ['9e36322f-9696-49ae-ad3b-6b8158b76b75'] = true;
+
+let _summarizablemetrics = _extdata
+| summarize count() by ['9e36322f-9696-49ae-ad3b-6b8158b76b75'];
+
+let _tophits1 = _extdata
+| join kind=inner _summarizablemetrics on ['9e36322f-9696-49ae-ad3b-6b8158b76b75']
+| partition by ['9e36322f-9696-49ae-ad3b-6b8158b76b75']
+(
+top 1 by ['timestamp'] desc
+| project ['9e36322f-9696-49ae-ad3b-6b8158b76b75'],['count_'], ['1']=pack('source_field','DistanceKilometers','source_value',['DistanceKilometers'],'sort_value',['timestamp'])
+| summarize take_any(['9e36322f-9696-49ae-ad3b-6b8158b76b75']),take_any(['count_']), ['1%tophits']=make_list(['1'])
+);
+
+(_tophits1 
+| project-away ['9e36322f-9696-49ae-ad3b-6b8158b76b75']
+| as aggs);
+```
