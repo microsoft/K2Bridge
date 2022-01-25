@@ -34,7 +34,7 @@ namespace UnitTests.K2Bridge.Visitors
             return topHitsAggregation.KustoQL;
         }
 
-        [TestCase(ExpectedResult = "\nlet _tophits2 = _extdata\n| join kind=inner _summarizablemetrics on ['3']\n| partition by ['3'] (top 1 by ['sortfieldA'].['B'] desc\n| project ['2']=pack('source_field','metricfieldA.B','source_value',['metricfieldA'].['B'],'sort_value',['sortfieldA'].['B'])\n| summarize ['2%tophits']=make_list(['2']));")]
+        [TestCase(ExpectedResult = "\nlet _tophits2 = _extdata\n| join kind=inner _summarizablemetrics on ['3']\n| partition by ['3'] (top 1 by todouble(['sortfieldA'].['B']) desc\n| project ['2']=pack('source_field','metricfieldA.B','source_value',['metricfieldA'].['B'],'sort_value',['sortfieldA'].['B'])\n| summarize ['2%tophits']=make_list(['2']));")]
         public string TopHitsAggregationVisit_WithDynamic_ReturnsValidResponse()
         {
             var topHitsAggregation = new TopHitsAggregation()
@@ -47,8 +47,7 @@ namespace UnitTests.K2Bridge.Visitors
                 Sort = new List<SortClause>() { new SortClause() { FieldName = "sortfieldA.B", Order = "desc" } },
             };
 
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockTimestampSchemaRetriever());
-            VisitorTestsUtils.VisitRootDsl(visitor);
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("sortfieldA.B", "long");
             visitor.Visit(topHitsAggregation);
 
             return topHitsAggregation.KustoQL;
