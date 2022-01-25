@@ -422,7 +422,7 @@ stages:
 
     - task: AzureCLI@1
       displayName: Delete AKS namespace and Kusto database
-      condition: and(variables['KUBERNETES_NAMESPACE'], not(eq(variables['KUBERNETES_NAMESPACE'], 'master')))
+      condition: and(variables['KUBERNETES_NAMESPACE'], not(eq(variables['KUBERNETES_NAMESPACE'], 'main')))
       inputs:
         azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
         scriptLocation: inlineScript
