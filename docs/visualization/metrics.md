@@ -187,7 +187,7 @@ let _summarizablemetrics = _extdata
 
 In the current implementation, when used within visualization chart, this aggregation is similar to [Top metrics aggregation](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-metrics.html). The top_metrics aggregation selects metrics from the document with the largest or smallest "sort" value. 
 
-![](images/top_hits.png =250)
+![](images/top_hits.png =250x)
 
 For each bucket, this metric returns the first or last N records by the selected `sort on` value. N is specified by the `size` value. And, from these returned N records, we project the `field` value. If you have more that one record returned, you can apply an additional aggregation (for instance sum N `field` values). 
 
