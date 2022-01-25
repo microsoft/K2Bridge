@@ -5,6 +5,7 @@
 namespace K2Bridge.Utils
 {
     using System;
+    using System.Linq;
 
     /// <summary>
     /// String extensions methods.
@@ -17,6 +18,8 @@ namespace K2Bridge.Utils
 
             return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
         }
+
+        public static string QuoteKustoTable(this string table) => $"['{table}']";
 
         public static string EscapeSlashesAndQuotes(this string str)
         {
