@@ -185,11 +185,7 @@ let _summarizablemetrics = _extdata
 
 # Top hits aggregation
 
-A top_hits metric aggregator keeps track of the most relevant document being aggregated. This aggregator is intended to be used as a sub aggregator, so that the top matching documents can be aggregated per bucket.
-
-[Top hits aggregation (Elasticsearch)](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-hits-aggregation.html)
-
-Note: In the current implementation, when used within visualization chart, this aggregation is similar to [Top metrics aggregation](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-metrics.html). The top_metrics aggregation selects metrics from the document with the largest or smallest "sort" value. 
+In the current implementation, when used within visualization chart, this aggregation is similar to [Top metrics aggregation](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-top-metrics.html). The top_metrics aggregation selects metrics from the document with the largest or smallest "sort" value.
 
 This aggregation is mapped on [top operator](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/topoperator) when translated to Kusto Query Language.
 
