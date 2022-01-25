@@ -36,7 +36,7 @@ namespace K2Bridge.Visitors
             return fieldType switch
             {
                 "integer" or "long" or "float" or "double" => ClauseFieldType.Numeric,
-                "string" => ClauseFieldType.Text,
+                "string" or "keyword" => ClauseFieldType.Text,
                 "date" => ClauseFieldType.Date,
                 _ => ClauseFieldType.Unknown,
             };
