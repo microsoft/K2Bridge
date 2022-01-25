@@ -17,5 +17,12 @@ namespace K2Bridge.Utils
 
             return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
         }
+
+        public static string EscapeSlashesAndQuotes(this string str)
+        {
+            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null or empty");
+
+            return str.EscapeSlashes().Replace(@"""", @"\""", StringComparison.OrdinalIgnoreCase);;
+        }
     }
 }
