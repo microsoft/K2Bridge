@@ -14,7 +14,6 @@ namespace K2Bridge
     using K2Bridge.Visitors;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// ElasticQueryTranslator provides the functionality for translating a Kibana query into Kusto query.
@@ -55,7 +54,7 @@ namespace K2Bridge
                 var elasticSearchDsl = JsonConvert.DeserializeObject<ElasticSearchDSL>(query);
 
                 // deserialize the headers and extract the index name
-                var headerDictionary = JsonConvert.DeserializeObject(
+                var headerDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(
                     header,
                     new JsonSerializerSettings
                     {
@@ -63,10 +62,8 @@ namespace K2Bridge
                     });
 
                 Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
-                Ensure.IsNotNull(headerDictionary, nameof(headerDictionary));
 
-                elasticSearchDsl.IndexName =
-                    (headerDictionary as JObject)?.GetValue("index", StringComparison.OrdinalIgnoreCase)?.ToString();
+                elasticSearchDsl.IndexName = headerDictionary["index"];
                 elasticSearchDsl.HighlightText = new Dictionary<string, string>();
 
                 List<string> sortFields = null;
