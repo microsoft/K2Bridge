@@ -44,6 +44,30 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(matchPhraseClause);
         }
 
+        [TestCase(ExpectedResult = "['MyField'] == \"test {test} test\"")]
+        public string MatchPhraseVisit_WithBrackets_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", "test {test} test");
+
+            return VisitQuery(matchPhraseClause);
+        }
+
+        [TestCase(ExpectedResult = @"['MyField'] == ""test \""test\"" test""")]
+        public string MatchPhraseVisit_WithQuotes_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", @"test ""test"" test");
+
+            return VisitQuery(matchPhraseClause);
+        }
+
+        [TestCase(ExpectedResult = @"['MyField'] == ""test \\ \""test\"" \\ test""")]
+        public string MatchPhraseVisit_WithSlashes_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", @"test \ ""test"" \ test");
+
+            return VisitQuery(matchPhraseClause);
+        }
+
         [TestCase(ExpectedResult = "['MyField'] == \"\"")]
         public string MatchPhraseVisit_WithoutClause_ReturnsEqualsEmpty()
         {

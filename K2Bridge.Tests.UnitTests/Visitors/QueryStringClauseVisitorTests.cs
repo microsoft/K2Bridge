@@ -6,6 +6,7 @@ namespace UnitTests.K2Bridge.Visitors
 {
     using global::K2Bridge.Models.Request.Queries;
     using global::K2Bridge.Tests.UnitTests.Visitors;
+    using Lucene.Net.QueryParsers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -67,18 +68,45 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(queryClause);
         }
 
-        [TestCase(ExpectedResult = "* has \"\\\\\"Get\"")]
-        public string Visit_WithBreakQuotationPhrase_ReturnsAndContainsResponse()
+        [TestCase(ExpectedResult = @"* has ""\""Get""")]
+        public string Visit_WithEscapedQuotationPhrase_ReturnsAndContainsResponse()
         {
-            var queryClause = CreateQueryStringClause("\\\"Get", false);
+            var queryClause = CreateQueryStringClause(@"\""Get", false);
 
             return VisitQuery(queryClause);
+        }
+
+        [TestCase(ExpectedResult = @"* has ""{\""Get}""")]
+        public string Visit_WithBrackets_ReturnsAndContainsResponse()
+        {
+            var queryClause = CreateQueryStringClause(@"\{\""Get\}", false);
+
+            return VisitQuery(queryClause);
+        }
+
+        [TestCase(ExpectedResult = @"* has ""Get""")]
+        public string Visit_WithQuoted_OpensQuoteReturnsAndContainsResponse()
+        {
+            var queryClause = CreateQueryStringClause(@"""Get""", false);
+
+            return VisitQuery(queryClause);
+        }
+
+        [TestCase]
+        public void Visit_WithIncorrectlyQuoted_Throws()
+        {
+            Assert.Throws<ParseException>(() =>
+            {
+                var queryClause = CreateQueryStringClause(@"""Get", false);
+
+                VisitQuery(queryClause);
+            });
         }
 
         [TestCase(ExpectedResult = "* has \"\\\\dev\\\\kusto\\\\K2Bridge\"")]
         public string Visit_WithBreakQuotePhrase_ReturnsAndContainsResponse()
         {
-            var queryClause = CreateQueryStringClause(@"\dev\kusto\K2Bridge", false);
+            var queryClause = CreateQueryStringClause(@"\\dev\\kusto\\K2Bridge", false);
 
             return VisitQuery(queryClause);
         }
