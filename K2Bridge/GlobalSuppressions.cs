@@ -8,18 +8,5 @@
 // a specific target and scoped to a namespace, type, member, etc.
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "TEMP", Scope = "member", Target = "~M:K2Bridge.Startup.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)")]
-[assembly: SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "TEMP", Scope = "member", Target = "~P:K2Bridge.Models.IConnectionDetails.ClusterUrl")]
-[assembly: SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "Inherited functionality is enough", Scope = "type", Target = "~T:K2Bridge.Models.QueryData")]
-
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "type", Target = "~T:K2Bridge.Startup")]
-[assembly: SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Cannot be null", Scope = "member", Target = "~M:K2Bridge.CorrelationIdHeaderMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext)~System.Threading.Tasks.Task")]
-
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "TODO", Scope = "member", Target = "~M:K2Bridge.Controllers.MetadataController.Passthrough~System.Threading.Tasks.Task{Microsoft.AspNetCore.Mvc.IActionResult}")]
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "TODO", Scope = "member", Target = "~M:K2Bridge.KustoDAL.KustoResponseParser.ReadDataResponse(System.Data.IDataReader)~Kusto.Data.Data.KustoResponseDataSet")]
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "TODO", Scope = "member", Target = "~M:K2Bridge.KustoDAL.LuceneHighlighter.GetHighlightedValue(System.String,System.Object)~System.String")]
-[assembly: SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "TODO", Scope = "member", Target = "~M:K2Bridge.KustoDAL.LuceneHighlighter.MakeValueHighlighter(Lucene.Net.QueryParsers.QueryParser,System.String,System.String,System.String)~Lucene.Net.Search.Highlight.Highlighter")]
-[assembly: SuppressMessage("Usage", "CA2254:Template should be a static expression", Justification = "Generic ensure method", Scope = "member", Target = "~M:K2Bridge.Ensure.ConditionIsMet(System.Boolean,System.String,Microsoft.Extensions.Logging.ILogger)")]
-[assembly: SuppressMessage("Usage", "CA2254:Template should be a static expression", Justification = "Generic ensure method", Scope = "member", Target = "~M:K2Bridge.Ensure.ConstructMessageAndThrowArgumentOrNullArgument``1(``0,System.String,System.String,Microsoft.Extensions.Logging.ILogger)")]
-
 [assembly: SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Too complex to fix now", Scope = "type", Target = "~T:K2Bridge.Models.Response.HitsCollection")]
