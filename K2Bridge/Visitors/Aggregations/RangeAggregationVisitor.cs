@@ -21,7 +21,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Metric, nameof(RangeAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Field, nameof(RangeAggregation.Field));
 
-            string expandColumn = EncodeKustoField("_range_value");
+            var expandColumn = EncodeKustoField("_range_value");
 
             // Extend expression:
             // >> ['2']=pack_array("range1", "range2", "range3"), ['_range_value'] = pack_array(expr1, expr2, expr3)

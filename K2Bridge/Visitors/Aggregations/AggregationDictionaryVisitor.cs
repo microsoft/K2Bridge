@@ -39,7 +39,7 @@ namespace K2Bridge.Visitors
             else
             {
                 // This is not a bucket aggregation scenario.
-                string defaultKey = Guid.NewGuid().ToString();
+                var defaultKey = Guid.NewGuid().ToString();
 
                 var defaultAggregation = new AggregationContainer()
                 {

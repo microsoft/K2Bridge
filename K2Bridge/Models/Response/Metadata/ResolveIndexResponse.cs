@@ -12,7 +12,7 @@ namespace K2Bridge.Models.Response.Metadata
     /// </summary>
     public class ResolveIndexResponse
     {
-        private readonly List<ResolveIndexResponseIndex> indices = new ();
+        private readonly List<ResolveIndexResponseIndex> indices = new();
 
         /// <summary>
         /// Gets indices.

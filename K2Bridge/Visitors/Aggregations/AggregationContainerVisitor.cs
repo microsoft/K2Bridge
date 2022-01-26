@@ -63,7 +63,7 @@ namespace K2Bridge.Visitors
 
             if (!string.IsNullOrEmpty(summarizableMetricsExpression))
             {
-                query.Append($",");
+                query.Append(',');
             }
 
             return query.ToString();

@@ -45,10 +45,12 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(extendedStatsAggregation, nameof(extendedStatsAggregation));
             EnsureClause.StringIsNotNullOrEmpty(extendedStatsAggregation.Field, extendedStatsAggregation.Field, ExceptionMessage);
 
-            var metadata = new List<string>();
-            metadata.Add(extendedStatsAggregation.Key);
-            metadata.Add(AggregationsConstants.ExtendedStats);
-            metadata.Add(extendedStatsAggregation.Sigma.ToString());
+            var metadata = new List<string>
+            {
+                extendedStatsAggregation.Key,
+                AggregationsConstants.ExtendedStats,
+                extendedStatsAggregation.Sigma.ToString(),
+            };
 
             var keyWithMetadata = EncodeKustoField(string.Join(AggregationsConstants.MetadataSeparator, metadata));
 
@@ -76,7 +78,7 @@ namespace K2Bridge.Visitors
             query.Append($"'{AggregationsConstants.VarianceSampling}', {varianceSampling},");
             query.Append($"'{AggregationsConstants.StandardDeviationPopulation}', {standardDeviationPopulation},");
             query.Append($"'{AggregationsConstants.StandardDeviationSampling}', {standardDeviationSampling}");
-            query.Append(")");
+            query.Append(')');
 
             extendedStatsAggregation.KustoQL = query.ToString();
 
@@ -127,11 +129,13 @@ namespace K2Bridge.Visitors
             var valuesForColumnNames = string.Join(sep, percentileAggregation.Percents.ToList().Select(item => $"{item:0.0}"));
             var valuesForOperator = string.Join(',', percentileAggregation.Percents);
 
-            var metadata = new List<string>();
-            metadata.Add(percentileAggregation.Key);
-            metadata.Add(AggregationsConstants.Percentile);
-            metadata.Add(valuesForColumnNames);
-            metadata.Add(percentileAggregation.Keyed.ToString());
+            var metadata = new List<string>
+            {
+                percentileAggregation.Key,
+                AggregationsConstants.Percentile,
+                valuesForColumnNames,
+                percentileAggregation.Keyed.ToString(),
+            };
 
             // We don't use EncodeKustoField on this key because it contains a '.' but isn't dynamic
             // Example: ['A%percentile%25.0%50.0%99.0%False']=percentiles_array(fieldA, 25,50,99)']
@@ -152,18 +156,22 @@ namespace K2Bridge.Visitors
             var topHitsExpression = $"{KustoQLOperators.Top} {topHitsAggregation.Size} by {EncodeKustoField(sort.FieldName, true)} {sort.Order}";
 
             // ['4']=pack('field', AvgTicketPrice, 'order', timestamp)
-            var data = new Dictionary<string, string>();
-            data.Add($"'{AggregationsConstants.SourceField}'", $"'{topHitsAggregation.Field}'");
-            data.Add($"'{AggregationsConstants.SourceValue}'", EncodeKustoField(topHitsAggregation.Field));
-            data.Add($"'{AggregationsConstants.SortValue}'", EncodeKustoField(sort.FieldName));
+            var data = new Dictionary<string, string>
+            {
+                { $"'{AggregationsConstants.SourceField}'", $"'{topHitsAggregation.Field}'" },
+                { $"'{AggregationsConstants.SourceValue}'", EncodeKustoField(topHitsAggregation.Field) },
+                { $"'{AggregationsConstants.SortValue}'", EncodeKustoField(sort.FieldName) },
+            };
 
             var packedData = string.Join(',', data.Select(item => $"{item.Key},{item.Value}"));
             var projectExpression = $"{EncodeKustoField(topHitsAggregation.Key)}={KustoQLOperators.Pack}({packedData})";
 
             // ['4']=make_list(['4'])
-            var metadata = new List<string>();
-            metadata.Add(topHitsAggregation.Key);
-            metadata.Add(AggregationsConstants.TopHits);
+            var metadata = new List<string>
+            {
+                topHitsAggregation.Key,
+                AggregationsConstants.TopHits,
+            };
 
             var keyWithMetadata = EncodeKustoField(string.Join(AggregationsConstants.MetadataSeparator, metadata));
             var summarizeExpression = $"{keyWithMetadata}={KustoQLOperators.MakeList}({EncodeKustoField(topHitsAggregation.Key)})";

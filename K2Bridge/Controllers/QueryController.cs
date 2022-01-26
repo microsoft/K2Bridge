@@ -235,7 +235,7 @@ namespace K2Bridge.Controllers
                 var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out encodingData);
                 if (hasEncodingHeader ?? false)
                 {
-                    logger.LogWarning("Unsupported encoding was requested: {encodingData}", encodingData);
+                    logger.LogWarning("Unsupported encoding was requested: {EncodingData}", encodingData);
                 }
             }
         }

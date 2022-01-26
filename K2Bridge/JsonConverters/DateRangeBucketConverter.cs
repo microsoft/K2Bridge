@@ -58,7 +58,7 @@ namespace K2Bridge.JsonConverters
                 serializer.Serialize(writer, bucket.Key);
             }
 
-            foreach (KeyValuePair<string, IAggregate> aggregate in bucket)
+            foreach (var aggregate in bucket)
             {
                 writer.WritePropertyName(aggregate.Key);
                 serializer.Serialize(writer, aggregate.Value);

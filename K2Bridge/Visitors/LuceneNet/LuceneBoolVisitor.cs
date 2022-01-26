@@ -26,7 +26,7 @@ namespace K2Bridge.Visitors.LuceneNet
             var mustNot = new List<IQuery>();
             var clauses = ((BooleanQuery)boolQueryWrapper.LuceneQuery).GetClauses();
 
-            foreach (BooleanClause clause in clauses)
+            foreach (var clause in clauses)
             {
                 // based on the the current clause, instansiate the correct Lucene Query object
                 var luceneQuery =

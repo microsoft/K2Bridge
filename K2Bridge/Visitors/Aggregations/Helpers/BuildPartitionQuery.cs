@@ -23,7 +23,7 @@ namespace K2Bridge.Visitors
         {
             var query = new StringBuilder();
 
-            string joinVariable = SubQueriesStack.Last();
+            var joinVariable = SubQueriesStack.Last();
             SubQueriesStack.Add(definition.PartionQueryName);
 
             // let _tophits = _extdata
@@ -80,7 +80,7 @@ namespace K2Bridge.Visitors
         public string GetVisitedMetricsEncodedKeysTakeAny()
         {
             var encodedKeys = VisitedMetrics.Select(key => $"{KustoQLOperators.TakeAny}({key})");
-            return string.Join(',', encodedKeys);;
+            return string.Join(',', encodedKeys); ;
         }
     }
 }
