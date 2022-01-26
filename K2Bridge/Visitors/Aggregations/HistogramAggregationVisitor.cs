@@ -7,8 +7,6 @@ namespace K2Bridge.Visitors
     using System;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
-    using K2Bridge.Models.Response;
-    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="HistogramAggregation"/> element.
