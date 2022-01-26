@@ -58,8 +58,20 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
-        /// <param name="aggregation">The aggregation to visit.</param>
-        void Visit(Aggregation aggregation);
+        /// <param name="aggregationDictionary">The aggregation to visit.</param>
+        void Visit(AggregationDictionary aggregationDictionary);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="aggregationContainer">The aggregation to visit.</param>
+        void Visit(AggregationContainer aggregationContainer);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="defaultAggregation">The Bucket Aggregations to visit.</param>
+        void Visit(DefaultAggregation defaultAggregation);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
@@ -70,8 +82,26 @@ namespace K2Bridge.Visitors
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
-        /// <param name="avgAggregation">The Metric Aggregations to visit.</param>
-        void Visit(AvgAggregation avgAggregation);
+        /// <param name="termsAggregation">The Bucket Aggregations to visit.</param>
+        void Visit(TermsAggregation termsAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="rangeAggregation">The Range aggregation to visit.</param>
+        void Visit(RangeAggregation rangeAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="histogramAggregation">The Bucket Aggregations to visit.</param>
+        void Visit(HistogramAggregation histogramAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="avgAggregation">The Average Aggregations to visit.</param>
+        void Visit(AverageAggregation avgAggregation);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
@@ -80,10 +110,69 @@ namespace K2Bridge.Visitors
         void Visit(CardinalityAggregation cardinalityAggregation);
 
         /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="extendedStatsAggregation">The Extended Stats Aggregations to visit.</param>
+        void Visit(ExtendedStatsAggregation extendedStatsAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="minAggregation">The Min Aggregations to visit.</param>
+        void Visit(MinAggregation minAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="maxAggregation">The Max Aggregations to visit.</param>
+        void Visit(MaxAggregation maxAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="sumAggregation">The Sum Aggregations to visit.</param>
+        void Visit(SumAggregation sumAggregation);
+
+        /// <summary>
+        /// Accepts a range expression, and builds the Kusto query.
+        /// </summary>
+        /// <param name="rangeAggregationExpression">The range aggregation expression.</param>
+        void Visit(RangeAggregationExpression rangeAggregationExpression);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="percentileAggregation">The Percentile Aggregation to visit.</param>
+        void Visit(PercentileAggregation percentileAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="topHitsAggregation">The Percentile Aggregation to visit.</param>
+        void Visit(TopHitsAggregation topHitsAggregation);
+
+        /// <summary>
         /// Accepts a query string clause, parses the phrase to a lucene query, and builds a Kusto query based on the lucene query.
         /// </summary>
         /// <param name="queryStringClause">The query string clause.</param>
         void Visit(QueryStringClause queryStringClause);
+
+        /// <summary>
+        /// Accepts a filters aggregation, and builds the Kusto query.
+        /// </summary>
+        /// <param name="filtersAggregation">The filters aggregation expression.</param>
+        void Visit(FiltersAggregation filtersAggregation);
+
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="rangeAggregation">The Range aggregation to visit.</param>
+        void Visit(DateRangeAggregation dateRangeAggregation);
+
+        /// <summary>
+        /// Accepts a given visitable object and builds a Kusto query.
+        /// </summary>
+        /// <param name="dateRangeAggregationExpression">The range aggregation expression.</param>
+        void Visit(DateRangeAggregationExpression dateRangeAggregationExpression);
 
         /// <summary>
         /// Accepts a given visitable object and builds a Kusto single doc query.

@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Models.Response
 {
+    using K2Bridge.Models.Response.Aggregations;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -15,6 +16,6 @@ namespace K2Bridge.Models.Response
         /// Gets or sets aggregations in a response element.
         /// </summary>
         [JsonProperty("aggregations")]
-        public Aggregations Aggregations { get; set; } = new Aggregations();
+        public AggregateDictionary Aggregations { get; } = new AggregateDictionary();
     }
 }

@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Visitors
 {
+    using System;
     using System.Text.RegularExpressions;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Utils;
@@ -15,8 +16,8 @@ namespace K2Bridge.Visitors
     {
         // The following regexes look for the '?' or '*' chars which are
         // not followed by an escape character
-        private static readonly Regex SingleCharPattern = new Regex(@"(?<!\\)\?");
-        private static readonly Regex MultiCharPattern = new Regex(@"(?<!\\)\*");
+        private static readonly Regex SingleCharPattern = new (@"(?<!\\)\?");
+        private static readonly Regex MultiCharPattern = new (@"(?<!\\)\*");
 
         /// <inheritdoc/>
         public void Visit(MatchPhraseClause matchPhraseClause)
@@ -28,11 +29,18 @@ namespace K2Bridge.Visitors
 
             if (matchPhraseClause.Phrase != null)
             {
-                matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"{matchPhraseClause.Phrase.EscapeSlashes()}\"";
+                var parsedPhrase = matchPhraseClause.Phrase switch
+                {
+                    DateTime dt => $"{KustoQLOperators.ToDateTime}(\"{dt.ToUniversalTime():o}\")",
+                    uint or int or short or ushort or long or ulong or float or double => matchPhraseClause.Phrase,
+                    object o => $"\"{matchPhraseClause.Phrase.ToString().EscapeSlashesAndQuotes()}\"",
+                };
+
+                matchPhraseClause.KustoQL = $"{EncodeKustoField(matchPhraseClause.FieldName)} {KustoQLOperators.Equal} {parsedPhrase}";
                 return;
             }
 
-            matchPhraseClause.KustoQL = $"{matchPhraseClause.FieldName} {KustoQLOperators.Equal} \"\"";
+            matchPhraseClause.KustoQL = $"{EncodeKustoField(matchPhraseClause.FieldName)} {KustoQLOperators.Equal} \"\"";
         }
     }
 }

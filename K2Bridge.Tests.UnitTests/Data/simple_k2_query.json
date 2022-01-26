@@ -16,7 +16,7 @@
     "2": {
       "date_histogram": {
         "field": "timestamp",
-        "interval": "1M",
+        "calendar_interval": "month",
         "time_zone": "UTC",
         "min_doc_count": 1
       }
@@ -52,7 +52,13 @@
           }
         }
       ],
-      "filter": [],
+      "filter": [
+        {
+          "match_phrase": {
+            "test": 5
+          }
+        }
+      ],
       "should": [],
       "must_not": []
     }

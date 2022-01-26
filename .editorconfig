@@ -1,0 +1,85 @@
+# This file is the top-most EditorConfig file
+root = true
+
+# All Files
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+##########################################
+# File Extension Settings
+##########################################
+
+# Visual Studio Solution Files
+[*.sln]
+indent_style = tab
+
+# Visual Studio XML Project Files
+[*.{csproj,vbproj,vcxproj.filters,proj,projitems,shproj}]
+indent_size = 2
+
+# XML Configuration Files
+[*.{xml,config,props,targets,nuspec,resx,ruleset,vsixmanifest,vsct}]
+indent_size = 2
+
+# JSON Files
+[*.{json,json5,webmanifest}]
+indent_size = 2
+
+# YAML Files
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown Files
+[*.{md,mdx}]
+trim_trailing_whitespace = false
+
+# Web Files
+[*.{htm,html,js,jsm,ts,tsx,cjs,cts,ctsx,mjs,mts,mtsx,css,sass,scss,less,pcss,svg,vue}]
+indent_size = 2
+
+# Batch Files
+[*.{cmd,bat}]
+end_of_line = crlf
+
+# Bash Files
+[*.sh]
+end_of_line = lf
+
+# Makefiles
+[Makefile]
+indent_style = tab
+
+
+
+
+[*.cs]
+
+# Default Severity for all .NET Code Style rules below
+dotnet_analyzer_diagnostic.severity = suggestion
+
+# Default severity for analyzer diagnostics with category 'Style' (escalated to build warnings)
+dotnet_analyzer_diagnostic.category-Style.severity = warning
+
+dotnet_diagnostic.IDE0005.severity = warning    # Using directive is unnecessary.
+dotnet_diagnostic.CA1848.severity = none        # Do not encourage LoggerMessage delegates in every instance
+dotnet_diagnostic.CA2254.severity = suggestion  # Logging template should not vary between calls
+
+# IDE0065: Misplaced using directive
+csharp_using_directive_placement = inside_namespace
+
+# Newline options
+# https://docs.microsoft.com/visualstudio/ide/editorconfig-formatting-conventions#new-line-options
+csharp_new_line_before_open_brace = all
+
+
+[*.{cs,csx,cake}]
+# 'var' preferences
+csharp_style_var_for_built_in_types = true:warning
+csharp_style_var_when_type_is_apparent = true:warning
+csharp_style_var_elsewhere = true:warning
+# others
+# csharp_style_namespace_declarations = file_scoped:warning

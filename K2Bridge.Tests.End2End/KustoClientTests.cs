@@ -59,7 +59,7 @@ namespace K2Bridge.Tests.End2End
         public async Task MSearch_All_ReturnsAllHitsAsExpected()
         {
             var result = await K2Client().MSearch(TypesIndex, $"{TypesDir}/MSearch_All_InTimeRange.json");
-            var totalHits = result.SelectToken("responses[0].hits.total");
+            var totalHits = result.SelectToken("responses[0].hits.total.value");
             Assert.IsNotNull(totalHits);
             Assert.IsTrue(totalHits.Value<int>() == 1);
 
@@ -89,81 +89,110 @@ namespace K2Bridge.Tests.End2End
         [Description("FieldCaps returns fields for all types as expected")]
         public async Task FieldCaps_WithAllTypes_ReturnsTypesConvertedToESTypes()
         {
-            var fieldCaps = await K2Client().FieldCaps(typesIndexFullName);
-            var expected = JObject.Parse(@"{
-              ""fields"": {
-                ""Boolean"": {
-                  ""boolean"": {
+            var fieldCaps = await K2Client().FieldCaps(typesIndexFullName, removeDynamicColumns: false);
+            var expected = JObject.Parse($@"{{
+              ""indices"": [
+                ""{typesIndexFullName.Split(':')[1]}""
+              ],
+              ""fields"": {{
+                ""Boolean"": {{
+                  ""boolean"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""boolean""
-                  }
-                },
-                ""DateTime"": {
-                  ""date"": {
+                  }}
+                }},
+                ""DateTime"": {{
+                  ""date"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""date""
-                  }
-                },
-                ""Guid"": {
-                  ""string"": {
+                  }}
+                }},
+                ""Guid"": {{
+                  ""string"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""string""
-                  }
-                },
-                ""Int32"": {
-                  ""integer"": {
+                  }}
+                }},
+                ""Int32"": {{
+                  ""integer"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""integer""
-                  }
-                },
-                ""Int64"": {
-                  ""long"": {
+                  }}
+                }},
+                ""Int64"": {{
+                  ""long"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""long""
-                  }
-                },
-                ""Double"": {
-                  ""double"": {
+                  }}
+                }},
+                ""Double"": {{
+                  ""double"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""double""
-                  }
-                },
-                ""String"": {
-                  ""keyword"": {
+                  }}
+                }},
+                ""String"": {{
+                  ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""keyword""
-                  }
-                },
-                ""TimeSpan"": {
-                  ""string"": {
+                  }}
+                }},
+                ""TimeSpan"": {{
+                  ""string"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""string""
-                  }
-                },
-                ""SqlDecimal"": {
-                  ""double"": {
+                  }}
+                }},
+                ""SqlDecimal"": {{
+                  ""double"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""double""
-                  }
-                },
-                ""Dynamic"": {
-                  ""object"": {
+                  }}
+                }},
+                ""Dynamic"": {{
+                  ""object"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""object""
-                  }
-                },
-              }
-            }");
+                  }}
+                }},
+                ""Dynamic.a"": {{
+                  ""long"": {{
+                    ""aggregatable"": true,
+                    ""searchable"": true,
+                    ""metadata_field"": false,
+                    ""type"": ""long""
+                  }}
+                }},
+                ""Dynamic.b"": {{
+                  ""keyword"": {{
+                    ""aggregatable"": true,
+                    ""searchable"": true,
+                    ""metadata_field"": false,
+                    ""type"": ""keyword""
+                  }}
+                }},
+              }}
+            }}");
             fieldCaps.Should().BeEquivalentTo(expected);
         }
 
@@ -175,16 +204,16 @@ namespace K2Bridge.Tests.End2End
 
             foreach (var entry in KustoColumnType)
             {
-              var name = entry.Key;
-              kustoColumns.Add($"{name}:{entry.Value}");
-              columnMappings.Add(new ColumnMapping()
-              {
-                ColumnName = name,
-                Properties = new Dictionary<string, string>
+                var name = entry.Key;
+                kustoColumns.Add($"{name}:{entry.Value}");
+                columnMappings.Add(new ColumnMapping()
                 {
-                  ["Path"] = $"$.{name}",
-                },
-              });
+                    ColumnName = name,
+                    Properties = new Dictionary<string, string>
+                    {
+                        ["Path"] = $"$.{name}",
+                    },
+                });
             }
 
             // Send drop table ifexists command to Kusto

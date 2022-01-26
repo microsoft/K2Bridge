@@ -7,7 +7,7 @@ namespace K2Bridge.Tests.End2End
     using System;
     using System.Diagnostics;
     using System.IO;
-    using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using Kusto.Data;
     using NUnit.Framework;
@@ -118,15 +118,15 @@ namespace K2Bridge.Tests.End2End
             var token = Environment.GetEnvironmentVariable("AAD_TOKEN") ?? GetAADToken(kustoUri);
 
             kusto = new KustoConnectionStringBuilder(kustoUri, kustoDatabase)
-               .WithAadApplicationTokenAuthentication(token);
+                .WithAadApplicationTokenAuthentication(token);
 
-            if (!File.Exists("flights.json.gz"))
+            const string fileName = "flights.json.gz";
+            if (!File.Exists(fileName))
             {
-                using var wc = new WebClient();
-                wc.DownloadFile("https://raw.githubusercontent.com/elastic/kibana/v6.8.22/src/server/sample_data/data_sets/flights/flights.json.gz", "flights.json.gz");
+                await DownloadFile("https://github.com/elastic/kibana/raw/v7.16.2/src/plugins/home/server/services/sample_data/data_sets/flights/flights.json.gz", fileName);
             }
 
-            await PopulateBothBackends($"{FLIGHTSDIR}/structure.json", "flights.json.gz");
+            await PopulateBothBackends($"{FLIGHTSDIR}/structure.json", fileName);
         }
 
         /// <summary>
@@ -143,19 +143,23 @@ namespace K2Bridge.Tests.End2End
             esClient = await CreateElasticsearchClient(testMethodName);
         }
 
-        protected static string KustoDatabase() {
+        protected static string KustoDatabase()
+        {
             return kustoDatabase;
         }
 
-        protected static KustoConnectionStringBuilder Kusto() {
+        protected static KustoConnectionStringBuilder Kusto()
+        {
             return kusto;
         }
 
-        protected TestElasticClient K2Client() {
+        protected TestElasticClient K2Client()
+        {
             return k2Client;
         }
 
-        protected TestElasticClient ESClient() {
+        protected TestElasticClient ESClient()
+        {
             return esClient;
         }
 
@@ -210,6 +214,29 @@ namespace K2Bridge.Tests.End2End
         {
             var bridgeUri = Environment.GetEnvironmentVariable("K2BRIDGE_URL") ?? "http://localhost:8080";
             return await TestElasticClient.Create(bridgeUri, $"{prefix}-k2.json");
+        }
+
+        /// <summary>
+        /// Download a remote file.
+        /// </summary>
+        /// <param name="url">the URL of the remote file</param>
+        /// <param name="fileName">The file to be created</param>
+        /// <exception cref="FileNotFoundException"></exception>
+        private static async Task DownloadFile(string url, string fileName)
+        {
+            using var hc = new HttpClient();
+            var response = await hc.GetAsync(new Uri(url));
+            if (response.IsSuccessStatusCode)
+            {
+                await using var stream = await response.Content.ReadAsStreamAsync();
+                var fi = new FileInfo(fileName);
+                await using var fs = fi.OpenWrite();
+                await stream.CopyToAsync(fs);
+            }
+            else
+            {
+                throw new FileNotFoundException();
+            }
         }
     }
 }

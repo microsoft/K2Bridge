@@ -5,6 +5,7 @@
 namespace K2Bridge.JsonConverters
 {
     using System;
+    using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Request.Queries;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -31,7 +32,7 @@ namespace K2Bridge.JsonConverters
             var obj = new QueryStringClause
             {
                 Phrase = (string)jt.First["query"],
-                Wildcard = (wildcard != null) ? (bool)wildcard : false,
+                Wildcard = (wildcard != null) && (bool)wildcard,
                 Default = (defaultWildcard != null) ? (string)defaultWildcard : "*",
             };
 

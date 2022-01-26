@@ -9,7 +9,6 @@ namespace K2Bridge.Models
     /// <summary>
     /// Represents the data needed to search for information in the database.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1815:Override equals and operator equals on value types", Justification = "Not needed for this class.")]
     public struct QueryData
     {
         /// <summary>
@@ -20,7 +19,12 @@ namespace K2Bridge.Models
         /// <param name="sortFields">Field names specified in query sort clause.</param>
         /// <param name="docValueFields">Field names specified in query docvalue_fields clause.</param>
         /// <param name="highlightText">What terms need to be highlighted in the results.</param>
-        public QueryData(string queryCommandText, string indexName, IList<string> sortFields = null, IList<string> docValueFields = null, Dictionary<string, string> highlightText = null)
+        public QueryData(
+            string queryCommandText,
+            string indexName,
+            IList<string> sortFields = null,
+            IList<string> docValueFields = null,
+            Dictionary<string, string> highlightText = null)
         {
             Ensure.IsNotNullOrEmpty(queryCommandText, nameof(queryCommandText), "Query string cannot be empty or null");
             Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), "Index name string cannot be empty or null");
@@ -32,6 +36,7 @@ namespace K2Bridge.Models
             HighlightText = highlightText;
             HighlightPreTag = string.Empty;
             HighlightPostTag = string.Empty;
+            PrimaryAggregation = default;
         }
 
         /// <summary>
@@ -62,11 +67,16 @@ namespace K2Bridge.Models
         /// <summary>
         /// Gets or sets the tag that opens highlighted text.
         /// </summary>
-        public string HighlightPreTag { get; set; }
+        public string HighlightPreTag { get; internal set; }
 
         /// <summary>
         /// Gets or sets the tag that closes highlighted text.
         /// </summary>
-        public string HighlightPostTag { get; set; }
+        public string HighlightPostTag { get; internal set; }
+
+        /// <summary>
+        /// Gets the primary aggregation.
+        /// </summary>
+        public KeyValuePair<string, string> PrimaryAggregation { get; internal set; }
     }
 }

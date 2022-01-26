@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Visitors.LuceneNet
 {
-    using System.Globalization;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Models.Request.Queries.LuceneNet;
     using Lucene.Net.Search;
@@ -23,8 +22,10 @@ namespace K2Bridge.Visitors.LuceneNet
             var rangeClause = new RangeClause
             {
                 FieldName = rangeQuery.Field,
-                GTEValue = rangeQuery.LowerTerm,
-                LTValue = rangeQuery.UpperTerm,
+                GTEValue = rangeQuery.IncludesLower ? rangeQuery.LowerTerm : null,
+                GTValue = rangeQuery.IncludesLower ? null : rangeQuery.LowerTerm,
+                LTEValue = rangeQuery.IncludesUpper ? rangeQuery.UpperTerm : null,
+                LTValue = rangeQuery.IncludesUpper ? null : rangeQuery.UpperTerm,
             };
             rangeQueryWrapper.ESQuery = rangeClause;
         }

@@ -60,11 +60,13 @@ namespace UnitTests.K2Bridge.Controllers
             var mockClientFactory = new Mock<IHttpClientFactory>();
             var mockLogger = new Mock<ILogger<MetadataController>>();
 
-            Assert.Throws<ArgumentNullException>(() => {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
                 new MetadataController(null, mockLogger.Object);
             });
 
-            Assert.Throws<ArgumentNullException>(() => {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
                 new MetadataController(mockClientFactory.Object, null);
             });
         }
@@ -195,7 +197,8 @@ namespace UnitTests.K2Bridge.Controllers
             httpContext.Request.Scheme = "http";
 
             // Controller needs a controller context
-            var controllerContext = new ControllerContext() {
+            var controllerContext = new ControllerContext()
+            {
                 HttpContext = httpContext,
             };
             return new MetadataControllerFixture()

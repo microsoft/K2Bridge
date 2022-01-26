@@ -18,8 +18,6 @@ namespace K2Bridge.Visitors
         /// <param name="schemaRetriever">schemaRetriever.</param>
         /// <param name="fieldName">fieldName.</param>
         /// <returns>A ClauseFieldType.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2007:Consider calling ConfigureAwait on the awaited task", Justification = "await it valid.")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Resources are not supported yet.")]
         public static async Task<ClauseFieldType> GetType(ISchemaRetriever schemaRetriever, string fieldName)
         {
             Ensure.IsNotNull(schemaRetriever, nameof(schemaRetriever), "schemaRetriever cannot be null.");
@@ -35,20 +33,13 @@ namespace K2Bridge.Visitors
             }
 
             var fieldType = dic[fieldName];
-            switch (fieldType)
+            return fieldType switch
             {
-                case "integer":
-                case "long":
-                case "float":
-                case "double":
-                    return ClauseFieldType.Numeric;
-                case "string":
-                    return ClauseFieldType.Text;
-                case "date":
-                    return ClauseFieldType.Date;
-                default:
-                    return ClauseFieldType.Unknown;
-            }
+                "integer" or "long" or "float" or "double" => ClauseFieldType.Numeric,
+                "string" or "keyword" => ClauseFieldType.Text,
+                "date" => ClauseFieldType.Date,
+                _ => ClauseFieldType.Unknown,
+            };
         }
     }
 }

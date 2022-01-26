@@ -29,11 +29,11 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("SearchAsync (IndexList) returns functions")]
+        [Description("/_resolve/index returns functions")]
         public async Task Search_WithFunction_ReturnsResponseWithFunctions()
         {
             var indexList = await K2Client().Search();
-            var match = indexList.SelectToken($"aggregations.indices.buckets[?(@.key == '{functionFullName}')]");
+            var match = indexList.SelectToken($"indices[?(@.name == '{functionFullName}')]");
             Assert.IsNotNull(match);
         }
 
@@ -42,31 +42,37 @@ namespace K2Bridge.Tests.End2End
         public async Task FieldCaps_WithFunction_ReturnsResponseWithFunctions()
         {
             var fieldCaps = await K2Client().FieldCaps(functionFullName);
-            var expected = JObject.Parse(@"{
-              ""fields"": {
-                ""OriginCountry"": {
-                  ""keyword"": {
+            var expected = JObject.Parse($@"{{
+              ""indices"": [
+                ""{functionFullName.Split(':')[1]}""
+              ],
+              ""fields"": {{
+                ""OriginCountry"": {{
+                  ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""keyword""
-                  }
-                },
-                ""Origin"": {
-                  ""keyword"": {
+                  }}
+                }},
+                ""Origin"": {{
+                  ""keyword"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""keyword""
-                  }
-                },
-                ""timestamp"": {
-                  ""date"": {
+                  }}
+                }},
+                ""timestamp"": {{
+                  ""date"": {{
                     ""aggregatable"": true,
                     ""searchable"": true,
+                    ""metadata_field"": false,
                     ""type"": ""date""
-                  }
-                }
-              }
-            }");
+                  }}
+                }}
+              }}
+            }}");
             fieldCaps.Should().BeEquivalentTo(expected);
         }
 
@@ -75,7 +81,7 @@ namespace K2Bridge.Tests.End2End
         public async Task MSearch_WithFunction_ReturnsExpectedResponse()
         {
             var result = await K2Client().MSearch(functionFullName, $"{FLIGHTSDIR}/MSearch_TwoResults_Equivalent.json");
-            var totalHits = result.SelectToken("responses[0].hits.total");
+            var totalHits = result.SelectToken("responses[0].hits.total.value");
             Assert.IsNotNull(totalHits);
             Assert.IsTrue(totalHits.Value<int>() == 2);
             var indexName = result.SelectToken("responses[0].hits.hits[0]._index");

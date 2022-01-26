@@ -27,7 +27,7 @@ namespace K2Bridge.Visitors
             {
                 EnsureClause.StringIsNotNullOrEmpty(sortClause.Order, nameof(sortClause.Order));
 
-                sortClause.KustoQL = $"{sortClause.FieldName} {sortClause.Order}";
+                sortClause.KustoQL = $"{EncodeKustoField(sortClause.FieldName)} {sortClause.Order}";
             }
         }
     }

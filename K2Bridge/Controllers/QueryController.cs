@@ -18,6 +18,7 @@ namespace K2Bridge.Controllers
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Primitives;
 
     /// <summary>
     /// Handles requests for business data from Kusto.
@@ -61,7 +62,6 @@ namespace K2Bridge.Controllers
         [Produces("application/json")]
         [ProducesResponseType(typeof(ElasticResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(HttpResponseMessageResult), StatusCodes.Status200OK)]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "An uncommon behavior.")]
         public async Task<IActionResult> MultiSearchAsync(
             [FromServices] RequestContext requestContext)
         {
@@ -231,7 +231,8 @@ namespace K2Bridge.Controllers
             // Since by default we ignore this, adding a log to see if it does happen.
             if (logger.IsEnabled(LogLevel.Warning))
             {
-                var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out var encodingData);
+                StringValues encodingData = string.Empty;
+                var hasEncodingHeader = HttpContext.Request.Headers?.TryGetValue("accept-encoding", out encodingData);
                 if (hasEncodingHeader ?? false)
                 {
                     logger.LogWarning("Unsupported encoding was requested: {encodingData}", encodingData);

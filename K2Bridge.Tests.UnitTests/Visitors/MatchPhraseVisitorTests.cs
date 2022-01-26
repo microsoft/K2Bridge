@@ -4,6 +4,7 @@
 
 namespace UnitTests.K2Bridge.Visitors
 {
+    using System;
     using global::K2Bridge.Models.Request.Queries;
     using global::K2Bridge.Visitors;
     using NUnit.Framework;
@@ -11,7 +12,7 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class MatchPhraseVisitorTests
     {
-        [TestCase(ExpectedResult = "MyField == \"MyPhrase\"")]
+        [TestCase(ExpectedResult = "['MyField'] == \"MyPhrase\"")]
         public string MatchPhraseVisit_WithValidClause_ReturnsEquals()
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", "MyPhrase");
@@ -19,7 +20,55 @@ namespace UnitTests.K2Bridge.Visitors
             return VisitQuery(matchPhraseClause);
         }
 
-        [TestCase(ExpectedResult = "MyField == \"\"")]
+        [TestCase(ExpectedResult = "['MyField'] == 3")]
+        public string MatchPhraseVisit_WithValidIntClause_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", 3);
+
+            return VisitQuery(matchPhraseClause);
+        }
+
+        [TestCase(ExpectedResult = "['MyField'] == 3.5")]
+        public string MatchPhraseVisit_WithValidDoubleClause_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", 3.5);
+
+            return VisitQuery(matchPhraseClause);
+        }
+
+        [TestCase(ExpectedResult = "['MyField'] == todatetime(\"2017-01-02T13:45:23.1330000Z\")")]
+        public string MatchPhraseVisit_WithValidDateClause_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", new DateTime(2017, 1, 2, 13, 45, 23, 133, DateTimeKind.Utc));
+
+            return VisitQuery(matchPhraseClause);
+        }
+
+        [TestCase(ExpectedResult = "['MyField'] == \"test {test} test\"")]
+        public string MatchPhraseVisit_WithBrackets_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", "test {test} test");
+
+            return VisitQuery(matchPhraseClause);
+        }
+
+        [TestCase(ExpectedResult = @"['MyField'] == ""test \""test\"" test""")]
+        public string MatchPhraseVisit_WithQuotes_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", @"test ""test"" test");
+
+            return VisitQuery(matchPhraseClause);
+        }
+
+        [TestCase(ExpectedResult = @"['MyField'] == ""test \\ \""test\"" \\ test""")]
+        public string MatchPhraseVisit_WithSlashes_ReturnsEquals()
+        {
+            var matchPhraseClause = CreateMatchPhraseClause("MyField", @"test \ ""test"" \ test");
+
+            return VisitQuery(matchPhraseClause);
+        }
+
+        [TestCase(ExpectedResult = "['MyField'] == \"\"")]
         public string MatchPhraseVisit_WithoutClause_ReturnsEqualsEmpty()
         {
             var matchPhraseClause = CreateMatchPhraseClause("MyField", null);
@@ -35,7 +84,7 @@ namespace UnitTests.K2Bridge.Visitors
             Assert.Throws(typeof(IllegalClauseException), () => VisitQuery(matchPhraseClause));
         }
 
-        private static MatchPhraseClause CreateMatchPhraseClause(string fieldName, string phrase)
+        private static MatchPhraseClause CreateMatchPhraseClause(string fieldName, object phrase)
         {
             return new MatchPhraseClause
             {

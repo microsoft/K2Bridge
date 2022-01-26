@@ -9,9 +9,11 @@ namespace K2Bridge
     using System.Linq;
     using K2Bridge.Models;
     using K2Bridge.Models.Request;
+    using K2Bridge.Models.Request.Aggregations;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Telemetry;
     using K2Bridge.Visitors;
+    using Lucene.Net.QueryParsers;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
@@ -68,15 +70,9 @@ namespace K2Bridge
                 if (elasticSearchDsl.Query.Bool != null)
                 {
                     Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Must, nameof(elasticSearchDsl.Query.Bool.Must));
+                    Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Filter, nameof(elasticSearchDsl.Query.Bool.Filter));
 
-                    if (elasticSearchDsl.Query.Bool.Filter.Any())
-                    {
-                        // KQL in an experimental search syntax in Kibana that is turned on in version 7 but also available in version 6.
-                        // One can set it with option "search:queryLanguage" to "Lucene". More info: https://www.elastic.co/guide/en/kibana/current/advanced-options.html.
-                        Logger.LogWarning("Query includes a filter element indicating Kibana is working in KQL syntax, which is not supported yet. You should search with Lucene syntax instead.");
-                    }
-
-                    foreach (var element in elasticSearchDsl.Query.Bool.Must)
+                    foreach (var element in elasticSearchDsl.Query.Bool.Must.Concat(elasticSearchDsl.Query.Bool.Filter))
                     {
                         switch (element)
                         {
@@ -84,7 +80,7 @@ namespace K2Bridge
                                 elasticSearchDsl.HighlightText.Add("*", queryStringClause.Phrase);
                                 break;
                             case MatchPhraseClause matchPhraseClause:
-                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, matchPhraseClause.Phrase);
+                                elasticSearchDsl.HighlightText.Add(matchPhraseClause.FieldName, QueryParser.Escape(matchPhraseClause.Phrase.ToString()));
                                 break;
                         }
                     }
@@ -122,6 +118,15 @@ namespace K2Bridge
 
                     queryData.HighlightPreTag = elasticSearchDsl.Highlight.PreTags[0];
                     queryData.HighlightPostTag = elasticSearchDsl.Highlight.PostTags[0];
+                }
+
+                var aggregations = elasticSearchDsl.Aggregations;
+
+                // If PrimaryAggregation is BucketAggregation, we add its key and type to QueryData
+                if (aggregations?.Count == 1 && aggregations.First().Value.PrimaryAggregation is BucketAggregation)
+                {
+                    var (key, aggregationContainer) = aggregations.First();
+                    queryData.PrimaryAggregation = KeyValuePair.Create<string, string>(key, aggregationContainer.PrimaryAggregation.GetType().Name);
                 }
 
                 return queryData;

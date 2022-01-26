@@ -16,11 +16,11 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class ElasticSearchDSLVisitorTests
     {
-        [TestCase(ExpectedResult =
-            "let _data = database(\"\").myindex | where (dayOfWeek == 1);\n(_data | limit 0 | as hits)")]
-        public string Visit_WithNumericFieldType_GeneratesQueryWithEqual()
+        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'] == 1);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'].['a'].['b'] == 1);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        public string Visit_WithNumericFieldType_GeneratesQueryWithEqual(string fieldName)
         {
-            var queryClause = CreateQueryStringClause("dayOfWeek:1", false);
+            var queryClause = CreateQueryStringClause(fieldName + ":1", false);
             var dsl = new ElasticSearchDSL
             {
                 Query = new Query
@@ -40,11 +40,11 @@ namespace UnitTests.K2Bridge.Visitors
             return dsl.KustoQL;
         }
 
-        [TestCase(ExpectedResult =
-        "let _data = database(\"\").myindex | where (dayOfWeek >2);\n(_data | limit 0 | as hits)")]
-        public string Visit_WithGreaterThanExpression_ExpectedResults()
+        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'] >2);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'].['a'].['b'] >2);\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        public string Visit_WithGreaterThanExpression_ExpectedResults(string fieldName)
         {
-            var queryClause = CreateQueryStringClause("dayOfWeek:>2", false);
+            var queryClause = CreateQueryStringClause(fieldName + ":>2", false);
             var dsl = new ElasticSearchDSL
             {
                 Query = new Query
@@ -64,11 +64,11 @@ namespace UnitTests.K2Bridge.Visitors
             return dsl.KustoQL;
         }
 
-        [TestCase(ExpectedResult =
-            "let _data = database(\"\").myindex | where (dayOfWeek has \"1\");\n(_data | limit 0 | as hits)")]
-        public string Visit_WithStringFieldType_GeneratesQueryWithHas()
+        [TestCase("dayOfWeek", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'] has \"1\");\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        [TestCase("dayOfWeek.a.b", ExpectedResult = "let _data = database(\"\").['myindex'] | where (['dayOfWeek'].['a'].['b'] has \"1\");\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)")]
+        public string Visit_WithStringFieldType_GeneratesQueryWithHas(string fieldName)
         {
-            var queryClause = CreateQueryStringClause("dayOfWeek:1", false);
+            var queryClause = CreateQueryStringClause(fieldName + ":1", false);
             var dsl = new ElasticSearchDSL
             {
                 Query = new Query
@@ -102,7 +102,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl, "defaultDBName");
 
-            Assert.AreEqual(dsl.KustoQL, "let _data = database(\"defaultDBName\").someindex " + string.Empty + ";\n(_data | limit 0 | as hits)");
+            Assert.AreEqual(dsl.KustoQL, "let _data = database(\"defaultDBName\").['someindex'] " + string.Empty + ";\n(_data | count | as hitsTotal);\n(_data | limit 0 | as hits)");
         }
 
         [Test]
@@ -119,7 +119,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl, "defaultDBName");
 
-            Assert.True(dsl.KustoQL.Contains("let _data = database(\"defaultDBName\").someindex", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("let _data = database(\"defaultDBName\").['someindex']", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace UnitTests.K2Bridge.Visitors
                     Bool = new BoolQuery(),
                 },
                 IndexName = "someindex",
-                Aggregations = new Dictionary<string, Aggregation>(),
+                Aggregations = new AggregationDictionary(),
             };
 
             CreateVisitorAndVisit(dsl);
@@ -162,15 +162,19 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void Visit_WhenHasAggregations_KustoQLShouldContainAggs()
         {
-            var agg = JsonConvert.DeserializeObject<Aggregation>(@"
-                {
-                    ""date_histogram"": {
-                        ""field"": ""timestamp"",
-                        ""interval"": ""3h"",
-                        ""time_zone"": ""Asia/Jerusalem"",
-                        ""min_doc_count"": 1
+            string dateHistogramAggregation = @"
+                {""aggs"": {
+                    ""2"": {
+                        ""date_histogram"": {
+                            ""field"": ""timestamp"",
+                            ""fixed_interval"": ""1m"",
+                            ""time_zone"": ""Asia/Jerusalem"",
+                            ""min_doc_count"": 1
+                        }
                     }
-                }");
+                }}";
+
+            var aggs = JsonConvert.DeserializeObject<AggregationContainer>(dateHistogramAggregation);
 
             var dsl = new ElasticSearchDSL
             {
@@ -179,12 +183,12 @@ namespace UnitTests.K2Bridge.Visitors
                     Bool = new BoolQuery(),
                 },
                 IndexName = "someindex",
-                Aggregations = new Dictionary<string, Aggregation>() { { "2", agg } },
+                Aggregations = aggs.SubAggregations,
             };
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.True(dsl.KustoQL.Contains("_data | summarize count() by timestamp = bin(timestamp, 3h)\n", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("\nlet _extdata = _data\n| extend ['2'] = bin(['timestamp'], 1m);\nlet _summarizablemetrics = _extdata\n| summarize count() by ['2']\n", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
@@ -211,7 +215,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.True(dsl.KustoQL.Contains("\n(_data | order by timestamp asc | limit 17", StringComparison.OrdinalIgnoreCase));
+            Assert.True(dsl.KustoQL.Contains("\n(_data | order by ['timestamp'] asc | limit 17", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
@@ -238,7 +242,7 @@ namespace UnitTests.K2Bridge.Visitors
 
             CreateVisitorAndVisit(dsl);
 
-            Assert.False(dsl.KustoQL.Contains("\n(_data | order by timestamp asc", StringComparison.OrdinalIgnoreCase));
+            Assert.False(dsl.KustoQL.Contains("\n(_data | order by ['timestamp'] asc", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]

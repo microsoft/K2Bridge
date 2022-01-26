@@ -23,6 +23,7 @@ namespace K2Bridge
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Rewrite;
+    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
@@ -68,10 +69,10 @@ namespace K2Bridge
                         .CreateKustoConnectionStringBuilder(s.GetRequiredService<IConnectionDetails>());
 
                     return new KustoQueryExecutor(
-                     KustoClientFactory.CreateCslQueryProvider(conn),
-                     KustoClientFactory.CreateCslAdminProvider(conn),
-                     s.GetRequiredService<ILogger<KustoQueryExecutor>>(),
-                     s.GetRequiredService<Telemetry.Metrics>());
+                        KustoClientFactory.CreateCslQueryProvider(conn),
+                        KustoClientFactory.CreateCslAdminProvider(conn),
+                        s.GetRequiredService<ILogger<KustoQueryExecutor>>(),
+                        s.GetRequiredService<Telemetry.Metrics>());
                 });
 
             services.AddHttpContextAccessor();
@@ -80,11 +81,19 @@ namespace K2Bridge
 
             services.AddTransient<ITranslator, ElasticQueryTranslator>();
 
+            var maxDynamicSamples = GetConfigOptional<ulong>("maxDynamicSamples");
+            var maxDynamicSamplesIngestionTimeHours = GetConfigOptional<ulong>("maxDynamicSamplesIngestionTimeHours");
+
+            services.AddMemoryCache();
+
             services.AddTransient<IKustoDataAccess, KustoDataAccess>(
                 s => new KustoDataAccess(
+                    s.GetRequiredService<IMemoryCache>(),
                     s.GetRequiredService<IQueryExecutor>(),
                     s.GetRequiredService<RequestContext>(),
-                    s.GetRequiredService<ILogger<KustoDataAccess>>()));
+                    s.GetRequiredService<ILogger<KustoDataAccess>>(),
+                    maxDynamicSamples,
+                    maxDynamicSamplesIngestionTimeHours));
 
             services.AddTransient<ISchemaRetrieverFactory, SchemaRetrieverFactory>(
                 s => new SchemaRetrieverFactory(
@@ -99,7 +108,7 @@ namespace K2Bridge
             services.AddTransient<IResponseParser, KustoResponseParser>(
                 s => new KustoResponseParser(
                     s.GetRequiredService<ILogger<KustoResponseParser>>(),
-                    bool.Parse((Configuration as IConfigurationRoot)["outputBackendQuery"]),
+                    GetConfig<bool>("outputBackendQuery"),
                     s.GetRequiredService<Telemetry.Metrics>()));
 
             // use this http client factory to issue requests to the metadata elastic instance
@@ -155,7 +164,6 @@ namespace K2Bridge
 
                 // Special treatment for certains requests that are intentionally not marked with the [ApiController] attribute.
                 endpoints.MapControllerRoute("fieldcaps", "FieldCapability/Process/{indexName?}", defaults: new { controller = "FieldCapability", action = "Process" });
-                endpoints.MapControllerRoute("indexlist", "IndexList/Process/{indexName?}", defaults: new { controller = "IndexList", action = "Process" });
                 endpoints.MapFallbackToController("Passthrough", "Metadata");
 
                 // Enable middleware to serve from health endpoint
@@ -204,30 +212,85 @@ namespace K2Bridge
         private void ConfigureApplicationInsights(IServiceCollection services)
         {
             // Only if explicitly declared we are collecting telemetry
-            var hasCollectBool =
-                bool.TryParse(
-                    (Configuration as IConfigurationRoot)["collectTelemetry"],
-                    out bool isCollect);
+            var isCollect = GetConfigOptional<bool>("collectTelemetry");
 
-            if (!hasCollectBool || !isCollect)
+            if (isCollect ?? false)
             {
                 return;
             }
 
-            var adxUrl = (Configuration as IConfigurationRoot)["adxClusterUrl"];
+            var adxUrl = GetConfig<string>("adxClusterUrl");
 
             // verify we got a valid instrumentation key, if we didn't, we just skip AppInsights
             // we do not log this, as at this point we still don't have a logger
-            var hasGuid = Guid.TryParse((Configuration as IConfigurationRoot)["instrumentationKey"], out Guid instrumentationKey);
-            if (hasGuid)
+            var instrumentationKey = GetConfigOptional<Guid>("instrumentationKey");
+            if (!instrumentationKey.HasValue)
             {
-                services.AddApplicationInsightsTelemetry(instrumentationKey.ToString());
-                var telemetryIdentifier = ComputeSHA256(adxUrl);
-
-                services.AddHttpContextAccessor();
-                services.AddSingleton<ITelemetryInitializer>(s =>
-                    new TelemetryInitializer(s.GetRequiredService<IHttpContextAccessor>(), telemetryIdentifier, HealthCheckRoute));
+                return;
             }
+
+            services.AddApplicationInsightsTelemetry(instrumentationKey.ToString());
+            var telemetryIdentifier = ComputeSHA256(adxUrl);
+
+            services.AddHttpContextAccessor();
+            services.AddSingleton<ITelemetryInitializer>(s =>
+                new TelemetryInitializer(s.GetRequiredService<IHttpContextAccessor>(), telemetryIdentifier, HealthCheckRoute));
+        }
+
+        private T GetConfig<T>(string key)
+        {
+            var config = ((IConfigurationRoot)Configuration)[key];
+            var type = typeof(T);
+            if (type == typeof(string))
+            {
+                return (T)(object)config;
+            }
+
+            if (type == typeof(bool))
+            {
+                return (T)(object)bool.Parse(config);
+            }
+
+            if (type == typeof(double))
+            {
+                return (T)(object)double.Parse(config);
+            }
+
+            if (type == typeof(Guid))
+            {
+                return (T)(object)Guid.Parse(config);
+            }
+
+            throw new InvalidOperationException($"Unsupported type {type}");
+        }
+
+        private T? GetConfigOptional<T>(string key)
+            where T : struct
+        {
+            var config = ((IConfigurationRoot)Configuration)[key];
+            var type = typeof(T);
+
+            if (type == typeof(bool))
+            {
+                return bool.TryParse(config, out var result) ? new T?((T)(object)result) : null;
+            }
+
+            if (type == typeof(double))
+            {
+                return double.TryParse(config, out var result) ? new T?((T)(object)result) : null;
+            }
+
+            if (type == typeof(ulong))
+            {
+                return ulong.TryParse(config, out var result) ? new T?((T)(object)result) : null;
+            }
+
+            if (type == typeof(Guid))
+            {
+                return Guid.TryParse(config, out var result) ? new T?((T)(object)result) : null;
+            }
+
+            throw new InvalidOperationException($"Unsupported type {type}");
         }
     }
 }

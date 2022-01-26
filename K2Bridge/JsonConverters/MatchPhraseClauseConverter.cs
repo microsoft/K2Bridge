@@ -5,6 +5,7 @@
 namespace K2Bridge.JsonConverters
 {
     using System;
+    using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Request.Queries;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
@@ -38,7 +39,7 @@ namespace K2Bridge.JsonConverters
                 var obj = new MatchPhraseClause
                 {
                     FieldName = first.Name,
-                    Phrase = (string)((JValue)first.First).Value,
+                    Phrase = ((JValue)first.First).Value,
                 };
                 return obj;
             }

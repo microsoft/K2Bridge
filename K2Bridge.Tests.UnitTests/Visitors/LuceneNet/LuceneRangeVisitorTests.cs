@@ -5,14 +5,12 @@
 namespace UnitTests.K2Bridge.Visitors.LuceneNet
 {
     using System;
-    using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Queries;
     using global::K2Bridge.Models.Request.Queries.LuceneNet;
     using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using global::K2Bridge.Visitors.LuceneNet;
     using NUnit.Framework;
-    using UnitTests.K2Bridge.Visitors;
 
     [TestFixture]
     public class LuceneRangeVisitorTests
@@ -39,7 +37,7 @@ namespace UnitTests.K2Bridge.Visitors.LuceneNet
                 Throws.TypeOf<IllegalClauseException>());
         }
 
-        [TestCase(ExpectedResult = "days >= 2 and days < 6")]
+        [TestCase(ExpectedResult = "['days'] >= 2 and ['days'] <= 6")]
         public string Visit_WithValidRangeQuery_ReturnsValidResponse()
         {
             var rangeQuery = new LuceneRangeQuery

@@ -2,18 +2,40 @@
 
 ## Requirements
 
-* AKS cluster ([create an AKS cluster instructions](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal#create-an-aks-cluster)) or any other Kubernetes cluster (version 1.14 or newer - tested and verified up to version 1.16. A minimum of 3 node count).
+### AKS
+
+You need an AKS cluster ([create an AKS cluster instructions](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough-portal#create-an-aks-cluster)) or any other Kubernetes cluster (version 1.21.2 or newer - tested and verified with version 1.21.2. and a minimum of 3 node count).  
+
 You need to be able to connect to your cluster from your machine.
-* [Helm 3](https://github.com/helm/helm#install)
-* An Azure Data Explorer (ADX) instance
-    * You will need the ADX cluster URL and a database name
-* An Azure AD service principal authorized to view data in ADX
-    * You will need the ClientID and Secret
-    * [Create an Azure AD service principal instructions](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#create-an-azure-active-directory-application)
-    * Instructions on how to set cluster's view permissions for the Azure AD service principal, can be found here: [manage permissions](https://docs.microsoft.com/en-us/azure/data-explorer/manage-database-permissions#manage-permissions-in-the-azure-portal)
-    * Important note: A service principal with 'Viewer' permission is enough. It is highly discouraged to use higher permissions (read, admin, etc...)
-* [Optional] - Docker for image build
-    If you need to build the image, please follow the [build instructions](./build.md).
+
+During the cluster creation, the cluster infrastructure authentication specified is used by Azure Kubernetes Service to manage cloud resources attached to the cluster.  
+
+This can be either a [service principal](https://docs.microsoft.com/en-us/azure/aks/kubernetes-service-principal?tabs=azure-cli) or a [system-assigned managed identity](https://docs.microsoft.com/en-us/azure/aks/use-managed-identity).
+
+If you choose to use a service principal, you will need to:
+* [Create an Azure AD service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#create-an-azure-active-directory-application)
+* Get the **ClientID** and **Secret**
+
+If you choose to use a sytem assigned identity, you will need to:
+* Get the agent pool managed identity **ClientID** (located in the generated "[_MC_xxxx_]" resource group)
+
+### Azure Data Explorer (ADX)
+
+You need a running ADX instance. This instance will be the main entry point for retrieving metrics and aggregations from K2Bridge.  
+You need the ADX Cluster URL and the database name.
+
+Regarding the authorization needed to access **ADX** from **K2Bridge**, you need to set cluster's view permissions for :
+* The Azure AD service principal, if you've choosed to use a service principal to authenticate your AKS cluster
+* The System Assigned Managed Identity, if you've choose the System Assigned Managed Identity to authenticate your AKS cluster.
+
+Instructions on how to set cluster's view permissions for the Azure AD service principal or the System assigned managed identity, can be found here: [Manage permissions](https://docs.microsoft.com/en-us/azure/data-explorer/manage-database-permissions#manage-permissions-in-the-azure-portal)
+
+### Tooling
+
+To be able to deploy **K2Bridge** in your **AKS** cluster, you need [Helm 3](https://github.com/helm/helm#install).
+
+Optionaly, you may want to use Docker to build the image.
+If you need to build the image, please follow the [build instructions](./build.md).
 
 ## Run on Azure Kubernetes Service (AKS)
 
@@ -53,8 +75,14 @@ You need to be able to connect to your cluster from your machine.
         ADX_URL=[YOUR_ADX_CLUSTER_URL e.g. https://mycluster.westeurope.kusto.windows.net]
         ADX_DATABASE=[YOUR_ADX_DATABASE_NAME]
         ADX_CLIENT_ID=[SERVICE_PRINCIPAL_CLIENT_ID]
-        ADX_CLIENT_SECRET=[SERVICE_PRINCIPAL_CLIENT_SECRET]
         ADX_TENANT_ID=[SERVICE_PRINCIPAL_TENANT_ID]
+        ```
+        Note: when using managed identity, the ADX_CLIENT_ID value is the client id of the managed identity
+
+        Optional - provide ADX SP Client secret
+
+        ```sh
+        ADX_CLIENT_SECRET=[SERVICE_PRINCIPAL_CLIENT_SECRET]
         ```
 
         Optional - enable ApplicationInsights telemetry
@@ -65,8 +93,13 @@ You need to be able to connect to your cluster from your machine.
         ```
 
         ```sh
-        helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=6.8_latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
+        helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.aadClientSecret="$ADX_CLIENT_SECRET" --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=7.16_latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
         ```
+
+        OR (if managed identity was set)
+
+        ```sh
+        helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.useManagedIdentity=true --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=7.16_latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
 
         The complete set of configuration options can be found [here](./configuration.md).
 
@@ -74,7 +107,7 @@ You need to be able to connect to your cluster from your machine.
         The command output will suggest a helm command to run to deploy Kibana, similar to:
 
         ```sh
-        helm install kibana elastic/kibana -n k2bridge --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=6.8.22 --set elasticsearchHosts=http://k2bridge:8080
+        helm install kibana elastic/kibana -n k2bridge --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=7.10.2 --set elasticsearchHosts=http://k2bridge:8080
         ```
 
 1. Configure index-patterns  

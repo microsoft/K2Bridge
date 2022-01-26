@@ -12,7 +12,9 @@ namespace K2Bridge.KustoDAL
     using K2Bridge.Factories;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
+    using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Telemetry;
+    using K2Bridge.Utils;
     using Kusto.Data;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
@@ -23,8 +25,6 @@ namespace K2Bridge.KustoDAL
     /// </summary>
     public class KustoResponseParser : IResponseParser
     {
-        private const string AggregationTableName = "aggs";
-        private const string HitsTableName = "hits";
         private readonly Metrics metricsHistograms;
 
         private readonly bool outputBackendQuery;
@@ -54,10 +54,10 @@ namespace K2Bridge.KustoDAL
         {
             Ensure.IsNotNull(kustoResponseDataSet, nameof(kustoResponseDataSet));
 
-            if (kustoResponseDataSet[HitsTableName] != null)
+            if (kustoResponseDataSet[KustoTableNames.Hits] != null)
             {
                 using var highlighter = new LuceneHighlighter(query, Logger);
-                return HitsMapper.MapRowsToHits(kustoResponseDataSet[HitsTableName].TableData.Rows, query, highlighter);
+                return HitsMapper.MapRowsToHits(kustoResponseDataSet[KustoTableNames.Hits].TableData.Rows, query, highlighter);
             }
 
             return Enumerable.Empty<Hit>();
@@ -149,48 +149,78 @@ namespace K2Bridge.KustoDAL
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="reader">Kusto IDataReader response.</param>
         /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
-        /// <param name="isSingleDoc">Indicates whether this was a single document query.</param>
         /// <returns>ElasticResponse object.</returns>
         private ElasticResponse ReadResponse(
                 QueryData query,
                 IDataReader reader,
                 TimeSpan timeTaken)
         {
-            var response = new ElasticResponse();
+            var elasticResponse = new ElasticResponse();
+            var searchResponse = elasticResponse.Responses.First();
 
-            response.AddTook(timeTaken);
+            elasticResponse.AddTook(timeTaken);
 
             Logger.LogTrace("Reading response using reader.");
-            var parsedKustoResponse = ReadDataResponse(reader);
+            var kustoResponse = ReadDataResponse(reader);
 
-            if (parsedKustoResponse[AggregationTableName] != null)
+            if (kustoResponse[KustoTableNames.Aggregation] != null)
             {
+                var (key, aggregationType) = query.PrimaryAggregation;
+                var tableData = kustoResponse[KustoTableNames.Aggregation].TableData;
+
+                // Not all aggregations return a metadata table
+                var metadataTableData = kustoResponse[KustoTableNames.Metadata]?.TableData;
+
                 Logger.LogTrace("Parsing aggregations");
 
-                // read aggregations
-                foreach (DataRow row in parsedKustoResponse[AggregationTableName].TableData.Rows)
+                if (string.IsNullOrWhiteSpace(aggregationType))
                 {
-                    var bucket = BucketFactory.CreateFromDataRow(row);
-                    response.AddAggregation(bucket);
+                    // This is not a bucket aggregation scenario
+                    if (tableData.Rows.Count == 0)
+                    {
+                        tableData.Rows.Add(tableData.NewRow());
+                    }
+
+                    foreach (DataRow row in tableData.Rows)
+                    {
+                        searchResponse.Aggregations.AddAggregates(key, row, query, Logger);
+                    }
+                }
+                else
+                {
+                    // This a bucket aggregation scenario
+                    IAggregate bucketAggregate = aggregationType switch
+                    {
+                        nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, tableData, query, Logger),
+                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, tableData, metadataTableData, query, Logger),
+                        nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, tableData, query, Logger),
+                        nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, tableData, query, Logger),
+                        nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, tableData, metadataTableData, query, Logger),
+                        nameof(Models.Request.Aggregations.HistogramAggregation) => AggregateFactory.GetHistogramAggregate(key, tableData, query, Logger),
+                        _ => null,
+                    };
+
+                    searchResponse.Aggregations.Add(key, bucketAggregate);
                 }
             }
-            else
+
+            // For Range aggregations, the calculated total hits is wrong, so we have an additional column with the expected count
+            if (kustoResponse[KustoTableNames.HitsTotal] != null)
             {
-                // A ViewSingleDocument queries do not produce any aggregations used for total,
-                // but Kibana expects this value
-                response.AddToTotal(1);
+                // A single row with a single column
+                elasticResponse.SetTotal((long)kustoResponse[KustoTableNames.HitsTotal].TableData.Rows[0][0]);
             }
 
-            // read hits
+            // Read hits
             Logger.LogDebug("Reading Hits using QueryData: {@query}", query.ToSensitiveData());
-            var hits = ReadHits(parsedKustoResponse, query);
-            response.AddHits(hits);
+            var hits = ReadHits(kustoResponse, query);
+            elasticResponse.AddHits(hits);
             if (outputBackendQuery)
             {
-                response.AppendBackendQuery(query.QueryCommandText);
+                elasticResponse.AppendBackendQuery(query.QueryCommandText);
             }
 
-            return response;
+            return elasticResponse;
         }
     }
 }

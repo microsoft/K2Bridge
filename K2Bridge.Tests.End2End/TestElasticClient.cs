@@ -56,6 +56,76 @@ namespace K2Bridge.Tests.End2End
         }
 
         /// <summary>
+        /// When comparing the Percentiles Payloads, we need to omit the values due to ticket #15795.
+        /// </summary>
+        /// <param name="parent">JSON element at which to start search.</param>
+        public static void DeleteValuesToComparePercentiles(JToken parent)
+        {
+            var tokens = parent.SelectTokens("responses[*].aggregations..value");
+            foreach (JValue v in tokens)
+            {
+                if (v.Type == JTokenType.String)
+                {
+                    v.Value = "0";
+                }
+            }
+
+            tokens = parent.SelectTokens("responses[*].aggregations..value_as_string");
+            foreach (JValue v in tokens)
+            {
+                if (v.Type == JTokenType.Date)
+                {
+                    v.Value = "2022-01-01T23:50:52.916+00:00";
+                }
+            }
+
+            tokens = parent.SelectTokens("responses[*].aggregations..buckets..values");
+            foreach (JToken v in tokens)
+            {
+                // Median percentile KeyValuePair has "50.0" as Key
+                if (v.Type == JTokenType.Object)
+                {
+                    v["50.0"] = 0;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get all descendants tokens from a root token
+        /// </summary>
+        public static IEnumerable<JToken> GetAllDescendantsTokens(JToken rootToken)
+        {
+            var toSearch = new Stack<JToken>(rootToken.Children());
+            while (toSearch.Count > 0)
+            {
+                var inspected = toSearch.Pop();
+                yield return inspected;
+                foreach (var child in inspected)
+                {
+                    toSearch.Push(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Make a Math.Round operation on all float values in a json payload.
+        /// </summary>
+        public static void RoundFloats(JToken parent, string jsonPath, int? digits = null)
+        {
+            if (!digits.HasValue)
+            {
+                return;
+            }
+            var rootToken = parent.SelectToken(jsonPath);
+            foreach (JValue v in TestElasticClient.GetAllDescendantsTokens(rootToken).Where(x => x.Type == JTokenType.Float))
+            {
+                var originalMetricValue = (double)v.Value;
+                var normalizedMetricValue = Math.Round(originalMetricValue, digits.Value);
+                v.Value = normalizedMetricValue;
+            }
+        }
+
+        /// <summary>
         /// Queries the backend and parses the result as JSON.
         /// </summary>
         /// <param name="request">Request to backend.</param>
@@ -81,7 +151,7 @@ namespace K2Bridge.Tests.End2End
         ///   "cluster_name" : "__placeholder__",
         ///   "cluster_uuid" : "__placeholder__",
         ///   "version" : {
-        ///     "number" : "6.8.22",
+        ///     "number" : "7.16.2",
         ///     "build_flavor" : "oss",
         ///     "build_type" : "docker",
         ///     "build_hash" : "78990e9",
@@ -113,33 +183,53 @@ namespace K2Bridge.Tests.End2End
         /// <param name="indexName">Index name to query.</param>
         /// <param name="jsonQueryFile">File name containing query.</param>
         /// <param name="validateHighlight">Controls the validation of the highlight element.</param>
+        /// <param name="roundingFloats">If value is specified make a round operation on all floats</param>
         /// <returns>SearchAsync operation result.</returns>
-        public async Task<JToken> MSearch(string indexName, string jsonQueryFile, bool validateHighlight = true)
+        public async Task<JToken> MSearch(string indexName, string jsonQueryFile, bool validateHighlight = true, int? roundingFloats = null)
         {
             JObject query = JObject.Parse(File.ReadAllText(jsonQueryFile));
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "_msearch");
             var payload = new StringBuilder();
-            payload.AppendLine($"{{\"index\":\"{indexName}\"}}");
+            payload.AppendLine(FormattableString.Invariant($"{{\"index\":\"{indexName}\"}}"));
             payload.AppendLine(query.ToString(Formatting.None));
             request.Content = new StringContent(payload.ToString());
             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-ndjson");
             var result = await JsonQuery(request);
             MaskSearchCommon(result, "responses[*].");
 
+            MaskValue(result, "took");
+
             if (!validateHighlight)
             {
                 DeleteValue(result, "responses[*].hits.hits[*].highlight");
             }
 
-            // backend query isn't something we want to compare since it's unique to K2
+            // Backend query isn't something we want to compare since it's unique to K2
             DeleteValue(result, "responses[*]._backendQuery");
+
+            // Ignore fields.hour_of_day (script_fields are currently no supported)
+            DeleteValue(result, "responses[*].hits.hits[*].fields.hour_of_day");
+
+            // Ignore these fields in aggregation buckets
+            DeleteValue(result, "responses[*].aggregations.*.doc_count_error_upper_bound");
+            DeleteValue(result, "responses[*].aggregations.*.sum_other_doc_count");
+
+            // Normalize aggregate value (double) with fixed number of decimal
+            NormalizeAggregateValue(result, "responses[*].aggregations..value");
+
+            // Make a Math.Round on all floats values
+            RoundFloats(result, "responses[*].aggregations", roundingFloats);
+
+            // Delete _id and _version in top hits aggregation
+            DeleteValue(result, "responses[*].aggregations..hits[*]._id");
+            DeleteValue(result, "responses[*].aggregations..hits[*]._version");
 
             return result;
         }
 
         /// <summary>
-        /// API operation for wildcard index search (hitting the IndexList endpoint).
+        /// API operation for resolving indices (hitting the IndexList endpoint).
         /// </summary>
         /// <param name="optionalIndexToKeep">Optional input with index name to keep.
         /// if this is not null, all other index names will be removed and it will be
@@ -147,39 +237,16 @@ namespace K2Bridge.Tests.End2End
         /// <returns><c>JToken</c> with parsed response.</returns>
         public async Task<JToken> Search(string optionalIndexToKeep = null)
         {
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/*/_search/")
-            {
-                Content = new StringContent("{\"size\":0,\"aggs\":{\"indices\":{\"terms\":{\"field\":\"_index\",\"size\":200}}}}"),
-            };
-            request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+            using var request = new HttpRequestMessage(HttpMethod.Get, "/_resolve/index/*");
 
             var result = await JsonQuery(request);
 
-            MaskSearchCommon(result, string.Empty);
+            DeleteValue(result, $"aliases");
+            DeleteValue(result, $"data_streams");
 
-            // TODO: K2Bridge always returns 0 for doc_count
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            MaskValue(result, "aggregations.indices.buckets[*].doc_count");
-
-            // TODO: K2Bridge always returns 0 for total
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            MaskValue(result, "hits.total");
-
-            // TODO: K2Bridge returns null
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            MaskValue(result, "hits.max_score");
-
-            // TODO: K2Bridge returns extra status field
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            DeleteValue(result, "status");
-
-            // TODO: K2Bridge does not return these two fields
-            // https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1467
-            DeleteValue(result, "aggregations.indices.doc_count_error_upper_bound");
-            DeleteValue(result, "aggregations.indices.sum_other_doc_count");
             if (!string.IsNullOrEmpty(optionalIndexToKeep))
             {
-                NormalizeIndexNamesForIndexList(result, "aggregations.indices.buckets[*].key", optionalIndexToKeep);
+                NormalizeIndexNamesForIndexList(result, "indices[*].name", optionalIndexToKeep);
             }
 
             return result;
@@ -189,8 +256,9 @@ namespace K2Bridge.Tests.End2End
         /// API operation for field capabilities search.
         /// </summary>
         /// <param name="indexName">Index name to query.</param>
+        /// <param name="removeDynamicColumns">Remove dynamic columns, used for comparisons where one side doesn't generate dynamic columns.</param>
         /// <returns><c>JToken</c> with parsed response.</returns>
-        public async Task<JToken> FieldCaps(string indexName)
+        public async Task<JToken> FieldCaps(string indexName, bool removeDynamicColumns = true)
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, $"/{indexName}/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false");
             var result = await JsonQuery(request);
@@ -201,11 +269,17 @@ namespace K2Bridge.Tests.End2End
             // Remove extra fields returned by Elasticsearch (prefixed by _)
             JObject fields = (JObject)result.SelectToken($"$.fields");
             var removes = new List<string>();
-            foreach (var field in fields)
+            foreach (var (name, _) in fields)
             {
-                if (field.Key.StartsWith("_", StringComparison.OrdinalIgnoreCase))
+                if (name.StartsWith("_", StringComparison.OrdinalIgnoreCase))
                 {
-                    removes.Add(field.Key);
+                    removes.Add(name);
+                }
+
+                // Remove all dynamic fields, since for this elastic doesn't create them so they shouldn't be compared.
+                if (removeDynamicColumns && name.Contains('.', StringComparison.OrdinalIgnoreCase))
+                {
+                    removes.Add(name);
                 }
             }
 
@@ -304,6 +378,25 @@ namespace K2Bridge.Tests.End2End
                 var originalTimestamp = (DateTime)v.Value;
                 var normalizedTimestamp = TimeZoneInfo.ConvertTimeToUtc(originalTimestamp);
                 v.Value = normalizedTimestamp.ToString("o", CultureInfo.InvariantCulture);
+            }
+        }
+
+        // <summary>
+        /// Normalize aggregate metric value with fixed number of decimals.
+        /// </summary>
+        /// <param name="parent">JSON element at which to start search.</param>
+        /// <param name="jsonPath">JSONPath search pattern for metric values to normalize.</param>
+        private static void NormalizeAggregateValue(JToken parent, string jsonPath)
+        {
+            var tokens = parent.SelectTokens(jsonPath);
+            foreach (JValue v in tokens)
+            {
+                if (v.Type == JTokenType.Float)
+                {
+                    var originalMetricValue = (double)v.Value;
+                    var normalizedMetricValue = originalMetricValue.ToString("F6", CultureInfo.InvariantCulture);
+                    v.Value = normalizedMetricValue;
+                }
             }
         }
 

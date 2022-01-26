@@ -106,11 +106,11 @@ namespace UnitTests.K2Bridge.Visitors
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
             Assert.That(
-                () => visitor.Visit(new AvgAggregation()),
+                () => visitor.Visit(new AverageAggregation()),
                 Throws.TypeOf<IllegalClauseException>());
 
             Assert.That(
-                () => visitor.Visit((AvgAggregation)null),
+                () => visitor.Visit((AverageAggregation)null),
                 Throws.TypeOf<ArgumentNullException>());
         }
 
@@ -120,10 +120,10 @@ namespace UnitTests.K2Bridge.Visitors
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
             // This is a valid scenario
-            visitor.Visit(new Aggregation());
+            visitor.Visit(new AggregationContainer());
 
             Assert.That(
-                () => visitor.Visit((Aggregation)null),
+                () => visitor.Visit((AggregationContainer)null),
                 Throws.TypeOf<ArgumentNullException>());
         }
 
@@ -180,6 +180,20 @@ namespace UnitTests.K2Bridge.Visitors
 
             Assert.That(
                 () => visitor.Visit((DateHistogramAggregation)null),
+                Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [TestCase]
+        public void HistogramAggVisit_WithInvalidClause_ThrowsIllegalClauseException()
+        {
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+
+            Assert.That(
+                () => visitor.Visit(new HistogramAggregation()),
+                Throws.TypeOf<IllegalClauseException>());
+
+            Assert.That(
+                () => visitor.Visit((HistogramAggregation)null),
                 Throws.TypeOf<ArgumentNullException>());
         }
 

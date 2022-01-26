@@ -1,0 +1,50 @@
+{
+    "aggs": {
+        "1": {
+            "extended_stats": {
+                "field": "DistanceKilometers"
+            }
+        },
+        "2": {
+            "extended_stats": {
+                "field": "DistanceKilometers",
+                "sigma": 3
+            }
+        }
+    },
+    "size": 0,
+    "stored_fields": [
+        "*"
+    ],
+    "script_fields": {},
+    "docvalue_fields": [
+        {
+            "field": "timestamp",
+            "format": "date_time"
+        }
+    ],
+    "_source": {
+        "excludes": []
+    },
+    "query": {
+        "bool": {
+            "must": [],
+            "filter": [
+                {
+                    "match_all": {}
+                },
+                {
+                    "range": {
+                        "timestamp": {
+                            "gte": "2018-02-01T11:00:00.000Z",
+                            "lte": "2018-02-10T11:00:00.000Z",
+                            "format": "strict_date_optional_time"
+                        }
+                    }
+                }
+            ],
+            "should": [],
+            "must_not": []
+        }
+    }
+}

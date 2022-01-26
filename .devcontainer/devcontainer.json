@@ -3,12 +3,19 @@
     "build": {
         "dockerfile": "Dockerfile",
     },
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind"
+    ],
     "extensions": [
         "hashicorp.terraform",
         "ms-vscode.azurecli",
         "ms-dotnettools.csharp"
     ],
-    "forwardPorts": [5601, 8080, 9200],
+    "forwardPorts": [
+        5601,
+        8080,
+        9200
+    ],
     "settings": {
         "editor.formatOnSave": true,
         "terminal.integrated.defaultProfile.linux": "bash",

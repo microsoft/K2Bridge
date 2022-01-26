@@ -12,7 +12,6 @@ namespace K2Bridge.Models
         /// <summary>
         /// Gets the kusto cluster URL.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "String is valid.")]
         string ClusterUrl { get; }
 
         /// <summary>
@@ -34,5 +33,10 @@ namespace K2Bridge.Models
         /// Gets the AAD tenant ID.
         /// </summary>
         string AadTenantId { get; }
+
+        /// <summary>
+        /// Gets a boolean indicating if we need to use a Managed Identity.
+        /// </summary>
+        bool UseManagedIdentity { get; }
     }
 }

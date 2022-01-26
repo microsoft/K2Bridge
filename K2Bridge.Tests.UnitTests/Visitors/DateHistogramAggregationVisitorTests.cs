@@ -5,19 +5,21 @@
 namespace UnitTests.K2Bridge.Visitors
 {
     using global::K2Bridge.Models.Request.Aggregations;
+    using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using NUnit.Framework;
 
     [TestFixture]
     public class DateHistogramAggregationVisitorTests
     {
-        [TestCase(ExpectedResult = "wibble by wobble = wobble\n| order by wobble asc")]
+        [TestCase(ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);")]
         public string DateHistogramVisit_WithSimpleAggregation_ReturnsValidResponse()
         {
             var histogramAggregation = new DateHistogramAggregation()
             {
-                Metric = "wibble",
-                FieldName = "wobble",
+                Field = "field",
+                Key = "key",
+                Metric = "metric",
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
@@ -26,20 +28,47 @@ namespace UnitTests.K2Bridge.Visitors
             return histogramAggregation.KustoQL;
         }
 
-        [TestCase("w", ExpectedResult = "wibble by wobble = startofweek(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
-        [TestCase("y", ExpectedResult = "wibble by wobble = startofyear(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
-        [TestCase("M", ExpectedResult = "wibble by wobble = startofmonth(wobble)\n| order by wobble asc", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
-        [TestCase("z", ExpectedResult = "wibble by wobble = bin(wobble, z)\n| order by wobble asc")]
+        [TestCase("w", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofweek(['field']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("week", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofweek(['field']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("y", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofyear(['field']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("year", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofyear(['field']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("M", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofmonth(['field']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("month", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofmonth(['field']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("z", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = bin(['field'], z);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);")]
         public string DateHistogramVisit_WithAggregation_ReturnsValidResponse(string interval)
         {
             var histogramAggregation = new DateHistogramAggregation()
             {
-                Metric = "wibble",
-                FieldName = "wobble",
-                Interval = interval,
+                Field = "field",
+                FixedInterval = interval,
+                Key = "key",
+                Metric = "metric",
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(histogramAggregation);
+
+            return histogramAggregation.KustoQL;
+        }
+
+        [TestCase("w", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofweek(todatetime(['field'].['A']));\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("week", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofweek(todatetime(['field'].['A']));\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfWeekInterval_ReturnsValidResponse")]
+        [TestCase("y", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofyear(todatetime(['field'].['A']));\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("year", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofyear(todatetime(['field'].['A']));\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfYearInterval_ReturnsValidResponse")]
+        [TestCase("M", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofmonth(todatetime(['field'].['A']));\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("month", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = startofmonth(todatetime(['field'].['A']));\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);", TestName = "DateHistogramVisit_WithStartOfMonthInterval_ReturnsValidResponse")]
+        [TestCase("z", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = bin(todatetime(['field'].['A']), z);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] asc;\n(_summarizablemetrics\n| order by ['key'] asc\n| as aggs);")]
+        public string DateHistogramVisit_WithAggregation_WithDynamicField_ReturnsValidResponse(string interval)
+        {
+            var histogramAggregation = new DateHistogramAggregation()
+            {
+                Field = "field.A",
+                FixedInterval = interval,
+                Key = "key",
+                Metric = "metric",
+            };
+
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("field.A", "date");
             visitor.Visit(histogramAggregation);
 
             return histogramAggregation.KustoQL;

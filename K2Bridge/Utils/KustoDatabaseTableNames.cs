@@ -52,7 +52,7 @@ namespace K2Bridge.Utils
                 return (defaultDatabaseName, indexName);
             }
 
-            var databaseName = indexName.Substring(0, splitIndex);
+            var databaseName = indexName[..splitIndex];
             var tableName = indexName.Substring(splitIndex + 1, indexName.Length - splitIndex - 1);
             return (databaseName, tableName);
         }

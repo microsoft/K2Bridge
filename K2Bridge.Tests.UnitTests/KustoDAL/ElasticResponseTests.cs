@@ -102,8 +102,31 @@ namespace UnitTests.K2Bridge.KustoDAL
                 "somevalue1 somevalue2");
         }
 
+        [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":{\"a\":\"pre SOmevalue1 post\",\"b\":{\"b1\":\"pre SOmevalue2 post\"},\"c\":\"pre SOmevalue1 post pre SOmevalue2 post\",\"d\":{\"d1\":{\"d1a\":\"pre SOmevalue2 post\"}}},\"somefield2\":\"pre SOmevalue2 post\",\"somefield3\":\"pre SOmevalue1 post pre SOmevalue2 post\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1.a\":[\"pre hlSOmevalue1/hl post\"],\"somefield1.b.b1\":[\"pre hlSOmevalue2/hl post\"],\"somefield1.c\":[\"pre hlSOmevalue1/hl post pre hlSOmevalue2/hl post\"],\"somefield1.d.d1.d1a\":[\"pre hlSOmevalue2/hl post\"],\"somefield2\":[\"pre hlSOmevalue2/hl post\"],\"somefield3\":[\"pre hlSOmevalue1/hl post pre hlSOmevalue2/hl post\"]}}")]
+        public string MapRowsToHits_WhenDynamic_HighlightIsIsValid()
+        {
+            var mapRowsToHitsWhenDynamicHighlightIsIsValid = MakeHighlightHit(
+                new Dictionary<string, object>
+                {
+                    {
+                        "somefield1", new JObject
+                        {
+                            ["a"] = "pre SOmevalue1 post",
+                            ["b"] = new JObject() { ["b1"] = "pre SOmevalue2 post" },
+                            ["c"] = "pre SOmevalue1 post pre SOmevalue2 post",
+                            ["d"] = new JObject() { ["d1"] = new JObject() { ["d1a"] = "pre SOmevalue2 post" } },
+                        }
+                    },
+                    { "somefield2", "pre SOmevalue2 post" },
+                    { "somefield3", "pre SOmevalue1 post pre SOmevalue2 post" },
+                },
+                "*",
+                "somevalue1 somevalue2");
+            return mapRowsToHitsWhenDynamicHighlightIsIsValid;
+        }
+
         [TestCase(ExpectedResult =
-            "{\"responses\":[{\"aggregations\":{\"2\":{\"buckets\":[]}},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":0,\"max_score\":null,\"hits\":[]},\"status\":200}]}")]
+            "{\"responses\":[{\"aggregations\":{},\"took\":0,\"timed_out\":false,\"_shards\":{\"total\":1,\"successful\":1,\"skipped\":0,\"failed\":0},\"hits\":{\"total\":{\"relation\":\"eq\",\"value\":0},\"max_score\":null,\"hits\":[]},\"status\":200}],\"took\":0}")]
         public string ElasticResponseConstructor_OnValidInput_CreatesValidResponse()
         {
             var defaultResponse = new ElasticResponse();

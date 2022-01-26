@@ -16,14 +16,15 @@ namespace K2Bridge.KustoDAL
         /// Executes a query to Kusto for Fields Caps.
         /// </summary>
         /// <param name="indexName">Index name.</param>
+        /// <param name="invalidateCache">Invalidate the cache and force refresh.</param>
         /// <returns>An object with the field caps.</returns>
-        Task<FieldCapabilityResponse> GetFieldCapsAsync(string indexName);
+        Task<FieldCapabilityResponse> GetFieldCapsAsync(string indexName, bool invalidateCache = false);
 
         /// <summary>
-        /// Executes a query to Kusto for Index List.
+        /// Resolves index name.
         /// </summary>
         /// <param name="indexName">Index name.</param>
         /// <returns>A list of Indexes.</returns>
-        Task<IndexListResponseElement> GetIndexListAsync(string indexName);
+        Task<ResolveIndexResponse> ResolveIndexAsync(string indexName);
     }
 }

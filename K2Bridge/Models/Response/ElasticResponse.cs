@@ -13,7 +13,7 @@ namespace K2Bridge.Models.Response
     /// </summary>
     public class ElasticResponse
     {
-        private readonly List<ResponseElement> responses = new List<ResponseElement> { new ResponseElement() };
+        private readonly List<ResponseElement> responses = new () { new ResponseElement() };
 
         /// <summary>
         /// Gets responses.
@@ -23,30 +23,10 @@ namespace K2Bridge.Models.Response
         public IEnumerable<ResponseElement> Responses => responses;
 
         /// <summary>
-        /// Add aggregation to first response.
+        /// Gets or sets query execution time.
         /// </summary>
-        /// <param name="bucket">The added bucket.</param>
-        public void AddAggregation(IBucket bucket)
-        {
-            // TODO: support more than one response
-            responses[0].Aggregations.Collection.AddBucket(bucket);
-
-            // if bucket is DateHistogramBucket, we need to add DocCount to HitsCollection.Total
-            if (bucket is DateHistogramBucket)
-            {
-                responses[0].Hits.AddToTotal(bucket.DocCount);
-            }
-        }
-
-        /// <summary>
-        /// Retrieve all aggregations.
-        /// </summary>
-        /// <returns>IEnumerable of all aggregations.</returns>
-        public IEnumerable<IBucket> GetAllAggregations()
-        {
-            // TODO: support more than one response
-            return responses[0].Aggregations.Collection.Buckets;
-        }
+        [JsonProperty("took")]
+        public int TookMilliseconds { get; set; }
 
         /// <summary>
         /// Add hits to first response.
@@ -75,6 +55,7 @@ namespace K2Bridge.Models.Response
         public void AddTook(TimeSpan timeTaken)
         {
             responses[0].TookMilliseconds += timeTaken.Milliseconds;
+            TookMilliseconds += timeTaken.Milliseconds;
         }
 
         /// <summary>
@@ -84,6 +65,15 @@ namespace K2Bridge.Models.Response
         public void AddToTotal(int count)
         {
             responses[0].Hits.AddToTotal(count);
+        }
+
+        /// <summary>
+        /// Sets the HitsTotal of the first response.
+        /// </summary>
+        /// <param name="count">An int to increment by.</param>
+        public void SetTotal(long count)
+        {
+            responses[0].Hits.SetTotal(count);
         }
 
         /// <summary>

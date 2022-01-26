@@ -4,6 +4,10 @@
 
 namespace K2Bridge.Tests.End2End
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
     using FluentAssertions.Json;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;
@@ -163,7 +167,7 @@ namespace K2Bridge.Tests.End2End
         }
 
         [Test]
-        [Description("/_search index list Kibana query")]
+        [Description("/_resolve/index Kibana query")]
         public void CompareElasticKusto_WhenSearch_ResponsesAreEquivalent()
         {
             var es = ESClient().Search();
@@ -198,16 +202,188 @@ namespace K2Bridge.Tests.End2End
             AssertJsonIdentical(k2.Result, es.Result);
         }
 
+        [Test]
+        [Description("/_msearch visualization query with aggregation metrics and no bucket aggregation")]
+        public void CompareElasticKusto_WhenMSearchVizMetrics_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Metrics.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with extended stats metrics and no bucket aggregation")]
+        public void CompareElasticKusto_WhenMSearchVizExtendedStats_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_ExtendedStats.json", roundingFloats: 3);
+        }
+
+        [Test]
+        [Description("/_msearch visualization with tophits and no bucket aggregation")]
+        public void CompareElasticKusto_WhenMSearchVizTopHits_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_TopHits.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with date histogram and aggregation metrics")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramMetrics_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Metrics.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with extended stats metrics and aggregation metrics")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramExtendedStats_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_ExtendedStats.json", roundingFloats: 3);
+        }
+
+        [Test]
+        [Description("/_msearch visualization with tophits and and aggregation metrics")]
+        public void CompareElasticKusto_WhenMSearchVizTermsTopHits_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Terms_TopHits.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with terms and sort by count")]
+        public void CompareElasticKusto_WhenMSearchVizTermsOrderCount_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Terms_OrderCount.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with terms and sort by custom metric")]
+        public void CompareElasticKusto_WhenMSearchVizTermsOrderCustom_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Terms_OrderCustom.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with range")]
+        public void CompareElasticKusto_WhenMSearchVizRange_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Range_Metrics.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with overlapping range")]
+        public void CompareElasticKusto_WhenMSearchVizRangeOverlapping_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Range_Overlapping.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization with percentiles and no bucket aggregation")]
+        public void CompareElasticKusto_WhenMSearchVizPercentiles_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Percentiles.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with date histogram and percentiles")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentiles_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentiles.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with date histogram and median")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramMedian_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Median.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with date histogram and median")]
+        public void CompareElasticKusto_WhenMSearchVizDateHistogramPercentile_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateHistogram_Percentile.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with filters")]
+        public void CompareElasticKusto_WhenMSearchVizFilters_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Filters_Metrics.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with date range")]
+        public void CompareElasticKusto_WhenMSearchVizDateRange_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_DateRange_Metrics.json");
+        }
+
+        [Description("/_msearch visualization query with histogram and aggregation metrics")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMetrics_ResponsesAreEquivalent()
+        {
+            ParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Metrics.json");
+        }
+
+        [Description("/_msearch visualization query with histogram and percentiles")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramPercentiles_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Percentiles.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with histogram and median")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMedian_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with histogram and percentile")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramPercentile_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Percentile.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with histogram and median with hard bounds")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMedianWithHardBounds_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median_HardBounds.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with histogram and median with extended bounds")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMedianWithExtendedBounds_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median_ExtendedBounds.json");
+        }
+
+        [Test]
+        [Description("/_msearch visualization query with histogram and median with min doc count = 0")]
+        public void CompareElasticKusto_WhenMSearchVizHistogramMedianWithMinDocCount0_ResponsesAreEquivalent()
+        {
+            ApproximateParallelQuery($"{FLIGHTSDIR}/MSearch_Viz_Histogram_Median_MinDocCountZero.json");
+        }
+
         private static void AssertJsonIdentical(JToken k2, JToken es)
         {
             k2.Should().BeEquivalentTo(es);
         }
 
-        private void ParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true)
+        private void ParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true, int? roundingFloats = null)
         {
-            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight);
-            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight);
-            var t = es.Result.SelectToken("responses[0].hits.total");
+            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight, roundingFloats);
+            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight, roundingFloats);
+            var t = es.Result.SelectToken("responses[0].hits.total.value");
+            Assert.IsTrue(t.Value<int>() >= minResults);
+            AssertJsonIdentical(k2.Result, es.Result);
+        }
+
+        // When comparing the Percentiles Payloads, we need to omit the values due to ticket #15795.
+        private void ApproximateParallelQuery(string esQueryFile, string k2QueryFile = null, int minResults = 1, bool validateHighlight = true, int? roundingFloats = null)
+        {
+            var es = ESClient().MSearch(INDEX, esQueryFile, validateHighlight, roundingFloats);
+            TestElasticClient.DeleteValuesToComparePercentiles(es.Result);
+            var k2 = K2Client().MSearch(INDEX, k2QueryFile ?? esQueryFile, validateHighlight, roundingFloats);
+            TestElasticClient.DeleteValuesToComparePercentiles(k2.Result);
+
+            var t = es.Result.SelectToken("responses[0].hits.total.value");
             Assert.IsTrue(t.Value<int>() >= minResults);
             AssertJsonIdentical(k2.Result, es.Result);
         }

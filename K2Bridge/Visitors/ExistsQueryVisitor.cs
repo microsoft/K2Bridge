@@ -17,7 +17,7 @@ namespace K2Bridge.Visitors
             Ensure.IsNotNull(existsClause, nameof(existsClause));
             EnsureClause.StringIsNotNullOrEmpty(existsClause.FieldName, nameof(existsClause.FieldName));
 
-            existsClause.KustoQL = $"{KustoQLOperators.IsNotNull}({existsClause.FieldName})";
+            existsClause.KustoQL = $"{KustoQLOperators.IsNotNull}({EncodeKustoField(existsClause.FieldName)})";
         }
     }
 }

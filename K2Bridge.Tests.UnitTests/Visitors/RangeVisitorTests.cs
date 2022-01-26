@@ -13,7 +13,7 @@ namespace UnitTests.K2Bridge.Visitors
     public class RangeVisitorTests
     {
         [TestCase(
-            ExpectedResult = "myField >= 3 and myField < 5",
+            ExpectedResult = "['myField'] >= 3 and ['myField'] < 5",
             TestName = "Visit_WithBasicInput_ReturnsValidResponse")]
         public string TestBasicRangeVisitor()
         {
@@ -24,7 +24,7 @@ namespace UnitTests.K2Bridge.Visitors
 
         [TestCase(
             ExpectedResult =
-            "myField >= unixtime_milliseconds_todatetime(1212121121) and myField <= unixtime_milliseconds_todatetime(2121212121)",
+            "['myField'] >= unixtime_milliseconds_todatetime(1212121121) and ['myField'] <= unixtime_milliseconds_todatetime(2121212121)",
             TestName = "Visit_WithEpochInput_ReturnsValidResponse")]
         public string TestEpochBasicRangeVisitor()
         {
@@ -46,7 +46,7 @@ namespace UnitTests.K2Bridge.Visitors
         {
             var rangeClause = CreateRangeClause("myField", null, null, null, "5", "other");
 
-            Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
+            Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause, type: "integer"));
         }
 
         [Test]
@@ -54,7 +54,7 @@ namespace UnitTests.K2Bridge.Visitors
         {
             var rangeClause = CreateRangeClause("myField", "5", null, null, null, "other");
 
-            Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
+            Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause, type: "integer"));
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace UnitTests.K2Bridge.Visitors
             Assert.Throws(typeof(IllegalClauseException), () => VisitRangeClause(rangeClause));
         }
 
-        private static string VisitRangeClause(RangeClause clause, string fieldName = "MyField", string type = "string")
+        private static string VisitRangeClause(RangeClause clause, string fieldName = "myField", string type = "string")
         {
             var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor(fieldName, type);
             visitor.Visit(clause);

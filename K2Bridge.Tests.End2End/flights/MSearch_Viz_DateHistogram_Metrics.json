@@ -1,0 +1,69 @@
+{
+    "aggs": {
+        "2": {
+            "date_histogram": {
+                "field": "timestamp",
+                "calendar_interval": "1d",
+                "time_zone": "UTC",
+                "min_doc_count": 1
+            },
+            "aggs": {
+                "3": {
+                    "avg": {
+                        "field": "DistanceKilometers"
+                    }
+                },
+                "4": {
+                    "max": {
+                        "field": "DistanceKilometers"
+                    }
+                },
+                "5": {
+                    "sum": {
+                        "field": "DistanceKilometers"
+                    }
+                },
+                "6": {
+                    "min": {
+                        "field": "DistanceKilometers"
+                    }
+                }
+            }
+        }
+    },
+    "size": 0,
+    "stored_fields": [
+        "*"
+    ],
+    "script_fields": {},
+    "docvalue_fields": [
+        {
+            "field": "timestamp",
+            "format": "date_time"
+        }
+    ],
+    "_source": {
+        "excludes": []
+    },
+    "query": {
+        "bool": {
+            "must": [],
+            "filter": [
+                {
+                    "match_all": {}
+                },
+                {
+                    "range": {
+                        "timestamp": {
+                            "gte": "2018-02-01T11:00:00.000Z",
+                            "lte": "2018-02-10T11:00:00.000Z",
+                            "format": "strict_date_optional_time"
+                        }
+                    }
+                }
+            ],
+            "should": [],
+            "must_not": []
+        }
+    }
+}

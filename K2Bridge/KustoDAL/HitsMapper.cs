@@ -9,11 +9,13 @@ namespace K2Bridge.KustoDAL
     using System.Data;
     using System.Data.SqlTypes;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Xml;
     using K2Bridge.Factories;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Utils;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Provides parsing for hit rows in Data Explorer response objects.
@@ -23,19 +25,19 @@ namespace K2Bridge.KustoDAL
         /// <summary>
         /// Type converter function used to get values from column.
         /// </summary>
-        private static readonly Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>
+        private static readonly Dictionary<Type, Func<object, object>> Converters = new ()
         {
-            { typeof(sbyte), (value) => value is DBNull || value == null ? null : (bool?)((sbyte)value != 0) },
-            { typeof(SqlDecimal), (value) => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble() },
-            { typeof(Guid), (value) => value is DBNull || value == null ? null : ((Guid)value).ToString() },
-            { typeof(TimeSpan), (value) => value is DBNull || value == null ? null : XmlConvert.ToString((TimeSpan)value) },
+            [typeof(sbyte)] = value => value is DBNull or null ? null : (bool?)((sbyte)value != 0),
+            [typeof(SqlDecimal)] = value => value.Equals(SqlDecimal.Null) ? double.NaN : ((SqlDecimal)value).ToDouble(),
+            [typeof(Guid)] = value => value is DBNull or null ? null : ((Guid)value).ToString(),
+            [typeof(TimeSpan)] = value => value is DBNull or null ? null : XmlConvert.ToString((TimeSpan)value),
 
             // Elasticsearch returns timestamp fields in UTC in ISO-8601 but without Timezone.
             // Use a String type to control serialization to mimic this behavior.
-            { typeof(DateTime), (value) => value is DBNull ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF") },
+            [typeof(DateTime)] = value => value is DBNull ? null : ((DateTime)value).ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF"),
         };
 
-        private static readonly Random Random = new Random();
+        private static readonly Random Random = new ();
 
         /// <summary>
         /// Parses a kusto datatable to hits.
@@ -78,10 +80,32 @@ namespace K2Bridge.KustoDAL
                 var columnName = columns[columnIndex].ColumnName;
                 var columnValue = GetTypedValueFromColumn(columns[columnIndex], row[columnName]);
                 hit.AddSource(columnName, columnValue);
-                var highlightValue = highlighter.GetHighlightedValue(columnName, columnValue);
-                if (!string.IsNullOrEmpty(highlightValue))
+
+                // We need to flatten the dynamic field in order to highlight them properly.
+                IEnumerable<(string columnName, object columnValue)> subColumns;
+                if (columnValue is JObject j)
                 {
-                    hit.AddColumnHighlight(columnName, new List<string> { highlightValue });
+                    subColumns = j.Descendants()
+                        .OfType<JValue>()
+                        .Select(jv =>
+                        {
+                            // The Regex removes the array notation from the column name. my.field[0].a[1].b -> my.field.a.b
+                            var fixedPath = Regex.Replace(jv.Path, @"\[\d+\]", string.Empty);
+                            return (columnName + "." + fixedPath, jv.Value);
+                        });
+                }
+                else
+                {
+                    subColumns = new[] { (columnName, columnValue) };
+                }
+
+                foreach (var (name, value) in subColumns)
+                {
+                    var highlightValue = highlighter.GetHighlightedValue(name, value);
+                    if (!string.IsNullOrEmpty(highlightValue))
+                    {
+                        hit.AddColumnHighlight(name, new List<string> { highlightValue });
+                    }
                 }
             }
 
@@ -106,9 +130,9 @@ namespace K2Bridge.KustoDAL
                     continue;
                 }
 
-                if (value is DateTime)
+                if (value is DateTime time)
                 {
-                    value = TimeUtils.ToEpochMilliseconds((DateTime)value);
+                    value = TimeUtils.ToEpochMilliseconds(time);
                 }
 
                 hit.Sort.Add(value);

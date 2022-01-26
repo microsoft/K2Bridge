@@ -19,7 +19,7 @@ namespace K2Bridge.KustoDAL
     internal class KustoQueryExecutor : IQueryExecutor
     {
         private const string KustoApplicationNameForTracing = "K2Bridge";
-        private const string SupportedElasticVersionForTracing = "v6.8";
+        private const string SupportedElasticVersionForTracing = "v7.16";
         private const string ControlCommandActivityName = "ExecuteControlCommand";
         private const string QueryActivityName = "ExecuteQuery";
         private static readonly string AssemblyVersion = typeof(KustoQueryExecutor).Assembly.GetName().Version.ToString();
@@ -58,13 +58,25 @@ namespace K2Bridge.KustoDAL
         /// <returns>A new instance of <see cref="KustoConnectionStringBuilder"/>.</returns>
         public static KustoConnectionStringBuilder CreateKustoConnectionStringBuilder(IConnectionDetails connectionDetails)
         {
-            var conn = new KustoConnectionStringBuilder(
-                connectionDetails.ClusterUrl,
-                connectionDetails.DefaultDatabaseName)
-                .WithAadApplicationKeyAuthentication(
-                    connectionDetails.AadClientId,
-                    connectionDetails.AadClientSecret,
-                    connectionDetails.AadTenantId);
+            KustoConnectionStringBuilder conn;
+
+            if (connectionDetails.UseManagedIdentity)
+            {
+                conn = new KustoConnectionStringBuilder(
+                    connectionDetails.ClusterUrl,
+                    connectionDetails.DefaultDatabaseName)
+                    .WithAadUserManagedIdentity(connectionDetails.AadClientId);
+            }
+            else
+            {
+                conn = new KustoConnectionStringBuilder(
+                    connectionDetails.ClusterUrl,
+                    connectionDetails.DefaultDatabaseName)
+                    .WithAadApplicationKeyAuthentication(
+                        connectionDetails.AadClientId,
+                        connectionDetails.AadClientSecret,
+                        connectionDetails.AadTenantId);
+            }
 
             // Sending both name and version this way for better visibility in Kusto audit logs.
             conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion} ({SupportedElasticVersionForTracing})";

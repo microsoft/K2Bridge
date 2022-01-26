@@ -11,12 +11,25 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class ExistsVisitorTests
     {
-        [TestCase(ExpectedResult = "isnotnull(MyField)")]
+        [TestCase(ExpectedResult = "isnotnull(['MyField'])")]
         public string ExistsVisit_WithValidInput_ReturnsIsNotNullResponse()
         {
             var existsClause = new ExistsClause
             {
                 FieldName = "MyField",
+            };
+
+            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+            visitor.Visit(existsClause);
+            return existsClause.KustoQL;
+        }
+
+        [TestCase(ExpectedResult = "isnotnull(['MyField'].['@1'].['b'])")]
+        public string ExistsVisit_WithValidDynamicInput_ReturnsIsNotNullResponse()
+        {
+            var existsClause = new ExistsClause
+            {
+                FieldName = "MyField.@1.b",
             };
 
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
