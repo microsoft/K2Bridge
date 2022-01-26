@@ -24,12 +24,12 @@ namespace K2Bridge.Tests.End2End
         // Map from Elasticsearch type to Kusto type, when type names differ
         private static readonly Dictionary<string, string> ES2KUSTOTYPE = new()
         {
-                { "text", "string" },
-                { "keyword", "string" },
-                { "float", "double" },
-                { "integer", "int" },
-                { "geo_point", "dynamic" },
-            };
+            { "text", "string" },
+            { "keyword", "string" },
+            { "float", "double" },
+            { "integer", "int" },
+            { "geo_point", "dynamic" },
+        };
 
         /// <summary>
         ///  Populate the Kusto backend with test data.

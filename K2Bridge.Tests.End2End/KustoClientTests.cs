@@ -28,17 +28,17 @@ namespace K2Bridge.Tests.End2End
         // Map Kusto columns to types
         private static readonly Dictionary<string, string> KustoColumnType = new()
         {
-                { "Boolean", "bool" },
-                { "DateTime", "datetime" },
-                { "Guid", "guid" },
-                { "Int32", "int" },
-                { "Int64", "long" },
-                { "Double", "real" },
-                { "String", "string" },
-                { "TimeSpan", "timespan" },
-                { "SqlDecimal", "decimal" },
-                { "Dynamic", "dynamic" },
-            };
+            { "Boolean", "bool" },
+            { "DateTime", "datetime" },
+            { "Guid", "guid" },
+            { "Int32", "int" },
+            { "Int64", "long" },
+            { "Double", "real" },
+            { "String", "string" },
+            { "TimeSpan", "timespan" },
+            { "SqlDecimal", "decimal" },
+            { "Dynamic", "dynamic" },
+        };
 
         private static ICslAdminProvider kustoAdminClient;
 
