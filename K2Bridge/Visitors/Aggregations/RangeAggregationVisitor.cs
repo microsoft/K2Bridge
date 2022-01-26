@@ -59,10 +59,11 @@ namespace K2Bridge.Visitors
 
             // Bucket expression:
             // >> count() by ['2'] | order by ['2'] asc
-            var bucketExpression = new StringBuilder();
+            var bucketExpression = $"{rangeAggregation.Metric} by {EncodeKustoField(rangeAggregation.Key)}";
 
-            bucketExpression.Append($"{rangeAggregation.Metric} by {EncodeKustoField(rangeAggregation.Key)}");
-            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(rangeAggregation.Key)} asc");
+            // OrderBy expression:
+            // >> | order by ['2'] asc
+            var orderByExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(rangeAggregation.Key)} asc";
 
             // Build final query using rangeAggregation expressions
             // let _extdata = _data
@@ -76,7 +77,8 @@ namespace K2Bridge.Visitors
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression.ToString(),
-                BucketExpression = bucketExpression.ToString(),
+                BucketExpression = bucketExpression,
+                OrderByExpression = orderByExpression,
                 Metadata = new Dictionary<string, List<string>> {
                     { rangeAggregation.Key, rangeNames },
                 },

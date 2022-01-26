@@ -10,12 +10,11 @@ namespace K2Bridge.Factories
     using System.Globalization;
     using System.Linq;
     using System.Text;
-    using System.Text.RegularExpressions;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
@@ -24,13 +23,19 @@ namespace K2Bridge.Factories
     internal static class AggregateFactory
     {
         /// <summary>
+        ///  Gets pseudo-random number generator.
+        /// </summary>
+        private static readonly Random Random = new();
+
+        /// <summary>
         /// Get date histogram aggregate from a given <see cref="DataTable"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>
-        public static BucketAggregate GetDateHistogramAggregate(string key, DataTable dataTable, ILogger logger)
+        public static BucketAggregate GetDateHistogramAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get date histogram aggregate for {}", key);
 
@@ -38,7 +43,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateDateHistogramBucket(key, row, logger);
+                var bucket = BucketFactory.CreateDateHistogramBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     dateHistogramAggregate.Buckets.Add(bucket);
@@ -53,9 +58,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>
-        public static BucketAggregate GetRangeAggregate(string key, DataTable dataTable, DataTable metadataTable, ILogger logger)
+        public static BucketAggregate GetRangeAggregate(string key, DataTable dataTable, DataTable metadataTable, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(metadataTable, nameof(DataTable));
 
@@ -67,7 +73,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateRangeBucket(key, row, logger);
+                var bucket = BucketFactory.CreateRangeBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     rangeAggregate.Buckets.Add(bucket);
@@ -87,7 +93,7 @@ namespace K2Bridge.Factories
                 // Add a fake bucket
                 var fakeRow = dataTable.NewRow();
                 fakeRow[key] = missingBucket;
-                var fb = BucketFactory.CreateRangeBucket(key, fakeRow, logger);
+                var fb = BucketFactory.CreateRangeBucket(key, fakeRow, query, logger);
                 rangeAggregate.Buckets.Add(fb);
             }
 
@@ -99,9 +105,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetDateRangeAggregate(string key, DataTable dataTable, ILogger logger)
+        public static BucketAggregate GetDateRangeAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get date range aggregate for {}", key);
 
@@ -109,7 +116,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateDateRangeBucket(key, row, logger);
+                var bucket = BucketFactory.CreateDateRangeBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     rangeAggregate.Buckets.Add(bucket);
@@ -124,9 +131,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="TermsAggregate"/>.</returns>
-        public static TermsAggregate GetTermsAggregate(string key, DataTable dataTable, ILogger logger)
+        public static TermsAggregate GetTermsAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get terms aggregate for {}", key);
 
@@ -134,7 +142,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateTermsBucket(key, row, logger);
+                var bucket = BucketFactory.CreateTermsBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     termsAggregate.Buckets.Add(bucket);
@@ -149,9 +157,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, DataTable metadataTable, ILogger logger)
+        public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, DataTable metadataTable, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(metadataTable, nameof(DataTable));
 
@@ -166,7 +175,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateFiltersBucket(key, row, logger);
+                var bucket = BucketFactory.CreateFiltersBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     filtersAggregate.Buckets.Add(bucket);
@@ -186,7 +195,7 @@ namespace K2Bridge.Factories
                 // Add a fake bucket
                 var fakeRow = dataTable.NewRow();
                 fakeRow[key] = missingBucket;
-                var fb = BucketFactory.CreateFiltersBucket(key, fakeRow, logger);
+                var fb = BucketFactory.CreateFiltersBucket(key, fakeRow, query, logger);
                 filtersAggregate.Buckets.Add(fb);
             }
 
@@ -219,10 +228,11 @@ namespace K2Bridge.Factories
         /// Get histogram aggregate from a given <see cref="DataRowCollection"/>.
         /// </summary>
         /// <param name="key">The aggregation key.</param>
-        /// <param name="rowCollection">The row collection be parsed.</param>
+        /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"></returns>
-        public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, ILogger logger)
+        public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get histogram aggregate for {}", key);
 
@@ -230,7 +240,7 @@ namespace K2Bridge.Factories
 
             foreach (DataRow row in dataTable.Rows)
             {
-                var bucket = BucketFactory.CreateHistogramBucket(key, row, logger);
+                var bucket = BucketFactory.CreateHistogramBucket(key, row, query, logger);
                 if (bucket != null)
                 {
                     histogramAggregate.Buckets.Add(bucket);
@@ -246,8 +256,9 @@ namespace K2Bridge.Factories
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be added as aggregate.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        public static void AddAggregates(this AggregateDictionary aggregateDictionary, string primaryKey, DataRow row, ILogger logger)
+        public static void AddAggregates(this AggregateDictionary aggregateDictionary, string primaryKey, DataRow row, QueryData query, ILogger logger)
         {
             var columns = row.Table.Columns;
 
@@ -259,33 +270,30 @@ namespace K2Bridge.Factories
                 }
 
                 // Column Metadata (Separator %)
-                // Structure: key%metric%value1%value2%keyed
                 var columnMetadata = column.ColumnName.Split(AggregationsConstants.MetadataSeparator);
+                string key;
 
-                if (columnMetadata.Length > 1)
+                if (columnMetadata.Length <= 1)
                 {
-                    var metric = columnMetadata[1];
-
-                    if (metric == "percentile")
-                    {
-                        var key = columnMetadata[0];
-                        aggregateDictionary.Add(key, GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger));
-                    }
-                    else if (metric == "extended_stats")
-                    {
-                        var key = columnMetadata[0];
-                        aggregateDictionary.Add(key, GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger));
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid.");
-                    }
-                }
-                else
-                {
-                    var key = column.ColumnName;
+                    // ColumnName contains only the key (this is a value aggregate)
+                    key = column.ColumnName;
                     aggregateDictionary.Add(key, GetValueAggregate(key, row, logger));
+                    continue;
                 }
+
+                // ColumnName contains key + metadata (metric used to select aggregate type)
+                key = columnMetadata[0];
+                var metric = columnMetadata[1];
+
+                IAggregate aggregate = metric switch
+                {
+                    AggregationsConstants.Percentile => GetPercentileAggregate(column.ColumnName, columnMetadata, row, logger),
+                    AggregationsConstants.ExtendedStats => GetExtendedStatsAggregate(column.ColumnName, columnMetadata, row, logger),
+                    AggregationsConstants.TopHits => GetTopHitsAggregate(column.ColumnName, columnMetadata, row, logger, query),
+                    _ => throw new InvalidOperationException($"Failed to parse column metadata. {metric} is invalid."),
+                };
+
+                aggregateDictionary.Add(key, aggregate);
             }
         }
 
@@ -430,6 +438,70 @@ namespace K2Bridge.Factories
             logger.LogTrace("Percentile aggregate returned for {}: {}", columnName, percentileAggregate);
 
             return percentileAggregate;
+        }
+
+        /// <summary>
+        /// Get tophits aggregate from a given <see cref="DataRow"/>.
+        /// </summary>
+        /// <param name="columnName">The column name.</param>
+        /// <param name="columnMetadata">The column metadata.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="logger">ILogger object for logging.</param>
+        /// <param name="query">QueryData containing query information.</param>
+        /// <returns><see cref="TopHitsAggregate"/>.</returns>
+        private static TopHitsAggregate GetTopHitsAggregate(string columnName, string[] columnMetadata, DataRow row, ILogger logger, QueryData query)
+        {
+            logger.LogTrace("Get TopHits aggregate for {}", columnName);
+
+            var topHitsAggregate = new TopHitsAggregate() { };
+
+            topHitsAggregate.Hits.SetTotal(0);
+
+            var rowValue = row[columnName];
+            if (rowValue.GetType() != typeof(System.DBNull))
+            {
+                var docCount = (long)row[BucketColumnNames.Count];
+                topHitsAggregate.Hits.SetTotal(docCount);
+
+                if (row[columnName] is JArray { HasValues: true } topHitsValues)
+                {
+                    var hits = new List<Hit>();
+
+                    foreach (JObject jObject in topHitsValues)
+                    {
+                        var hit = HitsFactory.Create(Random.Next().ToString(), query.IndexName);
+
+                        var sourceField = jObject[AggregationsConstants.SourceField].Value<string>();
+                        var sourceValue = jObject[AggregationsConstants.SourceValue];
+
+                        var sortValue = jObject[AggregationsConstants.SortValue];
+
+                        // Add fields
+                        hit.Fields.Add(sourceField, new List<object>() { sourceValue });
+
+                        // Add source
+                        hit.AddSource(sourceField, sourceValue);
+
+                        // Add sort (with date conversion to timestamp)
+                        if (sortValue.Type == JTokenType.String)
+                        {
+                            hit.Sort.Add(TimeUtils.ToEpochMilliseconds(sortValue.Value<DateTime>()));
+                        }
+                        else
+                        {
+                            hit.Sort.Add(sortValue.Value<double>());
+                        }
+
+                        hits.Add(hit);
+                    }
+
+                    topHitsAggregate.Hits.AddHits(hits);
+                }
+            }
+
+            logger.LogTrace("TopHits aggregate returned for {}: {}", columnName, topHitsAggregate);
+
+            return topHitsAggregate;
         }
 
         /// <summary>
