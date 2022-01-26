@@ -17,7 +17,7 @@ steps:
 - task: AzureCLI@1
   displayName: Set up Terraform backend
   # Avoid concurrent Terraform runs on PRs, which would result in failures due to exclusive lock on remote state file.
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), variables['RUN_FLAG_TERRAFORM']))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), variables['RUN_FLAG_TERRAFORM']))
   inputs:
     azureSubscription: ${{ parameters.TerraformBackendServiceConnection }}
     scriptLocation: inlineScript
@@ -77,7 +77,7 @@ steps:
 # - https://github.com/microsoft/azure-pipelines-extensions/issues/747
 - task: AzureCLI@1
   displayName: Get ARM credentials for Terraform
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), variables['RUN_FLAG_TERRAFORM']))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), variables['RUN_FLAG_TERRAFORM']))
   inputs:
     azureSubscription: ${{ parameters.TerraformEnvironmentServiceConnection }}
     scriptLocation: inlineScript
@@ -96,7 +96,7 @@ steps:
     terraform plan -input=false -out=tfplan -var environment=${{ parameters.environment }} ${{ parameters.TerraformArguments }}
     terraform apply -auto-approve -input=false tfplan
   displayName: Terraform apply
-  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), variables['RUN_FLAG_TERRAFORM']))
+  condition: and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), variables['RUN_FLAG_TERRAFORM']))
   workingDirectory: $(System.DefaultWorkingDirectory)/infrastructure/terraform
   env:
     ${{ parameters.TerraformEnvVariables }}

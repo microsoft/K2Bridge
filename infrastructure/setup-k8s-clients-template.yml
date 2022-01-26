@@ -23,8 +23,8 @@ steps:
     set -eu  # fail on error
 
     KUBERNETES_NAMESPACE="build$(Build.BuildId)"
-    if [ "$(Build.SourceBranch)" = "refs/heads/master" ]; then
-      KUBERNETES_NAMESPACE="master"
+    if [ "$(Build.SourceBranch)" = "refs/heads/main" ]; then
+      KUBERNETES_NAMESPACE="main"
     fi
       if [ "$(Build.SourceBranch)" = "refs/heads/dev-vnext" ]; then
       KUBERNETES_NAMESPACE="dev-vnext"
