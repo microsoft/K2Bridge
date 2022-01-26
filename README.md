@@ -1,20 +1,15 @@
 # K2Bridge
 
-| :exclamation: Important security note - [Action required] - Upgrade your K2bridge deployment. Read more [here](./docs/es6822.md) |
-|----------------------------------------------------------------------------------------------------------------------------------|
+K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) (ADX, or codename Kusto) as its backend database.
 
 ---
 
 | :zap: Breaking change notice ! |
 |--------------------------------|
 
-We are currently working on a new K2 version which will add support for visualization and for Kibana 7.10. To avoid a breaking change, we are changing the way we tag our images.
-The new images tags are: 6.8_latest and 7.10_latest, support Kibana 6.8 and Kibana 7.10 respectively.
+This is a new version that add support for visualization and for Kibana 7. To avoid a breaking change, we are changing the way we tag our images. 
+The new images tags are: 6.8_latest and 7.16_latest, support Kibana 6.8 and Kibana 7.10 respectively.
 _Action item:_ Use the provided helm chart to update the deployment with the new image tags. |
-
----
-
-### K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://azure.microsoft.com/en-us/services/data-explorer/) (ADX, or codename Kusto) as its backend database.
 
 ---
 
