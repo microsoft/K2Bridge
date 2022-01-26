@@ -18,11 +18,13 @@ namespace K2Bridge.Visitors
 
             var extendExpression = $"{EncodeKustoField(defaultAggregation.Key)} = {KustoQLOperators.True}";
             var bucketExpression = $"{defaultAggregation.Metric} by {EncodeKustoField(defaultAggregation.Key)}";
+            var projectAwayExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.ProjectAway} {EncodeKustoField(defaultAggregation.Key)}";
 
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression,
                 BucketExpression = bucketExpression,
+                ProjectAwayExpression = projectAwayExpression,
             };
 
             // Build final query using defaultAggregation expressions

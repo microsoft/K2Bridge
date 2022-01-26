@@ -218,8 +218,12 @@ namespace K2Bridge.Tests.End2End
             // Normalize aggregate value (double) with fixed number of decimal
             NormalizeAggregateValue(result, "responses[*].aggregations..value");
 
-            // make a Math.Round on all floats values
+            // Make a Math.Round on all floats values
             RoundFloats(result, "responses[*].aggregations", roundingFloats);
+
+            // Delete _id and _version in top hits aggregation
+            DeleteValue(result, "responses[*].aggregations..hits[*]._id");
+            DeleteValue(result, "responses[*].aggregations..hits[*]._version");
 
             return result;
         }

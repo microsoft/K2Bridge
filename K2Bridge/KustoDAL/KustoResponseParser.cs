@@ -183,7 +183,7 @@ namespace K2Bridge.KustoDAL
 
                     foreach (DataRow row in tableData.Rows)
                     {
-                        searchResponse.Aggregations.AddAggregates(key, row, Logger);
+                        searchResponse.Aggregations.AddAggregates(key, row, query, Logger);
                     }
                 }
                 else
@@ -191,12 +191,12 @@ namespace K2Bridge.KustoDAL
                     // This a bucket aggregation scenario
                     IAggregate bucketAggregate = aggregationType switch
                     {
-                        nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, tableData, Logger),
-                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, tableData, metadataTableData, Logger),
-                        nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, tableData, Logger),
-                        nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, tableData, Logger),
-                        nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, tableData, metadataTableData, Logger),
-                        nameof(Models.Request.Aggregations.HistogramAggregation) => AggregateFactory.GetHistogramAggregate(key, tableData, Logger),
+                        nameof(Models.Request.Aggregations.DateHistogramAggregation) => AggregateFactory.GetDateHistogramAggregate(key, tableData, query, Logger),
+                        nameof(Models.Request.Aggregations.RangeAggregation) => AggregateFactory.GetRangeAggregate(key, tableData, metadataTableData, query, Logger),
+                        nameof(Models.Request.Aggregations.DateRangeAggregation) => AggregateFactory.GetDateRangeAggregate(key, tableData, query, Logger),
+                        nameof(Models.Request.Aggregations.TermsAggregation) => AggregateFactory.GetTermsAggregate(key, tableData, query, Logger),
+                        nameof(Models.Request.Aggregations.FiltersAggregation) => AggregateFactory.GetFiltersAggregate(key, tableData, metadataTableData, query, Logger),
+                        nameof(Models.Request.Aggregations.HistogramAggregation) => AggregateFactory.GetHistogramAggregate(key, tableData, query, Logger),
                         _ => null,
                     };
 

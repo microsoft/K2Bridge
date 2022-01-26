@@ -27,7 +27,8 @@ namespace K2Bridge.Visitors
             var bucketExpression = new StringBuilder();
             bucketExpression.Append($"{termsAggregation.Metric} by {EncodeKustoField(termsAggregation.Key)}");
 
-            var orderBy = termsAggregation.Order?.SortField switch
+            // OrderBy expression: | order by count_ desc
+            var orderByExpression = termsAggregation.Order?.SortField switch
             {
                 "_key" => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(termsAggregation.Key)} {termsAggregation.Order.SortOrder}",
                 "_count" => $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(BucketColumnNames.Count)} {termsAggregation.Order.SortOrder}",
@@ -35,8 +36,8 @@ namespace K2Bridge.Visitors
                 _ => string.Empty,
             };
 
-            bucketExpression.Append(orderBy);
-            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Limit} {termsAggregation.Size}");
+            // Limit expression: | limit 5
+            var limitExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Limit} {termsAggregation.Size}";
 
             // Build final query using termsAggregation expressions
             // let _extdata = _data
@@ -48,6 +49,8 @@ namespace K2Bridge.Visitors
             {
                 ExtendExpression = extendExpression,
                 BucketExpression = bucketExpression.ToString(),
+                OrderByExpression = orderByExpression,
+                LimitExpression = limitExpression,
             };
 
             var query = BuildBucketAggregationQuery(termsAggregation, definition);
