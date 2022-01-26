@@ -7,6 +7,7 @@ namespace UnitTests.K2Bridge.Models.Response
     using System;
     using System.Data;
     using global::K2Bridge.Factories;
+    using global::K2Bridge.Models;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Newtonsoft.Json.Linq;
@@ -28,9 +29,11 @@ namespace UnitTests.K2Bridge.Models.Response
             row[primaryKey] = new DateTime(2017, 1, 2, 13, 4, 5, 60, DateTimeKind.Utc);
             row["count_"] = 234;
 
+            QueryData data = new QueryData("query", "index");
+
             // Act
             var logger = Mock.Of<ILogger<dynamic>>();
-            var bucket = BucketFactory.CreateDateHistogramBucket(primaryKey, row, logger);
+            var bucket = BucketFactory.CreateDateHistogramBucket(primaryKey, row, data, logger);
 
             // Assert
             Assert.AreEqual("2017-01-02T13:04:05.060Z", bucket.KeyAsString);
@@ -55,9 +58,11 @@ namespace UnitTests.K2Bridge.Models.Response
             row["count_"] = 234;
             row["1%percentile%50.0%True"] = new JArray(644.54658);
 
+            QueryData data = new QueryData("query", "index");
+
             // Act
             var logger = Mock.Of<ILogger<dynamic>>();
-            var bucket = BucketFactory.CreateDateHistogramBucket(primaryKey, row, logger);
+            var bucket = BucketFactory.CreateDateHistogramBucket(primaryKey, row, data, logger);
 
             // Assert
             Assert.AreEqual("2017-01-02T13:04:05.060Z", bucket.KeyAsString);

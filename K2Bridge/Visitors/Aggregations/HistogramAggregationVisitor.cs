@@ -47,10 +47,11 @@ namespace K2Bridge.Visitors
                 extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Where} {field} >= bin({min}, {interval}) and {field} < bin({max}, {interval})+{interval}");
             }
 
-            // Bucket expression: count() by ['2'] | order by ['2'] asc
-            var bucketExpression = new StringBuilder();
-            bucketExpression.Append($"{histogramAggregation.Metric} by {histogramKey}");
-            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {histogramKey} asc");
+            // Bucket expression: count() by ['2']
+            var bucketExpression = $"{histogramAggregation.Metric} by {histogramKey}";
+
+            // OrderBy expression: | order by ['2'] asc
+            var orderByExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {histogramKey} asc";
 
             // Build final query using histogramAggregation expressions
             // let _extdata = _data
@@ -62,7 +63,8 @@ namespace K2Bridge.Visitors
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression.ToString(),
-                BucketExpression = bucketExpression.ToString(),
+                BucketExpression = bucketExpression,
+                OrderByExpression = orderByExpression,
             };
 
             var query = BuildBucketAggregationQuery(histogramAggregation, definition);

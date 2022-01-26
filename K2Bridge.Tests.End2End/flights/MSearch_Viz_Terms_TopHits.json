@@ -1,0 +1,68 @@
+{
+    "aggs": {
+        "2": {
+            "terms": {
+                "field": "Carrier",
+                "order": {
+                    "_key": "desc"
+                },
+                "size": 10
+            },
+            "aggs": {
+                "1": {
+                    "top_hits": {
+                        "docvalue_fields": [
+                            {
+                                "field": "DistanceKilometers"
+                            }
+                        ],
+                        "_source": "DistanceKilometers",
+                        "size": 1,
+                        "sort": [
+                            {
+                                "timestamp": {
+                                    "order": "desc"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "size": 0,
+    "stored_fields": [
+        "*"
+    ],
+    "script_fields": {},
+    "docvalue_fields": [
+        {
+            "field": "timestamp",
+            "format": "date_time"
+        }
+    ],
+    "_source": {
+        "excludes": []
+    },
+    "query": {
+        "bool": {
+            "must": [],
+            "filter": [
+                {
+                    "match_all": {}
+                },
+                {
+                    "range": {
+                        "timestamp": {
+                            "gte": "2018-02-01T11:00:00.000Z",
+                            "lte": "2018-02-02T11:00:00.000Z",
+                            "format": "strict_date_optional_time"
+                        }
+                    }
+                }
+            ],
+            "should": [],
+            "must_not": []
+        }
+    }
+}

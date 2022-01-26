@@ -46,11 +46,11 @@ namespace K2Bridge.Visitors
             extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Where} {expandColumn} == {KustoQLOperators.True}");
 
             // Bucket expression:
-            // >> count() by ['2'] | order by ['2'] asc
-            var bucketExpression = new StringBuilder();
+            // >> count() by ['2']
+            var bucketExpression = $"{filtersAggregation.Metric} by {EncodeKustoField(filtersAggregation.Key)}";
 
-            bucketExpression.Append($"{filtersAggregation.Metric} by {EncodeKustoField(filtersAggregation.Key)}");
-            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc");
+            // OrderBy expression: | order by ['2'] asc
+            var orderByExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(filtersAggregation.Key)} asc";
 
             // Build final query using filtersAggregation expressions
             // let _extdata = _data
@@ -64,7 +64,8 @@ namespace K2Bridge.Visitors
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression.ToString(),
-                BucketExpression = bucketExpression.ToString(),
+                BucketExpression = bucketExpression,
+                OrderByExpression = orderByExpression,
                 Metadata = new Dictionary<string, List<string>> {
                     { filtersAggregation.Key, filterNames },
                 },
