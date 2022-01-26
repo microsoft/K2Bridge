@@ -82,6 +82,8 @@ namespace K2Bridge.Visitors
         public const string Ago = "ago";
         public const string IngestionTime = "ingestion_time";
         public const string HoursMark = "h";
+        public const string StrCmp = "strcmp";
+        public const string ToLower = "tolower";
 #pragma warning restore SA1600 // Elements should be documented
     }
 }
