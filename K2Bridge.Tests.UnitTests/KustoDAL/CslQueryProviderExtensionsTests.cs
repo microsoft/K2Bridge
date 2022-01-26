@@ -22,7 +22,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         private readonly IDataReader stubReader = new Mock<IDataReader>().Object;
         private readonly Mock<ICslQueryProvider> stubClient = new();
         private readonly Mock<Metrics> stubMetrics = new();
-        private readonly ClientRequestProperties clientRequestProperties;
+        private readonly ClientRequestProperties clientRequestProperties = new Mock<ClientRequestProperties>().Object;
 
         [Test]
         public async Task ExecuteMonitoredQueryAsync_WithValidInput_ReturnsReaderAndTime()
