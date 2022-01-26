@@ -92,7 +92,7 @@ namespace K2Bridge.KustoDAL
                 var response = ReadResponse(queryData, reader, timeTaken);
 
                 // Log total number of hits to have an idea of how many rows were returned by the search expression and aggregated.
-                Logger.LogDebug("Total number of hits: {totalHits}", response?.Responses?.First()?.Hits.Total);
+                Logger.LogDebug("Total number of hits: {TotalHits}", response?.Responses?.First()?.Hits.Total);
 
                 return response;
             }
@@ -129,13 +129,13 @@ namespace K2Bridge.KustoDAL
             Ensure.IsNotNull(netQueryExecutionTime, nameof(netQueryExecutionTime));
             var netQueryExecutionTimeValue = (float)netQueryExecutionTime;
             metricsHistograms.AdxNetQueryDurationMetric.Observe(netQueryExecutionTimeValue);
-            Logger.LogDebug("[metric] backend query net (engine) duration: {netQueryExecutionTime}", TimeSpan.FromSeconds(netQueryExecutionTimeValue));
+            Logger.LogDebug("[metric] backend query net (engine) duration: {NetQueryExecutionTime}", TimeSpan.FromSeconds(netQueryExecutionTimeValue));
 
             var tableSizeSum = parsedQueryStatus.SelectTokens("dataset_statistics..table_size").Sum(x => x.ToObject<long>());
             if (tableSizeSum > 0)
             {
                 metricsHistograms.AdxQueryBytesMetric.Observe(tableSizeSum);
-                Logger.LogDebug("[metric] backend query bytes: {tableSizeSum}", tableSizeSum);
+                Logger.LogDebug("[metric] backend query bytes: {TableSizeSum}", tableSizeSum);
             }
             else
             {

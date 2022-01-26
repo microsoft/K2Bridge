@@ -120,7 +120,7 @@ namespace K2Bridge.KustoDAL
 
                 var fieldCount = dataReader.FieldCount;
                 Logger.LogDebug("FieldCount: {@fieldCount}", fieldCount);
-                Logger.LogDebug("[metric] backend query total (sdk) duration: {timeTaken}", timeTaken);
+                Logger.LogDebug("[metric] backend query total (sdk) duration: {TimeTaken}", timeTaken);
                 return (timeTaken, dataReader);
             }
             catch (Exception ex)

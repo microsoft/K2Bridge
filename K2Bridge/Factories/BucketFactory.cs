@@ -63,7 +63,7 @@ namespace K2Bridge.Factories
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
         /// <returns><see cref="TermsBucket"/> instance.</returns>
-        public static TermsBucket CreateTermsBucket(string primaryKey, DataRow row, QueryData query,ILogger logger)
+        public static TermsBucket CreateTermsBucket(string primaryKey, DataRow row, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -89,7 +89,7 @@ namespace K2Bridge.Factories
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
         /// <returns><see cref="RangeBucket"/> instance.</returns>
-        public static RangeBucket CreateRangeBucket(string primaryKey, DataRow row, QueryData query,ILogger logger)
+        public static RangeBucket CreateRangeBucket(string primaryKey, DataRow row, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -116,7 +116,7 @@ namespace K2Bridge.Factories
             var fromKey = from?.ToString("0.0##########", CultureInfo.InvariantCulture) ?? "*";
             var toKey = to?.ToString("0.0##########", CultureInfo.InvariantCulture) ?? "*";
 
-            string key = $"{fromKey}-{toKey}";
+            var key = $"{fromKey}-{toKey}";
 
             // Assemble the bucket
             var rb = new RangeBucket

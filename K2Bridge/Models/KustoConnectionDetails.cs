@@ -31,7 +31,7 @@ namespace K2Bridge.Models
 
             if (!useManagedIdentity)
             {
-              Ensure.IsNotNullOrEmpty(aadClientSecret, "Kusto AAD Client Secret is empty or null");
+                Ensure.IsNotNullOrEmpty(aadClientSecret, "Kusto AAD Client Secret is empty or null");
             }
 
             Ensure.IsNotNullOrEmpty(aadTenantId, "Kusto AAD Tenant ID is empty");
