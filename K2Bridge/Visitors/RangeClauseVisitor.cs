@@ -42,7 +42,9 @@ namespace K2Bridge.Visitors
                             FillKqlQuery(rangeClause, s => $"{KustoQLOperators.ToDateTime}(\"{DateTime.Parse(s):o}\")");
                             break;
                         case ClauseFieldType.Text:
-                            throw new NotSupportedException("Text Range is not supported.");
+                            // We replaced the field with 0 to correctly compare it to the strcmp
+                            FillKqlQuery(rangeClause, s => $"{KustoQLOperators.StrCmp}('{s}', {KustoQLOperators.ToStringOperator}({EncodeKustoField(rangeClause.FieldName)}))", "0");
+                            break;
                         case ClauseFieldType.Unknown:
                             throw new Exception($"Field name {rangeClause.FieldName} has an unknown type.");
                         default:
@@ -53,7 +55,7 @@ namespace K2Bridge.Visitors
             }
         }
 
-        private void FillKqlQuery(RangeClause rangeClause, Func<string, string> valueConverter = null)
+        private void FillKqlQuery(RangeClause rangeClause, Func<string, string> valueConverter = null, string replaceField = null)
         {
             valueConverter ??= s => s;
             var (gtOperator, gtValue) = rangeClause switch
@@ -62,7 +64,7 @@ namespace K2Bridge.Visitors
                 { GTValue: "*" } or { GTEValue: "*" } => (null, null),
                 { GTValue: { } gt } => (">", valueConverter(gt)),
                 { GTEValue: { } gte } => (">=", valueConverter(gte)),
-                _ => throw new Exception("Invalid range clause."),
+                _ => throw new IllegalClauseException("Invalid range clause."),
             };
 
             var (ltOperator, ltValue) = rangeClause switch
@@ -71,12 +73,14 @@ namespace K2Bridge.Visitors
                 { LTValue: "*" } or { LTEValue: "*" } => (null, null),
                 { LTValue: { } lt } => ("<", valueConverter(lt)),
                 { LTEValue: { } lte } => ("<=", valueConverter(lte)),
-                _ => throw new Exception("Invalid range clause."),
+                _ => throw new IllegalClauseException("Invalid range clause."),
             };
 
             var field = EncodeKustoField(rangeClause.FieldName);
-            var gtQuery = gtOperator != null ? $"{field} {gtOperator} {gtValue}" : null;
-            var ltQuery = ltOperator != null ? $"{field} {ltOperator} {ltValue}" : null;
+            var replacedField = replaceField ?? field;
+
+            var gtQuery = gtOperator != null ? $"{replacedField} {gtOperator} {gtValue}" : null;
+            var ltQuery = ltOperator != null ? $"{replacedField} {ltOperator} {ltValue}" : null;
             rangeClause.KustoQL = (gtQuery, ltQuery) switch
             {
                 (null, null) => $"{KustoQLOperators.IsNotNull}({field})",

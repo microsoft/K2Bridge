@@ -118,6 +118,21 @@ namespace UnitTests.K2Bridge.Visitors
             return DateRangeClauseToKQL(CreateDateRangeClause("2020-01-01 00:00", "2020-02-22 10:00", minRange, maxRange));
         }
 
+         // Numeric RangeClause Query Tests
+        [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
+        [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "0 < strcmp('C', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
+        [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "0 <= strcmp('C', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]
+        [TestCase(RangeType.Exclusive, RangeType.Wildcard, ExpectedResult = "0 > strcmp('A', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinOpenAndMaxWildcard")]
+        [TestCase(RangeType.Exclusive, RangeType.Exclusive, ExpectedResult = "0 > strcmp('A', tostring(['MyField'])) and 0 < strcmp('C', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinOpenAndMaxOpen")]
+        [TestCase(RangeType.Exclusive, RangeType.Inclusive, ExpectedResult = "0 > strcmp('A', tostring(['MyField'])) and 0 <= strcmp('C', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinOpenAndMaxClosed")]
+        [TestCase(RangeType.Inclusive, RangeType.Wildcard, ExpectedResult = "0 >= strcmp('A', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinClosedAndMaxWildcard")]
+        [TestCase(RangeType.Inclusive, RangeType.Exclusive, ExpectedResult = "0 >= strcmp('A', tostring(['MyField'])) and 0 < strcmp('C', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinClosedAndMaxOpen")]
+        [TestCase(RangeType.Inclusive, RangeType.Inclusive, ExpectedResult = "0 >= strcmp('A', tostring(['MyField'])) and 0 <= strcmp('C', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinClosedAndMaxClosed")]
+        public string TestValidTextRange_ReturnsValidResponse(RangeType minRange, RangeType maxRange)
+        {
+            return TextRangeClauseToKQL(CreateRangeClause("A", "C", minRange, maxRange));
+        }
+
         private static RangeClause CreateRangeClause(string min, string max, RangeType minRange, RangeType maxRange)
         {
             return new RangeClause()
@@ -167,6 +182,13 @@ namespace UnitTests.K2Bridge.Visitors
         private static string DateRangeClauseToKQL(RangeClause rangeClause)
         {
             var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("MyField", "date");
+            visitor.Visit(rangeClause);
+            return rangeClause.KustoQL;
+        }
+
+        private static string TextRangeClauseToKQL(RangeClause rangeClause)
+        {
+            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor("MyField", "keyword");
             visitor.Visit(rangeClause);
             return rangeClause.KustoQL;
         }
