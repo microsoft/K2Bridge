@@ -90,7 +90,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             }
         }";
 
-        private static readonly BoolQuery OutterBoolResult = new BoolQuery
+        private static readonly BoolQuery OutterBoolResult = new()
         {
             Must = new List<IQuery>(),
             MustNot = new List<IQuery>(),
@@ -99,7 +99,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             Filter = new List<IQuery> { null },
         };
 
-        private static readonly BoolQuery InnerBoolResult = new BoolQuery
+        private static readonly BoolQuery InnerBoolResult = new()
         {
             Must = new List<IQuery>
             {
@@ -151,7 +151,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             Filter = new List<IQuery> { },
         };
 
-        private static readonly RangeClause LeafResult = new RangeClause()
+        private static readonly RangeClause LeafResult = new()
         {
             FieldName = "timestamp",
             GTEValue = "1581963795598",

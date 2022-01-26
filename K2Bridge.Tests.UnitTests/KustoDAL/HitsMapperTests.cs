@@ -104,9 +104,11 @@ namespace UnitTests.K2Bridge.KustoDAL
                 "myIndex",
                 highlightText: new Dictionary<string, string> {
                     { "*", "boxes" },
-                });
-            query.HighlightPreTag = "Foo";
-            query.HighlightPostTag = "Bar";
+                })
+            {
+                HighlightPreTag = "Foo",
+                HighlightPostTag = "Bar",
+            };
 
             // Assert
             var highlight = JToken.FromObject(new string[] { "FooboxesBar" });
@@ -161,9 +163,11 @@ namespace UnitTests.K2Bridge.KustoDAL
                 "myIndex",
                 highlightText: new Dictionary<string, string> {
                     { "*", highlightString },
-                });
-            query.HighlightPreTag = "@";
-            query.HighlightPostTag = "$";
+                })
+            {
+                HighlightPreTag = "@",
+                HighlightPostTag = "$",
+            };
 
             // Assert
             expected[0]["_source"]["label1"] = JToken.FromObject(text);
@@ -319,7 +323,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public void MapRowsToHits_WithNullDateTime_ReturnsHitsWithNull()
         {
-            using DataTable hitsTable = HitTypeTestTable(Type.GetType("System.DateTime"), DBNull.Value);
+            using var hitsTable = HitTypeTestTable(Type.GetType("System.DateTime"), DBNull.Value);
             MapHitTypeAndAssert(hitsTable, defaultQuery, JValue.CreateNull());
         }
 
@@ -414,7 +418,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static DataTable HitTypeTestTable(Type dataType, object value)
         {
-            DataTable resTable = new DataTable();
+            var resTable = new DataTable();
 
             var column1 = new DataColumn
             {
@@ -432,29 +436,14 @@ namespace UnitTests.K2Bridge.KustoDAL
             return resTable;
         }
 
-        private IEnumerable<Hit> ReadHits(DataTable table, QueryData query)
+        private static IEnumerable<Hit> ReadHits(DataTable table, QueryData query)
         {
             var logger = new Mock<ILogger>();
             using var highlighter = new LuceneHighlighter(query, logger.Object);
             return HitsMapper.MapRowsToHits(table.Rows, query, highlighter);
         }
 
-        private void AssertHits(IEnumerable<Hit> hits)
-        {
-            var hitl = new List<Hit>(hits);
-            Assert.AreEqual(1, hitl.Count);
-
-            foreach (var hit in hitl)
-            {
-                hit.Id = null;
-            }
-
-            var hitJson = JToken.FromObject(hitl);
-
-            hitJson.Should().BeEquivalentTo(expected);
-        }
-
-        private void MapHitTypeAndAssert(DataTable table, QueryData query, object expected)
+        private static void MapHitTypeAndAssert(DataTable table, QueryData query, object expected)
         {
             var logger = new Mock<ILogger>();
             using var highlighter = new LuceneHighlighter(query, logger.Object);
@@ -470,6 +459,21 @@ namespace UnitTests.K2Bridge.KustoDAL
             var hitJson = JToken.FromObject(hitl).First;
 
             Assert.AreEqual(hitJson["_source"]["column1"], expected);
+        }
+
+        private void AssertHits(IEnumerable<Hit> hits)
+        {
+            var hitl = new List<Hit>(hits);
+            Assert.AreEqual(1, hitl.Count);
+
+            foreach (var hit in hitl)
+            {
+                hit.Id = null;
+            }
+
+            var hitJson = JToken.FromObject(hitl);
+
+            hitJson.Should().BeEquivalentTo(expected);
         }
     }
 }

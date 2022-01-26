@@ -10,7 +10,6 @@ namespace UnitTests.K2Bridge.HttpMessages
     using global::K2Bridge.HttpMessages;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Features;
-    using Microsoft.Extensions.Primitives;
     using NUnit.Framework;
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA1001:owns disposable field(s) but is not disposable", Justification = "No need to do this.")]
@@ -32,7 +31,6 @@ namespace UnitTests.K2Bridge.HttpMessages
                 () => new HttpResponseMessageResult(null));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
         [SetUp]
         public void SetUp()
         {
@@ -50,7 +48,6 @@ namespace UnitTests.K2Bridge.HttpMessages
             httpResponseMessageResult = new HttpResponseMessageResult(httpResponseMessage);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
         [Test]
         public async Task ExecuteResultAsync_WithValidContext_Passes()
         {
@@ -69,15 +66,14 @@ namespace UnitTests.K2Bridge.HttpMessages
             var responseFeature = ac.HttpContext.Features.Get<IHttpResponseFeature>();
             Assert.AreEqual(Reason, responseFeature.ReasonPhrase);
 
-            res.Headers.TryGetValue("my-custom-header", out StringValues headerVal);
+            res.Headers.TryGetValue("my-custom-header", out var headerVal);
             Assert.AreEqual(httpResponseMessage.Headers.GetValues("my-custom-header"), headerVal);
 
             var val = httpResponseMessage.Content.Headers.GetValues("my-custom-content-header");
-            res.Headers.TryGetValue("my-custom-content-header", out StringValues contentHeaderVal);
+            res.Headers.TryGetValue("my-custom-content-header", out var contentHeaderVal);
             Assert.AreEqual(val, contentHeaderVal);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
         [Test]
         public async Task ExecuteResultAsync_IgnoresTransferEncoding_Passes()
         {
@@ -102,19 +98,18 @@ namespace UnitTests.K2Bridge.HttpMessages
             var responseFeature = ac.HttpContext.Features.Get<IHttpResponseFeature>();
             Assert.AreEqual(Reason, responseFeature.ReasonPhrase);
 
-            res.Headers.TryGetValue("my-custom-header", out StringValues headerVal);
+            res.Headers.TryGetValue("my-custom-header", out var headerVal);
             Assert.AreEqual(httpResponseMessage.Headers.GetValues("my-custom-header"), headerVal);
 
             var val = httpResponseMessage.Content.Headers.GetValues("my-custom-content-header");
-            res.Headers.TryGetValue("my-custom-content-header", out StringValues contentHeaderVal);
+            res.Headers.TryGetValue("my-custom-content-header", out var contentHeaderVal);
             Assert.AreEqual(val, contentHeaderVal);
 
             // Verify transfer encoding was ignored
-            res.Headers.TryGetValue("Transfer-Encoding", out StringValues transferEnc);
+            res.Headers.TryGetValue("Transfer-Encoding", out var transferEnc);
             Assert.IsTrue(transferEnc.Count == 0);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
         [Test]
         public void ExecuteResultAsync_WithActionContextNoHttpContext_Throws()
         {
@@ -128,7 +123,6 @@ namespace UnitTests.K2Bridge.HttpMessages
                 async () => await httpResponseMessageResult.ExecuteResultAsync(ac));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
         [Test]
         public void ExecuteResultAsync_WithoutActionContext_Throws()
         {

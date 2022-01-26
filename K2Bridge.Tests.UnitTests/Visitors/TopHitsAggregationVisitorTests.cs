@@ -21,7 +21,7 @@ namespace UnitTests.K2Bridge.Visitors
             {
                 DocValueFields = new List<DocValueField>() { new DocValueField() { Field = "metricfieldA" } },
                 Key = "2",
-                PartitionKey="3",
+                PartitionKey = "3",
                 Field = "metricfieldA",
                 Size = 1,
                 Sort = new List<SortClause>() { new SortClause() { FieldName = "sortfieldA", Order = "desc" } },
@@ -41,7 +41,7 @@ namespace UnitTests.K2Bridge.Visitors
             {
                 DocValueFields = new List<DocValueField>() { new DocValueField() { Field = "metricfieldA.B" } },
                 Key = "2",
-                PartitionKey="3",
+                PartitionKey = "3",
                 Field = "metricfieldA.B",
                 Size = 1,
                 Sort = new List<SortClause>() { new SortClause() { FieldName = "sortfieldA.B", Order = "desc" } },

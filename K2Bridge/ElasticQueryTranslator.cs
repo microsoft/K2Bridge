@@ -126,7 +126,7 @@ namespace K2Bridge
                 if (aggregations?.Count == 1 && aggregations.First().Value.PrimaryAggregation is BucketAggregation)
                 {
                     var (key, aggregationContainer) = aggregations.First();
-                    queryData.PrimaryAggregation = KeyValuePair.Create<string, string>(key, aggregationContainer.PrimaryAggregation.GetType().Name);
+                    queryData.PrimaryAggregation = KeyValuePair.Create(key, aggregationContainer.PrimaryAggregation.GetType().Name);
                 }
 
                 return queryData;

@@ -80,7 +80,7 @@ namespace K2Bridge.Tests.End2End
             }
 
             tokens = parent.SelectTokens("responses[*].aggregations..buckets..values");
-            foreach (JToken v in tokens)
+            foreach (var v in tokens)
             {
                 // Median percentile KeyValuePair has "50.0" as Key
                 if (v.Type == JTokenType.Object)
@@ -187,7 +187,7 @@ namespace K2Bridge.Tests.End2End
         /// <returns>SearchAsync operation result.</returns>
         public async Task<JToken> MSearch(string indexName, string jsonQueryFile, bool validateHighlight = true, int? roundingFloats = null)
         {
-            JObject query = JObject.Parse(File.ReadAllText(jsonQueryFile));
+            var query = JObject.Parse(File.ReadAllText(jsonQueryFile));
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "_msearch");
             var payload = new StringBuilder();
@@ -267,7 +267,7 @@ namespace K2Bridge.Tests.End2End
             ReplaceType(result, "geo_point", "object", false);
 
             // Remove extra fields returned by Elasticsearch (prefixed by _)
-            JObject fields = (JObject)result.SelectToken($"$.fields");
+            var fields = (JObject)result.SelectToken($"$.fields");
             var removes = new List<string>();
             foreach (var (name, _) in fields)
             {
@@ -359,7 +359,7 @@ namespace K2Bridge.Tests.End2End
         private static void DeleteValue(JToken parent, string jsonPath)
         {
             var tokens = parent.SelectTokens(jsonPath);
-            foreach (JToken v in tokens)
+            foreach (var v in tokens)
             {
                 v.Parent.Remove();
             }

@@ -162,7 +162,7 @@ namespace UnitTests.K2Bridge.Visitors
         [Test]
         public void Visit_WhenHasAggregations_KustoQLShouldContainAggs()
         {
-            string dateHistogramAggregation = @"
+            var dateHistogramAggregation = @"
                 {""aggs"": {
                     ""2"": {
                         ""date_histogram"": {
@@ -274,7 +274,7 @@ namespace UnitTests.K2Bridge.Visitors
             };
         }
 
-        private void CreateVisitorAndVisit(ElasticSearchDSL elasticSearchDSL, string dbName = "")
+        private static void CreateVisitorAndVisit(ElasticSearchDSL elasticSearchDSL, string dbName = "")
         {
             var visitor =
                 new ElasticSearchDSLVisitor(

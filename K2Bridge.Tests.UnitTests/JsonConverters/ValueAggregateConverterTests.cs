@@ -23,18 +23,18 @@ namespace UnitTests.K2Bridge.JsonConverters
             ""value"": null
         }";
 
-        private static readonly ValueAggregate ValidValueAggregateWithValue = new ValueAggregate()
+        private static readonly ValueAggregate ValidValueAggregateWithValue = new()
         {
             Value = 644.0861,
         };
 
-        private static readonly ValueAggregate ValidValueAggregateWithValueAsString = new ValueAggregate()
+        private static readonly ValueAggregate ValidValueAggregateWithValueAsString = new()
         {
             Value = 1625176800000,
             ValueAsString = "2021-07-02T00:00:00.000+02:00",
         };
 
-        private static readonly ValueAggregate ValidValueAggregateWithNullValues = new ValueAggregate()
+        private static readonly ValueAggregate ValidValueAggregateWithNullValues = new()
         {
             Value = null,
             ValueAsString = null,

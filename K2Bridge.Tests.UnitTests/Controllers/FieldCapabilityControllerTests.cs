@@ -34,7 +34,7 @@ namespace UnitTests.K2Bridge.Controllers
             Assert.IsInstanceOf<ContentResult>(result);
         }
 
-        private FieldCapabilityController GetController()
+        private static FieldCapabilityController GetController()
         {
             var mockDAL = new Mock<IKustoDataAccess>();
             var response = new FieldCapabilityResponse();

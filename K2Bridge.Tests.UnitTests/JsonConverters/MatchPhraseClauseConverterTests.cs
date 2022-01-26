@@ -53,7 +53,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }";
 
-        private static readonly Query ExpectedValidMatchClause = new Query
+        private static readonly Query ExpectedValidMatchClause = new()
         {
             Bool = new BoolQuery
             {

@@ -26,7 +26,8 @@ namespace K2Bridge.Tests.End2End
         protected const string TypesMapping = "types_mapping";
 
         // Map Kusto columns to types
-        private static readonly Dictionary<string, string> KustoColumnType = new Dictionary<string, string> {
+        private static readonly Dictionary<string, string> KustoColumnType = new()
+        {
                 { "Boolean", "bool" },
                 { "DateTime", "datetime" },
                 { "Guid", "guid" },

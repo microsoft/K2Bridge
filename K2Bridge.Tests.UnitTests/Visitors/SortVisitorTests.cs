@@ -60,7 +60,7 @@ namespace UnitTests.K2Bridge.Visitors
             Assert.Throws(typeof(IllegalClauseException), () => VisitSortQuery(sortClause));
         }
 
-        private string VisitSortQuery(SortClause clause)
+        private static string VisitSortQuery(SortClause clause)
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(clause);

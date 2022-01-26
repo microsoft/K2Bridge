@@ -458,7 +458,7 @@ namespace K2Bridge.Factories
             topHitsAggregate.Hits.SetTotal(0);
 
             var rowValue = row[columnName];
-            if (rowValue.GetType() != typeof(System.DBNull))
+            if (rowValue.GetType() != typeof(DBNull))
             {
                 var docCount = (long)row[BucketColumnNames.Count];
                 topHitsAggregate.Hits.SetTotal(docCount);
@@ -518,11 +518,11 @@ namespace K2Bridge.Factories
             var valueAggregate = new ValueAggregate() { Value = null };
             var rowValue = row[key];
 
-            if (rowValue.GetType() != typeof(System.DBNull))
+            if (rowValue.GetType() != typeof(DBNull))
             {
                 valueAggregate = rowValue switch
                 {
-                    System.DateTime dateValue => new ValueAggregate() { Value = TimeUtils.ToEpochMilliseconds(dateValue), ValueAsString = dateValue.ToString("yyyy-MM-ddTHH:mm:ss.fffK") },
+                    DateTime dateValue => new ValueAggregate() { Value = TimeUtils.ToEpochMilliseconds(dateValue), ValueAsString = dateValue.ToString("yyyy-MM-ddTHH:mm:ss.fffK") },
                     _ => new ValueAggregate() { Value = Convert.ToDouble(rowValue) },
                 };
             }
