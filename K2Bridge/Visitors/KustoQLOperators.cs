@@ -73,6 +73,11 @@ namespace K2Bridge.Visitors
         public const string CommandSeparator = "\n|";
         public const string NewLine = "\n";
         public const string True = "true";
+        public const string Top = "top";
+        public const string MakeList = "make_list";
+        public const string TakeAny = "take_any";
+        public const string JoinInner = "join kind=inner";
+        public const string PartitionBy = "partition by";
         public const string Datatable = "datatable";
         public const string Ago = "ago";
         public const string IngestionTime = "ingestion_time";

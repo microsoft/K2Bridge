@@ -11,9 +11,14 @@ namespace K2Bridge.Models.Request.Aggregations
     {
         public string Metric { get; set; } = "count()";
 
-        /// <summary>
-        /// Gets or sets the metrics part of the query, assembled by the sub aggregations.
+        public string MetricKey { get; set; } = "count_";
+
+        /// Gets or sets the summarizable metrics part of the query, assembled by the sub aggregations.
         /// </summary>
-        public string SubAggregationsKustoQL { get; set; }
+        public string SummarizableMetricsKustoQL { get; set; }
+
+        /// <summary>
+        /// Gets or sets the partionable metrics part of the query, assembled by the sub aggregations.
+        public string PartitionableMetricsKustoQL { get; set; }
     }
 }

@@ -5,6 +5,7 @@
 namespace UnitTests.K2Bridge.JsonConverters
 {
     using System.Collections.Generic;
+    using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Aggregations;
     using NUnit.Framework;
 
@@ -181,6 +182,27 @@ namespace UnitTests.K2Bridge.JsonConverters
                     ""extended_stats"" : {
                         ""field"" : ""metric""
                     } 
+                }
+            }}";
+
+        private const string TopHitsAggregation = @"
+            {""aggs"": { 
+                ""2"": {
+                    ""top_hits"": {
+                        ""docvalue_fields"": [
+                            { 
+                                ""field"": ""metricfield""
+                            }
+                        ],    
+                        ""size"": 1,
+                        ""sort"": [
+                            {
+                                ""sortfield"": {
+                                    ""order"": ""desc""
+                                }
+                            }
+                        ]
+                    }
                 }
             }}";
 
@@ -499,6 +521,26 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
+        private static readonly AggregationContainer ExpectedTopHitsAggregation = new AggregationContainer()
+        {
+            PrimaryAggregation = null,
+            SubAggregations = new AggregationDictionary
+            {
+                ["2"] = new AggregationContainer
+                {
+                    PrimaryAggregation = new TopHitsAggregation
+                    {
+                        DocValueFields = new List<DocValueField>() { new DocValueField() { Field = "metricfield" } },
+                        Key = "2",
+                        Field = "metricfield",
+                        Size = 1,
+                        Sort = new List<SortClause>() { new SortClause() { FieldName = "sortfield", Order = "desc" } },
+                    },
+                    SubAggregations = new AggregationDictionary(),
+                },
+            },
+        };
+
         private static readonly AggregationContainer ExpectedNoAggAggregation = new AggregationContainer()
         {
             PrimaryAggregation = null,
@@ -528,6 +570,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             new TestCaseData(PercentilesKeyedAggregation, ExpectedValidPercentilesKeyedAggregation).SetName("JsonDeserializeObject_WithAggregationValidPercentiles_DeserializedCorrectly"),
             new TestCaseData(ExtendedStatsAggregationWithSigma, ExpectedExtendedStatsAggregationWithSigma).SetName("JsonDeserializeObject_WithExtendedStatsAggregationWithSigma_DeserializedCorrectly"),
             new TestCaseData(ExtendedStatsAggregationWithoutSigma, ExpectedExtendedStatsAggregationWithoutSigma).SetName("JsonDeserializeObject_WithExtendedStatsAggregationWithoutSigma_DeserializedCorrectly"),
+            new TestCaseData(TopHitsAggregation, ExpectedTopHitsAggregation).SetName("JsonDeserializeObject_WithTopHitsAggregation_DeserializedCorrectly"),
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
 

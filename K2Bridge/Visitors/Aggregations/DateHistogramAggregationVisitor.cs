@@ -49,10 +49,11 @@ namespace K2Bridge.Visitors
                 extendExpression.Append(field);
             }
 
-            // Bucket expression: count() by ['10'] | order by ['10'] asc
-            var bucketExpression = new StringBuilder();
-            bucketExpression.Append($"{dateHistogramAggregation.Metric} by {EncodeKustoField(dateHistogramAggregation.Key)}");
-            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc");
+            // Bucket expression: count() by ['10']
+            var bucketExpression = $"{dateHistogramAggregation.Metric} by {EncodeKustoField(dateHistogramAggregation.Key)}";
+
+            // OrderBy expression: | order by ['10'] asc
+            var orderByExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateHistogramAggregation.Key)} asc";
 
             // Build final query using dateHistogramAggregation expressions
             // let _extdata = _data
@@ -63,7 +64,8 @@ namespace K2Bridge.Visitors
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression.ToString(),
-                BucketExpression = bucketExpression.ToString(),
+                BucketExpression = bucketExpression,
+                OrderByExpression = orderByExpression,
             };
 
             var query = BuildBucketAggregationQuery(dateHistogramAggregation, definition);

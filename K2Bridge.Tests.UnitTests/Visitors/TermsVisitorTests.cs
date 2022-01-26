@@ -12,7 +12,7 @@ namespace UnitTests.K2Bridge.Visitors
     [TestFixture]
     public class TermsVisitorTests
     {
-        [TestCase(ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| limit 10;")]
+        [TestCase(ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| limit 10;\n(_summarizablemetrics\n| as aggs);")]
         public string TermsVisit_WithNullOrder_ReturnsValidResponse()
         {
             var termsAggregation = new TermsAggregation()
@@ -30,9 +30,9 @@ namespace UnitTests.K2Bridge.Visitors
             return termsAggregation.KustoQL;
         }
 
-        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
-        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
-        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
+        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['count_'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
+        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['key'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
+        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = ['field'];\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['1'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_ReturnsValidResponse(string sortFieldName)
         {
             var termsAggregation = new TermsAggregation()
@@ -54,9 +54,9 @@ namespace UnitTests.K2Bridge.Visitors
             return termsAggregation.KustoQL;
         }
 
-        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = tostring(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
-        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = tostring(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
-        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = tostring(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
+        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = tostring(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['count_'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
+        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = tostring(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['key'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
+        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = tostring(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['1'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_DynamicString_ReturnsValidResponse(string sortFieldName)
         {
             var termsAggregation = new TermsAggregation()
@@ -78,9 +78,9 @@ namespace UnitTests.K2Bridge.Visitors
             return termsAggregation.KustoQL;
         }
 
-        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
-        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
-        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
+        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['count_'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
+        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['key'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
+        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['1'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_DynamicLong_ReturnsValidResponse(string sortFieldName)
         {
             var termsAggregation = new TermsAggregation()
@@ -102,9 +102,9 @@ namespace UnitTests.K2Bridge.Visitors
             return termsAggregation.KustoQL;
         }
 
-        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
-        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
-        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
+        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['count_'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
+        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['key'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
+        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todouble(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['1'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_DynamicDouble_ReturnsValidResponse(string sortFieldName)
         {
             var termsAggregation = new TermsAggregation()
@@ -126,9 +126,9 @@ namespace UnitTests.K2Bridge.Visitors
             return termsAggregation.KustoQL;
         }
 
-        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todatetime(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
-        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todatetime(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
-        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todatetime(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
+        [TestCase("_count", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todatetime(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['count_'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['count_'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationSortCount_ReturnsValidResponse")]
+        [TestCase("_key", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todatetime(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['key'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['key'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationKeyCount_ReturnsValidResponse")]
+        [TestCase("1", ExpectedResult = "\nlet _extdata = _data\n| extend ['key'] = todatetime(['field'].['A']);\nlet _summarizablemetrics = _extdata\n| summarize metric by ['key']\n| order by ['1'] desc\n| limit 10;\n(_summarizablemetrics\n| order by ['1'] desc\n| as aggs);", TestName = "TermsVisit_WithAggregationCustomCount_ReturnsValidResponse")]
         public string TermsVisit_WithAggregation_DynamicDate_ReturnsValidResponse(string sortFieldName)
         {
             var termsAggregation = new TermsAggregation()

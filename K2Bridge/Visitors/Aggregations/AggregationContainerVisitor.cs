@@ -27,9 +27,17 @@ namespace K2Bridge.Visitors
 
             if (aggregationContainer.PrimaryAggregation is BucketAggregation bucketAggregation)
             {
+                VisitedMetrics.Add(EncodeKustoField(bucketAggregation.Key));
+                VisitedMetrics.Add(EncodeKustoField(bucketAggregation.MetricKey));
+
                 var primaryAggregations = aggregationContainer.SubAggregations.Values.Select(x => x.PrimaryAggregation).ToList();
 
-                bucketAggregation.SubAggregationsKustoQL = BuildSummarizableMetricsQuery(primaryAggregations);
+                bucketAggregation.SummarizableMetricsKustoQL = BuildSummarizableMetricsQuery(
+                    primaryAggregations);
+
+                bucketAggregation.PartitionableMetricsKustoQL = BuildPartitionableMetricsQuery(
+                    primaryAggregations,
+                    bucketAggregation.Key);
             }
 
             aggregationContainer.PrimaryAggregation.Accept(this);
@@ -56,6 +64,23 @@ namespace K2Bridge.Visitors
             if (!string.IsNullOrEmpty(summarizableMetricsExpression))
             {
                 query.Append($",");
+            }
+
+            return query.ToString();
+        }
+
+        private string BuildPartitionableMetricsQuery(IEnumerable<Aggregation> primaryAggregations, string partitionKey)
+        {
+            // Collect all additional queries built from PartitionableMetricAggregation metrics
+            var query = new StringBuilder();
+            var aggregations = primaryAggregations.OfType<PartitionableMetricAggregation>();
+
+            foreach (var aggregation in aggregations)
+            {
+                aggregation.PartitionKey = partitionKey;
+
+                aggregation.Accept(this);
+                query.Append($"{aggregation.KustoQL}");
             }
 
             return query.ToString();

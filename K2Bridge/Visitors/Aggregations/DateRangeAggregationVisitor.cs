@@ -57,11 +57,12 @@ namespace K2Bridge.Visitors
             extendExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.Where} {expandColumn} == {KustoQLOperators.True}");
 
             // Bucket expression:
-            // >> count() by ['2'] | order by ['2'] asc
-            var bucketExpression = new StringBuilder();
+            // >> count() by ['2']
+            var bucketExpression = $"{dateRangeAggregation.Metric} by {EncodeKustoField(dateRangeAggregation.Key)}";
 
-            bucketExpression.Append($"{dateRangeAggregation.Metric} by {EncodeKustoField(dateRangeAggregation.Key)}");
-            bucketExpression.Append($"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc");
+            // OrderBy expression:
+            // >> | order by ['2'] asc
+            var orderByExpression = $"{KustoQLOperators.CommandSeparator} {KustoQLOperators.OrderBy} {EncodeKustoField(dateRangeAggregation.Key)} asc";
 
             // Build final query using dateRangeAggregation expressions
             // let _extdata = _data
@@ -74,7 +75,8 @@ namespace K2Bridge.Visitors
             var definition = new BucketAggregationQueryDefinition()
             {
                 ExtendExpression = extendExpression.ToString(),
-                BucketExpression = bucketExpression.ToString(),
+                BucketExpression = bucketExpression,
+                OrderByExpression = orderByExpression,
             };
 
             var query = BuildBucketAggregationQuery(dateRangeAggregation, definition);

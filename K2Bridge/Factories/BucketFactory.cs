@@ -8,6 +8,7 @@ namespace K2Bridge.Factories
     using System.Data;
     using System.Globalization;
     using System.Linq;
+    using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
     using K2Bridge.Utils;
@@ -23,9 +24,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
         /// <returns><see cref="DateHistogramBucket"/> instance.</returns>
-        public static DateHistogramBucket CreateDateHistogramBucket(string primaryKey, DataRow row, ILogger logger)
+        public static DateHistogramBucket CreateDateHistogramBucket(string primaryKey, DataRow row, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -48,7 +50,7 @@ namespace K2Bridge.Factories
                 KeyAsString = dateBucket.ToString("yyyy-MM-ddTHH:mm:ss.fffK"),
             };
 
-            dhb.AddAggregates(primaryKey, row, logger);
+            dhb.AddAggregates(primaryKey, row, query, logger);
 
             return dhb;
         }
@@ -58,9 +60,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
         /// <returns><see cref="TermsBucket"/> instance.</returns>
-        public static TermsBucket CreateTermsBucket(string primaryKey, DataRow row, ILogger logger)
+        public static TermsBucket CreateTermsBucket(string primaryKey, DataRow row, QueryData query,ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -73,7 +76,7 @@ namespace K2Bridge.Factories
                 Key = Convert.ToString(key),
             };
 
-            tb.AddAggregates(primaryKey, row, logger);
+            tb.AddAggregates(primaryKey, row, query, logger);
 
             return tb;
         }
@@ -83,9 +86,10 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="primaryKey">The primary aggregation key.</param>
         /// <param name="row">The row to be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
         /// <returns><see cref="RangeBucket"/> instance.</returns>
-        public static RangeBucket CreateRangeBucket(string primaryKey, DataRow row, ILogger logger)
+        public static RangeBucket CreateRangeBucket(string primaryKey, DataRow row, QueryData query,ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -123,7 +127,7 @@ namespace K2Bridge.Factories
                 To = to,
             };
 
-            rb.AddAggregates(primaryKey, row, logger);
+            rb.AddAggregates(primaryKey, row, query, logger);
 
             return rb;
         }
@@ -131,9 +135,12 @@ namespace K2Bridge.Factories
         /// <summary>
         /// Create a new <see cref="FiltersBucket"/> from a given <see cref="DataRow"/>.
         /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <param name="primaryKey">The primary aggregation key.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
+        /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
         /// <returns>A new FiltersBucket.</returns>
-        public static FiltersBucket CreateFiltersBucket(string primaryKey, DataRow row, ILogger logger)
+        public static FiltersBucket CreateFiltersBucket(string primaryKey, DataRow row, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -153,16 +160,19 @@ namespace K2Bridge.Factories
             };
 
             // Pass the encoded column name so that it is correctly identified when adding other aggs
-            fb.AddAggregates(encodedKey, row, logger);
+            fb.AddAggregates(encodedKey, row, query, logger);
 
             return fb;
         }
 
         /// Create a new <see cref="DateRangeBucket"/> from a given <see cref="DataRow"/>.
         /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <param name="primaryKey">The primary aggregation key.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
+        /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
         /// <returns>A new DateRangeBucket.</returns>
-        public static DateRangeBucket CreateDateRangeBucket(string primaryKey, DataRow row, ILogger logger)
+        public static DateRangeBucket CreateDateRangeBucket(string primaryKey, DataRow row, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -203,7 +213,7 @@ namespace K2Bridge.Factories
 
             drb.Key = $"{drb.FromAsString}-{drb.ToAsString}";
 
-            drb.AddAggregates(primaryKey, row, logger);
+            drb.AddAggregates(primaryKey, row, query, logger);
 
             return drb;
         }
@@ -211,9 +221,12 @@ namespace K2Bridge.Factories
         /// <summary>
         /// Create a new <see cref="HistogramBucket" from a given <see cref="DataRow"/>/>.
         /// </summary>
-        /// <param name="row">The row to be transformed to bucket.</param>
+        /// <param name="primaryKey">The primary aggregation key.</param>
+        /// <param name="row">The row to be parsed.</param>
+        /// <param name="query">QueryData containing query information.</param>
+        /// <param name="logger">The <see cref="ILogger"/> used for logging.</param>
         /// <returns>A new HistogramBucket.</returns>
-        public static HistogramBucket CreateHistogramBucket(string primaryKey, DataRow row, ILogger logger)
+        public static HistogramBucket CreateHistogramBucket(string primaryKey, DataRow row, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(row, nameof(row));
 
@@ -234,7 +247,7 @@ namespace K2Bridge.Factories
                 Key = Convert.ToDouble(key),
             };
 
-            hb.AddAggregates(primaryKey, row, logger);
+            hb.AddAggregates(primaryKey, row, query, logger);
 
             return hb;
         }
