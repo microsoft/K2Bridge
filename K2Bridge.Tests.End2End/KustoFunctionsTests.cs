@@ -93,7 +93,7 @@ namespace K2Bridge.Tests.End2End
         {
             // Create `countries` table to test an ADX join query
             KustoExecute(@"
-                .set-or-replace countries <| 
+                .set-or-replace countries <|
                   print CountryCode='AE', CountryName='United Arab Emirates'
                   | union (print CountryCode='AR', CountryName='Argentina')
                   | union (print CountryCode='AT', CountryName='Austria')
