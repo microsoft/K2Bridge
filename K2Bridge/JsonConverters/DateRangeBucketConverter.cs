@@ -4,7 +4,6 @@
 
 namespace K2Bridge.JsonConverters
 {
-    using System.Collections.Generic;
     using K2Bridge.JsonConverters.Base;
     using K2Bridge.Models.Response.Aggregations;
     using Newtonsoft.Json;
@@ -58,7 +57,7 @@ namespace K2Bridge.JsonConverters
                 serializer.Serialize(writer, bucket.Key);
             }
 
-            foreach (KeyValuePair<string, IAggregate> aggregate in bucket)
+            foreach (var aggregate in bucket)
             {
                 writer.WritePropertyName(aggregate.Key);
                 serializer.Serialize(writer, aggregate.Value);

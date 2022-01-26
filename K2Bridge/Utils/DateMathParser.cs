@@ -7,9 +7,9 @@ namespace K2Bridge.Visitors
     using System;
     using System.Text.RegularExpressions;
 
-    /// <content>
+    /// <summary>
     /// Parser for the Date Math expressions.
-    /// </content>
+    /// </summary>
     public class DateMathParser
     {
         public static string ParseDateMath(string expr)
@@ -19,7 +19,8 @@ namespace K2Bridge.Visitors
                 @"^
                         (?: (?<anchor>now) | (?: (?<anchor>.+?) (?:\|\||$)) )
                         (?: (?<rangeSign>[+-]) (?<rangeValue>\d+) (?<rangeUnit>[a-zA-Z]))*
-                        (?: (?:\/ (?<rounding>y|M|w|d|h|H|m|s)))?", RegexOptions.IgnorePatternWhitespace);
+                        (?: (?:\/ (?<rounding>y|M|w|d|h|H|m|s)))?",
+                RegexOptions.IgnorePatternWhitespace);
             var match = rgx.Match(expr);
 
             var kexpr = string.Empty;
@@ -31,7 +32,7 @@ namespace K2Bridge.Visitors
 
             // The date literal, ie.g. YYYY-MM-DD or "now"
             var anchor = match.Groups["anchor"].Value;
-            if (anchor.Equals("now"))
+            if (anchor.Equals("now", StringComparison.OrdinalIgnoreCase))
             {
                 kexpr = "now()";
             }

@@ -34,7 +34,7 @@ namespace K2Bridge.JsonConverters
             return obj;
         }
 
-        private Aggregation GetPrimaryAggregation(JProperty property, JsonReader reader, JsonSerializer serializer)
+        private static Aggregation GetPrimaryAggregation(JProperty property, JsonReader reader, JsonSerializer serializer)
         {
             Aggregation aggregation = null;
 
@@ -56,7 +56,7 @@ namespace K2Bridge.JsonConverters
                     "percentiles" => property.Value.ToObject<PercentileAggregation>(serializer),
                     "top_hits" => property.Value.ToObject<TopHitsAggregation>(serializer),
                     "histogram" => property.Value.ToObject<HistogramAggregation>(serializer),
-                    _ => aggregation
+                    _ => aggregation,
                 };
             }
 

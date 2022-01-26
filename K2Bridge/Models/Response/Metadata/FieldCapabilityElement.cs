@@ -36,6 +36,6 @@ namespace K2Bridge.Models.Response.Metadata
         /// <summary>
         /// Gets or sets a value indicating whether the field is metadatas.
         /// </summary>
-        public bool IsMetadataField { get; set; } = false;
+        public bool IsMetadataField { get; set; }
     }
 }
