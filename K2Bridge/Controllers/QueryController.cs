@@ -96,7 +96,7 @@ namespace K2Bridge.Controllers
             [FromServices] RequestContext requestContext)
         {
             Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), null, logger);
-            var header = "{index:\"" + indexName + "\"}";
+            var header = "{\"index\":\"" + indexName + "\"}";
 
             return await SearchInternalAsync(header, await ExtractBodyAsync(), requestContext, true);
         }
