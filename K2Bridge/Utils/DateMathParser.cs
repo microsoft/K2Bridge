@@ -7,9 +7,9 @@ namespace K2Bridge.Visitors
     using System;
     using System.Text.RegularExpressions;
 
-    /// <content>
+    /// <summary>
     /// Parser for the Date Math expressions.
-    /// </content>
+    /// </summary>
     public class DateMathParser
     {
         public static string ParseDateMath(string expr)
