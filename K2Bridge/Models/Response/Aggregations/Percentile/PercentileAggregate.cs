@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response.Aggregations
+namespace K2Bridge.Models.Response.Aggregations.Percentile
 {
     using System.Collections.Generic;
     using K2Bridge.JsonConverters;

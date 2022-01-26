@@ -13,6 +13,10 @@ namespace K2Bridge.Factories
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
+    using K2Bridge.Models.Response.Aggregations.Bucket.Terms;
+    using K2Bridge.Models.Response.Aggregations.ExtendedStats;
+    using K2Bridge.Models.Response.Aggregations.Percentile;
+    using K2Bridge.Models.Response.Aggregations.TopHits;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;

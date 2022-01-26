@@ -7,7 +7,15 @@ namespace K2Bridge.Visitors
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Aggregations.Metric;
+    using K2Bridge.Models.Request.Aggregations.Metric.Average;
+    using K2Bridge.Models.Request.Aggregations.Metric.Cardinality;
+    using K2Bridge.Models.Request.Aggregations.Metric.ExtendedStats;
+    using K2Bridge.Models.Request.Aggregations.Metric.Max;
+    using K2Bridge.Models.Request.Aggregations.Metric.Min;
+    using K2Bridge.Models.Request.Aggregations.Metric.Percentile;
+    using K2Bridge.Models.Request.Aggregations.Metric.Sum;
+    using K2Bridge.Models.Request.Aggregations.Metric.TopHits;
     using K2Bridge.Utils;
 
     /// <content>

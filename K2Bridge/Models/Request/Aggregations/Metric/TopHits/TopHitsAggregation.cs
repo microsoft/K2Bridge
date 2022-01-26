@@ -2,12 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations
+namespace K2Bridge.Models.Request.Aggregations.Metric.TopHits
 {
     using System.Linq;
     using System.Collections.Generic;
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
+    using K2Bridge.Models.Request.Aggregations.Metric;
 
     /// <summary>
     /// A top_hits metric aggregator keeps track of the most relevant document being aggregated.

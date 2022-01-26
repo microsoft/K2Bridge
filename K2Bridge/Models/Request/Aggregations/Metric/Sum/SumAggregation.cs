@@ -2,8 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations
+namespace K2Bridge.Models.Request.Aggregations.Metric.Sum
 {
+    using K2Bridge.Models.Request.Aggregations.Metric;
     using K2Bridge.Visitors;
 
     /// <summary>

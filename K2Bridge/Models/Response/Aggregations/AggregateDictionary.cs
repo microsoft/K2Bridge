@@ -4,6 +4,7 @@
 
 namespace K2Bridge.Models.Response.Aggregations
 {
+    using K2Bridge.Models.Response.Aggregations.Percentile;
     using System.Collections.Generic;
 
     /// <summary>

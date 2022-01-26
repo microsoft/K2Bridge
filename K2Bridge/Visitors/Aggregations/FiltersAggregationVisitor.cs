@@ -6,7 +6,7 @@ namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
     using System.Text;
-    using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Aggregations.Bucket.Filters;
     using K2Bridge.Utils;
 
     /// <content>

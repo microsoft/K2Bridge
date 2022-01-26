@@ -6,7 +6,7 @@ namespace K2Bridge.JsonConverters
 {
     using System.Globalization;
     using K2Bridge.JsonConverters.Base;
-    using K2Bridge.Models.Response.Aggregations;
+    using K2Bridge.Models.Response.Aggregations.Percentile;
     using Newtonsoft.Json;
 
     /// <summary>

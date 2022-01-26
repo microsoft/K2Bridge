@@ -10,7 +10,12 @@ namespace K2Bridge.Factories
     using System.Linq;
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
-    using K2Bridge.Models.Response.Aggregations;
+    using K2Bridge.Models.Response.Aggregations.Bucket.DateHistogram;
+    using K2Bridge.Models.Response.Aggregations.Bucket.DateRange;
+    using K2Bridge.Models.Response.Aggregations.Bucket.Filters;
+    using K2Bridge.Models.Response.Aggregations.Bucket.Histogram;
+    using K2Bridge.Models.Response.Aggregations.Bucket.Range;
+    using K2Bridge.Models.Response.Aggregations.Bucket.Terms;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
 

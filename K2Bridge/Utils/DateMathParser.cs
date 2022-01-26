@@ -2,7 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors
+using K2Bridge.Visitors;
+
+namespace K2Bridge.Utils
 {
     using System;
     using System.Text.RegularExpressions;

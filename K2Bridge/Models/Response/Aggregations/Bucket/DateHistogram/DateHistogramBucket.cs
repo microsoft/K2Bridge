@@ -2,9 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response.Aggregations
+namespace K2Bridge.Models.Response.Aggregations.Bucket.DateHistogram
 {
     using K2Bridge.JsonConverters;
+    using K2Bridge.Models.Response.Aggregations.Bucket;
     using Newtonsoft.Json;
 
     /// <summary>
