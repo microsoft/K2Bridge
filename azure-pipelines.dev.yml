@@ -5,14 +5,12 @@ trigger:
     include:
     - main
     - kibana6.8
-    - dev-vnext
 
 pr:
   branches:
     include:
     - main
     - kibana6.8
-    - dev-vnext
   paths:
     exclude:
     - '*.md'
