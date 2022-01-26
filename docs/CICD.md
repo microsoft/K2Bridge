@@ -53,4 +53,3 @@ This way, only after the pipeline job has fully read the test result XML,  the t
 completes and the container is deleted.
 
 For running the end-to-end test suite on a local development environment, see [the End2End tests section in the developer documentation](development.md).
-

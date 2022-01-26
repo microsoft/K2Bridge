@@ -13,7 +13,7 @@ namespace UnitTests.K2Bridge.JsonConverters
     public class AggregationContainerConverterTests
     {
         private const string DateHistogramAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""date_histogram"": {
                         ""field"": ""timestamp"",
@@ -65,7 +65,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             }}";
 
         private const string HistogramAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""histogram"": {
                         ""field"": ""price"",
@@ -76,7 +76,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             }}";
 
         private const string CardinalityAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""cardinality"": {
                         ""field"": ""metric"",
@@ -85,52 +85,52 @@ namespace UnitTests.K2Bridge.JsonConverters
             }}";
 
         private const string AvgAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
-                    ""avg"" : { 
-                        ""field"" : ""metric"" 
-                    } 
+                    ""avg"" : {
+                        ""field"" : ""metric""
+                    }
                 }
             }}";
 
         private const string AvgEmptyFieldsAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
-                    ""avg"" : { 
-                        ""nofield"" : ""metric"" 
-                    } 
+                    ""avg"" : {
+                        ""nofield"" : ""metric""
+                    }
                 }
             }}";
 
         private const string MinAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""min"" : {
-                        ""field"" : ""metric"" 
-                    } 
+                        ""field"" : ""metric""
+                    }
                 }
             }}";
 
         private const string MaxAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""max"" : {
-                        ""field"" : ""metric"" 
-                    } 
+                        ""field"" : ""metric""
+                    }
                 }
             }}";
 
         private const string SumAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""sum"" : {
-                        ""field"" : ""metric"" 
-                    } 
+                        ""field"" : ""metric""
+                    }
                 }
             }}";
 
         private const string PercentileAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""percentiles"": {
                         ""field"": ""metric"",
@@ -142,7 +142,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             }}";
 
         private const string PercentilesAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""percentiles"": {
                         ""field"": ""metric"",
@@ -154,7 +154,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             }}";
 
         private const string PercentilesKeyedAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""percentiles"": {
                         ""field"": ""metric"",
@@ -167,33 +167,33 @@ namespace UnitTests.K2Bridge.JsonConverters
             }}";
 
         private const string ExtendedStatsAggregationWithSigma = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""extended_stats"" : {
                         ""field"" : ""metric"",
                         ""sigma"" : 3
-                    } 
+                    }
                 }
             }}";
 
         private const string ExtendedStatsAggregationWithoutSigma = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""extended_stats"" : {
                         ""field"" : ""metric""
-                    } 
+                    }
                 }
             }}";
 
         private const string TopHitsAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
                     ""top_hits"": {
                         ""docvalue_fields"": [
-                            { 
+                            {
                                 ""field"": ""metricfield""
                             }
-                        ],    
+                        ],
                         ""size"": 1,
                         ""sort"": [
                             {
@@ -207,11 +207,11 @@ namespace UnitTests.K2Bridge.JsonConverters
             }}";
 
         private const string NoAggAggregation = @"
-            {""aggs"": { 
+            {""aggs"": {
                 ""2"": {
-                    ""noagg"" : { 
-                        ""field"" : ""metric"" 
-                        } 
+                    ""noagg"" : {
+                        ""field"" : ""metric""
+                        }
                 }
             }}";
 
