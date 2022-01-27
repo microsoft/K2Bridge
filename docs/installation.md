@@ -17,7 +17,7 @@ If you choose to use a service principal, you will need to:
 * Get the **ClientID** and **Secret**
 
 If you choose to use a sytem assigned identity, you will need to:
-* Get the agent pool managed identity **ClientID** (located in the generated "[_MC_xxxx_]" resource group)
+* Get the agent pool managed identity **ClientID** (located in the generated "[_MC_xxxx_]" resource group) ([Documentation about MC_ resource group](https://docs.microsoft.com/en-us/azure/aks/faq#why-are-two-resource-groups-created-with-aks))
 
 ### Azure Data Explorer (ADX)
 
@@ -100,6 +100,7 @@ If you need to build the image, please follow the [build instructions](./build.m
 
         ```sh
         helm install k2bridge charts/k2bridge -n k2bridge --set settings.adxClusterUrl="$ADX_URL" --set settings.adxDefaultDatabaseName="$ADX_DATABASE" --set settings.aadClientId="$ADX_CLIENT_ID" --set settings.useManagedIdentity=true --set settings.aadTenantId="$ADX_TENANT_ID" [--set image.tag=7.16_latest] [--set settings.collectTelemetry=$COLLECT_TELEMETRY]
+        ```
 
         The complete set of configuration options can be found [here](./configuration.md).
 
