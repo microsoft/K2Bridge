@@ -67,7 +67,7 @@ dotnet_analyzer_diagnostic.category-Style.severity = warning
 dotnet_diagnostic.IDE0005.severity = warning    # Using directive is unnecessary.
 dotnet_diagnostic.CA1848.severity = none        # Do not encourage LoggerMessage delegates in every instance
 dotnet_diagnostic.CA2254.severity = suggestion  # Logging template should not vary between calls
-dotnet_diagnostic.IDE0058.severity = suggestion
+dotnet_diagnostic.IDE0058.severity = suggestion # Returned expression not used - we have many string builders (and others), the default is very noisy
 
 # IDE0065: Misplaced using directive
 csharp_using_directive_placement = inside_namespace
