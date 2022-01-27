@@ -4,6 +4,10 @@
 
 namespace K2Bridge.Tests.End2End
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
     using FluentAssertions.Json;
     using Newtonsoft.Json.Linq;
     using NUnit.Framework;

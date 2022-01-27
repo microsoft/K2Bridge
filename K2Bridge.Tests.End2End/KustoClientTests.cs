@@ -26,19 +26,18 @@ namespace K2Bridge.Tests.End2End
         protected const string TypesMapping = "types_mapping";
 
         // Map Kusto columns to types
-        private static readonly Dictionary<string, string> KustoColumnType = new()
-        {
-            { "Boolean", "bool" },
-            { "DateTime", "datetime" },
-            { "Guid", "guid" },
-            { "Int32", "int" },
-            { "Int64", "long" },
-            { "Double", "real" },
-            { "String", "string" },
-            { "TimeSpan", "timespan" },
-            { "SqlDecimal", "decimal" },
-            { "Dynamic", "dynamic" },
-        };
+        private static readonly Dictionary<string, string> KustoColumnType = new Dictionary<string, string> {
+                { "Boolean", "bool" },
+                { "DateTime", "datetime" },
+                { "Guid", "guid" },
+                { "Int32", "int" },
+                { "Int64", "long" },
+                { "Double", "real" },
+                { "String", "string" },
+                { "TimeSpan", "timespan" },
+                { "SqlDecimal", "decimal" },
+                { "Dynamic", "dynamic" },
+            };
 
         private static ICslAdminProvider kustoAdminClient;
 

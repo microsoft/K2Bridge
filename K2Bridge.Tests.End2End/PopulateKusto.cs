@@ -22,14 +22,13 @@ namespace K2Bridge.Tests.End2End
     public static class PopulateKusto
     {
         // Map from Elasticsearch type to Kusto type, when type names differ
-        private static readonly Dictionary<string, string> ES2KUSTOTYPE = new()
-        {
-            { "text", "string" },
-            { "keyword", "string" },
-            { "float", "double" },
-            { "integer", "int" },
-            { "geo_point", "dynamic" },
-        };
+        private static readonly Dictionary<string, string> ES2KUSTOTYPE = new Dictionary<string, string> {
+                { "text", "string" },
+                { "keyword", "string" },
+                { "float", "double" },
+                { "integer", "int" },
+                { "geo_point", "dynamic" },
+            };
 
         /// <summary>
         ///  Populate the Kusto backend with test data.
@@ -51,9 +50,9 @@ namespace K2Bridge.Tests.End2End
             var columnMappings = new List<ColumnMapping>();
             foreach (var prop in properties)
             {
-                var name = prop.Key;
-                var value = prop.Value as JObject;
-                var type = (string)value["type"];
+                string name = prop.Key;
+                JObject value = prop.Value as JObject;
+                string type = (string)value["type"];
                 if (ES2KUSTOTYPE.ContainsKey(type))
                 {
                     type = ES2KUSTOTYPE[type];
@@ -105,7 +104,7 @@ namespace K2Bridge.Tests.End2End
         private static async Task<IKustoIngestionResult> KustoIngest(KustoConnectionStringBuilder kusto, string db, string table, string mappingName, Stream stream)
         {
             // Create a disposable client that will execute the ingestion
-            using var client = KustoIngestFactory.CreateDirectIngestClient(kusto);
+            using IKustoIngestClient client = KustoIngestFactory.CreateDirectIngestClient(kusto);
             var ingestProps = new KustoIngestionProperties(db, table)
             {
                 IngestionMapping = new IngestionMapping

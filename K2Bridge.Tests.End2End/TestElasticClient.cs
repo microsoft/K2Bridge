@@ -34,7 +34,7 @@ namespace K2Bridge.Tests.End2End
         private TestElasticClient(HttpClient client, string dumpFileName)
         {
             this.client = client;
-            var invalids = Path.GetInvalidFileNameChars();
+            var invalids = System.IO.Path.GetInvalidFileNameChars();
             var safeName = string.Join("_", dumpFileName.Split(invalids, StringSplitOptions.RemoveEmptyEntries)).TrimEnd('.');
             this.dumpFileName = safeName;
         }
@@ -80,7 +80,7 @@ namespace K2Bridge.Tests.End2End
             }
 
             tokens = parent.SelectTokens("responses[*].aggregations..buckets..values");
-            foreach (var v in tokens)
+            foreach (JToken v in tokens)
             {
                 // Median percentile KeyValuePair has "50.0" as Key
                 if (v.Type == JTokenType.Object)
@@ -91,7 +91,7 @@ namespace K2Bridge.Tests.End2End
         }
 
         /// <summary>
-        /// Get all descendants tokens from a root token.
+        /// Get all descendants tokens from a root token
         /// </summary>
         public static IEnumerable<JToken> GetAllDescendantsTokens(JToken rootToken)
         {
@@ -116,9 +116,8 @@ namespace K2Bridge.Tests.End2End
             {
                 return;
             }
-
             var rootToken = parent.SelectToken(jsonPath);
-            foreach (JValue v in GetAllDescendantsTokens(rootToken).Where(x => x.Type == JTokenType.Float))
+            foreach (JValue v in TestElasticClient.GetAllDescendantsTokens(rootToken).Where(x => x.Type == JTokenType.Float))
             {
                 var originalMetricValue = (double)v.Value;
                 var normalizedMetricValue = Math.Round(originalMetricValue, digits.Value);
@@ -184,11 +183,11 @@ namespace K2Bridge.Tests.End2End
         /// <param name="indexName">Index name to query.</param>
         /// <param name="jsonQueryFile">File name containing query.</param>
         /// <param name="validateHighlight">Controls the validation of the highlight element.</param>
-        /// <param name="roundingFloats">If value is specified make a round operation on all floats.</param>
+        /// <param name="roundingFloats">If value is specified make a round operation on all floats</param>
         /// <returns>SearchAsync operation result.</returns>
         public async Task<JToken> MSearch(string indexName, string jsonQueryFile, bool validateHighlight = true, int? roundingFloats = null)
         {
-            var query = JObject.Parse(File.ReadAllText(jsonQueryFile));
+            JObject query = JObject.Parse(File.ReadAllText(jsonQueryFile));
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "_msearch");
             var payload = new StringBuilder();
@@ -268,7 +267,7 @@ namespace K2Bridge.Tests.End2End
             ReplaceType(result, "geo_point", "object", false);
 
             // Remove extra fields returned by Elasticsearch (prefixed by _)
-            var fields = (JObject)result.SelectToken($"$.fields");
+            JObject fields = (JObject)result.SelectToken($"$.fields");
             var removes = new List<string>();
             foreach (var (name, _) in fields)
             {
@@ -360,13 +359,29 @@ namespace K2Bridge.Tests.End2End
         private static void DeleteValue(JToken parent, string jsonPath)
         {
             var tokens = parent.SelectTokens(jsonPath);
-            foreach (var v in tokens)
+            foreach (JToken v in tokens)
             {
                 v.Parent.Remove();
             }
         }
 
         /// <summary>
+        /// Normalize timestamp timezones to UTC.
+        /// </summary>
+        /// <param name="parent">JSON element at which to start search.</param>
+        /// <param name="jsonPath">JSONPath search pattern for DateTime values to normalize.</param>
+        private static void NormalizeTimestamps(JToken parent, string jsonPath)
+        {
+            var tokens = parent.SelectTokens(jsonPath);
+            foreach (JValue v in tokens)
+            {
+                var originalTimestamp = (DateTime)v.Value;
+                var normalizedTimestamp = TimeZoneInfo.ConvertTimeToUtc(originalTimestamp);
+                v.Value = normalizedTimestamp.ToString("o", CultureInfo.InvariantCulture);
+            }
+        }
+
+        // <summary>
         /// Normalize aggregate metric value with fixed number of decimals.
         /// </summary>
         /// <param name="parent">JSON element at which to start search.</param>
