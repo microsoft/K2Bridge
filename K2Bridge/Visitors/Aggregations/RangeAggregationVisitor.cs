@@ -49,6 +49,7 @@ namespace K2Bridge.Visitors
                 rangeNames.Add(range.BucketNameKustoQL);
             }
 
+
             extendExpression.Append($"{EncodeKustoField(rangeAggregation.Key)} = {KustoQLOperators.PackArray}({string.Join(',', rangeNames)}), ");
             extendExpression.Append($"{expandColumn} = {KustoQLOperators.PackArray}({string.Join(',', rangeExpressions)})");
 
