@@ -458,7 +458,7 @@ namespace K2Bridge.Factories
             topHitsAggregate.Hits.SetTotal(0);
 
             var rowValue = row[columnName];
-            if (rowValue.GetType() != typeof(DBNull))
+            if (rowValue is DBNull)
             {
                 var docCount = (long)row[BucketColumnNames.Count];
                 topHitsAggregate.Hits.SetTotal(docCount);
@@ -518,7 +518,7 @@ namespace K2Bridge.Factories
             var valueAggregate = new ValueAggregate() { Value = null };
             var rowValue = row[key];
 
-            if (rowValue.GetType() != typeof(DBNull))
+            if (rowValue is DBNull)
             {
                 valueAggregate = rowValue switch
                 {
