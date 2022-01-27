@@ -107,7 +107,7 @@ namespace K2Bridge.Factories
         /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns><see cref="BucketAggregate"></returns>
+        /// <returns><see cref="BucketAggregate"/>.</returns>
         public static BucketAggregate GetDateRangeAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get date range aggregate for {}", key);
@@ -159,7 +159,7 @@ namespace K2Bridge.Factories
         /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns><see cref="BucketAggregate"></returns>
+        /// <returns><see cref="BucketAggregate"/>.</returns>
         public static BucketAggregate GetFiltersAggregate(string key, DataTable dataTable, DataTable metadataTable, QueryData query, ILogger logger)
         {
             Ensure.IsNotNull(metadataTable, nameof(DataTable));
@@ -207,7 +207,7 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="metadataTable">The metadata table.</param>
-        /// <returns>A HashSet<string> of expected bucket names.</returns>
+        /// <returns>A HashSet of string type, of expected bucket names.</returns>
         public static HashSet<string> GetExpectedBuckets(string key, DataTable metadataTable)
         {
             var expectedBuckets = new HashSet<string>();
@@ -231,7 +231,7 @@ namespace K2Bridge.Factories
         /// <param name="dataTable">The row collection be parsed.</param>
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns><see cref="BucketAggregate"></returns>
+        /// <returns><see cref="BucketAggregate"/>.</returns>
         public static BucketAggregate GetHistogramAggregate(string key, DataTable dataTable, QueryData query, ILogger logger)
         {
             logger.LogTrace("Get histogram aggregate for {}", key);
@@ -251,7 +251,7 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// Add aggregates to current <see cref="AggregateDictionary"> instance from a given <see cref="DataRow"/>.
+        /// Add aggregates to current <see cref="AggregateDictionary"/> instance from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="aggregateDictionary">AggregateDictionary instance.</param>
         /// <param name="primaryKey">The primary aggregation key.</param>
@@ -304,7 +304,7 @@ namespace K2Bridge.Factories
         /// <param name="columnMetadata">The column metadata parsed.</param>
         /// <param name="row">The row to be parsed.</param>
         /// <param name="logger">ILogger object for logging.</param>
-        /// <returns><see cref="ExtendedStatsAggregate"></returns>
+        /// <returns><see cref="ExtendedStatsAggregate"/>.</returns>
         private static ExtendedStatsAggregate GetExtendedStatsAggregate(string columnName, string[] columnMetadata, DataRow row, ILogger logger)
         {
             logger.LogTrace("Get extended stats for standard deviation aggregate for {}", columnName);
