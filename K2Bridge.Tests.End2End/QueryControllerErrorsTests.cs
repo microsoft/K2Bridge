@@ -48,7 +48,7 @@ namespace K2Bridge.Tests.End2End
             Replace("\r\n", string.Empty, StringComparison.OrdinalIgnoreCase).
             Replace("\n", string.Empty, StringComparison.OrdinalIgnoreCase);
 
-        private void AssertJson(string expectedJsonString, JToken json)
+        private static void AssertJson(string expectedJsonString, JToken json)
         {
             // remove unnecessary chars from json strings.
             expectedJsonString = NormalizeChars(expectedJsonString);

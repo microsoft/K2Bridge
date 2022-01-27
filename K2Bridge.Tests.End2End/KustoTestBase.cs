@@ -136,7 +136,7 @@ namespace K2Bridge.Tests.End2End
         [SetUp]
         public async Task SetUp()
         {
-            string testMethodName = CurrentContext.Test.Name;
+            var testMethodName = CurrentContext.Test.Name;
 
             k2Client = await CreateKustoClient(testMethodName);
 
@@ -180,7 +180,7 @@ namespace K2Bridge.Tests.End2End
             az.StartInfo.UseShellExecute = false;
             az.StartInfo.RedirectStandardOutput = true;
             az.Start();
-            string strOutput = az.StandardOutput.ReadToEnd();
+            var strOutput = az.StandardOutput.ReadToEnd();
             az.WaitForExit(10000);
             if (az.ExitCode != 0)
             {
@@ -219,8 +219,8 @@ namespace K2Bridge.Tests.End2End
         /// <summary>
         /// Download a remote file.
         /// </summary>
-        /// <param name="url">the URL of the remote file</param>
-        /// <param name="fileName">The file to be created</param>
+        /// <param name="url">the URL of the remote file.</param>
+        /// <param name="fileName">The file to be created.</param>
         /// <exception cref="FileNotFoundException"></exception>
         private static async Task DownloadFile(string url, string fileName)
         {
