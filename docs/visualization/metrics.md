@@ -94,7 +94,7 @@ Upper Deviation (Population or Sampling) = Average Value + (Standard Deviation (
 
 The `Sigma` value controls controls how many standard deviations +/- from the mean should be displayed.
 
-> As reference, you can check the Elasticsearch implementation used to calcul bounds here : [getStdDeviationBound()](https://github.com/elastic/elasticsearch/blob/0699c9351f1439e246d408fd6538deafde4087b6/server/src/main/java/org/elasticsearch/search/aggregations/metrics/InternalExtendedStats.java#L187-L194)
+> As reference, you can check the Elasticsearch implementation used to calculate bounds here : [getStdDeviationBound()](https://github.com/elastic/elasticsearch/blob/0699c9351f1439e246d408fd6538deafde4087b6/server/src/main/java/org/elasticsearch/search/aggregations/metrics/InternalExtendedStats.java#L187-L194)
 
 Example of Kusto Query Language built by K2Bridge:
 
