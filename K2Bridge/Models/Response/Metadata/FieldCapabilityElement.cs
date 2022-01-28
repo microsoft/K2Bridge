@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -36,6 +36,6 @@ namespace K2Bridge.Models.Response.Metadata
         /// <summary>
         /// Gets or sets a value indicating whether the field is metadatas.
         /// </summary>
-        public bool IsMetadataField { get; set; } = false;
+        public bool IsMetadataField { get; set; }
     }
 }

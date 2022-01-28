@@ -14,16 +14,18 @@ namespace K2Bridge.Visitors
     /// </content>
     internal partial class ElasticSearchDSLVisitor : IVisitor
     {
-        // List of visited metrics
-        // Each time a metric aggregation is parsed, its key is added to the list
-        // Helps to propagate all previous aggregations results in BuildPartitionQuery
+        /// <summary>
+        /// Gets a list of visited metrics.
+        /// Each time a metric aggregation is parsed, its key is added to the list.
+        /// Helps to propagate all previous aggregations results in BuildPartitionQuery.
+        /// </summary>
         internal List<string> VisitedMetrics { get; } = new List<string>();
 
         public string BuildPartitionQuery(PartitionQueryDefinition definition)
         {
             var query = new StringBuilder();
 
-            string joinVariable = SubQueriesStack.Last();
+            var joinVariable = SubQueriesStack.Last();
             SubQueriesStack.Add(definition.PartionQueryName);
 
             // let _tophits = _extdata
@@ -69,7 +71,7 @@ namespace K2Bridge.Visitors
 
         /// <summary>
         /// Gets the list of all metrics keys already visited
-        /// ['2'], ['3'], ['count_']
+        /// ['2'], ['3'], ['count_'].
         /// </summary>
         public string GetVisitedMetricsEncodedKeys() => string.Join(',', VisitedMetrics);
 
@@ -80,7 +82,7 @@ namespace K2Bridge.Visitors
         public string GetVisitedMetricsEncodedKeysTakeAny()
         {
             var encodedKeys = VisitedMetrics.Select(key => $"{KustoQLOperators.TakeAny}({key})");
-            return string.Join(',', encodedKeys);;
+            return string.Join(',', encodedKeys);
         }
     }
 }

@@ -5,8 +5,6 @@
 namespace K2Bridge.Models.Request.Aggregations
 {
     using System.Collections.Generic;
-    using K2Bridge.JsonConverters;
-    using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;
     using Newtonsoft.Json;
 

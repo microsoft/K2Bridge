@@ -3,21 +3,21 @@
 # Display Help
 Help()
 {
-   echo "Create Azure Data Explorer (ADX) cluster for development purpose."
-   echo
-   echo "Syntax: create-adx.sh [-u|l|h]"
-   echo "options:"
-   echo "u     Unique name used to create resources."
-   echo "l     Location name. Values from: az account list-locations."
-   echo "h     Print this Help."
-   echo
+    echo "Create Azure Data Explorer (ADX) cluster for development purpose."
+    echo
+    echo "Syntax: create-adx.sh [-u|l|h]"
+    echo "options:"
+    echo "u     Unique name used to create resources."
+    echo "l     Location name. Values from: az account list-locations."
+    echo "h     Print this Help."
+    echo
 }
 
 while getopts u:l:h flag;
 do
     case "${flag}" in
         h) Help
-           exit;;
+            exit;;
         u) unique=${OPTARG};;
         l) location=${OPTARG};;
     esac
@@ -95,7 +95,7 @@ az storage account create \
     --resource-group $RESOURCE_GROUP_NAME \
     --sku Standard_LRS
 
-# Connection string used for next az storage commands  
+# Connection string used for next az storage commands
 export AZURE_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --name $STORAGE_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME --query connectionString -o tsv)
 
 # Create Storage Container
@@ -128,15 +128,15 @@ curl -X POST "$KUSTO_URL/v1/rest/ingest/$ADX_DB_NAME/kibana_data_flights?streamF
 rm $DATA_FILE_NAME
 
 # Environment variables needed to run end-to-end tests
-echo "export K2BRIDGE_URL=http://localhost:8080" >> ~/.bashrc 
-echo "export ELASTICSEARCH_URL=http://localhost:9200" >> ~/.bashrc 
-echo "export KUSTO_URI=https://$ADX_CLUSTER_NAME.$LOCATION.kusto.windows.net" >> ~/.bashrc 
-echo "export KUSTO_DB=$ADX_DB_NAME" >> ~/.bashrc 
+echo "export K2BRIDGE_URL=http://localhost:8080" >> ~/.bashrc
+echo "export ELASTICSEARCH_URL=http://localhost:9200" >> ~/.bashrc
+echo "export KUSTO_URI=https://$ADX_CLUSTER_NAME.$LOCATION.kusto.windows.net" >> ~/.bashrc
+echo "export KUSTO_DB=$ADX_DB_NAME" >> ~/.bashrc
 
 # Reminder
 echo -e "\n"
 echo "${COLOR_YELLOW}At the end of your development, don't forget to delete service principal and its role assignements."
-echo "${COLOR_YELLOW}az ad sp delete --id $(echo $SECRETS | jq -r '.appId')"  
+echo "${COLOR_YELLOW}az ad sp delete --id $(echo $SECRETS | jq -r '.appId')"
 
 # Variables needed to populate appsettings.development.json
 echo -e "\n"

@@ -63,11 +63,11 @@ If you need to build the image, please follow the [build instructions](./build.m
 1. Deploy
 
     * Recommended - create a kubernetes namespace.  
-         This namespace is later passed to `helm install` via the `-n` switch.
+        This namespace is later passed to `helm install` via the `-n` switch.
 
-      ```sh
-      kubectl create namespace k2bridge
-      ```
+    ```sh
+    kubectl create namespace k2bridge
+    ```
 
     * Set a few variables with the correct values for your environment:
 

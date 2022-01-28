@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -54,7 +54,7 @@ namespace K2Bridge.KustoDAL
             {
                 var msg = $"Failed getting table schema for {IndexName}";
                 Logger.LogError(msg);
-                throw new Exception(msg);
+                throw new QueryException(msg);
             }
 
             return response.Fields.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Type);

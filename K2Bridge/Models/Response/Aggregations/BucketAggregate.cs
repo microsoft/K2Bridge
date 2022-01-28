@@ -22,6 +22,6 @@ namespace K2Bridge.Models.Response.Aggregations
         /// <summary>
         /// Gets or sets a value indicating whether it's a Keyed aggregate.
         /// </summary>
-        public bool Keyed { get; set; } = false;
+        public bool Keyed { get; set; }
     }
 }

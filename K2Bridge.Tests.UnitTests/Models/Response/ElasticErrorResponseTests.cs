@@ -12,11 +12,11 @@ namespace UnitTests.K2Bridge.Models.Response
     public class ElasticErrorResponseTests
     {
         private const string ExpectedValidErrorResponse = @"
-            {""responses"":[ 
-                    { 
-                        ""error"":{ 
-                            ""root_cause"":[ 
-                            { 
+            {""responses"":[
+                    {
+                        ""error"":{
+                            ""root_cause"":[
+                            {
                                 ""type"":""test-root-type"",
                                 ""reason"":""test-root-reason"",
                                 ""index_uuid"":""test-index"",
@@ -34,10 +34,10 @@ namespace UnitTests.K2Bridge.Models.Response
         ";
 
         private const string ExpectedEmptyCauseErrorResponse = @"
-            {""responses"":[ 
-                    { 
-                        ""error"":{ 
-                            ""root_cause"":[ 
+            {""responses"":[
+                    {
+                        ""error"":{
+                            ""root_cause"":[
                             ],
                             ""type"":""test-type"",
                             ""reason"":""test-reason"",

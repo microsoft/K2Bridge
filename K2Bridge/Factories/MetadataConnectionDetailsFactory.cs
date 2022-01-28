@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -18,6 +18,6 @@ namespace K2Bridge.Factories
         /// <param name="config">Config.</param>
         /// <returns>MetadataConnectionDetails.</returns>
         internal static MetadataConnectionDetails MakeFromConfiguration(IConfigurationRoot config) =>
-            new (config["metadataElasticAddress"]);
+            new(config["metadataElasticAddress"]);
     }
 }
