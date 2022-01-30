@@ -16,10 +16,10 @@ public class ExistsClauseConverterTests
     private const string DynamicFieldName = "FieldName.@1.b";
     private static readonly object[] BadInputCases =
     {
-            "{ \"field\": [\"FieldName\" , \"OtherField\"] }",
-            "{ \"field\": [\"FieldName\"] , \"field2\": [\"FieldName2\"] }",
-            "{ \"field\": [\"FieldName\"] }",
-        };
+        "{ \"field\": [\"FieldName\" , \"OtherField\"] }",
+        "{ \"field\": [\"FieldName\"] , \"field2\": [\"FieldName2\"] }",
+        "{ \"field\": [\"FieldName\"] }",
+    };
 
     private readonly string validExistsClause = $"{{ \"field\": \"{FieldName}\" }}";
     private readonly string validExistsClauseDynamic = $"{{ \"field\": \"{DynamicFieldName}\" }}";
@@ -46,7 +46,6 @@ public class ExistsClauseConverterTests
         Assert.IsInstanceOf<ExistsClause>(parsed);
         Assert.AreEqual(DynamicFieldName, parsed.FieldName, errorMessage);
     }
-
 
     [TestCaseSource(nameof(BadInputCases))]
     public void DeserializeObject_WithInvalidInput_ThrowsInvalidCastException(string input)

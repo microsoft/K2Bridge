@@ -89,8 +89,8 @@ public static class HitsMapper
                     .OfType<JValue>()
                     .Select(jv =>
                     {
-                            // The Regex removes the array notation from the column name. my.field[0].a[1].b -> my.field.a.b
-                            var fixedPath = Regex.Replace(jv.Path, @"\[\d+\]", string.Empty);
+                        // The Regex removes the array notation from the column name. my.field[0].a[1].b -> my.field.a.b
+                        var fixedPath = Regex.Replace(jv.Path, @"\[\d+\]", string.Empty);
                         return (columnName + "." + fixedPath, jv.Value);
                     });
             }

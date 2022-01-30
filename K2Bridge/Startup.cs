@@ -156,18 +156,18 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
-                // Starts a Prometheus metrics exporter using endpoint routing.
-                // Using The default URL: /metrics.
-                endpoints.MapMetrics();
+            // Starts a Prometheus metrics exporter using endpoint routing.
+            // Using The default URL: /metrics.
+            endpoints.MapMetrics();
 
             endpoints.MapControllers();
 
-                // Special treatment for certains requests that are intentionally not marked with the [ApiController] attribute.
-                endpoints.MapControllerRoute("fieldcaps", "FieldCapability/Process/{indexName?}", defaults: new { controller = "FieldCapability", action = "Process" });
+            // Special treatment for certains requests that are intentionally not marked with the [ApiController] attribute.
+            endpoints.MapControllerRoute("fieldcaps", "FieldCapability/Process/{indexName?}", defaults: new { controller = "FieldCapability", action = "Process" });
             endpoints.MapFallbackToController("Passthrough", "Metadata");
 
-                // Enable middleware to serve from health endpoint
-                endpoints.MapHealthChecks(HealthCheckRoute);
+            // Enable middleware to serve from health endpoint
+            endpoints.MapHealthChecks(HealthCheckRoute);
         });
     }
 
