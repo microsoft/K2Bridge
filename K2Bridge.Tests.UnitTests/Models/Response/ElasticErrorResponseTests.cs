@@ -2,16 +2,16 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Models.Response
-{
-    using global::K2Bridge.Models.Response.ElasticError;
-    using NUnit.Framework;
-    using UnitTests.K2Bridge.JsonConverters;
+namespace K2Bridge.Tests.UnitTests.Models.Response;
 
-    [TestFixture]
-    public class ElasticErrorResponseTests
-    {
-        private const string ExpectedValidErrorResponse = @"
+using K2Bridge.Models.Response.ElasticError;
+using K2Bridge.Tests.UnitTests.JsonConverters;
+using NUnit.Framework;
+
+[TestFixture]
+public class ElasticErrorResponseTests
+{
+    private const string ExpectedValidErrorResponse = @"
             {""responses"":[
                     {
                         ""error"":{
@@ -33,7 +33,7 @@ namespace UnitTests.K2Bridge.Models.Response
                 }
         ";
 
-        private const string ExpectedEmptyCauseErrorResponse = @"
+    private const string ExpectedEmptyCauseErrorResponse = @"
             {""responses"":[
                     {
                         ""error"":{
@@ -49,19 +49,18 @@ namespace UnitTests.K2Bridge.Models.Response
                 }
         ";
 
-        [Test]
-        public void JsonSerialize_WithValidElasticErrorResponse_SerializeCorrectly()
-        {
-            var errorResponse = new ElasticErrorResponse("test-type", "test-reason", "test-phase");
-            errorResponse.AddRootCause("test-root-type", "test-root-reason", "test-index");
-            errorResponse.AssertJson(ExpectedValidErrorResponse);
-        }
+    [Test]
+    public void JsonSerialize_WithValidElasticErrorResponse_SerializeCorrectly()
+    {
+        var errorResponse = new ElasticErrorResponse("test-type", "test-reason", "test-phase");
+        errorResponse.AddRootCause("test-root-type", "test-root-reason", "test-index");
+        errorResponse.AssertJson(ExpectedValidErrorResponse);
+    }
 
-        [Test]
-        public void JsonSerialize_WithEmptyRootCauseElasticErrorResponse_SerializeCorrectly()
-        {
-            var errorResponse = new ElasticErrorResponse("test-type", "test-reason", "test-phase");
-            errorResponse.AssertJson(ExpectedEmptyCauseErrorResponse);
-        }
+    [Test]
+    public void JsonSerialize_WithEmptyRootCauseElasticErrorResponse_SerializeCorrectly()
+    {
+        var errorResponse = new ElasticErrorResponse("test-type", "test-reason", "test-phase");
+        errorResponse.AssertJson(ExpectedEmptyCauseErrorResponse);
     }
 }

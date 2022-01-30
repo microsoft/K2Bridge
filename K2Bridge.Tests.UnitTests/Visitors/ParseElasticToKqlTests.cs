@@ -2,18 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Visitors
-{
-    using global::K2Bridge.Models.Request.Queries;
-    using global::K2Bridge.Tests.UnitTests.Visitors;
-    using global::K2Bridge.Visitors;
-    using Newtonsoft.Json;
-    using NUnit.Framework;
+namespace K2Bridge.Tests.UnitTests.Visitors;
 
-    [TestFixture]
-    public class ParseElasticToKqlTests
-    {
-        private const string QueryExists = @"
+using K2Bridge.Models.Request.Queries;
+using K2Bridge.Visitors;
+using Newtonsoft.Json;
+using NUnit.Framework;
+
+[TestFixture]
+public class ParseElasticToKqlTests
+{
+    private const string QueryExists = @"
             {""bool"":
                 {""must"":
                     [
@@ -30,7 +29,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryMatchPhraseSingle = @"
+    private const string QueryMatchPhraseSingle = @"
             {""bool"":
                 {""must"":
                     [
@@ -49,7 +48,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryMatchPhraseMulti = @"
+    private const string QueryMatchPhraseMulti = @"
             {""bool"":
                 {""must"":
                     [
@@ -73,7 +72,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryTimestampRangeSingle = @"
+    private const string QueryTimestampRangeSingle = @"
             {""bool"":
                 {""must"":
                     [
@@ -92,7 +91,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryBetweenRangeSingle = @"
+    private const string QueryBetweenRangeSingle = @"
             {""bool"":
                 {""must"":
                     [
@@ -111,7 +110,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryTimestampRangeSingleNoPair = @"
+    private const string QueryTimestampRangeSingleNoPair = @"
             {""bool"":
                 {""must"":
                     [
@@ -130,7 +129,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryString = @"
+    private const string QueryString = @"
             {""bool"":
                 {""must"":
                     [
@@ -150,7 +149,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryPrefixString = @"
+    private const string QueryPrefixString = @"
             {""bool"":
                 {""must"":
                     [
@@ -170,7 +169,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryComplexWildcardString = @"
+    private const string QueryComplexWildcardString = @"
             {""bool"":
                 {""must"":
                     [
@@ -190,7 +189,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string QueryWildcardString = @"
+    private const string QueryWildcardString = @"
             {""bool"":
                 {""must"":
                     [
@@ -210,7 +209,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string CombinedQuery = @"
+    private const string CombinedQuery = @"
             {""bool"":
                 {""must"":
                     [
@@ -245,7 +244,7 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        private const string NotQueryStringClause = @"
+    private const string NotQueryStringClause = @"
             {""bool"":
                 {""must"":
                     [
@@ -272,125 +271,124 @@ namespace UnitTests.K2Bridge.Visitors
                 }
             }";
 
-        [TestCase(
-            QueryMatchPhraseSingle,
-            ExpectedResult = "where (['TEST_FIELD'] == \"TEST_RESULT\")",
-            TestName = "QueryAccept_WithSingleMatchPhrase_ReturnsExpectedResult")]
-        [TestCase(
-            QueryMatchPhraseMulti,
-            ExpectedResult = "where (['TEST_FIELD'] == \"TEST_RESULT\") and (['TEST_FIELD_2'] == \"TEST_RESULT_2\")",
-            TestName = "QueryAccept_WithMultiMatchPhrase_ReturnsExpectedResult")]
-        public string TestMatchPhraseQueries(string queryString)
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
-            query.Accept(visitor);
-            return query.KustoQL;
-        }
+    [TestCase(
+        QueryMatchPhraseSingle,
+        ExpectedResult = "where (['TEST_FIELD'] == \"TEST_RESULT\")",
+        TestName = "QueryAccept_WithSingleMatchPhrase_ReturnsExpectedResult")]
+    [TestCase(
+        QueryMatchPhraseMulti,
+        ExpectedResult = "where (['TEST_FIELD'] == \"TEST_RESULT\") and (['TEST_FIELD_2'] == \"TEST_RESULT_2\")",
+        TestName = "QueryAccept_WithMultiMatchPhrase_ReturnsExpectedResult")]
+    public string TestMatchPhraseQueries(string queryString)
+    {
+        var query = JsonConvert.DeserializeObject<Query>(queryString);
+        var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
+        query.Accept(visitor);
+        return query.KustoQL;
+    }
 
-        [TestCase(
-            QueryExists,
-            ExpectedResult = "where (isnotnull(['TEST_FIELD']))",
-            TestName = "QueryAccept_WithSingleExists_ReturnsExpectedResult")]
-        public string TestExistsClause(string queryString)
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
-            query.Accept(visitor);
-            return query.KustoQL;
-        }
+    [TestCase(
+        QueryExists,
+        ExpectedResult = "where (isnotnull(['TEST_FIELD']))",
+        TestName = "QueryAccept_WithSingleExists_ReturnsExpectedResult")]
+    public string TestExistsClause(string queryString)
+    {
+        var query = JsonConvert.DeserializeObject<Query>(queryString);
+        var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
+        query.Accept(visitor);
+        return query.KustoQL;
+    }
 
-        [TestCase(
-            QueryTimestampRangeSingle,
-            ExpectedResult = "where (['timestamp'] >= unixtime_milliseconds_todatetime(0) and ['timestamp'] <= unixtime_milliseconds_todatetime(10))",
-            TestName = "QueryAccept_WithTimestamp_ReturnsExpectedResult")]
-        [TestCase(
-            QueryBetweenRangeSingle,
-            ExpectedResult = "where (['TEST_FIELD'] >= 0 and ['TEST_FIELD'] < 10)",
-            TestName = "QueryAccept_WithBetweenRange_ReturnsExpectedResult")]
-        public string TestRangeQueries(string queryString)
-        {
-            return TestRangeClause(queryString, "TEST_FIELD", "long");
-        }
+    [TestCase(
+        QueryTimestampRangeSingle,
+        ExpectedResult = "where (['timestamp'] >= unixtime_milliseconds_todatetime(0) and ['timestamp'] <= unixtime_milliseconds_todatetime(10))",
+        TestName = "QueryAccept_WithTimestamp_ReturnsExpectedResult")]
+    [TestCase(
+        QueryBetweenRangeSingle,
+        ExpectedResult = "where (['TEST_FIELD'] >= 0 and ['TEST_FIELD'] < 10)",
+        TestName = "QueryAccept_WithBetweenRange_ReturnsExpectedResult")]
+    public string TestRangeQueries(string queryString)
+    {
+        return TestRangeClause(queryString, "TEST_FIELD", "long");
+    }
 
-        [TestCase(
-            QueryTimestampRangeSingleNoPair,
-            TestName = "QueryAccept_WithBetweenRangeSingleNoPair_ReturnsExpectedResult")]
-        public void TestRangeQueriesMissingValues(string queryString)
-        {
-            Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
-        }
+    [TestCase(
+        QueryTimestampRangeSingleNoPair,
+        TestName = "QueryAccept_WithBetweenRangeSingleNoPair_ReturnsExpectedResult")]
+    public void TestRangeQueriesMissingValues(string queryString)
+    {
+        Assert.Throws(typeof(IllegalClauseException), () => TestRangeClause(queryString));
+    }
 
-        [TestCase(
-            QueryString,
-            ExpectedResult = "where (* has \"TEST_RESULT\")",
-            TestName = "QueryAccept_WithValidInput_ReturnsExpectedResult")]
-        public string TestQueryStringQueries(string queryString)
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
-            query.Accept(visitor);
-            return query.KustoQL;
-        }
+    [TestCase(
+        QueryString,
+        ExpectedResult = "where (* has \"TEST_RESULT\")",
+        TestName = "QueryAccept_WithValidInput_ReturnsExpectedResult")]
+    public string TestQueryStringQueries(string queryString)
+    {
+        var query = JsonConvert.DeserializeObject<Query>(queryString);
+        var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
+        query.Accept(visitor);
+        return query.KustoQL;
+    }
 
-        [TestCase(
-            CombinedQuery,
-            ExpectedResult = "where (* has \"TEST_RESULT\") and (['TEST_FIELD'] == \"TEST_RESULT_2\") and (['TEST_FIELD_2'] == \"TEST_RESULT_3\") and (['timestamp'] >= unixtime_milliseconds_todatetime(0) and ['timestamp'] <= unixtime_milliseconds_todatetime(10))",
-            TestName = "QueryAccept_WithCombinedQuery_ReturnsExpectedResult")]
-        [TestCase(
-            NotQueryStringClause,
-            ExpectedResult = "where (* has \"TEST_RESULT\") and (['TEST_FIELD'] != \"TEST_RESULT_2\")",
-            TestName = "QueryAccept_WithNotString_ReturnsExpectedResult")]
-        public string TestCombinedQueries(string queryString)
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
-            query.Accept(visitor);
-            return query.KustoQL;
-        }
+    [TestCase(
+        CombinedQuery,
+        ExpectedResult = "where (* has \"TEST_RESULT\") and (['TEST_FIELD'] == \"TEST_RESULT_2\") and (['TEST_FIELD_2'] == \"TEST_RESULT_3\") and (['timestamp'] >= unixtime_milliseconds_todatetime(0) and ['timestamp'] <= unixtime_milliseconds_todatetime(10))",
+        TestName = "QueryAccept_WithCombinedQuery_ReturnsExpectedResult")]
+    [TestCase(
+        NotQueryStringClause,
+        ExpectedResult = "where (* has \"TEST_RESULT\") and (['TEST_FIELD'] != \"TEST_RESULT_2\")",
+        TestName = "QueryAccept_WithNotString_ReturnsExpectedResult")]
+    public string TestCombinedQueries(string queryString)
+    {
+        var query = JsonConvert.DeserializeObject<Query>(queryString);
+        var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
+        query.Accept(visitor);
+        return query.KustoQL;
+    }
 
-        [TestCase(
-            QueryWildcardString,
-            ExpectedResult = "where (* matches regex \"TEST(.)*RESULT\")",
-            TestName = "QueryAccept_WithWildCard_ReturnsExpectedResult")]
-        public string TestWildcardQuery(string queryString)
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
-            query.Accept(visitor);
-            return query.KustoQL;
-        }
+    [TestCase(
+        QueryWildcardString,
+        ExpectedResult = "where (* matches regex \"TEST(.)*RESULT\")",
+        TestName = "QueryAccept_WithWildCard_ReturnsExpectedResult")]
+    public string TestWildcardQuery(string queryString)
+    {
+        var query = JsonConvert.DeserializeObject<Query>(queryString);
+        var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
+        query.Accept(visitor);
+        return query.KustoQL;
+    }
 
-        [TestCase(
-            QueryComplexWildcardString,
-            ExpectedResult = "where (* matches regex \"TEST(.)*RESULT(.)*\")",
-            TestName = "QueryAccept_WithComplexWildCard_ReturnsExpectedResult")]
-        public string TestComplexWildcardQuery(string queryString)
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
-            query.Accept(visitor);
-            return query.KustoQL;
-        }
+    [TestCase(
+        QueryComplexWildcardString,
+        ExpectedResult = "where (* matches regex \"TEST(.)*RESULT(.)*\")",
+        TestName = "QueryAccept_WithComplexWildCard_ReturnsExpectedResult")]
+    public string TestComplexWildcardQuery(string queryString)
+    {
+        var query = JsonConvert.DeserializeObject<Query>(queryString);
+        var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
+        query.Accept(visitor);
+        return query.KustoQL;
+    }
 
-        [TestCase(
-            QueryPrefixString,
-            ExpectedResult = "where (* hasprefix \"TEST_RESULT\")",
-            TestName = "QueryAccept_WithPrefix_ReturnsExpectedResult")]
-        public string TestPrefixQuery(string queryString)
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
-            query.Accept(visitor);
-            return query.KustoQL;
-        }
+    [TestCase(
+        QueryPrefixString,
+        ExpectedResult = "where (* hasprefix \"TEST_RESULT\")",
+        TestName = "QueryAccept_WithPrefix_ReturnsExpectedResult")]
+    public string TestPrefixQuery(string queryString)
+    {
+        var query = JsonConvert.DeserializeObject<Query>(queryString);
+        var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor();
+        query.Accept(visitor);
+        return query.KustoQL;
+    }
 
-        private static string TestRangeClause(string queryString, string field = "MyField", string type = "string")
-        {
-            var query = JsonConvert.DeserializeObject<Query>(queryString);
-            var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor(field, type);
-            query.Accept(visitor);
-            return query.KustoQL;
-        }
+    private static string TestRangeClause(string queryString, string field = "MyField", string type = "string")
+    {
+        var query = JsonConvert.DeserializeObject<Query>(queryString);
+        var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor(field, type);
+        query.Accept(visitor);
+        return query.KustoQL;
     }
 }

@@ -2,83 +2,81 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Visitors.LuceneNet
+namespace K2Bridge.Tests.UnitTests.Visitors.LuceneNet;
+
+using System;
+using K2Bridge.Models.Request.Queries;
+using K2Bridge.Models.Request.Queries.LuceneNet;
+using K2Bridge.Visitors;
+using K2Bridge.Visitors.LuceneNet;
+using NUnit.Framework;
+
+[TestFixture]
+public class LuceneWildcardVisitorTests
 {
-    using System;
-    using global::K2Bridge.Models.Request.Queries;
-    using global::K2Bridge.Models.Request.Queries.LuceneNet;
-    using global::K2Bridge.Visitors;
-    using global::K2Bridge.Visitors.LuceneNet;
-    using NUnit.Framework;
-    using UnitTests.K2Bridge.Visitors;
-
-    [TestFixture]
-    public class LuceneWildcardVisitorTests
+    [TestCase]
+    public void Visit_WithNullWildcardQuery_ThrowsException()
     {
-        [TestCase]
-        public void Visit_WithNullWildcardQuery_ThrowsException()
+        var visitor = new LuceneVisitor();
+        Assert.That(
+            () => visitor.Visit((LuceneWildcardQuery)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
+
+    [TestCase]
+    public void Visit_WithInvalidWildcardQuery_ThrowsException()
+    {
+        var wildcardQuery = new LuceneWildcardQuery
         {
-            var visitor = new LuceneVisitor();
-            Assert.That(
-                () => visitor.Visit((LuceneWildcardQuery)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+            LuceneQuery = null,
+        };
+        var visitor = new LuceneVisitor();
+        Assert.That(
+            () => visitor.Visit(wildcardQuery),
+            Throws.TypeOf<IllegalClauseException>());
+    }
 
-        [TestCase]
-        public void Visit_WithInvalidWildcardQuery_ThrowsException()
+    [TestCase(ExpectedResult = "* matches regex \"Lo(.)*d(.)n\"")]
+    public string Visit_WithValidWildcardQuery_ReturnsValidResponse()
+    {
+        var wildcardQuery = new LuceneWildcardQuery
         {
-            var wildcardQuery = new LuceneWildcardQuery
-            {
-                LuceneQuery = null,
-            };
-            var visitor = new LuceneVisitor();
-            Assert.That(
-                () => visitor.Visit(wildcardQuery),
-                Throws.TypeOf<IllegalClauseException>());
-        }
+            LuceneQuery =
+            new Lucene.Net.Search.WildcardQuery(
+                new Lucene.Net.Index.Term("*", "Lo*d?n")),
+        };
 
-        [TestCase(ExpectedResult = "* matches regex \"Lo(.)*d(.)n\"")]
-        public string Visit_WithValidWildcardQuery_ReturnsValidResponse()
+        var luceneVisitor = new LuceneVisitor();
+        luceneVisitor.Visit(wildcardQuery);
+
+        var es = wildcardQuery.ESQuery;
+        Assert.NotNull(es);
+
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+        visitor.Visit((QueryStringClause)es);
+
+        return ((QueryStringClause)es).KustoQL;
+    }
+
+    [TestCase(ExpectedResult = "* matches regex \"L\\\\o(.)*d(.)n\"")]
+    public string Visit_WithValidEscapedWildcardQuery_ReturnsValidResponse()
+    {
+        var wildcardQuery = new LuceneWildcardQuery
         {
-            var wildcardQuery = new LuceneWildcardQuery
-            {
-                LuceneQuery =
-                new Lucene.Net.Search.WildcardQuery(
-                    new Lucene.Net.Index.Term("*", "Lo*d?n")),
-            };
+            LuceneQuery =
+            new Lucene.Net.Search.WildcardQuery(
+                new Lucene.Net.Index.Term("*", "L\\o*d?n")),
+        };
 
-            var luceneVisitor = new LuceneVisitor();
-            luceneVisitor.Visit(wildcardQuery);
+        var luceneVisitor = new LuceneVisitor();
+        luceneVisitor.Visit(wildcardQuery);
 
-            var es = wildcardQuery.ESQuery;
-            Assert.NotNull(es);
+        var es = wildcardQuery.ESQuery;
+        Assert.NotNull(es);
 
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit((QueryStringClause)es);
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+        visitor.Visit((QueryStringClause)es);
 
-            return ((QueryStringClause)es).KustoQL;
-        }
-
-        [TestCase(ExpectedResult = "* matches regex \"L\\\\o(.)*d(.)n\"")]
-        public string Visit_WithValidEscapedWildcardQuery_ReturnsValidResponse()
-        {
-            var wildcardQuery = new LuceneWildcardQuery
-            {
-                LuceneQuery =
-                new Lucene.Net.Search.WildcardQuery(
-                    new Lucene.Net.Index.Term("*", "L\\o*d?n")),
-            };
-
-            var luceneVisitor = new LuceneVisitor();
-            luceneVisitor.Visit(wildcardQuery);
-
-            var es = wildcardQuery.ESQuery;
-            Assert.NotNull(es);
-
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit((QueryStringClause)es);
-
-            return ((QueryStringClause)es).KustoQL;
-        }
+        return ((QueryStringClause)es).KustoQL;
     }
 }

@@ -2,109 +2,108 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Visitors
+namespace K2Bridge.Tests.UnitTests.Visitors;
+
+using System;
+using System.IO;
+using K2Bridge;
+using K2Bridge.Models.Request;
+using K2Bridge.Visitors;
+using Microsoft.Extensions.Logging;
+using Moq;
+using NUnit.Framework;
+
+[TestFixture]
+public class ElasticQueryTranslatorTests
 {
-    using System;
-    using System.IO;
-    using global::K2Bridge;
-    using global::K2Bridge.Models.Request;
-    using global::K2Bridge.Visitors;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using NUnit.Framework;
+    private const string DATADIR = "../../../Data";
 
-    [TestFixture]
-    public class ElasticQueryTranslatorTests
+    private const string INDEX = "{\"index\":\"myIndex\"}";
+
+    private const string MustField = "MyTerm";
+    private const string FilterField = "test";
+
+    private Mock<ILogger<ElasticQueryTranslator>> mockLogger;
+    private Mock<IVisitor> mockVisitor;
+    private ElasticQueryTranslator elasticQueryTranslator;
+
+    [SetUp]
+    public void Init()
     {
-        private const string DATADIR = "../../../Data";
+        mockLogger = new Mock<ILogger<ElasticQueryTranslator>>();
+        mockVisitor = new Mock<IVisitor>();
 
-        private const string INDEX = "{\"index\":\"myIndex\"}";
+        mockVisitor.Setup(visitor => visitor.Visit(It.IsNotNull<ElasticSearchDSL>()))
+            .Callback<ElasticSearchDSL>((dsl) => dsl.KustoQL = "some kql from mock visitor");
 
-        private const string MustField = "MyTerm";
-        private const string FilterField = "test";
+        elasticQueryTranslator = new ElasticQueryTranslator(
+            mockVisitor.Object,
+            mockLogger.Object);
+    }
 
-        private Mock<ILogger<ElasticQueryTranslator>> mockLogger;
-        private Mock<IVisitor> mockVisitor;
-        private ElasticQueryTranslator elasticQueryTranslator;
+    [TestCase(ExpectedResult = "some kql from mock visitor")]
+    public string Translate_WithValidInput_ReturnsValidResponse()
+    {
+        var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
 
-        [SetUp]
-        public void Init()
-        {
-            mockLogger = new Mock<ILogger<ElasticQueryTranslator>>();
-            mockVisitor = new Mock<IVisitor>();
+        // Should succeed as all arguments are valid. the result is just a simple
+        // hard coded mock
+        var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
 
-            mockVisitor.Setup(visitor => visitor.Visit(It.IsNotNull<ElasticSearchDSL>()))
-                .Callback<ElasticSearchDSL>((dsl) => dsl.KustoQL = "some kql from mock visitor");
+        return queryData.QueryCommandText;
+    }
 
-            elasticQueryTranslator = new ElasticQueryTranslator(
-                mockVisitor.Object,
-                mockLogger.Object);
-        }
+    [TestCase(ExpectedResult = "some kql from mock visitor")]
+    public string Translate_WithValidInput_ReturnsValidHighlights()
+    {
+        var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
 
-        [TestCase(ExpectedResult = "some kql from mock visitor")]
-        public string Translate_WithValidInput_ReturnsValidResponse()
-        {
-            var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
+        var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
+        Assert.AreEqual(queryData.HighlightText["*"], MustField);
+        Assert.AreEqual(queryData.HighlightText[FilterField], "5");
 
-            // Should succeed as all arguments are valid. the result is just a simple
-            // hard coded mock
-            var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
+        return queryData.QueryCommandText;
+    }
 
-            return queryData.QueryCommandText;
-        }
+    [TestCase]
+    public void Translate_WithInvalidHeader_ThrowsException()
+    {
+        var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
 
-        [TestCase(ExpectedResult = "some kql from mock visitor")]
-        public string Translate_WithValidInput_ReturnsValidHighlights()
-        {
-            var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
+        // will fail as empty header is not valid
+        Assert.That(
+            () => elasticQueryTranslator.TranslateQuery(string.Empty, query),
+            Throws.TypeOf<ArgumentException>());
 
-            var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
-            Assert.AreEqual(queryData.HighlightText["*"], MustField);
-            Assert.AreEqual(queryData.HighlightText[FilterField], "5");
+        // will fail in translation as a header without 'index' is not valid
+        Assert.That(
+            () => elasticQueryTranslator.TranslateQuery("{\"notindex\":\"myIndex\"}", query),
+            Throws.TypeOf<TranslateException>());
+    }
 
-            return queryData.QueryCommandText;
-        }
+    [TestCase]
+    public void Translate_WithInvalidQuery_ThrowsException()
+    {
+        var query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_query.json");
 
-        [TestCase]
-        public void Translate_WithInvalidHeader_ThrowsException()
-        {
-            var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
+        // will fail as query is not valid (missing query)
+        Assert.That(
+            () => elasticQueryTranslator.TranslateQuery(INDEX, query),
+            Throws.TypeOf<TranslateException>());
 
-            // will fail as empty header is not valid
-            Assert.That(
-                () => elasticQueryTranslator.TranslateQuery(string.Empty, query),
-                Throws.TypeOf<ArgumentException>());
+        query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_bool.json");
 
-            // will fail in translation as a header without 'index' is not valid
-            Assert.That(
-                () => elasticQueryTranslator.TranslateQuery("{\"notindex\":\"myIndex\"}", query),
-                Throws.TypeOf<TranslateException>());
-        }
+        // will fail as query is not valid (missing query.bool)
+        Assert.That(
+            () => elasticQueryTranslator.TranslateQuery(INDEX, query),
+            Throws.TypeOf<TranslateException>());
+    }
 
-        [TestCase]
-        public void Translate_WithInvalidQuery_ThrowsException()
-        {
-            var query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_query.json");
+    [TestCase]
+    public void Translate_SortIsNull_NoException()
+    {
+        var query = File.ReadAllText($"{DATADIR}/query_no_sort.json");
 
-            // will fail as query is not valid (missing query)
-            Assert.That(
-                () => elasticQueryTranslator.TranslateQuery(INDEX, query),
-                Throws.TypeOf<TranslateException>());
-
-            query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_bool.json");
-
-            // will fail as query is not valid (missing query.bool)
-            Assert.That(
-                () => elasticQueryTranslator.TranslateQuery(INDEX, query),
-                Throws.TypeOf<TranslateException>());
-        }
-
-        [TestCase]
-        public void Translate_SortIsNull_NoException()
-        {
-            var query = File.ReadAllText($"{DATADIR}/query_no_sort.json");
-
-            Assert.That(() => elasticQueryTranslator.TranslateQuery(INDEX, query), Throws.Nothing);
-        }
+        Assert.That(() => elasticQueryTranslator.TranslateQuery(INDEX, query), Throws.Nothing);
     }
 }

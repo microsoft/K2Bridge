@@ -2,58 +2,57 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Controllers
+namespace K2Bridge.Controllers;
+
+using System.Threading.Tasks;
+using K2Bridge.KustoDAL;
+using K2Bridge.RewriteRules;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+
+/// <summary>
+/// Handle Fields capability requests.
+/// This controller is intentionally not mapped with [ApiController] attribute in order to avoid registering the route during startup.
+/// Instead, we first want to rewrite the original URL, and only then map it to this controller.
+/// Please see the related Rewrite Rule. <see cref="RewriteSearchRule"/>.
+/// The original HTTP request from Kibana is in the format of:
+/// POST /kibana_sample_data_logs/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false HTTP/1.1
+/// Where "kibana_sample_data_logs" is an index name.
+/// The original URL will be rewritten to the following format: /FieldCapability/Process/kibana_sample_data_logs.
+/// </summary>
+public class FieldCapabilityController : ControllerBase
 {
-    using System.Threading.Tasks;
-    using K2Bridge.KustoDAL;
-    using K2Bridge.RewriteRules;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldCapabilityController"/> class.
+    /// </summary>
+    /// <param name="kustoDataAccess">An instance of <see cref="IKustoDataAccess"/>.</param>
+    /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
+    public FieldCapabilityController(IKustoDataAccess kustoDataAccess, ILogger<FieldCapabilityController> logger)
+    {
+        Logger = logger;
+        KustoDataAccess = kustoDataAccess;
+    }
+
+    private IKustoDataAccess KustoDataAccess { get; set; }
+
+    private ILogger Logger { get; set; }
 
     /// <summary>
-    /// Handle Fields capability requests.
-    /// This controller is intentionally not mapped with [ApiController] attribute in order to avoid registering the route during startup.
-    /// Instead, we first want to rewrite the original URL, and only then map it to this controller.
-    /// Please see the related Rewrite Rule. <see cref="RewriteSearchRule"/>.
-    /// The original HTTP request from Kibana is in the format of:
-    /// POST /kibana_sample_data_logs/_field_caps?fields=*&ignore_unavailable=true&allow_no_indices=false HTTP/1.1
-    /// Where "kibana_sample_data_logs" is an index name.
-    /// The original URL will be rewritten to the following format: /FieldCapability/Process/kibana_sample_data_logs.
+    /// Process the request.
     /// </summary>
-    public class FieldCapabilityController : ControllerBase
+    /// <param name="indexName">Index name.</param>
+    /// <returns>A response from Kusto.</returns>
+    [HttpPost]
+    public async Task<IActionResult> Process(string indexName)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldCapabilityController"/> class.
-        /// </summary>
-        /// <param name="kustoDataAccess">An instance of <see cref="IKustoDataAccess"/>.</param>
-        /// <param name="logger">An instance of <see cref="ILogger"/>.</param>
-        public FieldCapabilityController(IKustoDataAccess kustoDataAccess, ILogger<FieldCapabilityController> logger)
+        var response = await KustoDataAccess.GetFieldCapsAsync(indexName, invalidateCache: true);
+
+        return new ContentResult
         {
-            Logger = logger;
-            KustoDataAccess = kustoDataAccess;
-        }
-
-        private IKustoDataAccess KustoDataAccess { get; set; }
-
-        private ILogger Logger { get; set; }
-
-        /// <summary>
-        /// Process the request.
-        /// </summary>
-        /// <param name="indexName">Index name.</param>
-        /// <returns>A response from Kusto.</returns>
-        [HttpPost]
-        public async Task<IActionResult> Process(string indexName)
-        {
-            var response = await KustoDataAccess.GetFieldCapsAsync(indexName, invalidateCache: true);
-
-            return new ContentResult
-            {
-                Content = JsonConvert.SerializeObject(response),
-                ContentType = "application/json",
-                StatusCode = (int)System.Net.HttpStatusCode.OK,
-            };
-        }
+            Content = JsonConvert.SerializeObject(response),
+            ContentType = "application/json",
+            StatusCode = (int)System.Net.HttpStatusCode.OK,
+        };
     }
 }

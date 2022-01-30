@@ -2,32 +2,31 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.KustoDAL
+namespace K2Bridge.Tests.UnitTests.KustoDAL;
+
+using System;
+using K2Bridge.KustoDAL;
+using NUnit.Framework;
+
+[TestFixture]
+public class QueryExceptionTests
 {
-    using System;
-    using global::K2Bridge.KustoDAL;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class QueryExceptionTests
+    [Test]
+    public void Constructor_WithNoArgument_ThrowsArgumentException()
     {
-        [Test]
-        public void Constructor_WithNoArgument_ThrowsArgumentException()
-        {
-            Assert.Throws<ArgumentException>(() => new QueryException());
-        }
+        Assert.Throws<ArgumentException>(() => new QueryException());
+    }
 
-        [Test]
-        public void Constructor_WithMessage_ThrowsArgumentException()
-        {
-            Assert.Throws<ArgumentException>(() => new QueryException("test"));
-        }
+    [Test]
+    public void Constructor_WithMessage_ThrowsArgumentException()
+    {
+        Assert.Throws<ArgumentException>(() => new QueryException("test"));
+    }
 
-        [Test]
-        public void Constructor_WithInnerExceptionAndMessage_ConstructsQueryException()
-        {
-            var exc = new QueryException("test", new ArgumentException("test"));
-            Assert.AreEqual(QueryException.QueryPhaseName, exc.PhaseName);
-        }
+    [Test]
+    public void Constructor_WithInnerExceptionAndMessage_ConstructsQueryException()
+    {
+        var exc = new QueryException("test", new ArgumentException("test"));
+        Assert.AreEqual(QueryException.QueryPhaseName, exc.PhaseName);
     }
 }

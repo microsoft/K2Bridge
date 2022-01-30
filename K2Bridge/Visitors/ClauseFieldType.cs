@@ -2,31 +2,30 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors
+namespace K2Bridge.Visitors;
+
+/// <summary>
+/// ClauseFieldType.
+/// </summary>
+public enum ClauseFieldType
 {
     /// <summary>
-    /// ClauseFieldType.
+    /// Numeric value type
     /// </summary>
-    public enum ClauseFieldType
-    {
-        /// <summary>
-        /// Numeric value type
-        /// </summary>
-        Numeric,
+    Numeric,
 
-        /// <summary>
-        /// String value type
-        /// </summary>
-        Text,
+    /// <summary>
+    /// String value type
+    /// </summary>
+    Text,
 
-        /// <summary>
-        /// Date type
-        /// </summary>
-        Date,
+    /// <summary>
+    /// Date type
+    /// </summary>
+    Date,
 
-        /// <summary>
-        /// Unknown type
-        /// </summary>
-        Unknown,
-    }
+    /// <summary>
+    /// Unknown type
+    /// </summary>
+    Unknown,
 }

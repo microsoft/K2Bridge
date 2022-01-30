@@ -192,6 +192,13 @@ For this aggregation, some metadata are passed in the column name to build the r
 
 Median aggregation is just a specific version of percentiles aggregation where value targeted is 50.
 
+> **_Estimation error in percentiles:_**  
+The percentiles aggregate provides an approximate value using [T-Digest](https://github.com/tdunning/t-digest/blob/master/docs/t-digest-paper/histo.pdf).
+>
+> * The bounds on the estimation error vary with the value of the requested percentile. The best accuracy is at both ends of the [0..100] scale. Percentiles 0 and 100 are the exact minimum and maximum values of the distribution. The accuracy gradually decreases towards the middle of the scale. It's worst at the median and is capped at 1%.
+> * Error bounds are observed on the rank, not on the value. Suppose percentile(X, 50) returned a value of Xm. The estimate guarantees that at least 49% and at most 51% of the values of X are less or equal to Xm. There is no theoretical limit on the difference between Xm and the actual median value of X.
+> * The estimation may sometimes result in a precise value but there are no reliable conditions to define when it will be the case.
+
 # Sum aggregation
 
 A single-value metrics aggregation that sums up numeric values that are extracted from the aggregated documents. 

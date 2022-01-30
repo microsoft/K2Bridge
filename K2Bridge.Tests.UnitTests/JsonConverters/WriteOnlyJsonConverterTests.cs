@@ -2,28 +2,27 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.JsonConverters
+namespace K2Bridge.Tests.UnitTests.JsonConverters;
+
+using System;
+using K2Bridge.JsonConverters;
+using NUnit.Framework;
+
+[TestFixture]
+public class WriteOnlyJsonConverterTests
 {
-    using System;
-    using global::K2Bridge.JsonConverters;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class WriteOnlyJsonConverterTests
+    [Test]
+    public void WriteOnlyJsonConverter_CanRead_ReturnsFalse()
     {
-        [Test]
-        public void WriteOnlyJsonConverter_CanRead_ReturnsFalse()
-        {
-            var writeOnlyConverter = new PercentileAggregateConverter();
-            Assert.IsFalse(writeOnlyConverter.CanRead);
-        }
+        var writeOnlyConverter = new PercentileAggregateConverter();
+        Assert.IsFalse(writeOnlyConverter.CanRead);
+    }
 
-        [Test]
-        public void WriteOnlyJsonConverter_NotImplementedMethods_ThrowsAsExpected()
-        {
-            var writeOnlyConverter = new PercentileAggregateConverter();
-            Assert.Throws<NotImplementedException>(() => writeOnlyConverter.CanConvert(typeof(string)));
-            Assert.Throws<NotImplementedException>(() => writeOnlyConverter.ReadJson(null, null, null, null));
-        }
+    [Test]
+    public void WriteOnlyJsonConverter_NotImplementedMethods_ThrowsAsExpected()
+    {
+        var writeOnlyConverter = new PercentileAggregateConverter();
+        Assert.Throws<NotImplementedException>(() => writeOnlyConverter.CanConvert(typeof(string)));
+        Assert.Throws<NotImplementedException>(() => writeOnlyConverter.ReadJson(null, null, null, null));
     }
 }

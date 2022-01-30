@@ -2,226 +2,227 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Visitors
+namespace K2Bridge.Tests.UnitTests.Visitors;
+
+using System;
+using K2Bridge.Models.Request;
+using K2Bridge.Models.Request.Aggregations;
+using K2Bridge.Models.Request.Aggregations.Bucket;
+using K2Bridge.Models.Request.Aggregations.Metric;
+using K2Bridge.Models.Request.Queries;
+using K2Bridge.Visitors;
+using NUnit.Framework;
+
+[TestFixture]
+public class InvalidVisitableObjectsTests
 {
-    using System;
-    using global::K2Bridge.Models.Request;
-    using global::K2Bridge.Models.Request.Aggregations;
-    using global::K2Bridge.Models.Request.Queries;
-    using global::K2Bridge.Visitors;
-    using NUnit.Framework;
+    // verify the IllegalClauseException has at least the 3 common CTors (best practice).
 
-    [TestFixture]
-    public class InvalidVisitableObjectsTests
+    /// <summary>
+    /// Has a default ctor.
+    /// </summary>
+    [TestCase]
+    public void IllegalClauseExceptionDefaultCtor_Invoke_ReturnsIllegalClauseException()
     {
-        // verify the IllegalClauseException has at least the 3 common CTors (best practice).
-
-        /// <summary>
-        /// Has a default ctor.
-        /// </summary>
-        [TestCase]
-        public void IllegalClauseExceptionDefaultCtor_Invoke_ReturnsIllegalClauseException()
+        try
         {
-            try
-            {
-                throw new IllegalClauseException();
-            }
-            catch (IllegalClauseException exc)
-            {
-                Assert.AreEqual(
-                    exc.Message,
-                    "Clause is missing mandatory properties or has invalid values");
-            }
+            throw new IllegalClauseException();
         }
-
-        /// <summary>
-        /// Has a custom message ctor.
-        /// </summary>
-        [TestCase]
-        public void IllegalClauseExceptionCustomCtor_Invoke_ReturnsIllegalClauseException()
+        catch (IllegalClauseException exc)
         {
-            var customMsg = "custom message";
-            try
-            {
-                throw new IllegalClauseException(customMsg);
-            }
-            catch (IllegalClauseException exc)
-            {
-                Assert.AreEqual(exc.Message, customMsg);
-            }
+            Assert.AreEqual(
+                exc.Message,
+                "Clause is missing mandatory properties or has invalid values");
         }
+    }
 
-        /// <summary>
-        /// Has a ctor with inner exception.
-        /// </summary>
-        [TestCase]
-        public void IllegalClauseExceptionInnerExcCtor_Invoke_ReturnsIllegalClauseException()
+    /// <summary>
+    /// Has a custom message ctor.
+    /// </summary>
+    [TestCase]
+    public void IllegalClauseExceptionCustomCtor_Invoke_ReturnsIllegalClauseException()
+    {
+        var customMsg = "custom message";
+        try
         {
-            var customMsg = "custom message";
-            var innerMsg = "inner exc message";
-            try
-            {
-                throw new IllegalClauseException(customMsg, new ArgumentException(innerMsg));
-            }
-            catch (IllegalClauseException exc)
-            {
-                Assert.AreEqual(exc.Message, customMsg);
-                Assert.AreEqual(exc.InnerException.Message, innerMsg);
-            }
+            throw new IllegalClauseException(customMsg);
         }
-
-        // The following tests verify that given an invalid clause, they
-        // throw an <see cref="IllegalClauseException"/> or ArgumentException
-        [TestCase]
-        public void ExistsClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
+        catch (IllegalClauseException exc)
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-
-            Assert.That(
-                () => visitor.Visit(new ExistsClause()),
-                Throws.TypeOf<IllegalClauseException>());
-
-            Assert.That(
-                () => visitor.Visit((ExistsClause)null),
-                Throws.TypeOf<ArgumentNullException>());
+            Assert.AreEqual(exc.Message, customMsg);
         }
+    }
 
-        [TestCase]
-        public void MatchPhraseClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    /// <summary>
+    /// Has a ctor with inner exception.
+    /// </summary>
+    [TestCase]
+    public void IllegalClauseExceptionInnerExcCtor_Invoke_ReturnsIllegalClauseException()
+    {
+        var customMsg = "custom message";
+        var innerMsg = "inner exc message";
+        try
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-
-            Assert.That(
-                () => visitor.Visit(new MatchPhraseClause()),
-                Throws.TypeOf<IllegalClauseException>());
-
-            Assert.That(
-                () => visitor.Visit((MatchPhraseClause)null),
-                Throws.TypeOf<ArgumentNullException>());
+            throw new IllegalClauseException(customMsg, new ArgumentException(innerMsg));
         }
-
-        [TestCase]
-        public void AvgAggMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
+        catch (IllegalClauseException exc)
         {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-
-            Assert.That(
-                () => visitor.Visit(new AverageAggregation()),
-                Throws.TypeOf<IllegalClauseException>());
-
-            Assert.That(
-                () => visitor.Visit((AverageAggregation)null),
-                Throws.TypeOf<ArgumentNullException>());
+            Assert.AreEqual(exc.Message, customMsg);
+            Assert.AreEqual(exc.InnerException.Message, innerMsg);
         }
+    }
 
-        [TestCase]
-        public void AggregationMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
-        {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+    // The following tests verify that given an invalid clause, they
+    // throw an <see cref="IllegalClauseException"/> or ArgumentException
+    [TestCase]
+    public void ExistsClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
-            // This is a valid scenario
-            visitor.Visit(new AggregationContainer());
+        Assert.That(
+            () => visitor.Visit(new ExistsClause()),
+            Throws.TypeOf<IllegalClauseException>());
 
-            Assert.That(
-                () => visitor.Visit((AggregationContainer)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+        Assert.That(
+            () => visitor.Visit((ExistsClause)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
 
-        [TestCase]
-        public void CardinalityAggMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
-        {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+    [TestCase]
+    public void MatchPhraseClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
-            Assert.That(
-                () => visitor.Visit(new CardinalityAggregation()),
-                Throws.TypeOf<IllegalClauseException>());
+        Assert.That(
+            () => visitor.Visit(new MatchPhraseClause()),
+            Throws.TypeOf<IllegalClauseException>());
 
-            Assert.That(
-                () => visitor.Visit((CardinalityAggregation)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+        Assert.That(
+            () => visitor.Visit((MatchPhraseClause)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
 
-        [TestCase]
-        public void RangeClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
-        {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+    [TestCase]
+    public void AvgAggMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
-            Assert.That(
-                () => visitor.Visit(new RangeClause()),
-                Throws.TypeOf<IllegalClauseException>());
+        Assert.That(
+            () => visitor.Visit(new AverageAggregation()),
+            Throws.TypeOf<IllegalClauseException>());
 
-            Assert.That(
-                () => visitor.Visit((RangeClause)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+        Assert.That(
+            () => visitor.Visit((AverageAggregation)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
 
-        [TestCase]
-        public void SortClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
-        {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+    [TestCase]
+    public void AggregationMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
-            Assert.That(
-                () => visitor.Visit(new SortClause()),
-                Throws.TypeOf<IllegalClauseException>());
+        // This is a valid scenario
+        visitor.Visit(new AggregationContainer());
 
-            Assert.That(
-                () => visitor.Visit((SortClause)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+        Assert.That(
+            () => visitor.Visit((AggregationContainer)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
 
-        [TestCase]
-        public void DateHistogramAggVisit_WithInvalidClause_ThrowsIllegalClauseException()
-        {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+    [TestCase]
+    public void CardinalityAggMetricVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
-            Assert.That(
-                () => visitor.Visit(new DateHistogramAggregation()),
-                Throws.TypeOf<IllegalClauseException>());
+        Assert.That(
+            () => visitor.Visit(new CardinalityAggregation()),
+            Throws.TypeOf<IllegalClauseException>());
 
-            Assert.That(
-                () => visitor.Visit((DateHistogramAggregation)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+        Assert.That(
+            () => visitor.Visit((CardinalityAggregation)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
 
-        [TestCase]
-        public void HistogramAggVisit_WithInvalidClause_ThrowsIllegalClauseException()
-        {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+    [TestCase]
+    public void RangeClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
-            Assert.That(
-                () => visitor.Visit(new HistogramAggregation()),
-                Throws.TypeOf<IllegalClauseException>());
+        Assert.That(
+            () => visitor.Visit(new RangeClause()),
+            Throws.TypeOf<IllegalClauseException>());
 
-            Assert.That(
-                () => visitor.Visit((HistogramAggregation)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+        Assert.That(
+            () => visitor.Visit((RangeClause)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
 
-        [TestCase]
-        public void BoolQueryVisit_WithInvalidClause_ThrowsIllegalClauseException()
-        {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+    [TestCase]
+    public void SortClauseVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
-            // This is a valid scenario
-            visitor.Visit(new BoolQuery());
+        Assert.That(
+            () => visitor.Visit(new SortClause()),
+            Throws.TypeOf<IllegalClauseException>());
 
-            Assert.That(
-                () => visitor.Visit((BoolQuery)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+        Assert.That(
+            () => visitor.Visit((SortClause)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
 
-        [TestCase]
-        public void InvalidQueryVisit_WithInvalidClause_ThrowsIllegalClauseException()
-        {
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+    [TestCase]
+    public void DateHistogramAggVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
 
-            Assert.That(
-                () => visitor.Visit(new Query()),
-                Throws.TypeOf<IllegalClauseException>());
+        Assert.That(
+            () => visitor.Visit(new DateHistogramAggregation()),
+            Throws.TypeOf<IllegalClauseException>());
 
-            Assert.That(
-                () => visitor.Visit((BoolQuery)null),
-                Throws.TypeOf<ArgumentNullException>());
-        }
+        Assert.That(
+            () => visitor.Visit((DateHistogramAggregation)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
+
+    [TestCase]
+    public void HistogramAggVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+
+        Assert.That(
+            () => visitor.Visit(new HistogramAggregation()),
+            Throws.TypeOf<IllegalClauseException>());
+
+        Assert.That(
+            () => visitor.Visit((HistogramAggregation)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
+
+    [TestCase]
+    public void BoolQueryVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+
+        // This is a valid scenario
+        visitor.Visit(new BoolQuery());
+
+        Assert.That(
+            () => visitor.Visit((BoolQuery)null),
+            Throws.TypeOf<ArgumentNullException>());
+    }
+
+    [TestCase]
+    public void InvalidQueryVisit_WithInvalidClause_ThrowsIllegalClauseException()
+    {
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+
+        Assert.That(
+            () => visitor.Visit(new Query()),
+            Throws.TypeOf<IllegalClauseException>());
+
+        Assert.That(
+            () => visitor.Visit((BoolQuery)null),
+            Throws.TypeOf<ArgumentNullException>());
     }
 }

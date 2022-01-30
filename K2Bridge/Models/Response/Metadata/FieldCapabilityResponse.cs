@@ -2,55 +2,54 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response.Metadata
+namespace K2Bridge.Models.Response.Metadata;
+
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
+/// <summary>
+/// Field capability response.
+/// </summary>
+public class FieldCapabilityResponse
 {
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+    private readonly Dictionary<string, FieldCapabilityElement> fields = new();
+    private readonly List<string> indices = new();
 
     /// <summary>
-    /// Field capability response.
+    /// Gets all fields.
     /// </summary>
-    public class FieldCapabilityResponse
+    /// <returns>Dictionary of all fields with key field name and field capability element value.</returns>
+    [JsonProperty("fields")]
+    public IDictionary<string, FieldCapabilityElement> Fields => fields;
+
+    /// <summary>
+    /// Gets indices.
+    /// </summary>
+    /// <returns>List of indices.</returns>
+    [JsonProperty("indices")]
+    public IEnumerable<string> Indices
     {
-        private readonly Dictionary<string, FieldCapabilityElement> fields = new();
-        private readonly List<string> indices = new();
+        get { return indices; }
+    }
 
-        /// <summary>
-        /// Gets all fields.
-        /// </summary>
-        /// <returns>Dictionary of all fields with key field name and field capability element value.</returns>
-        [JsonProperty("fields")]
-        public IDictionary<string, FieldCapabilityElement> Fields => fields;
+    /// <summary>
+    /// Add field capability element to response.
+    /// </summary>
+    /// <param name="fieldCapabilityElement">Added field capability element.</param>
+    public void AddField(FieldCapabilityElement fieldCapabilityElement)
+    {
+        Ensure.IsNotNull(fieldCapabilityElement, nameof(fieldCapabilityElement));
+        Ensure.IsNotNull(fieldCapabilityElement.Name, nameof(fieldCapabilityElement.Name));
 
-        /// <summary>
-        /// Gets indices.
-        /// </summary>
-        /// <returns>List of indices.</returns>
-        [JsonProperty("indices")]
-        public IEnumerable<string> Indices
-        {
-            get { return indices; }
-        }
+        fields.Add(fieldCapabilityElement.Name, fieldCapabilityElement);
+    }
 
-        /// <summary>
-        /// Add field capability element to response.
-        /// </summary>
-        /// <param name="fieldCapabilityElement">Added field capability element.</param>
-        public void AddField(FieldCapabilityElement fieldCapabilityElement)
-        {
-            Ensure.IsNotNull(fieldCapabilityElement, nameof(fieldCapabilityElement));
-            Ensure.IsNotNull(fieldCapabilityElement.Name, nameof(fieldCapabilityElement.Name));
-
-            fields.Add(fieldCapabilityElement.Name, fieldCapabilityElement);
-        }
-
-        /// <summary>
-        /// Add index to response.
-        /// </summary>
-        /// <param name="indexName">Index name.</param>
-        public void AddIndex(string indexName)
-        {
-            indices.Add(indexName);
-        }
+    /// <summary>
+    /// Add index to response.
+    /// </summary>
+    /// <param name="indexName">Index name.</param>
+    public void AddIndex(string indexName)
+    {
+        indices.Add(indexName);
     }
 }

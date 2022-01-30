@@ -2,29 +2,28 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Utils
+namespace K2Bridge.Utils;
+
+using System;
+
+/// <summary>
+/// String extensions methods.
+/// </summary>
+public static class StringExtensions
 {
-    using System;
-
-    /// <summary>
-    /// String extensions methods.
-    /// </summary>
-    public static class StringExtensions
+    public static string EscapeSlashes(this string str)
     {
-        public static string EscapeSlashes(this string str)
-        {
-            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null");
+        Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null");
 
-            return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
-        }
+        return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
+    }
 
-        public static string QuoteKustoTable(this string table) => $"['{table}']";
+    public static string QuoteKustoTable(this string table) => $"['{table}']";
 
-        public static string EscapeSlashesAndQuotes(this string str)
-        {
-            Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null or empty");
+    public static string EscapeSlashesAndQuotes(this string str)
+    {
+        Ensure.IsNotNullOrEmpty(str, nameof(str), "Input cannot be null or empty");
 
-            return str.EscapeSlashes().Replace(@"""", @"\""", StringComparison.OrdinalIgnoreCase);
-        }
+        return str.EscapeSlashes().Replace(@"""", @"\""", StringComparison.OrdinalIgnoreCase);
     }
 }

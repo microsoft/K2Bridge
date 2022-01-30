@@ -2,17 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.JsonConverters
-{
-    using System.Collections.Generic;
-    using global::K2Bridge.Models.Request;
-    using global::K2Bridge.Models.Request.Queries;
-    using NUnit.Framework;
+namespace K2Bridge.Tests.UnitTests.JsonConverters;
 
-    [TestFixture]
-    public partial class JsonConvertersTests
-    {
-        private const string OutterBoolQuery = @"
+using System.Collections.Generic;
+using K2Bridge.Models.Request;
+using K2Bridge.Models.Request.Queries;
+using NUnit.Framework;
+
+[TestFixture]
+public partial class JsonConvertersTests
+{
+    private const string OutterBoolQuery = @"
               {""bool"":
                   {""must"":
                       [
@@ -26,7 +26,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                   }
               }";
 
-        private const string InnerBoolQuery = @"
+    private const string InnerBoolQuery = @"
         {
            ""bool"": {
              ""must"": [
@@ -79,7 +79,7 @@ namespace UnitTests.K2Bridge.JsonConverters
              }
         }";
 
-        private const string LeafClause = @"
+    private const string LeafClause = @"
         {
             ""range"": {
               ""timestamp"": {
@@ -90,18 +90,18 @@ namespace UnitTests.K2Bridge.JsonConverters
             }
         }";
 
-        private static readonly BoolQuery OutterBoolResult = new()
-        {
-            Must = new List<IQuery>(),
-            MustNot = new List<IQuery>(),
-            Should = new List<IQuery>(),
-            ShouldNot = new List<IQuery>(),
-            Filter = new List<IQuery> { null },
-        };
+    private static readonly BoolQuery OutterBoolResult = new()
+    {
+        Must = new List<IQuery>(),
+        MustNot = new List<IQuery>(),
+        Should = new List<IQuery>(),
+        ShouldNot = new List<IQuery>(),
+        Filter = new List<IQuery> { null },
+    };
 
-        private static readonly BoolQuery InnerBoolResult = new()
-        {
-            Must = new List<IQuery>
+    private static readonly BoolQuery InnerBoolResult = new()
+    {
+        Must = new List<IQuery>
             {
                 new QueryStringClause()
                 {
@@ -145,30 +145,29 @@ namespace UnitTests.K2Bridge.JsonConverters
                     Format = "epoch_millis",
                 },
             },
-            MustNot = new List<IQuery>(),
-            Should = new List<IQuery>(),
-            ShouldNot = new List<IQuery>(),
-            Filter = new List<IQuery> { },
-        };
+        MustNot = new List<IQuery>(),
+        Should = new List<IQuery>(),
+        ShouldNot = new List<IQuery>(),
+        Filter = new List<IQuery> { },
+    };
 
-        private static readonly RangeClause LeafResult = new()
-        {
-            FieldName = "timestamp",
-            GTEValue = "1581963795598",
-            LTEValue = "1581964695598",
-            Format = "epoch_millis",
-        };
+    private static readonly RangeClause LeafResult = new()
+    {
+        FieldName = "timestamp",
+        GTEValue = "1581963795598",
+        LTEValue = "1581964695598",
+        Format = "epoch_millis",
+    };
 
-        private static readonly object[] QueryTestCases = {
+    private static readonly object[] QueryTestCases = {
             new TestCaseData(OutterBoolQuery, OutterBoolResult).SetName("JsonDeserializeObject_WithIQueryOutterBool_DeserializedCorrectly"),
             new TestCaseData(InnerBoolQuery, InnerBoolResult).SetName("JsonDeserializeObject_WithIQueryInnerBool_DeserializedCorrectly"),
             new TestCaseData(LeafClause, LeafResult).SetName("JsonDeserializeObject_WithIQueryLeafClause_DeserializedCorrectly"),
         };
 
-        [TestCaseSource(nameof(QueryTestCases))]
-        public void ReadQueryAndValidate(string queryString, object expected)
-        {
-            queryString.AssertJsonString((IQuery)expected);
-        }
+    [TestCaseSource(nameof(QueryTestCases))]
+    public void ReadQueryAndValidate(string queryString, object expected)
+    {
+        queryString.AssertJsonString((IQuery)expected);
     }
 }

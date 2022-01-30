@@ -2,25 +2,24 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response
+namespace K2Bridge.Models.Response;
+
+using Newtonsoft.Json;
+
+/// <summary>
+/// Hits response.
+/// </summary>
+public class Total
 {
-    using Newtonsoft.Json;
+    /// <summary>
+    /// Gets the relation.
+    /// </summary>
+    [JsonProperty("relation")]
+    public const string Relation = "eq";
 
     /// <summary>
-    /// Hits response.
+    /// Gets or sets the value.
     /// </summary>
-    public class Total
-    {
-        /// <summary>
-        /// Gets the relation.
-        /// </summary>
-        [JsonProperty("relation")]
-        public const string Relation = "eq";
-
-        /// <summary>
-        /// Gets or sets the value.
-        /// </summary>
-        [JsonProperty("value")]
-        public long Value { get; set; }
-    }
+    [JsonProperty("value")]
+    public long Value { get; set; }
 }

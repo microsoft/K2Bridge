@@ -2,17 +2,16 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Queries.LuceneNet
+namespace K2Bridge.Models.Request.Queries.LuceneNet;
+
+using Lucene.Net.Search;
+
+/// <summary>
+/// Object containing both Lucene.Net query and ESQuery.
+/// </summary>
+internal abstract class LuceneQueryBase
 {
-    using Lucene.Net.Search;
+    public Query LuceneQuery { get; set; }
 
-    /// <summary>
-    /// Object containing both Lucene.Net query and ESQuery.
-    /// </summary>
-    internal abstract class LuceneQueryBase
-    {
-        public Query LuceneQuery { get; set; }
-
-        public IQuery ESQuery { get; set; }
-    }
+    public IQuery ESQuery { get; set; }
 }

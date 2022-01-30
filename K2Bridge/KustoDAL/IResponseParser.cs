@@ -2,26 +2,25 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoDAL
-{
-    using System;
-    using System.Data;
-    using K2Bridge.Models;
-    using K2Bridge.Models.Response;
+namespace K2Bridge.KustoDAL;
 
+using System;
+using System.Data;
+using K2Bridge.Models;
+using K2Bridge.Models.Response;
+
+/// <summary>
+/// An interface for response parsing.
+/// </summary>
+public interface IResponseParser
+{
     /// <summary>
-    /// An interface for response parsing.
+    /// Parse kusto IDataReader response into ElasticResponse.
     /// </summary>
-    public interface IResponseParser
-    {
-        /// <summary>
-        /// Parse kusto IDataReader response into ElasticResponse.
-        /// </summary>
-        /// <param name="reader">Kusto IDataReader response.</param>
-        /// <param name="queryData">QueryData containing query information.</param>
-        /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
-        /// <returns>"ElasticResponse".</returns>
-        /// <exception cref="ParseException">Throws a ParseException on error.</exception>
-        ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken);
-    }
+    /// <param name="reader">Kusto IDataReader response.</param>
+    /// <param name="queryData">QueryData containing query information.</param>
+    /// <param name="timeTaken">TimeSpan representing query execution duration.</param>
+    /// <returns>"ElasticResponse".</returns>
+    /// <exception cref="ParseException">Throws a ParseException on error.</exception>
+    ElasticResponse Parse(IDataReader reader, QueryData queryData, TimeSpan timeTaken);
 }
