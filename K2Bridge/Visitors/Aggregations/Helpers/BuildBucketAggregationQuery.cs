@@ -15,7 +15,7 @@ using K2Bridge.Visitors.Aggregations.Helpers;
 /// </content>
 internal partial class ElasticSearchDSLVisitor : IVisitor
 {
-    public string BuildBucketAggregationQuery(BucketAggregation bucketAggregation, BucketAggregationQueryDefinition definition)
+    private string BuildBucketAggregationQuery(BucketAggregation bucketAggregation, BucketAggregationQueryDefinition definition)
     {
         Ensure.IsNotNull(bucketAggregation, nameof(bucketAggregation));
 
