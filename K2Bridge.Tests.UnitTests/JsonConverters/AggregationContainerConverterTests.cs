@@ -215,7 +215,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }}";
 
-        private static readonly AggregationContainer ExpectedValidDateHistogramAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidDateHistogramAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -236,7 +236,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidTermsAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidTermsAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -259,7 +259,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidRangeAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidRangeAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -285,7 +285,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidDateRangeAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidDateRangeAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -309,7 +309,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidHistogramAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidHistogramAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -329,7 +329,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -346,7 +346,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidAvgAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidAvgAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -363,7 +363,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedNoFieldsAvgAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedNoFieldsAvgAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -380,7 +380,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidMinAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidMinAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -397,7 +397,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidMaxAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidMaxAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -414,7 +414,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidSumAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidSumAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -431,7 +431,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidPercentileAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidPercentileAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -449,7 +449,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidPercentilesAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidPercentilesAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -467,7 +467,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedValidPercentilesKeyedAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedValidPercentilesKeyedAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -486,7 +486,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithoutSigma = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithoutSigma = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -503,7 +503,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithSigma = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithSigma = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -521,7 +521,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedTopHitsAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedTopHitsAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary
@@ -541,7 +541,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly AggregationContainer ExpectedNoAggAggregation = new AggregationContainer()
+        private static readonly AggregationContainer ExpectedNoAggAggregation = new()
         {
             PrimaryAggregation = null,
             SubAggregations = new AggregationDictionary

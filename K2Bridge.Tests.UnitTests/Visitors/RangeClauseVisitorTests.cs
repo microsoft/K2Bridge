@@ -118,7 +118,7 @@ namespace UnitTests.K2Bridge.Visitors
             return DateRangeClauseToKQL(CreateDateRangeClause("2020-01-01 00:00", "2020-02-22 10:00", minRange, maxRange));
         }
 
-         // Numeric RangeClause Query Tests
+        // Numeric RangeClause Query Tests
         [TestCase(RangeType.Wildcard, RangeType.Wildcard, ExpectedResult = "isnotnull(['MyField'])", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinWildcardAndMaxWildcard")]
         [TestCase(RangeType.Wildcard, RangeType.Exclusive, ExpectedResult = "0 < strcmp('C', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinWildcardAndMaxOpen")]
         [TestCase(RangeType.Wildcard, RangeType.Inclusive, ExpectedResult = "0 <= strcmp('C', tostring(['MyField']))", TestName = "Visit_ValidTextRange_ReturnsValidResponse_WhenMinWildcardAndMaxClosed")]

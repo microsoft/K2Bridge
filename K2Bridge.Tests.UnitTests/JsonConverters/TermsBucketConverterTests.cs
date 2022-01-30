@@ -21,7 +21,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             ""2"" : {""value"": 644.0861}
         }";
 
-        private static readonly TermsBucket ValidTermsBucket = new TermsBucket()
+        private static readonly TermsBucket ValidTermsBucket = new()
         {
             DocCount = 502,
             Key = "IT",

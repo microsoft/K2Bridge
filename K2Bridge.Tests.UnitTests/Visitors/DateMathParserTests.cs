@@ -4,9 +4,6 @@
 
 namespace UnitTests.K2Bridge.Visitors
 {
-    using System.Collections.Generic;
-    using global::K2Bridge.Models.Request.Aggregations;
-    using global::K2Bridge.Tests.UnitTests.Visitors;
     using global::K2Bridge.Visitors;
     using NUnit.Framework;
 

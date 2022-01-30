@@ -378,7 +378,7 @@ namespace UnitTests.K2Bridge.Controllers
             Assert.ThrowsAsync(typeof(ArgumentException), async () => await uat.SingleSearchAsync(string.Empty, It.IsAny<RequestContext>()));
         }
 
-        private QueryController GetController()
+        private static QueryController GetController()
         {
             var mockQueryData = new QueryData("query", "kibana_logs");
             var mockTranslator = new Mock<ITranslator>();

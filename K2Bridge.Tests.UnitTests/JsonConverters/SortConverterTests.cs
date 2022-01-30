@@ -22,13 +22,13 @@ namespace UnitTests.K2Bridge.JsonConverters
                 ""timestamp"": { }
             }";
 
-        private static readonly SortClause ExpectedValidSort = new SortClause()
+        private static readonly SortClause ExpectedValidSort = new()
         {
             FieldName = "timestamp",
             Order = "desc",
         };
 
-        private static readonly SortClause ExpectedEmptySort = new SortClause()
+        private static readonly SortClause ExpectedEmptySort = new()
         {
             FieldName = "timestamp",
             Order = null,

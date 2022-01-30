@@ -66,12 +66,12 @@ namespace UnitTests.K2Bridge.JsonConverters
             }
         }";
 
-        private static readonly PercentileAggregate ValidPercentileAggregateWithKeyedFalse = new PercentileAggregate()
+        private static readonly PercentileAggregate ValidPercentileAggregateWithKeyedFalse = new()
         {
             Keyed = false,
         };
 
-        private static readonly PercentileAggregate ValidPercentileAggregateWithKeyedTrue = new PercentileAggregate()
+        private static readonly PercentileAggregate ValidPercentileAggregateWithKeyedTrue = new()
         {
             Keyed = true,
         };

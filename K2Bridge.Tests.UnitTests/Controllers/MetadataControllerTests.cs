@@ -85,7 +85,7 @@ namespace UnitTests.K2Bridge.Controllers
             controllerFixture.Client.Dispose();
 
             // Assert
-            Assert.IsInstanceOf(resultType, result, $"result {result.ToString()} is not of expected type {resultType.Name}");
+            Assert.IsInstanceOf(resultType, result, $"result {result} is not of expected type {resultType.Name}");
             return string.Empty;
         }
 
@@ -109,7 +109,7 @@ namespace UnitTests.K2Bridge.Controllers
             controllerFixture.Client.Dispose();
 
             // Assert
-            Assert.IsInstanceOf(typeof(HttpResponseMessageResult), result, $"result {result.ToString()} is not of expected type HttpResponseMessageResult");
+            Assert.IsInstanceOf(typeof(HttpResponseMessageResult), result, $"result {result} is not of expected type HttpResponseMessageResult");
         }
 
         [Test]
@@ -137,7 +137,7 @@ namespace UnitTests.K2Bridge.Controllers
             controllerFixture.Client.Dispose();
 
             // Assert
-            Assert.IsInstanceOf(typeof(HttpResponseMessageResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
+            Assert.IsInstanceOf(typeof(HttpResponseMessageResult), result, $"result {result} is not of expected type BadRequestObjectResult");
         }
 
         [Test]
@@ -159,10 +159,10 @@ namespace UnitTests.K2Bridge.Controllers
             controllerFixture.Client.Dispose();
 
             // Assert
-            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result.ToString()} is not of expected type BadRequestObjectResult");
+            Assert.IsInstanceOf(typeof(BadRequestObjectResult), result, $"result {result} is not of expected type BadRequestObjectResult");
         }
 
-        private MetadataControllerFixture GetControllerFixture(string path, string method, bool setupHandler = true)
+        private static MetadataControllerFixture GetControllerFixture(string path, string method, bool setupHandler = true)
         {
             var mockClientFactory = new Mock<IHttpClientFactory>();
             var handlerMock = new Mock<HttpMessageHandler>(MockBehavior.Loose);
@@ -182,7 +182,7 @@ namespace UnitTests.K2Bridge.Controllers
                     .Verifiable();
             }
 
-            var mockHttpClient = new HttpClient(handlerMock.Object) { BaseAddress = new System.Uri("http://localhost") };
+            var mockHttpClient = new HttpClient(handlerMock.Object) { BaseAddress = new Uri("http://localhost") };
             mockClientFactory.Setup(x => x.CreateClient(MetadataController.ElasticMetadataClientName)).Returns(mockHttpClient);
             var mockLogger = new Mock<ILogger<MetadataController>>();
             var httpContext = new DefaultHttpContext();

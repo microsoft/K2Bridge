@@ -20,7 +20,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             }
         }";
 
-        private static readonly FieldCapabilityElement ValidFieldCapsElement = new FieldCapabilityElement()
+        private static readonly FieldCapabilityElement ValidFieldCapsElement = new()
         {
             Name = "title",
             Type = "text",

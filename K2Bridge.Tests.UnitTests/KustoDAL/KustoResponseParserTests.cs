@@ -118,7 +118,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             Assert.AreEqual(0, elasticResult.Hits.Hits.Count());
-            Assert.AreEqual(0, elasticResult.Aggregations.Count());
+            Assert.AreEqual(0, elasticResult.Aggregations.Count);
         }
 
         [Test]
@@ -149,7 +149,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("timestamp", nameof(DateHistogramAggregation));
+            var primaryAggregation = KeyValuePair.Create("timestamp", nameof(DateHistogramAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = aggsTable.CreateDataReader();
@@ -160,7 +160,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(2, aggregate.Buckets.Count());
+            Assert.AreEqual(2, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -173,7 +173,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
+            var primaryAggregation = KeyValuePair.Create("2", nameof(RangeAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = ds.CreateDataReader();
@@ -184,7 +184,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(3, aggregate.Buckets.Count());
+            Assert.AreEqual(3, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -197,7 +197,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
+            var primaryAggregation = KeyValuePair.Create("2", nameof(RangeAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = ds.CreateDataReader();
@@ -208,7 +208,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(3, aggregate.Buckets.Count());
+            Assert.AreEqual(3, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -220,7 +220,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(DateRangeAggregation));
+            var primaryAggregation = KeyValuePair.Create("2", nameof(DateRangeAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = aggsTable.CreateDataReader();
@@ -231,7 +231,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(3, aggregate.Buckets.Count());
+            Assert.AreEqual(3, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -244,7 +244,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(FiltersAggregation));
+            var primaryAggregation = KeyValuePair.Create("2", nameof(FiltersAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = ds.CreateDataReader();
@@ -255,7 +255,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(3, aggregate.Buckets.Count());
+            Assert.AreEqual(3, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -268,7 +268,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(FiltersAggregation));
+            var primaryAggregation = KeyValuePair.Create("2", nameof(FiltersAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = ds.CreateDataReader();
@@ -279,7 +279,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(3, aggregate.Buckets.Count());
+            Assert.AreEqual(3, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -292,7 +292,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
+            var primaryAggregation = KeyValuePair.Create("2", nameof(RangeAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = ds.CreateDataReader();
@@ -303,7 +303,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(2, aggregate.Buckets.Count());
+            Assert.AreEqual(2, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -316,7 +316,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(RangeAggregation));
+            var primaryAggregation = KeyValuePair.Create("2", nameof(RangeAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = ds.CreateDataReader();
@@ -327,7 +327,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (BucketAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(3, aggregate.Buckets.Count());
+            Assert.AreEqual(3, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -339,7 +339,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var timeTaken = new TimeSpan(17);
             var query = new QueryData("query", "index");
 
-            var primaryAggregation = KeyValuePair.Create<string, string>("2", nameof(TermsAggregation));
+            var primaryAggregation = KeyValuePair.Create("2", nameof(TermsAggregation));
             query.PrimaryAggregation = primaryAggregation;
 
             var reader = aggsTable.CreateDataReader();
@@ -350,7 +350,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
             var elasticResult = result.Responses.ToList()[0];
             var aggregate = (TermsAggregate)elasticResult.Aggregations[primaryAggregation.Key];
-            Assert.AreEqual(2, aggregate.Buckets.Count());
+            Assert.AreEqual(2, aggregate.Buckets.Count);
         }
 
         [Test]
@@ -391,7 +391,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static DataTable GetTestTable()
         {
-            DataTable resTable = new DataTable();
+            var resTable = new DataTable();
 
             var column1 = new DataColumn
             {
@@ -423,13 +423,13 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static DataTable GetEmptyTable()
         {
-            DataTable resTable = new DataTable();
+            var resTable = new DataTable();
             return resTable;
         }
 
         private static DataTable GetDateHistogramAggsTable()
         {
-            DataTable resTable = new DataTable();
+            var resTable = new DataTable();
 
             var column1 = new DataColumn("timestamp", Type.GetType("System.DateTime"));
             var column2 = new DataColumn("count_");
@@ -454,7 +454,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetRangeAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -483,7 +483,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetRangeNoMatchAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -508,7 +508,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetNegativeRangeAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -537,7 +537,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetRangeMetadataTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("key");
             resTable.Columns.Add(column1);
@@ -557,7 +557,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetNegativeRangeMetadataTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("key");
             resTable.Columns.Add(column1);
@@ -577,7 +577,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetOverlappingRangeAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -600,7 +600,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetOverlappingRangeMetadataTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("key");
             resTable.Columns.Add(column1);
@@ -620,7 +620,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static DataTable GetDateRangeAggsTable()
         {
-            DataTable resTable = new DataTable();
+            var resTable = new DataTable();
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -651,7 +651,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static DataTable GetTermsAggsTable()
         {
-            DataTable resTable = new DataTable();
+            var resTable = new DataTable();
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -676,7 +676,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetFiltersAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -705,7 +705,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetFiltersNoMatchAggsTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("2");
             var column2 = new DataColumn("count_");
@@ -730,7 +730,7 @@ namespace UnitTests.K2Bridge.KustoDAL
 
         private static void GetFiltersMetadataTable(DataSet ds, string tableName)
         {
-            DataTable resTable = ds.Tables.Add(tableName);
+            var resTable = ds.Tables.Add(tableName);
 
             var column1 = new DataColumn("key");
             resTable.Columns.Add(column1);
