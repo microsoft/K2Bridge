@@ -17,6 +17,7 @@ internal class KustoConnectionDetails : IConnectionDetails
     /// <param name="aadClientId"></param>
     /// <param name="aadClientSecret"></param>
     /// <param name="aadTenantId"></param>
+    /// <param name="useManagedIdentity"></param>
     internal KustoConnectionDetails(
         string clusterUrl,
         string defaultDatabaseName,
@@ -70,7 +71,7 @@ internal class KustoConnectionDetails : IConnectionDetails
     public string AadTenantId { get; private set; }
 
     /// <summary>
-    /// Gets a boolean indicating if we need to use a Managed Identity.
+    /// Gets a value indicating whether we need to use a Managed Identity.
     /// </summary>
     public bool UseManagedIdentity { get; private set; }
 }

@@ -22,7 +22,7 @@ internal static class ControllerExtractMethods
     /// </summary>
     /// <param name="queryBody">query body.</param>
     /// <returns>Tuple of first and second elements.</returns>
-    internal static (string, string) SplitQueryBody(string queryBody)
+    internal static (string Header, string Query) SplitQueryBody(string queryBody)
     {
         var splitString = string.IsNullOrEmpty(queryBody) ? Enumerable.Empty<string>() : queryBody.Split(
                 new[] { "\r\n", "\r", "\n" },
