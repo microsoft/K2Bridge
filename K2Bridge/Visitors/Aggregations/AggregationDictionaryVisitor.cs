@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -39,7 +39,7 @@ namespace K2Bridge.Visitors
             else
             {
                 // This is not a bucket aggregation scenario.
-                string defaultKey = Guid.NewGuid().ToString();
+                var defaultKey = Guid.NewGuid().ToString();
 
                 var defaultAggregation = new AggregationContainer()
                 {

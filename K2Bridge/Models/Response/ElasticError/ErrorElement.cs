@@ -15,7 +15,7 @@ namespace K2Bridge.Models.Response.ElasticError
     /// </summary>
     public class ErrorElement
     {
-        private readonly List<RootCause> rootCauses = new ();
+        private readonly List<RootCause> rootCauses = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ErrorElement"/> class.

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -12,8 +12,8 @@ namespace K2Bridge.Models.Response.Metadata
     /// </summary>
     public class FieldCapabilityResponse
     {
-        private readonly Dictionary<string, FieldCapabilityElement> fields = new ();
-        private readonly List<string> indices = new ();
+        private readonly Dictionary<string, FieldCapabilityElement> fields = new();
+        private readonly List<string> indices = new();
 
         /// <summary>
         /// Gets all fields.

@@ -24,17 +24,17 @@ namespace K2Bridge.KustoDAL
     internal class LuceneHighlighter : IDisposable
     {
         private const string Default = "*";
-        private readonly bool isHighlight = false;
+        private readonly bool isHighlight;
 
         // Lucene analyzer.
-        private readonly Lazy<Analyzer> analyzer = new (() => new WordAnalyzer());
+        private readonly Lazy<Analyzer> analyzer = new(() => new WordAnalyzer());
 
         // Highlighters computed for this query.
         private readonly Lazy<IDictionary<string, Highlighter>> highlighters;
 
         private readonly QueryData query;
         private readonly ILogger logger;
-        private bool disposedValue = false;
+        private bool disposedValue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LuceneHighlighter"/> class.
@@ -49,7 +49,7 @@ namespace K2Bridge.KustoDAL
             // Skipping highlight if the query's HighlightText dictionary is empty or if pre/post tags are empty.
             isHighlight = query.HighlightText != null && !string.IsNullOrEmpty(query.HighlightPreTag) && !string.IsNullOrEmpty(query.HighlightPostTag);
             highlighters = new Lazy<IDictionary<string, Highlighter>>(() => MakeHighlighters(analyzer.Value, query));
-            logger.LogInformation("Lucene highlighter is enabled: {isHighlight}", isHighlight);
+            logger.LogInformation("Lucene highlighter is enabled: {IsHighlight}", isHighlight);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace K2Bridge.KustoDAL
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failure getting highlighted value for {columnName}.", columnName);
+                logger.LogError(e, "Failure getting highlighted value for {ColumnName}.", columnName);
                 return null;
             }
         }
@@ -165,7 +165,7 @@ namespace K2Bridge.KustoDAL
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failure creating highlighters for {value}", value);
+                logger.LogError(e, "Failure creating highlighters for {Value}", value);
                 return null;
             }
         }

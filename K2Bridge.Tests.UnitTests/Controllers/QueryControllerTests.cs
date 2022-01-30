@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -28,12 +28,12 @@ namespace UnitTests.K2Bridge.Controllers
         private const string ValidSearchRequestContent = "{\"version\": true,\"size\": 500,\"sort\": [{\"timestamp\": {\"order\": \"desc\",\"unmapped_type\": \"boolean\"}}],\"aggs\": {\"2\": {\"date_histogram\": {\"field\": \"timestamp\",\"calendar_interval\": \"month\",\"time_zone\": \"Asia/Jerusalem\",\"min_doc_count\": 1}}},\"stored_fields\": [\"*\"],\"script_fields\": {\"hour_of_day\": {\"script\": {\"source\": \"doc['timestamp'].value.hourOfDay\",\"lang\": \"painless\"}}},\"docvalue_fields\": [{\"field\": \"timestamp\",\"format\": \"date_time\"}],\"_source\": {\"excludes\": []},\"query\": {\"bool\": {\"must\": [{\"query_string\": {\"query\": \"Catania\",\"analyze_wildcard\": true,\"time_zone\": \"UTC\"}}],\"filter\": [{\"exists\": {\"field\": \"Carrier\"}},{\"range\": {\"DistanceKilometers\": {\"gte\": 100,\"lt\": 200}}},{\"range\": {\"timestamp\": {\"gte\": 1420647100399,\"lte\": 1578413500399,\"format\": \"epoch_millis\"}}}],\"should\": [],\"must_not\": [{\"match_phrase\": {\"FlightDelayType\": \"No Delay\"}}]}},\"highlight\": {\"pre_tags\": [\"@kibana-highlighted-field@\"],\"post_tags\": [\"@/kibana-highlighted-field@\"],\"fields\": {\"*\": {}},\"fragment_size\": 2147483647}}";
         private const string ValidMSearchRequestContent = ValidHeaderContent + "\n" + ValidSearchRequestContent;
         private const string QueryControllerTranslateErrorString = @"
-            { 
-                ""responses"":[ 
-                    { 
-                        ""error"":{ 
-                            ""root_cause"":[ 
-                            { 
+            {
+                ""responses"":[
+                    {
+                        ""error"":{
+                            ""root_cause"":[
+                            {
                                 ""type"":""ArgumentException"",
                                 ""reason"":""test"",
                                 ""index_uuid"":""unknown"",
@@ -51,12 +51,12 @@ namespace UnitTests.K2Bridge.Controllers
         ";
 
         private const string QueryControllerParseErrorString = @"
-            { 
-                ""responses"":[ 
-                    { 
-                        ""error"":{ 
-                            ""root_cause"":[ 
-                            { 
+            {
+                ""responses"":[
+                    {
+                        ""error"":{
+                            ""root_cause"":[
+                            {
                                 ""type"":""ArgumentException"",
                                 ""reason"":""test"",
                                 ""index_uuid"":""kibana_logs"",
@@ -74,12 +74,12 @@ namespace UnitTests.K2Bridge.Controllers
         ";
 
         private const string QueryControllerQueryErrorString = @"
-            { 
-                ""responses"":[ 
-                    { 
-                        ""error"":{ 
-                            ""root_cause"":[ 
-                            { 
+            {
+                ""responses"":[
+                    {
+                        ""error"":{
+                            ""root_cause"":[
+                            {
                                 ""type"":""ArgumentException"",
                                 ""reason"":""test"",
                                 ""index_uuid"":""kibana_logs"",
@@ -378,7 +378,7 @@ namespace UnitTests.K2Bridge.Controllers
             Assert.ThrowsAsync(typeof(ArgumentException), async () => await uat.SingleSearchAsync(string.Empty, It.IsAny<RequestContext>()));
         }
 
-        private QueryController GetController()
+        private static QueryController GetController()
         {
             var mockQueryData = new QueryData("query", "kibana_logs");
             var mockTranslator = new Mock<ITranslator>();

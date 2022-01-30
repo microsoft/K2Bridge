@@ -16,6 +16,6 @@ namespace K2Bridge.Models.Response.Aggregations
         /// <summary>
         /// Gets or sets the Keyed value.
         /// </summary>
-        public bool Keyed { get; set; } = false;
+        public bool Keyed { get; set; }
     }
 }

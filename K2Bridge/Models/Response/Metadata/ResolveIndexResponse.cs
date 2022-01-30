@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -12,7 +12,7 @@ namespace K2Bridge.Models.Response.Metadata
     /// </summary>
     public class ResolveIndexResponse
     {
-        private readonly List<ResolveIndexResponseIndex> indices = new ();
+        private readonly List<ResolveIndexResponseIndex> indices = new();
 
         /// <summary>
         /// Gets indices.

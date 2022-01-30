@@ -16,13 +16,13 @@ When run on a pull request or manually on a branch, the pipeline runs the follow
   * Deploy a standalone Elasticsearch chart to AKS, and run parallel end-to-end tests that load data side-by-side in both Kusto and Elasticsearch and query K2Bridge and Elasticsearch, verifying that both endpoints return equivalent results.
   * Clean up by deleting the per-build Kusto database and AKS namespace.
 
-When run on the `main` or `dev-vnext` branch, the pipeline runs as above, with the following additions:
+When run on the `main` or `kibana6.8` branch, the pipeline runs as above, with the following additions:
 
-  * Uses a non-temporary Kusto database and AKS namespace (`main`), that is not deleted after the build.
+  * Uses a non-temporary Kusto database and AKS namespace, that is not deleted after the build.
   * Promote successful builds by tagging them in ACR, and publishing them to MCR.
 
 The CI/CD Environment on Azure is depicted below. Kibana is not installed by the pipeline,
-but can be manually installed on the `main` namespace.
+but can be manually installed on the namespace.
 
 ![CI/CD Environment](./images/CICD%20Environment.png)
 
@@ -53,4 +53,3 @@ This way, only after the pipeline job has fully read the test result XML,  the t
 completes and the container is deleted.
 
 For running the end-to-end test suite on a local development environment, see [the End2End tests section in the developer documentation](development.md).
-

@@ -7,7 +7,6 @@ namespace K2Bridge.Visitors
     using System.Collections.Generic;
     using System.Text;
     using K2Bridge.Models.Request.Aggregations;
-    using K2Bridge.Utils;
 
     /// <content>
     /// A visitor for the <see cref="RangeAggregation"/> element.
@@ -21,7 +20,7 @@ namespace K2Bridge.Visitors
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Metric, nameof(RangeAggregation.Metric));
             EnsureClause.StringIsNotNullOrEmpty(rangeAggregation.Field, nameof(RangeAggregation.Field));
 
-            string expandColumn = EncodeKustoField("_range_value");
+            var expandColumn = EncodeKustoField("_range_value");
 
             // Extend expression:
             // >> ['2']=pack_array("range1", "range2", "range3"), ['_range_value'] = pack_array(expr1, expr2, expr3)
@@ -49,7 +48,6 @@ namespace K2Bridge.Visitors
 
                 rangeNames.Add(range.BucketNameKustoQL);
             }
-
 
             extendExpression.Append($"{EncodeKustoField(rangeAggregation.Key)} = {KustoQLOperators.PackArray}({string.Join(',', rangeNames)}), ");
             extendExpression.Append($"{expandColumn} = {KustoQLOperators.PackArray}({string.Join(',', rangeExpressions)})");
