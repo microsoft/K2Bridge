@@ -9,7 +9,7 @@ namespace K2Bridge
     using System.Linq;
     using K2Bridge.Models;
     using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Aggregations.Bucket;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Telemetry;
     using K2Bridge.Visitors;

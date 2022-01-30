@@ -4,7 +4,7 @@
 
 namespace UnitTests.K2Bridge.JsonConverters
 {
-    using global::K2Bridge.Models.Response.Aggregations;
+    using global::K2Bridge.Models.Response.Aggregations.Bucket;
     using NUnit.Framework;
 
     [TestFixture]

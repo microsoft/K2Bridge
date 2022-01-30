@@ -7,6 +7,8 @@ namespace UnitTests.K2Bridge.JsonConverters
     using System.Collections.Generic;
     using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Aggregations;
+    using global::K2Bridge.Models.Request.Aggregations.Bucket;
+    using global::K2Bridge.Models.Request.Aggregations.Metric;
     using NUnit.Framework;
 
     [TestFixture]

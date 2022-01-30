@@ -49,6 +49,5 @@ namespace K2Bridge.Utils
         /// The metadata value column name.
         /// </summary>
         public const string MetadataValue = "value";
-
     }
 }

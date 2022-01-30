@@ -4,7 +4,7 @@
 
 namespace UnitTests.K2Bridge.Visitors
 {
-    using global::K2Bridge.Visitors;
+    using global::K2Bridge.Utils;
     using NUnit.Framework;
 
     [TestFixture]

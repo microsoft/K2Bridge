@@ -6,7 +6,8 @@ namespace K2Bridge.Visitors
 {
     using System.Collections.Generic;
     using System.Text;
-    using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Aggregations.Bucket;
+    using K2Bridge.Visitors.Aggregations.Helpers;
 
     /// <content>
     /// A visitor for the <see cref="DateRangeAggregation"/> element.
@@ -48,7 +49,6 @@ namespace K2Bridge.Visitors
 
                 rangeNames.Add(range.BucketNameKustoQL);
             }
-
 
             extendExpression.Append($"{EncodeKustoField(dateRangeAggregation.Key)} = {KustoQLOperators.PackArray}({string.Join(',', rangeNames)}), ");
             extendExpression.Append($"{expandColumn} = {KustoQLOperators.PackArray}({string.Join(',', rangeExpressions)})");

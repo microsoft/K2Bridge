@@ -7,6 +7,8 @@ namespace UnitTests.K2Bridge.Visitors
     using System;
     using global::K2Bridge.Models.Request;
     using global::K2Bridge.Models.Request.Aggregations;
+    using global::K2Bridge.Models.Request.Aggregations.Bucket;
+    using global::K2Bridge.Models.Request.Aggregations.Metric;
     using global::K2Bridge.Models.Request.Queries;
     using global::K2Bridge.Visitors;
     using NUnit.Framework;

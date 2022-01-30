@@ -10,8 +10,9 @@ namespace UnitTests.K2Bridge.KustoDAL
     using System.Linq;
     using global::K2Bridge.KustoDAL;
     using global::K2Bridge.Models;
-    using global::K2Bridge.Models.Request.Aggregations;
+    using global::K2Bridge.Models.Request.Aggregations.Bucket;
     using global::K2Bridge.Models.Response.Aggregations;
+    using global::K2Bridge.Models.Response.Aggregations.Bucket;
     using global::K2Bridge.Telemetry;
     using global::K2Bridge.Utils;
     using Kusto.Data;
