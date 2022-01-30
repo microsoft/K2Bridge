@@ -38,10 +38,8 @@ public class ElasticErrorResponse
     /// <param name="type">Specific error type.</param>
     /// <param name="reason">Specific reason for error.</param>
     /// <param name="indexName">Index name where error happend.</param>
-    public void AddRootCause(string type, string reason, string indexName)
-    {
+    public void AddRootCause(string type, string reason, string indexName) =>
         responses[0].Error.AddRootCause(new RootCause(type, reason, indexName, indexName));
-    }
 
     /// <summary>
     /// Fluent extension over AddRootCause.

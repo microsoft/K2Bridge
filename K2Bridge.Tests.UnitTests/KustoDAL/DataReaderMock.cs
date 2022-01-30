@@ -39,25 +39,16 @@ public sealed class DataReaderMock : IDataReader
     {
     }
 
-    public bool GetBoolean(int i)
-    {
-        return (bool)this[i];
-    }
+    public bool GetBoolean(int i) => (bool)this[i];
 
-    public byte GetByte(int i)
-    {
-        return (byte)this[i];
-    }
+    public byte GetByte(int i) => (byte)this[i];
 
     public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
     {
         throw new NotImplementedException();
     }
 
-    public char GetChar(int i)
-    {
-        return (char)this[i];
-    }
+    public char GetChar(int i) => (char)this[i];
 
     public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
     {
@@ -69,60 +60,30 @@ public sealed class DataReaderMock : IDataReader
         throw new NotImplementedException();
     }
 
-    public string GetDataTypeName(int i)
-    {
-        return this[i].GetType().Name;
-    }
+    public string GetDataTypeName(int i) => this[i].GetType().Name;
 
-    public DateTime GetDateTime(int i)
-    {
-        return (DateTime)this[i];
-    }
+    public DateTime GetDateTime(int i) => (DateTime)this[i];
 
-    public decimal GetDecimal(int i)
-    {
-        return (decimal)this[i];
-    }
+    public decimal GetDecimal(int i) => (decimal)this[i];
 
-    public double GetDouble(int i)
-    {
-        return (double)this[i];
-    }
+    public double GetDouble(int i) => (double)this[i];
 
-    public Type GetFieldType(int i)
-    {
-        return this[i].GetType();
-    }
+    public Type GetFieldType(int i) => this[i].GetType();
 
-    public float GetFloat(int i)
-    {
-        return (float)this[i];
-    }
+    public float GetFloat(int i) => (float)this[i];
 
     public Guid GetGuid(int i)
     {
         throw new NotImplementedException();
     }
 
-    public short GetInt16(int i)
-    {
-        return (short)this[i];
-    }
+    public short GetInt16(int i) => (short)this[i];
 
-    public int GetInt32(int i)
-    {
-        return (int)this[i];
-    }
+    public int GetInt32(int i) => (int)this[i];
 
-    public long GetInt64(int i)
-    {
-        return (long)this[i];
-    }
+    public long GetInt64(int i) => (long)this[i];
 
-    public string GetName(int i)
-    {
-        return items[index].Keys.ElementAt(i);
-    }
+    public string GetName(int i) => items[index].Keys.ElementAt(i);
 
     public int GetOrdinal(string name)
     {
@@ -134,15 +95,9 @@ public sealed class DataReaderMock : IDataReader
         throw new NotImplementedException();
     }
 
-    public string GetString(int i)
-    {
-        return (string)this[i];
-    }
+    public string GetString(int i) => (string)this[i];
 
-    public object GetValue(int i)
-    {
-        return this[i];
-    }
+    public object GetValue(int i) => this[i];
 
     public int GetValues(object[] values)
     {

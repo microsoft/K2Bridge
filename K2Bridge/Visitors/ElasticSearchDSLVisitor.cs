@@ -107,21 +107,12 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
         elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
     }
 
-    private static string QuoteKustoField(string field)
-    {
-        return field == null ? null : string.Join(".", field.Split(".").Select(s => $"['{s}']"));
-    }
+    private static string QuoteKustoField(string field) => field == null ? null : string.Join(".", field.Split(".").Select(s => $"['{s}']"));
 
-    private static bool IsFieldDynamic(string field)
-    {
-        return field?.Contains('.') ?? false;
-    }
+    private static bool IsFieldDynamic(string field) => field?.Contains('.') ?? false;
 
     // Aggregations always need to be wrapped in a type
-    private string EncodeKustoField(MetricAggregation agg)
-    {
-        return EncodeKustoField(agg.Field, true);
-    }
+    private string EncodeKustoField(MetricAggregation agg) => EncodeKustoField(agg.Field, true);
 
     private string EncodeKustoField(string field, bool wrapDynamic = false)
     {

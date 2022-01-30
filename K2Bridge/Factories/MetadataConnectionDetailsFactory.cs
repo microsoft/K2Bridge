@@ -17,8 +17,6 @@ public static class MetadataConnectionDetailsFactory
     /// </summary>
     /// <param name="config">Config.</param>
     /// <returns>MetadataConnectionDetails.</returns>
-    internal static MetadataConnectionDetails MakeFromConfiguration(IConfigurationRoot config)
-    {
-        return new(config["metadataElasticAddress"]);
-    }
+    internal static MetadataConnectionDetails MakeFromConfiguration(IConfigurationRoot config) =>
+        new(config["metadataElasticAddress"]);
 }
