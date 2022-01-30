@@ -84,7 +84,7 @@ public static class HitsMapper
             hit.AddSource(columnName, columnValue);
 
             // We need to flatten the dynamic field in order to highlight them properly.
-            IEnumerable<(string columnName, object columnValue)> subColumns;
+            IEnumerable<(string ColumnName, object ColumnValue)> subColumns;
             if (columnValue is JObject j)
             {
                 subColumns = j.Descendants()

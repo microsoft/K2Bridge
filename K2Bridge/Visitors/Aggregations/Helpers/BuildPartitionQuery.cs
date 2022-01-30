@@ -81,7 +81,7 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
 
     /// <summary>
     /// Gets the list of all metrics keys already visited with take_any operator
-    /// take_any(['2']), take_any(['3']), take_any(['count_'])
+    /// take_any(['2']), take_any(['3']), take_any(['count_']).
     /// </summary>
     private string GetVisitedMetricsEncodedKeysTakeAny()
     {
