@@ -8,6 +8,4 @@
 // a specific target and scoped to a namespace, type, member, etc.
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1614:Element parameter documentation should have text", Justification = "TEMP", Scope = "member", Target = "~M:K2Bridge.Tests.End2End.PopulateElastic.CreateIndex(K2Bridge.Tests.End2End.TestElasticClient,System.String,System.String)~System.Threading.Tasks.Task{Newtonsoft.Json.Linq.JToken}")]
-[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1614:Element parameter documentation should have text", Justification = "TEMP", Scope = "member", Target = "~M:K2Bridge.Tests.End2End.PopulateKusto.Populate(Kusto.Data.KustoConnectionStringBuilder,System.String,System.String,System.String,System.String,System.String)~System.Threading.Tasks.Task{Kusto.Ingest.IKustoIngestionResult}")]
-[assembly: SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1117:Parameters should be on same line or separate lines", Justification = "Will be fixed in a seperate PR", Scope = "member", Target = "~M:K2Bridge.Tests.End2End.PrometheusTest.PrometheusTelemetry_WhenQueryParsed_ThenExposeQueryMetrics~System.Threading.Tasks.Task")]
+[assembly: SuppressMessage("Usage", "CA2201:Do not raise reserved exception types", Justification = "Good enough", Scope = "member", Target = "~M:K2Bridge.Tests.End2End.KustoTestBase.GetAADToken(System.String)~System.String")]

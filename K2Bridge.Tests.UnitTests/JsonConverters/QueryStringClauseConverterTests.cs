@@ -73,7 +73,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }";
 
-        private static readonly Query ExpectedValidQuery = new Query
+        private static readonly Query ExpectedValidQuery = new()
         {
             Bool = new BoolQuery
             {
@@ -92,7 +92,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly Query ExpectedValidQueryMissingAnalyzeWildcard = new Query
+        private static readonly Query ExpectedValidQueryMissingAnalyzeWildcard = new()
         {
             Bool = new BoolQuery
             {
@@ -111,7 +111,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly Query ExpectedValidQueryMissingDefaultField = new Query
+        private static readonly Query ExpectedValidQueryMissingDefaultField = new()
         {
             Bool = new BoolQuery
             {

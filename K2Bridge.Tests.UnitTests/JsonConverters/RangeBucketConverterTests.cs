@@ -61,7 +61,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 Key = key,
             };
 
-            ((RangeBucket)validRangeBucket).AssertJson(expectedJSON);
+            validRangeBucket.AssertJson(expectedJSON);
         }
     }
 }

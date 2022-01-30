@@ -38,8 +38,8 @@ namespace UnitTests.K2Bridge.KustoDAL
                     It.IsAny<ClientRequestProperties>()))
                 .Returns(Task.FromResult(expectedDataReaderMock.Object));
 
-            KustoQueryExecutor kustoQueryExecutor = new KustoQueryExecutor(queryClientMock.Object, adminClientMock.Object, loggerMock, metricsHistograms);
-            RequestContext requestContext = new RequestContext { CorrelationId = Guid.Empty };
+            var kustoQueryExecutor = new KustoQueryExecutor(queryClientMock.Object, adminClientMock.Object, loggerMock, metricsHistograms);
+            var requestContext = new RequestContext { CorrelationId = Guid.Empty };
 
             // Act
             var result = await kustoQueryExecutor.ExecuteControlCommandAsync("test command", requestContext);
@@ -66,7 +66,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             var queryClientMock = new Mock<ICslQueryProvider>();
             var adminClientMock = new Mock<ICslAdminProvider>();
             var loggerMock = new Mock<ILogger<KustoQueryExecutor>>().Object;
-            Metrics metricsHistograms = Metrics.Create(GetMockTelemetryClient());
+            var metricsHistograms = Metrics.Create(GetMockTelemetryClient());
             var expectedDataReaderMock = new Mock<IDataReader>();
             var queryData = new QueryData("test command text", "test index name");
 
@@ -77,8 +77,8 @@ namespace UnitTests.K2Bridge.KustoDAL
                     It.IsAny<ClientRequestProperties>()))
                 .Returns(Task.FromResult(expectedDataReaderMock.Object));
 
-            KustoQueryExecutor kustoQueryExecutor = new KustoQueryExecutor(queryClientMock.Object, adminClientMock.Object, loggerMock, metricsHistograms);
-            RequestContext requestContext = new RequestContext { CorrelationId = Guid.Empty };
+            var kustoQueryExecutor = new KustoQueryExecutor(queryClientMock.Object, adminClientMock.Object, loggerMock, metricsHistograms);
+            var requestContext = new RequestContext { CorrelationId = Guid.Empty };
 
             // Act
             var (timeTaken, dataReader) = await kustoQueryExecutor.ExecuteQueryAsync(queryData, requestContext);
@@ -88,8 +88,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             Assert.AreEqual(expectedDataReaderMock.Object, dataReader);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
-        private TelemetryClient GetMockTelemetryClient()
+        private static TelemetryClient GetMockTelemetryClient()
         {
             return new TelemetryClient(
                 new TelemetryConfiguration

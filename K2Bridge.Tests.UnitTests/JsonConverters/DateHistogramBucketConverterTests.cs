@@ -23,7 +23,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             ""2"" : {""value"": 644.0861}
         }";
 
-        private static readonly DateHistogramBucket ValidDateHistogramBucket = new DateHistogramBucket()
+        private static readonly DateHistogramBucket ValidDateHistogramBucket = new()
         {
             DocCount = 4133,
             Key = 1625176800000,

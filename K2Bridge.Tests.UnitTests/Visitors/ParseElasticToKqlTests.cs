@@ -385,7 +385,7 @@ namespace UnitTests.K2Bridge.Visitors
             return query.KustoQL;
         }
 
-        private string TestRangeClause(string queryString, string field = "MyField", string type = "string")
+        private static string TestRangeClause(string queryString, string field = "MyField", string type = "string")
         {
             var query = JsonConvert.DeserializeObject<Query>(queryString);
             var visitor = VisitorTestsUtils.CreateAndVisitRootVisitor(field, type);

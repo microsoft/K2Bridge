@@ -22,7 +22,7 @@ namespace UnitTests.K2Bridge.KustoDAL
     {
         private const string HitTestId = "999";
 
-        private QueryData query = new QueryData("_kql", "_index", null);
+        private QueryData query = new("_kql", "_index", null);
 
         [TestCase(ExpectedResult = "{\"_index\":\"_index\",\"_type\":\"_doc\",\"_id\":\"999\",\"_version\":1,\"_score\":null,\"_source\":{\"somefield1\":\"somevalue1\",\"somefield2\":\"somevalue2\",\"somefield3\":\"somevalue3\"},\"fields\":{},\"sort\":[],\"highlight\":{\"somefield1\":[\"hlsomevalue1/hl\"]}}")]
         public string MapRowsToHits_WhenSingleWordInQueryString_HighlightIsIsValid()
@@ -375,7 +375,7 @@ namespace UnitTests.K2Bridge.KustoDAL
         /// <returns>A DataTable from the data in results.</returns>
         private static DataTable ToDataTable(List<Dictionary<string, object>> results)
         {
-            DataTable table = new DataTable();
+            var table = new DataTable();
 
             foreach (var srow in results.Select((value, index) => new { value, index }))
             {
@@ -398,7 +398,7 @@ namespace UnitTests.K2Bridge.KustoDAL
             return table;
         }
 
-        private string MakeHighlightHit(Dictionary<string, object> fields, string highlightKey, string highlightText)
+        private static string MakeHighlightHit(Dictionary<string, object> fields, string highlightKey, string highlightText)
         {
             var results =
                 new List<Dictionary<string, object>>() {

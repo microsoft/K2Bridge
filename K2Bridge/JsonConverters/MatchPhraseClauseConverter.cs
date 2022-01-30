@@ -25,7 +25,7 @@ namespace K2Bridge.JsonConverters
             var jo = JObject.Load(reader);
             var first = (JProperty)jo.First;
 
-            if (first.First.GetType() == typeof(JObject))
+            if (first.First is JObject)
             {
                 var obj = new MatchPhraseClause
                 {
