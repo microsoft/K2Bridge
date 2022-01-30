@@ -41,14 +41,12 @@ public class QueryControllerErrorsTests : KustoTestBase
         AssertJson(ExpectedInvalidQueryResponse, response);
     }
 
-    private static string NormalizeChars(string s)
-    {
-        return s.
-            Replace("\\n", string.Empty, StringComparison.OrdinalIgnoreCase).
-            Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase).
-            Replace("\r\n", string.Empty, StringComparison.OrdinalIgnoreCase).
-            Replace("\n", string.Empty, StringComparison.OrdinalIgnoreCase);
-    }
+    private static string NormalizeChars(string s) =>
+        s.
+        Replace("\\n", string.Empty, StringComparison.OrdinalIgnoreCase).
+        Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase).
+        Replace("\r\n", string.Empty, StringComparison.OrdinalIgnoreCase).
+        Replace("\n", string.Empty, StringComparison.OrdinalIgnoreCase);
 
     private static void AssertJson(string expectedJsonString, JToken json)
     {

@@ -37,12 +37,10 @@ internal static class ControllerExtractMethods
     /// </summary>
     /// <param name="templateString">string to replace tokens in.</param>
     /// <returns>string with illegal charachter replaced.</returns>
-    internal static string ReplaceTemplateString(string templateString)
-    {
-        return !string.IsNullOrEmpty(templateString) && templateString.Contains(TemplateString, StringComparison.OrdinalIgnoreCase) ?
+    internal static string ReplaceTemplateString(string templateString) =>
+        !string.IsNullOrEmpty(templateString) && templateString.Contains(TemplateString, StringComparison.OrdinalIgnoreCase) ?
             templateString.Replace(TemplateQueryStringSeparator, AltTemplateQueryStringSeparator, StringComparison.OrdinalIgnoreCase) :
             templateString;
-    }
 
     /// <summary>
     /// Replaces back occourances of :: with :. for strings containing _template substring
@@ -51,10 +49,8 @@ internal static class ControllerExtractMethods
     /// </summary>
     /// <param name="templateString">string to replace tokens in.</param>
     /// <returns>string with charachter replaced back.</returns>
-    internal static string ReplaceBackTemplateString(string templateString)
-    {
-        return !string.IsNullOrEmpty(templateString) && templateString.Contains(TemplateString, StringComparison.OrdinalIgnoreCase) ?
+    internal static string ReplaceBackTemplateString(string templateString) =>
+        !string.IsNullOrEmpty(templateString) && templateString.Contains(TemplateString, StringComparison.OrdinalIgnoreCase) ?
             templateString.Replace(AltTemplateQueryStringSeparator, TemplateQueryStringSeparator, StringComparison.OrdinalIgnoreCase) :
             templateString;
-    }
 }

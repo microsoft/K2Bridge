@@ -18,10 +18,7 @@ public static class StringExtensions
         return str.Replace(@"\", @"\\", StringComparison.OrdinalIgnoreCase);
     }
 
-    public static string QuoteKustoTable(this string table)
-    {
-        return $"['{table}']";
-    }
+    public static string QuoteKustoTable(this string table) => $"['{table}']";
 
     public static string EscapeSlashesAndQuotes(this string str)
     {

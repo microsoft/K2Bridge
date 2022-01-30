@@ -18,7 +18,5 @@ public static class HitsFactory
     /// <param name="indexName">Index name.</param>
     /// <returns>Hit.</returns>
     public static Hit Create(string id, string indexName)
-    {
-        return new() { Id = id, Index = indexName };
-    }
+    => new() { Id = id, Index = indexName };
 }
