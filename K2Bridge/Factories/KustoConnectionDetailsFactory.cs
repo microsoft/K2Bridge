@@ -20,11 +20,11 @@ public static class KustoConnectionDetailsFactory
     internal static KustoConnectionDetails MakeFromConfiguration(IConfigurationRoot config)
     {
         return new(
-config["adxClusterUrl"],
-config["adxDefaultDatabaseName"],
-config["aadClientId"],
-config["aadClientSecret"],
-config["aadTenantId"],
-config.GetValue<bool>("useManagedIdentity"));
+            config["adxClusterUrl"],
+            config["adxDefaultDatabaseName"],
+            config["aadClientId"],
+            config["aadClientSecret"],
+            config["aadTenantId"],
+            config.GetValue<bool>("useManagedIdentity"));
     }
 }

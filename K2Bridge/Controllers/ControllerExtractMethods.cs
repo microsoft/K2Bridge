@@ -40,8 +40,8 @@ internal static class ControllerExtractMethods
     internal static string ReplaceTemplateString(string templateString)
     {
         return !string.IsNullOrEmpty(templateString) && templateString.Contains(TemplateString, StringComparison.OrdinalIgnoreCase) ?
-templateString.Replace(TemplateQueryStringSeparator, AltTemplateQueryStringSeparator, StringComparison.OrdinalIgnoreCase) :
-templateString;
+            templateString.Replace(TemplateQueryStringSeparator, AltTemplateQueryStringSeparator, StringComparison.OrdinalIgnoreCase) :
+            templateString;
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ templateString;
     internal static string ReplaceBackTemplateString(string templateString)
     {
         return !string.IsNullOrEmpty(templateString) && templateString.Contains(TemplateString, StringComparison.OrdinalIgnoreCase) ?
-templateString.Replace(AltTemplateQueryStringSeparator, TemplateQueryStringSeparator, StringComparison.OrdinalIgnoreCase) :
-templateString;
+            templateString.Replace(AltTemplateQueryStringSeparator, TemplateQueryStringSeparator, StringComparison.OrdinalIgnoreCase) :
+            templateString;
     }
 }
