@@ -2,32 +2,31 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations.Metric
+namespace K2Bridge.Models.Request.Aggregations.Metric;
+
+using K2Bridge.Visitors;
+using Newtonsoft.Json;
+
+/// <summary>
+/// A single-value metrics aggregation that computes the median of numeric values that are extracted from the aggregated documents.
+/// </summary>
+internal class PercentileAggregation : SummarizableMetricAggregation
 {
-    using K2Bridge.Visitors;
-    using Newtonsoft.Json;
+    /// <summary>
+    /// Gets or sets field percents for metric computation.
+    /// </summary>
+    [JsonProperty("percents")]
+    public double[] Percents { get; set; }
 
     /// <summary>
-    /// A single-value metrics aggregation that computes the median of numeric values that are extracted from the aggregated documents.
+    /// Gets or sets field keyed for the Percentile Aggregation.
     /// </summary>
-    internal class PercentileAggregation : SummarizableMetricAggregation
+    [JsonProperty("keyed")]
+    public bool? Keyed { get; set; } = true;
+
+    /// <inheritdoc/>
+    public override void Accept(IVisitor visitor)
     {
-        /// <summary>
-        /// Gets or sets field percents for metric computation.
-        /// </summary>
-        [JsonProperty("percents")]
-        public double[] Percents { get; set; }
-
-        /// <summary>
-        /// Gets or sets field keyed for the Percentile Aggregation.
-        /// </summary>
-        [JsonProperty("keyed")]
-        public bool? Keyed { get; set; } = true;
-
-        /// <inheritdoc/>
-        public override void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        visitor.Visit(this);
     }
 }

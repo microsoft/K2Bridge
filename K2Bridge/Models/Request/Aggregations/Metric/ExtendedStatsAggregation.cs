@@ -2,26 +2,25 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations.Metric
+namespace K2Bridge.Models.Request.Aggregations.Metric;
+
+using K2Bridge.Visitors;
+using Newtonsoft.Json;
+
+/// <summary>
+/// A single-value metrics aggregation that provides an interval of plus/minus two standard deviations from the mean.
+/// </summary>
+internal class ExtendedStatsAggregation : SummarizableMetricAggregation
 {
-    using K2Bridge.Visitors;
-    using Newtonsoft.Json;
-
     /// <summary>
-    /// A single-value metrics aggregation that provides an interval of plus/minus two standard deviations from the mean.
+    /// Gets or sets Sigma field.
     /// </summary>
-    internal class ExtendedStatsAggregation : SummarizableMetricAggregation
-    {
-        /// <summary>
-        /// Gets or sets Sigma field.
-        /// </summary>
-        [JsonProperty("sigma")]
-        public double Sigma { get; set; } = 2;
+    [JsonProperty("sigma")]
+    public double Sigma { get; set; } = 2;
 
-        /// <inheritdoc/>
-        public override void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+    /// <inheritdoc/>
+    public override void Accept(IVisitor visitor)
+    {
+        visitor.Visit(this);
     }
 }

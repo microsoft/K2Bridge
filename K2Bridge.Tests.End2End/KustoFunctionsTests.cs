@@ -2,47 +2,47 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.End2End
+namespace K2Bridge.Tests.End2End;
+
+using System.Threading.Tasks;
+using FluentAssertions.Json;
+using Kusto.Data.Common;
+using Kusto.Data.Net.Client;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+
+public class KustoFunctionsTests : KustoTestBase
 {
-    using System.Threading.Tasks;
-    using FluentAssertions.Json;
-    using Kusto.Data.Common;
-    using Kusto.Data.Net.Client;
-    using Newtonsoft.Json.Linq;
-    using NUnit.Framework;
+    private static ICslAdminProvider kustoAdminClient;
 
-    public class KustoFunctionsTests : KustoTestBase
+    private static string functionFullName;
+
+    [OneTimeSetUp]
+    public static void CreateClient()
     {
-        private static ICslAdminProvider kustoAdminClient;
-
-        private static string functionFullName;
-
-        [OneTimeSetUp]
-        public static void CreateClient()
+        using (kustoAdminClient = KustoClientFactory.CreateCslAdminProvider(Kusto()))
         {
-            using (kustoAdminClient = KustoClientFactory.CreateCslAdminProvider(Kusto()))
-            {
-                PopulateFunctionsData();
-            }
-
-            functionFullName = $"{KustoDatabase()}:fn_countries_and_airports";
+            PopulateFunctionsData();
         }
 
-        [Test]
-        [Description("/_resolve/index returns functions")]
-        public async Task Search_WithFunction_ReturnsResponseWithFunctions()
-        {
-            var indexList = await K2Client().Search();
-            var match = indexList.SelectToken($"indices[?(@.name == '{functionFullName}')]");
-            Assert.IsNotNull(match);
-        }
+        functionFullName = $"{KustoDatabase()}:fn_countries_and_airports";
+    }
 
-        [Test]
-        [Description("FieldCaps returns fields for functions")]
-        public async Task FieldCaps_WithFunction_ReturnsResponseWithFunctions()
-        {
-            var fieldCaps = await K2Client().FieldCaps(functionFullName);
-            var expected = JObject.Parse($@"{{
+    [Test]
+    [Description("/_resolve/index returns functions")]
+    public async Task Search_WithFunction_ReturnsResponseWithFunctions()
+    {
+        var indexList = await K2Client().Search();
+        var match = indexList.SelectToken($"indices[?(@.name == '{functionFullName}')]");
+        Assert.IsNotNull(match);
+    }
+
+    [Test]
+    [Description("FieldCaps returns fields for functions")]
+    public async Task FieldCaps_WithFunction_ReturnsResponseWithFunctions()
+    {
+        var fieldCaps = await K2Client().FieldCaps(functionFullName);
+        var expected = JObject.Parse($@"{{
               ""indices"": [
                 ""{functionFullName.Split(':')[1]}""
               ],
@@ -73,26 +73,26 @@ namespace K2Bridge.Tests.End2End
                 }}
               }}
             }}");
-            fieldCaps.Should().BeEquivalentTo(expected);
-        }
+        fieldCaps.Should().BeEquivalentTo(expected);
+    }
 
-        [Test]
-        [Description("MSearch returns data from functions")]
-        public async Task MSearch_WithFunction_ReturnsExpectedResponse()
-        {
-            var result = await K2Client().MSearch(functionFullName, $"{FLIGHTSDIR}/MSearch_TwoResults_Equivalent.json");
-            var totalHits = result.SelectToken("responses[0].hits.total.value");
-            Assert.IsNotNull(totalHits);
-            Assert.IsTrue(totalHits.Value<int>() == 2);
-            var indexName = result.SelectToken("responses[0].hits.hits[0]._index");
-            Assert.IsNotNull(indexName);
-            Assert.AreEqual($"{KustoDatabase()}:fn_countries_and_airports", indexName.Value<string>());
-        }
+    [Test]
+    [Description("MSearch returns data from functions")]
+    public async Task MSearch_WithFunction_ReturnsExpectedResponse()
+    {
+        var result = await K2Client().MSearch(functionFullName, $"{FLIGHTSDIR}/MSearch_TwoResults_Equivalent.json");
+        var totalHits = result.SelectToken("responses[0].hits.total.value");
+        Assert.IsNotNull(totalHits);
+        Assert.IsTrue(totalHits.Value<int>() == 2);
+        var indexName = result.SelectToken("responses[0].hits.hits[0]._index");
+        Assert.IsNotNull(indexName);
+        Assert.AreEqual($"{KustoDatabase()}:fn_countries_and_airports", indexName.Value<string>());
+    }
 
-        private static void PopulateFunctionsData()
-        {
-            // Create `countries` table to test an ADX join query
-            KustoExecute(@"
+    private static void PopulateFunctionsData()
+    {
+        // Create `countries` table to test an ADX join query
+        KustoExecute(@"
                 .set-or-replace countries <|
                   print CountryCode='AE', CountryName='United Arab Emirates'
                   | union (print CountryCode='AR', CountryName='Argentina')
@@ -128,20 +128,19 @@ namespace K2Bridge.Tests.End2End
                   | union (print CountryCode='ZA', CountryName='South Africa')
                   ");
 
-            // Drop functions if they exist
-            KustoExecute(@".drop functions (fn_countries_and_airports, fn_with_params) ifexists");
+        // Drop functions if they exist
+        KustoExecute(@".drop functions (fn_countries_and_airports, fn_with_params) ifexists");
 
-            // Function under test performing a join between two tables
-            KustoExecute(@".create function fn_countries_and_airports() {kibana_sample_data_flights | join (countries) on $left.OriginCountry == $right.CountryCode | project timestamp, OriginCountry, Origin }");
+        // Function under test performing a join between two tables
+        KustoExecute(@".create function fn_countries_and_airports() {kibana_sample_data_flights | join (countries) on $left.OriginCountry == $right.CountryCode | project timestamp, OriginCountry, Origin }");
 
-            // Another function that takes parameters - should not be surfaced
-            KustoExecute(@".create function fn_with_params(myLimit: long) {kibana_sample_data_flights | limit myLimit }");
-        }
+        // Another function that takes parameters - should not be surfaced
+        KustoExecute(@".create function fn_with_params(myLimit: long) {kibana_sample_data_flights | limit myLimit }");
+    }
 
-        private static void KustoExecute(string command)
-        {
-            TestContext.Progress.WriteLine(command);
-            kustoAdminClient.ExecuteControlCommand(command);
-        }
+    private static void KustoExecute(string command)
+    {
+        TestContext.Progress.WriteLine(command);
+        kustoAdminClient.ExecuteControlCommand(command);
     }
 }

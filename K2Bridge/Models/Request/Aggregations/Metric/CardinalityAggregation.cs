@@ -2,19 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations.Metric
-{
-    using K2Bridge.Visitors;
+namespace K2Bridge.Models.Request.Aggregations.Metric;
 
-    /// <summary>
-    /// A single-value metrics aggregation that calculates an approximate count of distinct values.
-    /// </summary>
-    internal class CardinalityAggregation : SummarizableMetricAggregation
+using K2Bridge.Visitors;
+
+/// <summary>
+/// A single-value metrics aggregation that calculates an approximate count of distinct values.
+/// </summary>
+internal class CardinalityAggregation : SummarizableMetricAggregation
+{
+    /// <inheritdoc/>
+    public override void Accept(IVisitor visitor)
     {
-        /// <inheritdoc/>
-        public override void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        visitor.Visit(this);
     }
 }

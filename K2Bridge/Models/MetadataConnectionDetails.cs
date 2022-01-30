@@ -2,30 +2,29 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models
+namespace K2Bridge.Models;
+
+/// <summary>
+/// A class representing connection details for Elasticsearch metadata instance.
+/// </summary>
+internal class MetadataConnectionDetails
 {
     /// <summary>
-    /// A class representing connection details for Elasticsearch metadata instance.
+    /// Initializes a new instance of the <see cref="MetadataConnectionDetails"/> class.
     /// </summary>
-    internal class MetadataConnectionDetails
+    /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint.</param>
+    internal MetadataConnectionDetails(string metadataEndpoint)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MetadataConnectionDetails"/> class.
-        /// </summary>
-        /// <param name="metadataEndpoint">URI for metadata Elasticsearch endpoint.</param>
-        internal MetadataConnectionDetails(string metadataEndpoint)
-        {
-            Ensure.IsNotNullOrEmpty(
-                metadataEndpoint,
-                nameof(metadataEndpoint),
-                "URI for metadata ElasticSearch endpoint is required, for example http://127.0.0.1:8080");
+        Ensure.IsNotNullOrEmpty(
+            metadataEndpoint,
+            nameof(metadataEndpoint),
+            "URI for metadata ElasticSearch endpoint is required, for example http://127.0.0.1:8080");
 
-            MetadataEndpoint = metadataEndpoint;
-        }
-
-        /// <summary>
-        /// Gets metadata endpoint.
-        /// </summary>
-        public string MetadataEndpoint { get; private set; }
+        MetadataEndpoint = metadataEndpoint;
     }
+
+    /// <summary>
+    /// Gets metadata endpoint.
+    /// </summary>
+    public string MetadataEndpoint { get; private set; }
 }

@@ -2,27 +2,26 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response.Aggregations
+namespace K2Bridge.Models.Response.Aggregations;
+
+using System.Collections.Generic;
+using K2Bridge.JsonConverters;
+using K2Bridge.Models.Response.Aggregations.Bucket;
+using Newtonsoft.Json;
+
+/// <summary>
+/// Describes bucket aggregate response element.
+/// </summary>
+[JsonConverter(typeof(BucketAggregateConverter))]
+public class BucketAggregate : IAggregate
 {
-    using System.Collections.Generic;
-    using K2Bridge.JsonConverters;
-    using K2Bridge.Models.Response.Aggregations.Bucket;
-    using Newtonsoft.Json;
+    /// <summary>
+    /// Gets a collection of buckets.
+    /// </summary>
+    public List<IKeyedBucket> Buckets { get; } = new List<IKeyedBucket>();
 
     /// <summary>
-    /// Describes bucket aggregate response element.
+    /// Gets or sets a value indicating whether it's a Keyed aggregate.
     /// </summary>
-    [JsonConverter(typeof(BucketAggregateConverter))]
-    public class BucketAggregate : IAggregate
-    {
-        /// <summary>
-        /// Gets a collection of buckets.
-        /// </summary>
-        public List<IKeyedBucket> Buckets { get; } = new List<IKeyedBucket>();
-
-        /// <summary>
-        /// Gets or sets a value indicating whether it's a Keyed aggregate.
-        /// </summary>
-        public bool Keyed { get; set; }
-    }
+    public bool Keyed { get; set; }
 }
