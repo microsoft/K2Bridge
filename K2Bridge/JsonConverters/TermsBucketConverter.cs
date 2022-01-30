@@ -1,12 +1,12 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-
-namespace K2Bridge.JsonConverters;
 
 using K2Bridge.JsonConverters.Base;
 using K2Bridge.Models.Response.Aggregations.Bucket;
 using Newtonsoft.Json;
+
+namespace K2Bridge.JsonConverters;
 
 /// <summary>
 /// This converter serializes <see cref="TermsBucket"/> to Elasticsearh response json format.

@@ -3,8 +3,7 @@
 // See LICENSE file in the project root for full license information.
 
 namespace K2Bridge.Models.Request.Queries.LuceneNet;
-
-using Lucene.Net.Search;
+using Query = Lucene.Net.Search.Query;
 
 /// <summary>
 /// Object containing both Lucene.Net query and ESQuery.

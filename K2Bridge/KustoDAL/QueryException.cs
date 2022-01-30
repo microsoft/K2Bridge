@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoDAL;
-
 using System;
+
+namespace K2Bridge.KustoDAL;
 
 /// <summary>
 /// Thrown when failing to execute a Kusto query.

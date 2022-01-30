@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.KustoDAL;
-
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,6 +19,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.UnitTests.KustoDAL;
 
 [TestFixture]
 public class KustoResponseParserTests

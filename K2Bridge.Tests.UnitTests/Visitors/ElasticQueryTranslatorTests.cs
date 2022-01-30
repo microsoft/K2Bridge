@@ -2,16 +2,15 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.Visitors;
-
 using System;
 using System.IO;
-using K2Bridge;
 using K2Bridge.Models.Request;
 using K2Bridge.Visitors;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.UnitTests.Visitors;
 
 [TestFixture]
 public class ElasticQueryTranslatorTests

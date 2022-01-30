@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Controllers;
-
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -19,6 +17,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+
+namespace K2Bridge.Controllers;
 
 /// <summary>
 /// Handles requests for business data from Kusto.

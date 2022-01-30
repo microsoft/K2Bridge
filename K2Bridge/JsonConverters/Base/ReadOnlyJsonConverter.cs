@@ -1,11 +1,11 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.JsonConverters.Base;
-
 using System;
 using Newtonsoft.Json;
+
+namespace K2Bridge.JsonConverters.Base;
 
 /// <summary>
 /// An abstract class used to implement the ReadJson functionality of a JsonConverter

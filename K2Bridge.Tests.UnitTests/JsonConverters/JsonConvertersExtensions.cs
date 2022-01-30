@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.JsonConverters;
-
 using System;
 using DeepEqual.Syntax;
 using Newtonsoft.Json;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.UnitTests.JsonConverters;
 
 internal static class JsonConvertersExtensions
 {

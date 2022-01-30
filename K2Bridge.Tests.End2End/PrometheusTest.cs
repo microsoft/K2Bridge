@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.End2End;
-
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -14,6 +12,8 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Moq;
 using NUnit.Framework;
 using static System.StringComparison;
+
+namespace K2Bridge.Tests.End2End;
 
 public class PrometheusTest : KustoTestBase
 {

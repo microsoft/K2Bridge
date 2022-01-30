@@ -1,12 +1,12 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-
-namespace K2Bridge.Tests.UnitTests.JsonConverters;
 
 using System;
 using K2Bridge.JsonConverters;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.UnitTests.JsonConverters;
 
 [TestFixture]
 public class WriteOnlyJsonConverterTests

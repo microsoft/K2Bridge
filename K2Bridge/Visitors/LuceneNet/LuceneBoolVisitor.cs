@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors.LuceneNet;
-
 using System.Collections.Generic;
 using K2Bridge.Models.Request;
 using K2Bridge.Models.Request.Queries;
 using K2Bridge.Models.Request.Queries.LuceneNet;
 using Lucene.Net.Search;
+
+namespace K2Bridge.Visitors.LuceneNet;
 
 /// <content>
 /// Defines a visit method for lucene boolean query.

@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.End2End;
-
 using FluentAssertions.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.End2End;
 
 /// <summary>
 /// Parallel end-to-end tests loading data into Kusto and Elasticsearch and assuring

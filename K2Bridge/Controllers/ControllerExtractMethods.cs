@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Controllers;
-
 using System;
 using System.Linq;
+
+namespace K2Bridge.Controllers;
 
 /// <summary>
 /// Static Methods used by controllers to extract data.

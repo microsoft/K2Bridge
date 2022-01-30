@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoDAL;
-
 using System;
 using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+
+namespace K2Bridge.KustoDAL;
 
 /// <inheritdoc/>
 public class SchemaRetriever : ISchemaRetriever

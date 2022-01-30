@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.HttpMessages;
-
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,6 +9,8 @@ using K2Bridge.HttpMessages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.UnitTests.HttpMessages;
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA1001:owns disposable field(s) but is not disposable", Justification = "No need to do this.")]
 [TestFixture]

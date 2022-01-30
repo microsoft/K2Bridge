@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations.Bucket;
-
 using K2Bridge.Visitors;
+
+namespace K2Bridge.Models.Request.Aggregations.Bucket;
 
 /// <summary>
 /// Default bucket aggregation.

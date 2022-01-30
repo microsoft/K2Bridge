@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors;
-
 using System.Threading.Tasks;
 using K2Bridge.KustoDAL;
+
+namespace K2Bridge.Visitors;
 
 /// <summary>
 /// A helper class for processing types.

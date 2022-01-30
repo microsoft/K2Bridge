@@ -1,11 +1,11 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoDAL;
-
 using K2Bridge.Models;
 using Kusto.Data.Common;
+
+namespace K2Bridge.KustoDAL;
 
 /// <summary>
 /// Extension methods for ClientRequestProperties.

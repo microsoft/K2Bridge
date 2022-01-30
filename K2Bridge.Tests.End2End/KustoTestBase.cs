@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.End2End;
-
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +11,8 @@ using Kusto.Data;
 using NUnit.Framework;
 using static System.Threading.Tasks.TaskScheduler;
 using static NUnit.Framework.TestContext;
+
+namespace K2Bridge.Tests.End2End;
 
 /// <summary>
 /// End-to-end tests loading data into Kusto and performing tests against Kusto.

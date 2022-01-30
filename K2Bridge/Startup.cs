@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge;
-
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -30,6 +28,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Prometheus;
 using Serilog;
+
+namespace K2Bridge;
 
 [ExcludeFromCodeCoverage]
 public class Startup

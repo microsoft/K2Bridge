@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.RewriteRules;
-
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Rewrite;
+
+namespace K2Bridge.RewriteRules;
 
 /// <summary>
 /// This rewrite rule ensure that HTTP request path has a valid form.

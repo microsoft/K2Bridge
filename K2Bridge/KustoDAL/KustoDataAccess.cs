@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoDAL;
-
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,6 +14,8 @@ using K2Bridge.Visitors;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+
+namespace K2Bridge.KustoDAL;
 
 /// <summary>
 /// DAL for Kusto.

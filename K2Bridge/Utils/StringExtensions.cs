@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Utils;
-
 using System;
+
+namespace K2Bridge.Utils;
 
 /// <summary>
 /// String extensions methods.

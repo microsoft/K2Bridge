@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.End2End;
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -16,6 +14,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.End2End;
 
 /// <summary>
 /// A low-level client for Elasticsearch operations.

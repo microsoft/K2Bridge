@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Utils;
-
 using System;
 using System.Text.RegularExpressions;
+
+namespace K2Bridge.Utils;
 
 /// <summary>
 /// Parser for the Date Math expressions.

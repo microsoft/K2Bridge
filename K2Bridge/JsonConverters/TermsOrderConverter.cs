@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.JsonConverters;
-
 using System;
 using K2Bridge.JsonConverters.Base;
 using K2Bridge.Models.Request.Aggregations.Bucket;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+namespace K2Bridge.JsonConverters;
 
 /// <summary>
 /// A converter able to deserialize the order element from TermsAggregation to <see cref="TermsOrder"/>.

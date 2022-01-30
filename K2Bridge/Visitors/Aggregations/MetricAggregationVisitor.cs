@@ -2,14 +2,14 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using K2Bridge.Models.Request.Aggregations.Metric;
 using K2Bridge.Utils;
 using K2Bridge.Visitors.Aggregations.Helpers;
+
+namespace K2Bridge.Visitors;
 
 /// <content>
 /// A visitor for the different <see cref="MetricAggregation"/> types.

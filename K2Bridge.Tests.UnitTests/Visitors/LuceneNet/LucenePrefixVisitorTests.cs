@@ -2,15 +2,14 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.Visitors.LuceneNet;
-
 using System;
 using K2Bridge.Models.Request.Queries;
 using K2Bridge.Models.Request.Queries.LuceneNet;
-using K2Bridge.Tests.UnitTests.Visitors;
 using K2Bridge.Visitors;
 using K2Bridge.Visitors.LuceneNet;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.UnitTests.Visitors.LuceneNet;
 
 [TestFixture]
 public class LucenePrefixVisitorTests

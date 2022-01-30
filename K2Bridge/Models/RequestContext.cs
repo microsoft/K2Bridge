@@ -1,11 +1,11 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models;
-
 using System;
 using Microsoft.AspNetCore.Http;
+
+namespace K2Bridge.Models;
 
 /// <summary>
 /// A class to hold different properties that will propagate in K2 and will later be a part of the request to Kusto.

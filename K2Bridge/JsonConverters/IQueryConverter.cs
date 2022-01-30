@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.JsonConverters;
-
 using System;
 using System.Collections.Generic;
 using K2Bridge.JsonConverters.Base;
@@ -11,6 +9,8 @@ using K2Bridge.Models.Request;
 using K2Bridge.Models.Request.Queries;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+namespace K2Bridge.JsonConverters;
 
 /// <summary>
 /// A converter able to deserialize the query element in an Elasticsearch query

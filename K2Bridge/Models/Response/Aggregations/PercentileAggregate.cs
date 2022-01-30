@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Response.Aggregations;
-
 using System.Collections.Generic;
 using K2Bridge.JsonConverters;
 using Newtonsoft.Json;
+
+namespace K2Bridge.Models.Response.Aggregations;
 
 /// <summary>
 /// Describes percentile aggregate response element.

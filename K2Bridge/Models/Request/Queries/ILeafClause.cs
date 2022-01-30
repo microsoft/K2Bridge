@@ -2,11 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Queries;
-
 using K2Bridge.JsonConverters;
-using K2Bridge.Models.Request;
 using Newtonsoft.Json;
+
+namespace K2Bridge.Models.Request.Queries;
 
 /// <summary>
 /// Leaf clause to visit.

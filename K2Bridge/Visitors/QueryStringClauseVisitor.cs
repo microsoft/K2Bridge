@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +12,8 @@ using K2Bridge.Utils;
 using K2Bridge.Visitors.LuceneNet;
 using Lucene.Net.Analysis;
 using Lucene.Net.QueryParsers;
+
+namespace K2Bridge.Visitors;
 
 /// <content>
 /// A visitor for the <see cref="QueryStringClause"/> element.

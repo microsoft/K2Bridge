@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Factories;
-
 using System;
 using System.Data;
 using System.Globalization;
@@ -13,6 +11,8 @@ using K2Bridge.Models.Response.Aggregations;
 using K2Bridge.Models.Response.Aggregations.Bucket;
 using K2Bridge.Utils;
 using Microsoft.Extensions.Logging;
+
+namespace K2Bridge.Factories;
 
 /// <summary>
 /// Bucket Factory.

@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Telemetry;
-
 using System.IO;
 using Prometheus;
 using Serilog.Core;
 using Serilog.Events;
+
+namespace K2Bridge.Telemetry;
 
 /// <summary>
 /// Logging custom sink that increments Prometheus exception counters every time

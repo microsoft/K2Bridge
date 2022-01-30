@@ -2,10 +2,11 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Queries.LuceneNet;
-
 using System;
 using Lucene.Net.Search;
+
+namespace K2Bridge.Models.Request.Queries.LuceneNet;
+using Query = Lucene.Net.Search.Query;
 
 /// <summary>
 /// Factory for making visitable lucene queries.

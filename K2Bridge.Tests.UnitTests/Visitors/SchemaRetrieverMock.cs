@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.Visitors;
-
 using System.Threading.Tasks;
 using K2Bridge.KustoDAL;
 using K2Bridge.Models.Response.Metadata;
 using Microsoft.Extensions.Logging;
 using Moq;
+
+namespace K2Bridge.Tests.UnitTests.Visitors;
 
 public static class SchemaRetrieverMock
 {

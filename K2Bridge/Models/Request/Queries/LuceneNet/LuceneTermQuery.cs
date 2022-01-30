@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Queries.LuceneNet;
-
 using K2Bridge.Visitors.LuceneNet;
+
+namespace K2Bridge.Models.Request.Queries.LuceneNet;
 
 /// <summary>
 /// Represents a lucene term query.

@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.RewriteRules;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Rewrite;
+
+namespace K2Bridge.RewriteRules;
 
 /// <summary>
 /// Normalizes the route of IndexList.

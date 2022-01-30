@@ -1,8 +1,6 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
-
-namespace K2Bridge.Controllers;
 
 using System;
 using System.Net.Http;
@@ -11,6 +9,8 @@ using K2Bridge.HttpMessages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 using Microsoft.Extensions.Logging;
+
+namespace K2Bridge.Controllers;
 
 /// <summary>
 /// Handles the request that goes directly to the underlying elasticsearch

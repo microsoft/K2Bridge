@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.KustoDAL;
-
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+
+namespace K2Bridge.Tests.UnitTests.KustoDAL;
 
 public sealed class DataReaderMock : IDataReader
 {

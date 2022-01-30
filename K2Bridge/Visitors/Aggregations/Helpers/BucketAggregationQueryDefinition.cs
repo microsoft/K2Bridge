@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors.Aggregations.Helpers;
-
 using System.Collections.Generic;
+
+namespace K2Bridge.Visitors.Aggregations.Helpers;
 
 internal class BucketAggregationQueryDefinition
 {

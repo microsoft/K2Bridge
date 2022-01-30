@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.End2End;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +13,8 @@ using Kusto.Data.Net.Client;
 using Kusto.Ingest;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.End2End;
 
 /// <summary>
 /// Utility class to load test data into Kusto.

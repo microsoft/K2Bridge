@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors;
-
 using System;
 using System.Text.RegularExpressions;
 using K2Bridge.Models.Request.Queries;
 using K2Bridge.Utils;
+
+namespace K2Bridge.Visitors;
 
 /// <content>
 /// A visitor for the <see cref="MatchPhraseClause"/> element.

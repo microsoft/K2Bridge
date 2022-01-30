@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Telemetry;
-
 using Microsoft.ApplicationInsights;
 using Prometheus;
+
+namespace K2Bridge.Telemetry;
 
 /// <summary>
 /// Prometheus Histograms to collect query performance data.

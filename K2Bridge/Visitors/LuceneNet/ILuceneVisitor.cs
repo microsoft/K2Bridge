@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors.LuceneNet;
-
 using K2Bridge.Models.Request.Queries.LuceneNet;
+
+namespace K2Bridge.Visitors.LuceneNet;
 
 /// <summary>
 /// ILuceneVisitor defines all the different visit methods overloads to handle all supported lucene query types.

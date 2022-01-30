@@ -2,13 +2,12 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.Visitors.Aggregations;
-
 using System.Collections.Generic;
 using K2Bridge.Models.Request.Aggregations.Bucket;
 using K2Bridge.Models.Request.Queries;
-using K2Bridge.Tests.UnitTests.Visitors;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.UnitTests.Visitors.Aggregations;
 
 [TestFixture]
 public class FiltersAggregationVisitorTests

@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +14,8 @@ using K2Bridge.Visitors;
 using Lucene.Net.QueryParsers;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+
+namespace K2Bridge;
 
 /// <summary>
 /// ElasticQueryTranslator provides the functionality for translating a Kibana query into Kusto query.

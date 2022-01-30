@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoDAL;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +13,10 @@ using Lucene.Net.Search.Highlight;
 using Microsoft.Extensions.Logging;
 using static System.Globalization.CultureInfo;
 using LuceneVersion = Lucene.Net.Util.Version;
+
+namespace K2Bridge.KustoDAL;
+
+using Analyzer = Lucene.Net.Analysis.Analyzer;
 
 /// <summary>
 /// This class tranforms text by adding pre and post tags to mark highlighted entried.

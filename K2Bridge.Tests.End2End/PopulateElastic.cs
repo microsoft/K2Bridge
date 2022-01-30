@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.End2End;
-
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -12,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+
+namespace K2Bridge.Tests.End2End;
 
 /// <summary>
 /// Utility class to load test data into Elasticsearch.

@@ -1,10 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models;
-
 using Destructurama.Attributed;
+
+namespace K2Bridge.Models;
 
 /// <summary>
 /// A wrapper class for data with potential PII data.

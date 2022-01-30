@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations.Bucket;
-
 using Newtonsoft.Json;
+
+namespace K2Bridge.Models.Request.Aggregations.Bucket;
 
 /// <summary>
 /// Extended_bounds can "force" the histogram aggregation to start building buckets on a specific min value

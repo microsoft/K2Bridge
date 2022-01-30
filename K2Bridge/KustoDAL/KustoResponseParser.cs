@@ -2,13 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoDAL;
-
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using K2Bridge;
 using K2Bridge.Factories;
 using K2Bridge.Models;
 using K2Bridge.Models.Request.Aggregations.Bucket;
@@ -20,6 +17,8 @@ using Kusto.Data;
 using Kusto.Data.Data;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+
+namespace K2Bridge.KustoDAL;
 
 /// <summary>
 /// Provides parsing methods for kusto response objects.
