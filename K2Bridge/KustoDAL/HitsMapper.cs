@@ -52,7 +52,9 @@ public static class HitsMapper
     }
 
     private static IEnumerable<Hit> MapAndAnalyzeRows(DataRowCollection kustoResponseDataTable, QueryData query, LuceneHighlighter highlighter)
-        => kustoResponseDataTable.OfType<DataRow>().Select(row => ReadHit(row, query, highlighter));
+    {
+        return kustoResponseDataTable.OfType<DataRow>().Select(row => ReadHit(row, query, highlighter));
+    }
 
     /// <summary>
     /// Get a Hit model from a kusto row.

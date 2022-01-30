@@ -55,6 +55,8 @@ public class ErrorElement
     /// Adds a root cause element to the collection.
     /// </summary>
     /// <param name="rootCause">The root cause element to add.</param>
-    internal void AddRootCause(RootCause rootCause) =>
+    internal void AddRootCause(RootCause rootCause)
+    {
         rootCauses.Add(rootCause);
+    }
 }
