@@ -6,6 +6,8 @@ namespace K2Bridge.Visitors
 {
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Aggregations.Bucket;
+    using K2Bridge.Models.Request.Aggregations.Metric;
     using K2Bridge.Models.Request.Queries;
 
     /// <summary>
@@ -163,9 +165,10 @@ namespace K2Bridge.Visitors
         /// <param name="filtersAggregation">The filters aggregation expression.</param>
         void Visit(FiltersAggregation filtersAggregation);
 
+        /// <summary>
         /// Accepts a given visitable object and builds a Kusto query.
         /// </summary>
-        /// <param name="rangeAggregation">The Range aggregation to visit.</param>
+        /// <param name="dateRangeAggregation">The Range aggregation to visit.</param>
         void Visit(DateRangeAggregation dateRangeAggregation);
 
         /// <summary>

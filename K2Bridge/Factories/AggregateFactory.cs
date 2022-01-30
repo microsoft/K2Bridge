@@ -13,6 +13,7 @@ namespace K2Bridge.Factories
     using K2Bridge.Models;
     using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
+    using K2Bridge.Models.Response.Aggregations.Bucket;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
@@ -58,6 +59,7 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="metadataTable"></param>
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>
@@ -157,6 +159,7 @@ namespace K2Bridge.Factories
         /// </summary>
         /// <param name="key">The aggregation key.</param>
         /// <param name="dataTable">The row collection be parsed.</param>
+        /// <param name="metadataTable"></param>
         /// <param name="query">QueryData containing query information.</param>
         /// <param name="logger">ILogger object for logging.</param>
         /// <returns><see cref="BucketAggregate"/>.</returns>

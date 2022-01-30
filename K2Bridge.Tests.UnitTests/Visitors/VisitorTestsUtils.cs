@@ -4,7 +4,6 @@
 
 namespace K2Bridge.Tests.UnitTests.Visitors
 {
-    using global::UnitTests.K2Bridge.Visitors;
     using K2Bridge.Models.Request;
     using K2Bridge.Models.Request.Queries;
     using K2Bridge.Visitors;

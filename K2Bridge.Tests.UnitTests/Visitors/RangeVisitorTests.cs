@@ -2,11 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Visitors
+namespace K2Bridge.Tests.UnitTests.Visitors
 {
-    using global::K2Bridge.Models.Request.Queries;
-    using global::K2Bridge.Tests.UnitTests.Visitors;
-    using global::K2Bridge.Visitors;
+    using K2Bridge.Models.Request.Queries;
+    using K2Bridge.Visitors;
     using NUnit.Framework;
 
     [TestFixture]
@@ -83,7 +82,7 @@ namespace UnitTests.K2Bridge.Visitors
         private static RangeClause CreateRangeClause(
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 #pragma warning disable SA1114 // Parameter list should follow declaration
-            string fieldName, string gte, string gt, string lte, string lt, string? format)
+            string fieldName, string gte, string gt, string lte, string lt, string format)
 #pragma warning restore SA1114 // Parameter list should follow declaration
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
         {

@@ -5,7 +5,8 @@
 namespace K2Bridge.Visitors
 {
     using System.Text;
-    using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Aggregations.Bucket;
+    using K2Bridge.Visitors.Aggregations.Helpers;
 
     /// <content>
     /// A visitor for the <see cref="DateHistogramAggregation"/> element.

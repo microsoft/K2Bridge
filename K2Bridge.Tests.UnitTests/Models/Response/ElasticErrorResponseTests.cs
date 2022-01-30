@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Models.Response
+namespace K2Bridge.Tests.UnitTests.Models.Response
 {
-    using global::K2Bridge.Models.Response.ElasticError;
+    using K2Bridge.Models.Response.ElasticError;
+    using K2Bridge.Tests.UnitTests.JsonConverters;
     using NUnit.Framework;
-    using UnitTests.K2Bridge.JsonConverters;
 
     [TestFixture]
     public class ElasticErrorResponseTests

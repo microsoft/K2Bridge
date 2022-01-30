@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.KustoDAL
+namespace K2Bridge.Tests.UnitTests.KustoDAL
 {
     using System;
     using System.Collections.Generic;
@@ -10,9 +10,9 @@ namespace UnitTests.K2Bridge.KustoDAL
     using System.Threading.Tasks;
     using FluentAssertions;
     using FluentAssertions.Json;
-    using global::K2Bridge.KustoDAL;
-    using global::K2Bridge.Models;
-    using global::K2Bridge.Models.Response.Metadata;
+    using K2Bridge.KustoDAL;
+    using K2Bridge.Models;
+    using K2Bridge.Models.Response.Metadata;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -685,7 +685,8 @@ namespace UnitTests.K2Bridge.KustoDAL
             mockQueryExecutor.Verify(exec => exec.ExecuteQueryAsync(
                 It.Is<QueryData>(d =>
                     d.IndexName == "testIndexName"
-                    && d.QueryCommandText == "['testIndexName'] | getschema | project ColumnName, ColumnType=DataType"), It.IsAny<RequestContext>()));
+                    && d.QueryCommandText == "['testIndexName'] | getschema | project ColumnName, ColumnType=DataType"),
+                It.IsAny<RequestContext>()));
 
             JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {
@@ -735,7 +736,8 @@ namespace UnitTests.K2Bridge.KustoDAL
                 + " | distinct TableName, DatabaseName"
                 + " | search TableName: 'testIndex'"
                 + " | search DatabaseName: ''"
-                + " |  project strcat(DatabaseName, \":\", TableName)", It.IsAny<RequestContext>()));
+                + " |  project strcat(DatabaseName, \":\", TableName)",
+                It.IsAny<RequestContext>()));
 
             Assert.IsNotNull(indexResponse);
             var itr = indexResponse.Indices.GetEnumerator();
@@ -764,7 +766,8 @@ namespace UnitTests.K2Bridge.KustoDAL
                 + " | where Parameters == '()'"
                 + " | distinct Name"
                 + " | search Name: 'testIndex'"
-                + " | project strcat(\"\", \":\", Name)", It.IsAny<RequestContext>()));
+                + " | project strcat(\"\", \":\", Name)",
+                It.IsAny<RequestContext>()));
 
             Assert.IsNotNull(indexResponse);
             var itr = indexResponse.Indices.GetEnumerator();

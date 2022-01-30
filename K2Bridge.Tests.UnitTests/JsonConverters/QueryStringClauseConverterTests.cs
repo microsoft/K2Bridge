@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.JsonConverters
+namespace K2Bridge.Tests.UnitTests.JsonConverters
 {
     using System.Collections.Generic;
-    using global::K2Bridge.Models.Request;
-    using global::K2Bridge.Models.Request.Queries;
+    using K2Bridge.Models.Request;
+    using K2Bridge.Models.Request.Queries;
     using NUnit.Framework;
 
     [TestFixture]

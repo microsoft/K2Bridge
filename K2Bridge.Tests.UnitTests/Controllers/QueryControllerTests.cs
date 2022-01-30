@@ -2,24 +2,24 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Controllers
+namespace K2Bridge.Tests.UnitTests.Controllers
 {
     using System;
     using System.Data;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
-    using global::K2Bridge;
-    using global::K2Bridge.Controllers;
-    using global::K2Bridge.KustoDAL;
-    using global::K2Bridge.Models;
-    using global::K2Bridge.Models.Response;
+    using K2Bridge;
+    using K2Bridge.Controllers;
+    using K2Bridge.KustoDAL;
+    using K2Bridge.Models;
+    using K2Bridge.Models.Response;
+    using K2Bridge.Tests.UnitTests.JsonConverters;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Moq;
     using NUnit.Framework;
-    using UnitTests.K2Bridge.JsonConverters;
 
     [TestFixture]
     public class QueryControllerTests

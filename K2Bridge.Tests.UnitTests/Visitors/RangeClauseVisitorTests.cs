@@ -2,10 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Visitors
+namespace K2Bridge.Tests.UnitTests.Visitors
 {
-    using global::K2Bridge.Models.Request.Queries;
-    using global::K2Bridge.Tests.UnitTests.Visitors;
+    using K2Bridge.Models.Request.Queries;
     using NUnit.Framework;
 
     public enum RangeType
@@ -138,9 +137,9 @@ namespace UnitTests.K2Bridge.Visitors
             return new RangeClause()
             {
                 FieldName = "MyField",
-                GTEValue = minRange == RangeType.Wildcard ? "*" : (minRange == RangeType.Inclusive ? min : null),
+                GTEValue = minRange == RangeType.Wildcard ? "*" : minRange == RangeType.Inclusive ? min : null,
                 GTValue = minRange == RangeType.Exclusive ? min : null,
-                LTEValue = maxRange == RangeType.Wildcard ? "*" : (maxRange == RangeType.Inclusive ? max : null),
+                LTEValue = maxRange == RangeType.Wildcard ? "*" : maxRange == RangeType.Inclusive ? max : null,
                 LTValue = maxRange == RangeType.Exclusive ? max : null,
                 Format = null,
             };
@@ -151,9 +150,9 @@ namespace UnitTests.K2Bridge.Visitors
             return new RangeClause()
             {
                 FieldName = "MyField",
-                GTEValue = minRange == RangeType.Wildcard ? "*" : (minRange == RangeType.Inclusive ? min : null),
+                GTEValue = minRange == RangeType.Wildcard ? "*" : minRange == RangeType.Inclusive ? min : null,
                 GTValue = minRange == RangeType.Exclusive ? min : null,
-                LTEValue = maxRange == RangeType.Wildcard ? "*" : (maxRange == RangeType.Inclusive ? max : null),
+                LTEValue = maxRange == RangeType.Wildcard ? "*" : maxRange == RangeType.Inclusive ? max : null,
                 LTValue = maxRange == RangeType.Exclusive ? max : null,
                 Format = "epoch_millis",
             };
@@ -164,9 +163,9 @@ namespace UnitTests.K2Bridge.Visitors
             return new RangeClause()
             {
                 FieldName = "MyField",
-                GTEValue = minRange == RangeType.Wildcard ? "*" : (minRange == RangeType.Inclusive ? min : null),
+                GTEValue = minRange == RangeType.Wildcard ? "*" : minRange == RangeType.Inclusive ? min : null,
                 GTValue = minRange == RangeType.Exclusive ? min : null,
-                LTEValue = maxRange == RangeType.Wildcard ? "*" : (maxRange == RangeType.Inclusive ? max : null),
+                LTEValue = maxRange == RangeType.Wildcard ? "*" : maxRange == RangeType.Inclusive ? max : null,
                 LTValue = maxRange == RangeType.Exclusive ? max : null,
                 Format = null,
             };

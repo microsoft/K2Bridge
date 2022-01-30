@@ -9,7 +9,7 @@ namespace K2Bridge.Visitors
     using System.Text;
     using K2Bridge.KustoDAL;
     using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Aggregations.Metric;
     using K2Bridge.Utils;
 
     /// <summary>

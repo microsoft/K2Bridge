@@ -8,6 +8,7 @@ namespace K2Bridge.Visitors
     using System.Linq;
     using System.Text;
     using K2Bridge.Utils;
+    using K2Bridge.Visitors.Aggregations.Helpers;
 
     /// <content>
     /// Helper function to build partition query.

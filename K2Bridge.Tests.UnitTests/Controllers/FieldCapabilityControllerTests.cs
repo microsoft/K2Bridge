@@ -2,13 +2,13 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Controllers
+namespace K2Bridge.Tests.UnitTests.Controllers
 {
     using System;
     using System.Threading.Tasks;
-    using global::K2Bridge.Controllers;
-    using global::K2Bridge.KustoDAL;
-    using global::K2Bridge.Models.Response.Metadata;
+    using K2Bridge.Controllers;
+    using K2Bridge.KustoDAL;
+    using K2Bridge.Models.Response.Metadata;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;

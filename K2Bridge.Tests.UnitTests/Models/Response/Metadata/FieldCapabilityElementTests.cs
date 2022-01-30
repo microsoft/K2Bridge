@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Models.Response.Metadata
+namespace K2Bridge.Tests.UnitTests.Models.Response.Metadata
 {
     using System;
     using System.Data;
-    using global::K2Bridge.Factories;
+    using K2Bridge.Factories;
     using Moq;
     using NUnit.Framework;
 
