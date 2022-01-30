@@ -14,10 +14,7 @@ using Newtonsoft.Json;
 internal abstract class ReadOnlyJsonConverter : JsonConverter
 {
     /// <inheritdoc/>
-    public override bool CanWrite
-    {
-        get { return false; }
-    }
+    public override bool CanWrite => false;
 
     /// <inheritdoc/>
     public override bool CanConvert(Type objectType)

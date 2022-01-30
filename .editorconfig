@@ -75,6 +75,7 @@ csharp_using_directive_placement = inside_namespace
 # Newline options
 # https://docs.microsoft.com/visualstudio/ide/editorconfig-formatting-conventions#new-line-options
 csharp_new_line_before_open_brace = all
+csharp_style_expression_bodied_methods=when_on_single_line:suggestion
 
 
 [*.{cs,csx,cake}]

@@ -18,10 +18,7 @@ public class ResolveIndexResponse
     /// Gets indices.
     /// </summary>
     [JsonProperty("indices")]
-    public IEnumerable<ResolveIndexResponseIndex> Indices
-    {
-        get { return indices; }
-    }
+    public IEnumerable<ResolveIndexResponseIndex> Indices => indices;
 
     /// <summary>
     /// Add index to indices respons.
