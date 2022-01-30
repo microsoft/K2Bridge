@@ -17,12 +17,14 @@ public static class KustoConnectionDetailsFactory
     /// </summary>
     /// <param name="config">Configuration element.</param>
     /// <returns>A Kusto Connection Details Object.</returns>
-    internal static KustoConnectionDetails MakeFromConfiguration(IConfigurationRoot config) =>
-        new(
+    internal static KustoConnectionDetails MakeFromConfiguration(IConfigurationRoot config)
+    {
+        return new(
             config["adxClusterUrl"],
             config["adxDefaultDatabaseName"],
             config["aadClientId"],
             config["aadClientSecret"],
             config["aadTenantId"],
             config.GetValue<bool>("useManagedIdentity"));
+    }
 }
