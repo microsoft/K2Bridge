@@ -348,11 +348,14 @@ public class ElasticResponseTests
         return false;
     }
 
-    private static IEnumerable<Hit> SetRandomProperties(IEnumerable<Hit> hits) => hits.Select(i =>
+    private static IEnumerable<Hit> SetRandomProperties(IEnumerable<Hit> hits)
     {
-        i.Id = HitTestId;
-        return i;
-    });
+        return hits.Select(i =>
+{
+i.Id = HitTestId;
+return i;
+});
+    }
 
     /// <summary>
     /// Create a list of Hits by iterating over mock results.
