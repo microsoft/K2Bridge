@@ -2,17 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.JsonConverters
-{
-    using System.Collections.Generic;
-    using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Queries;
-    using NUnit.Framework;
+namespace K2Bridge.Tests.UnitTests.JsonConverters;
 
-    [TestFixture]
-    public class RangeConverterTests
-    {
-        private const string QueryTimestampRangeSingle = @"
+using System.Collections.Generic;
+using K2Bridge.Models.Request;
+using K2Bridge.Models.Request.Queries;
+using NUnit.Framework;
+
+[TestFixture]
+public class RangeConverterTests
+{
+    private const string QueryTimestampRangeSingle = @"
             {""bool"":
                 {""must"":
                     [
@@ -31,7 +31,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }";
 
-        private const string QueryBetweenRangeSingle = @"
+    private const string QueryBetweenRangeSingle = @"
             {""bool"":
                 {""must"":
                     [
@@ -50,7 +50,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }";
 
-        private const string QueryTimestampRangeSingleNoPair = @"
+    private const string QueryTimestampRangeSingleNoPair = @"
             {""bool"":
                 {""must"":
                     [
@@ -69,11 +69,11 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }";
 
-        private static readonly Query ExpectedValidQueryTimestampRange = new()
+    private static readonly Query ExpectedValidQueryTimestampRange = new()
+    {
+        Bool = new BoolQuery
         {
-            Bool = new BoolQuery
-            {
-                Must = new List<IQuery> {
+            Must = new List<IQuery> {
                     new RangeClause()
                     {
                         FieldName = "timestamp",
@@ -82,18 +82,18 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                         Format = "epoch_millis",
                     },
                 },
-                MustNot = new List<IQuery>(),
-                Should = new List<IQuery>(),
-                ShouldNot = new List<IQuery>(),
-                Filter = new List<IQuery> { null },
-            },
-        };
+            MustNot = new List<IQuery>(),
+            Should = new List<IQuery>(),
+            ShouldNot = new List<IQuery>(),
+            Filter = new List<IQuery> { null },
+        },
+    };
 
-        private static readonly Query ExpectedValidQueryBetweenRange = new()
+    private static readonly Query ExpectedValidQueryBetweenRange = new()
+    {
+        Bool = new BoolQuery
         {
-            Bool = new BoolQuery
-            {
-                Must = new List<IQuery> {
+            Must = new List<IQuery> {
                     new RangeClause()
                     {
                         FieldName = "TEST_FIELD",
@@ -101,18 +101,18 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                         LTValue = "10",
                     },
                 },
-                MustNot = new List<IQuery>(),
-                Should = new List<IQuery>(),
-                ShouldNot = new List<IQuery>(),
-                Filter = new List<IQuery> { null },
-            },
-        };
+            MustNot = new List<IQuery>(),
+            Should = new List<IQuery>(),
+            ShouldNot = new List<IQuery>(),
+            Filter = new List<IQuery> { null },
+        },
+    };
 
-        private static readonly Query ExpectedValidQueryTimestampRangeSingleNoPair = new()
+    private static readonly Query ExpectedValidQueryTimestampRangeSingleNoPair = new()
+    {
+        Bool = new BoolQuery
         {
-            Bool = new BoolQuery
-            {
-                Must = new List<IQuery> {
+            Must = new List<IQuery> {
                     new RangeClause()
                     {
                         FieldName = "timestamp",
@@ -120,23 +120,22 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                         Format = "epoch_millis",
                     },
                 },
-                MustNot = new List<IQuery>(),
-                Should = new List<IQuery>(),
-                ShouldNot = new List<IQuery>(),
-                Filter = new List<IQuery> { null },
-            },
-        };
+            MustNot = new List<IQuery>(),
+            Should = new List<IQuery>(),
+            ShouldNot = new List<IQuery>(),
+            Filter = new List<IQuery> { null },
+        },
+    };
 
-        private static readonly object[] RangeTestCases = {
+    private static readonly object[] RangeTestCases = {
             new TestCaseData(QueryTimestampRangeSingle, ExpectedValidQueryTimestampRange).SetName("JsonDeserializeObject_WithQuerySimpleTimestampRange_DeserializedCorrectly"),
             new TestCaseData(QueryBetweenRangeSingle, ExpectedValidQueryBetweenRange).SetName("JsonDeserializeObject_WithQueryFieldBetweenRange_DeserializedCorrectly"),
             new TestCaseData(QueryTimestampRangeSingleNoPair, ExpectedValidQueryTimestampRangeSingleNoPair).SetName("JsonDeserializeObject_WithQueryTimestampRangeNoPair_DeserializedCorrectly"),
         };
 
-        [TestCaseSource(nameof(RangeTestCases))]
-        public void TestRangeQueryStringQueries(string queryString, object expected)
-        {
-            queryString.AssertJsonString((Query)expected);
-        }
+    [TestCaseSource(nameof(RangeTestCases))]
+    public void TestRangeQueryStringQueries(string queryString, object expected)
+    {
+        queryString.AssertJsonString((Query)expected);
     }
 }

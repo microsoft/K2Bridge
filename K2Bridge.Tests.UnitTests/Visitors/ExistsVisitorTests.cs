@@ -2,39 +2,38 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.Visitors
+namespace K2Bridge.Tests.UnitTests.Visitors;
+
+using K2Bridge.Models.Request.Queries;
+using K2Bridge.Visitors;
+using NUnit.Framework;
+
+[TestFixture]
+public class ExistsVisitorTests
 {
-    using K2Bridge.Models.Request.Queries;
-    using K2Bridge.Visitors;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class ExistsVisitorTests
+    [TestCase(ExpectedResult = "isnotnull(['MyField'])")]
+    public string ExistsVisit_WithValidInput_ReturnsIsNotNullResponse()
     {
-        [TestCase(ExpectedResult = "isnotnull(['MyField'])")]
-        public string ExistsVisit_WithValidInput_ReturnsIsNotNullResponse()
+        var existsClause = new ExistsClause
         {
-            var existsClause = new ExistsClause
-            {
-                FieldName = "MyField",
-            };
+            FieldName = "MyField",
+        };
 
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit(existsClause);
-            return existsClause.KustoQL;
-        }
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+        visitor.Visit(existsClause);
+        return existsClause.KustoQL;
+    }
 
-        [TestCase(ExpectedResult = "isnotnull(['MyField'].['@1'].['b'])")]
-        public string ExistsVisit_WithValidDynamicInput_ReturnsIsNotNullResponse()
+    [TestCase(ExpectedResult = "isnotnull(['MyField'].['@1'].['b'])")]
+    public string ExistsVisit_WithValidDynamicInput_ReturnsIsNotNullResponse()
+    {
+        var existsClause = new ExistsClause
         {
-            var existsClause = new ExistsClause
-            {
-                FieldName = "MyField.@1.b",
-            };
+            FieldName = "MyField.@1.b",
+        };
 
-            var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
-            visitor.Visit(existsClause);
-            return existsClause.KustoQL;
-        }
+        var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
+        visitor.Visit(existsClause);
+        return existsClause.KustoQL;
     }
 }

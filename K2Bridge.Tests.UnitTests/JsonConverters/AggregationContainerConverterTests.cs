@@ -2,19 +2,19 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.JsonConverters
-{
-    using System.Collections.Generic;
-    using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Aggregations;
-    using K2Bridge.Models.Request.Aggregations.Bucket;
-    using K2Bridge.Models.Request.Aggregations.Metric;
-    using NUnit.Framework;
+namespace K2Bridge.Tests.UnitTests.JsonConverters;
 
-    [TestFixture]
-    public class AggregationContainerConverterTests
-    {
-        private const string DateHistogramAggregation = @"
+using System.Collections.Generic;
+using K2Bridge.Models.Request;
+using K2Bridge.Models.Request.Aggregations;
+using K2Bridge.Models.Request.Aggregations.Bucket;
+using K2Bridge.Models.Request.Aggregations.Metric;
+using NUnit.Framework;
+
+[TestFixture]
+public class AggregationContainerConverterTests
+{
+    private const string DateHistogramAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""date_histogram"": {
@@ -26,7 +26,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string RangeAggregation = @"
+    private const string RangeAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""range"": {
@@ -40,7 +40,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string DateRangeAggregation = @"
+    private const string DateRangeAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""date_range"": {
@@ -53,7 +53,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string TermsAggregation = @"
+    private const string TermsAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""terms"": {
@@ -66,7 +66,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string HistogramAggregation = @"
+    private const string HistogramAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""histogram"": {
@@ -77,7 +77,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string CardinalityAggregation = @"
+    private const string CardinalityAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""cardinality"": {
@@ -86,7 +86,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string AvgAggregation = @"
+    private const string AvgAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""avg"" : {
@@ -95,7 +95,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string AvgEmptyFieldsAggregation = @"
+    private const string AvgEmptyFieldsAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""avg"" : {
@@ -104,7 +104,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string MinAggregation = @"
+    private const string MinAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""min"" : {
@@ -113,7 +113,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string MaxAggregation = @"
+    private const string MaxAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""max"" : {
@@ -122,7 +122,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string SumAggregation = @"
+    private const string SumAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""sum"" : {
@@ -131,7 +131,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string PercentileAggregation = @"
+    private const string PercentileAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""percentiles"": {
@@ -143,7 +143,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string PercentilesAggregation = @"
+    private const string PercentilesAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""percentiles"": {
@@ -155,7 +155,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string PercentilesKeyedAggregation = @"
+    private const string PercentilesKeyedAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""percentiles"": {
@@ -168,7 +168,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string ExtendedStatsAggregationWithSigma = @"
+    private const string ExtendedStatsAggregationWithSigma = @"
             {""aggs"": {
                 ""2"": {
                     ""extended_stats"" : {
@@ -178,7 +178,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string ExtendedStatsAggregationWithoutSigma = @"
+    private const string ExtendedStatsAggregationWithoutSigma = @"
             {""aggs"": {
                 ""2"": {
                     ""extended_stats"" : {
@@ -187,7 +187,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string TopHitsAggregation = @"
+    private const string TopHitsAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""top_hits"": {
@@ -208,7 +208,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private const string NoAggAggregation = @"
+    private const string NoAggAggregation = @"
             {""aggs"": {
                 ""2"": {
                     ""noagg"" : {
@@ -217,346 +217,346 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }}";
 
-        private static readonly AggregationContainer ExpectedValidDateHistogramAggregation = new()
+    private static readonly AggregationContainer ExpectedValidDateHistogramAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new DateHistogramAggregation
                 {
-                    PrimaryAggregation = new DateHistogramAggregation
-                    {
-                        Field = "timestamp",
-                        Key = "2",
-                        FixedInterval = "1m",
-                        TimeZone = "Asia/Jerusalem",
-                        MinimumDocumentCount = 1,
-                        Metric = "count()",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "timestamp",
+                    Key = "2",
+                    FixedInterval = "1m",
+                    TimeZone = "Asia/Jerusalem",
+                    MinimumDocumentCount = 1,
+                    Metric = "count()",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidTermsAggregation = new()
+    private static readonly AggregationContainer ExpectedValidTermsAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new TermsAggregation
                 {
-                    PrimaryAggregation = new TermsAggregation
+                    Field = "DestCountry",
+                    Key = "2",
+                    Order = new TermsOrder
                     {
-                        Field = "DestCountry",
-                        Key = "2",
-                        Order = new TermsOrder
-                        {
-                            SortField = "_count",
-                            SortOrder = "desc",
-                        },
-                        Metric = "count()",
+                        SortField = "_count",
+                        SortOrder = "desc",
                     },
-                    SubAggregations = new AggregationDictionary(),
+                    Metric = "count()",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidRangeAggregation = new()
+    private static readonly AggregationContainer ExpectedValidRangeAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new RangeAggregation
                 {
-                    PrimaryAggregation = new RangeAggregation
-                    {
-                        Field = "DestCountry",
-                        Key = "2",
-                        Keyed = true,
-                        Ranges = new List<RangeAggregationExpression>() {
+                    Field = "DestCountry",
+                    Key = "2",
+                    Keyed = true,
+                    Ranges = new List<RangeAggregationExpression>() {
                             new RangeAggregationExpression()
                             {
                                 From = 0,
                                 To = 100,
                             },
                         },
-                        Metric = "count()",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Metric = "count()",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidDateRangeAggregation = new()
+    private static readonly AggregationContainer ExpectedValidDateRangeAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new DateRangeAggregation
                 {
-                    PrimaryAggregation = new DateRangeAggregation
-                    {
-                        Field = "DestCountry",
-                        Key = "2",
-                        Keyed = false,
-                        Ranges = new List<DateRangeAggregationExpression>() {
+                    Field = "DestCountry",
+                    Key = "2",
+                    Keyed = false,
+                    Ranges = new List<DateRangeAggregationExpression>() {
                             new DateRangeAggregationExpression()
                             {
                                 From = "2016-02-01",
                                 To = "now/d",
                             },
                         },
-                    },
                 },
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidHistogramAggregation = new()
+    private static readonly AggregationContainer ExpectedValidHistogramAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new HistogramAggregation
                 {
-                    PrimaryAggregation = new HistogramAggregation
-                    {
-                        Field = "price",
-                        Key = "2",
-                        Interval = 50,
-                        MinimumDocumentCount = 1,
-                        Metric = "count()",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "price",
+                    Key = "2",
+                    Interval = 50,
+                    MinimumDocumentCount = 1,
+                    Metric = "count()",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new()
+    private static readonly AggregationContainer ExpectedValidCardinalityAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new CardinalityAggregation
                 {
-                    PrimaryAggregation = new CardinalityAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidAvgAggregation = new()
+    private static readonly AggregationContainer ExpectedValidAvgAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new AverageAggregation
                 {
-                    PrimaryAggregation = new AverageAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedNoFieldsAvgAggregation = new()
+    private static readonly AggregationContainer ExpectedNoFieldsAvgAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new AverageAggregation
                 {
-                    PrimaryAggregation = new AverageAggregation
-                    {
-                        Field = null,
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = null,
+                    Key = "2",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidMinAggregation = new()
+    private static readonly AggregationContainer ExpectedValidMinAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new MinAggregation
                 {
-                    PrimaryAggregation = new MinAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidMaxAggregation = new()
+    private static readonly AggregationContainer ExpectedValidMaxAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new MaxAggregation
                 {
-                    PrimaryAggregation = new MaxAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidSumAggregation = new()
+    private static readonly AggregationContainer ExpectedValidSumAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new SumAggregation
                 {
-                    PrimaryAggregation = new SumAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidPercentileAggregation = new()
+    private static readonly AggregationContainer ExpectedValidPercentileAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer()
             {
-                ["2"] = new AggregationContainer()
+                PrimaryAggregation = new PercentileAggregation
                 {
-                    PrimaryAggregation = new PercentileAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                        Percents = new double[] { 50 },
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
+                    Percents = new double[] { 50 },
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidPercentilesAggregation = new()
+    private static readonly AggregationContainer ExpectedValidPercentilesAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer()
             {
-                ["2"] = new AggregationContainer()
+                PrimaryAggregation = new PercentileAggregation
                 {
-                    PrimaryAggregation = new PercentileAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                        Percents = new double[] { 1, 50, 90, 95 },
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
+                    Percents = new double[] { 1, 50, 90, 95 },
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedValidPercentilesKeyedAggregation = new()
+    private static readonly AggregationContainer ExpectedValidPercentilesKeyedAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer()
             {
-                ["2"] = new AggregationContainer()
+                PrimaryAggregation = new PercentileAggregation
                 {
-                    PrimaryAggregation = new PercentileAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                        Keyed = true,
-                        Percents = new double[] { 1, 50, 90, 95 },
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
+                    Keyed = true,
+                    Percents = new double[] { 1, 50, 90, 95 },
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithoutSigma = new()
+    private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithoutSigma = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new ExtendedStatsAggregation
                 {
-                    PrimaryAggregation = new ExtendedStatsAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithSigma = new()
+    private static readonly AggregationContainer ExpectedExtendedStatsAggregationWithSigma = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new ExtendedStatsAggregation
                 {
-                    PrimaryAggregation = new ExtendedStatsAggregation
-                    {
-                        Field = "metric",
-                        Key = "2",
-                        Sigma = 3,
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    Field = "metric",
+                    Key = "2",
+                    Sigma = 3,
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedTopHitsAggregation = new()
+    private static readonly AggregationContainer ExpectedTopHitsAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
+                PrimaryAggregation = new TopHitsAggregation
                 {
-                    PrimaryAggregation = new TopHitsAggregation
-                    {
-                        DocValueFields = new List<DocValueField>() { new DocValueField() { Field = "metricfield" } },
-                        Key = "2",
-                        Field = "metricfield",
-                        Size = 1,
-                        Sort = new List<SortClause>() { new SortClause() { FieldName = "sortfield", Order = "desc" } },
-                    },
-                    SubAggregations = new AggregationDictionary(),
+                    DocValueFields = new List<DocValueField>() { new DocValueField() { Field = "metricfield" } },
+                    Key = "2",
+                    Field = "metricfield",
+                    Size = 1,
+                    Sort = new List<SortClause>() { new SortClause() { FieldName = "sortfield", Order = "desc" } },
                 },
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly AggregationContainer ExpectedNoAggAggregation = new()
+    private static readonly AggregationContainer ExpectedNoAggAggregation = new()
+    {
+        PrimaryAggregation = null,
+        SubAggregations = new AggregationDictionary
         {
-            PrimaryAggregation = null,
-            SubAggregations = new AggregationDictionary
+            ["2"] = new AggregationContainer
             {
-                ["2"] = new AggregationContainer
-                {
-                    PrimaryAggregation = null,
-                    SubAggregations = new AggregationDictionary(),
-                },
+                PrimaryAggregation = null,
+                SubAggregations = new AggregationDictionary(),
             },
-        };
+        },
+    };
 
-        private static readonly object[] AggregationTestCases = {
+    private static readonly object[] AggregationTestCases = {
             new TestCaseData(DateHistogramAggregation, ExpectedValidDateHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidDateHistogram_DeserializedCorrectly"),
             new TestCaseData(HistogramAggregation, ExpectedValidHistogramAggregation).SetName("JsonDeserializeObject_WithAggregationValidHistogram_DeserializedCorrectly"),
             new TestCaseData(TermsAggregation, ExpectedValidTermsAggregation).SetName("JsonDeserializeObject_WithAggregationValidTerms_DeserializedCorrectly"),
@@ -576,10 +576,9 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
             new TestCaseData(NoAggAggregation, ExpectedNoAggAggregation).SetName("JsonDeserializeObject_WithNoAgg_DeserializedCorrectly"),
         };
 
-        [TestCaseSource(nameof(AggregationTestCases))]
-        public void TestAggregationConverter(string queryString, object expected)
-        {
-            queryString.AssertJsonString((AggregationContainer)expected);
-        }
+    [TestCaseSource(nameof(AggregationTestCases))]
+    public void TestAggregationConverter(string queryString, object expected)
+    {
+        queryString.AssertJsonString((AggregationContainer)expected);
     }
 }

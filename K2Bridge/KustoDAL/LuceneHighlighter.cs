@@ -2,197 +2,196 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.KustoDAL
+namespace K2Bridge.KustoDAL;
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using K2Bridge.Models;
+using Lucene.Net.Analysis;
+using Lucene.Net.QueryParsers;
+using Lucene.Net.Search.Highlight;
+using Microsoft.Extensions.Logging;
+using static System.Globalization.CultureInfo;
+using LuceneVersion = Lucene.Net.Util.Version;
+
+/// <summary>
+/// This class tranforms text by adding pre and post tags to mark highlighted entried.
+/// It works using an input query which holds the search entries and the pre/post tags
+/// which are used during tranformation.
+/// </summary>
+internal class LuceneHighlighter : IDisposable
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using K2Bridge.Models;
-    using Lucene.Net.Analysis;
-    using Lucene.Net.QueryParsers;
-    using Lucene.Net.Search.Highlight;
-    using Microsoft.Extensions.Logging;
-    using static System.Globalization.CultureInfo;
-    using LuceneVersion = Lucene.Net.Util.Version;
+    private const string Default = "*";
+    private readonly bool isHighlight;
+
+    // Lucene analyzer.
+    private readonly Lazy<Analyzer> analyzer = new(() => new WordAnalyzer());
+
+    // Highlighters computed for this query.
+    private readonly Lazy<IDictionary<string, Highlighter>> highlighters;
+
+    private readonly QueryData query;
+    private readonly ILogger logger;
+    private bool disposedValue;
 
     /// <summary>
-    /// This class tranforms text by adding pre and post tags to mark highlighted entried.
-    /// It works using an input query which holds the search entries and the pre/post tags
-    /// which are used during tranformation.
+    /// Initializes a new instance of the <see cref="LuceneHighlighter"/> class.
     /// </summary>
-    internal class LuceneHighlighter : IDisposable
+    /// <param name="query"><see cref="QueryData"/> which highlighters are based on.</param>
+    /// <param name="logger">A logger.</param>
+    public LuceneHighlighter(QueryData query, ILogger logger)
     {
-        private const string Default = "*";
-        private readonly bool isHighlight;
+        this.query = query;
+        this.logger = logger;
 
-        // Lucene analyzer.
-        private readonly Lazy<Analyzer> analyzer = new(() => new WordAnalyzer());
+        // Skipping highlight if the query's HighlightText dictionary is empty or if pre/post tags are empty.
+        isHighlight = query.HighlightText != null && !string.IsNullOrEmpty(query.HighlightPreTag) && !string.IsNullOrEmpty(query.HighlightPostTag);
+        highlighters = new Lazy<IDictionary<string, Highlighter>>(() => MakeHighlighters(analyzer.Value, query));
+        logger.LogInformation("Lucene highlighter is enabled: {IsHighlight}", isHighlight);
+    }
 
-        // Highlighters computed for this query.
-        private readonly Lazy<IDictionary<string, Highlighter>> highlighters;
-
-        private readonly QueryData query;
-        private readonly ILogger logger;
-        private bool disposedValue;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LuceneHighlighter"/> class.
-        /// </summary>
-        /// <param name="query"><see cref="QueryData"/> which highlighters are based on.</param>
-        /// <param name="logger">A logger.</param>
-        public LuceneHighlighter(QueryData query, ILogger logger)
+    /// <summary>
+    /// Returns a highlighted transformation of the value.
+    /// </summary>
+    /// <param name="columnName">Field name.</param>
+    /// <param name="value">Field Value.</param>
+    /// <returns>a highlight-tagged version of the input value, if highlight is on and value is not empty.</returns>
+    public string GetHighlightedValue(string columnName, object value)
+    {
+        try
         {
-            this.query = query;
-            this.logger = logger;
-
-            // Skipping highlight if the query's HighlightText dictionary is empty or if pre/post tags are empty.
-            isHighlight = query.HighlightText != null && !string.IsNullOrEmpty(query.HighlightPreTag) && !string.IsNullOrEmpty(query.HighlightPostTag);
-            highlighters = new Lazy<IDictionary<string, Highlighter>>(() => MakeHighlighters(analyzer.Value, query));
-            logger.LogInformation("Lucene highlighter is enabled: {IsHighlight}", isHighlight);
-        }
-
-        /// <summary>
-        /// Returns a highlighted transformation of the value.
-        /// </summary>
-        /// <param name="columnName">Field name.</param>
-        /// <param name="value">Field Value.</param>
-        /// <returns>a highlight-tagged version of the input value, if highlight is on and value is not empty.</returns>
-        public string GetHighlightedValue(string columnName, object value)
-        {
-            try
+            if (!isHighlight || value == null)
             {
-                if (!isHighlight || value == null)
-                {
-                    return string.Empty;
-                }
-
-                var stringValue = value.ToString();
-                Highlighter highlighter = null;
-                if (query.HighlightText.ContainsKey("*") && highlighters.Value.ContainsKey("*"))
-                {
-                    highlighter = highlighters.Value["*"];
-                }
-
-                if (query.HighlightText.ContainsKey(columnName) && highlighters.Value.ContainsKey(columnName))
-                {
-                    highlighter = highlighters.Value[columnName];
-                }
-
-                if (highlighter == null)
-                {
-                    return string.Empty;
-                }
-
-                return highlighter.GetBestFragment(analyzer.Value, columnName, stringValue);
+                return string.Empty;
             }
-            catch (Exception e)
+
+            var stringValue = value.ToString();
+            Highlighter highlighter = null;
+            if (query.HighlightText.ContainsKey("*") && highlighters.Value.ContainsKey("*"))
             {
-                logger.LogError(e, "Failure getting highlighted value for {ColumnName}.", columnName);
-                return null;
+                highlighter = highlighters.Value["*"];
             }
-        }
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Implement dispose pattern.
-        /// </summary>
-        /// <param name="disposing">A indication to cleanup objects in this class.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
+            if (query.HighlightText.ContainsKey(columnName) && highlighters.Value.ContainsKey(columnName))
             {
-                if (disposing)
+                highlighter = highlighters.Value[columnName];
+            }
+
+            if (highlighter == null)
+            {
+                return string.Empty;
+            }
+
+            return highlighter.GetBestFragment(analyzer.Value, columnName, stringValue);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failure getting highlighted value for {ColumnName}.", columnName);
+            return null;
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Implement dispose pattern.
+    /// </summary>
+    /// <param name="disposing">A indication to cleanup objects in this class.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                if (analyzer.IsValueCreated)
                 {
-                    if (analyzer.IsValueCreated)
-                    {
-                        analyzer.Value.Dispose();
-                    }
+                    analyzer.Value.Dispose();
                 }
-
-                disposedValue = true;
             }
-        }
 
-        /// <summary>
-        /// Creates a dicionary of highlighters based on the query's HighlightText dictionary.
-        /// </summarTy>
-        /// <param name="analyzer">A lucene word analyzer.</param>
-        /// <param name="query">The query.</param>
-        /// <returns>a dictionary of searched tokens and their highlighters.</returns>
-        private IDictionary<string, Highlighter> MakeHighlighters(Analyzer analyzer, QueryData query)
+            disposedValue = true;
+        }
+    }
+
+    /// <summary>
+    /// Creates a dicionary of highlighters based on the query's HighlightText dictionary.
+    /// </summarTy>
+    /// <param name="analyzer">A lucene word analyzer.</param>
+    /// <param name="query">The query.</param>
+    /// <returns>a dictionary of searched tokens and their highlighters.</returns>
+    private IDictionary<string, Highlighter> MakeHighlighters(Analyzer analyzer, QueryData query)
+    {
+        var parser = new QueryParser(LuceneVersion.LUCENE_30, Default, analyzer)
         {
-            var parser = new QueryParser(LuceneVersion.LUCENE_30, Default, analyzer)
+            AllowLeadingWildcard = true,
+        };
+        return query.HighlightText
+            .Select(kv => (key: kv.Key, highlighter: MakeValueHighlighter(parser, kv.Value, query.HighlightPreTag, query.HighlightPostTag)))
+            .Where(kv => kv.highlighter != null)
+            .ToDictionary(x => x.key, x => x.highlighter);
+    }
+
+    /// <summary>
+    /// Creates a single highlighter.
+    /// </summarTy>
+    /// <param name="parser">A lucene parser.</param>
+    /// <param name="value">The value which was searched.</param>
+    /// <param name="highlightPreTag">Pre match tag.</param>
+    /// <param name="highlightPostTag">Post match taf.</param>
+    /// <returns>a highlighter.</returns>
+    private Highlighter MakeValueHighlighter(QueryParser parser, string value, string highlightPreTag, string highlightPostTag)
+    {
+        // With lucene-net 3.0.3 some queries are not supported, for instance query such as "*someterm" (prefix is wildcard).
+        // These queries throw exception when calling QueryParser.Parse(string value) regarding use of configuration manager
+        // which is not supported in net core. see bug https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1658
+        // these terms are discarded during the following creation of highlighter.
+        try
+        {
+            var luceneQuery = parser.Parse(value);
+            var scorer = new QueryScorer(luceneQuery);
+            var formatter = new SimpleHTMLFormatter(highlightPreTag, highlightPostTag);
+            return new Highlighter(formatter, scorer)
             {
-                AllowLeadingWildcard = true,
+                TextFragmenter = new SimpleSpanFragmenter(scorer, int.MaxValue),
+                MaxDocCharsToAnalyze = int.MaxValue,
             };
-            return query.HighlightText
-                .Select(kv => (key: kv.Key, highlighter: MakeValueHighlighter(parser, kv.Value, query.HighlightPreTag, query.HighlightPostTag)))
-                .Where(kv => kv.highlighter != null)
-                .ToDictionary(x => x.key, x => x.highlighter);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failure creating highlighters for {Value}", value);
+            return null;
+        }
+    }
+
+    private sealed class WordAnalyzer : Analyzer
+    {
+        public override TokenStream TokenStream(string fieldName, TextReader reader)
+        {
+            return new WordTokenizer(reader);
         }
 
-        /// <summary>
-        /// Creates a single highlighter.
-        /// </summarTy>
-        /// <param name="parser">A lucene parser.</param>
-        /// <param name="value">The value which was searched.</param>
-        /// <param name="highlightPreTag">Pre match tag.</param>
-        /// <param name="highlightPostTag">Post match taf.</param>
-        /// <returns>a highlighter.</returns>
-        private Highlighter MakeValueHighlighter(QueryParser parser, string value, string highlightPreTag, string highlightPostTag)
+        private sealed class WordTokenizer : CharTokenizer
         {
-            // With lucene-net 3.0.3 some queries are not supported, for instance query such as "*someterm" (prefix is wildcard).
-            // These queries throw exception when calling QueryParser.Parse(string value) regarding use of configuration manager
-            // which is not supported in net core. see bug https://dev.azure.com/csedevil/K2-bridge-internal/_workitems/edit/1658
-            // these terms are discarded during the following creation of highlighter.
-            try
+            public WordTokenizer(TextReader input)
+                : base(input)
             {
-                var luceneQuery = parser.Parse(value);
-                var scorer = new QueryScorer(luceneQuery);
-                var formatter = new SimpleHTMLFormatter(highlightPreTag, highlightPostTag);
-                return new Highlighter(formatter, scorer)
-                {
-                    TextFragmenter = new SimpleSpanFragmenter(scorer, int.MaxValue),
-                    MaxDocCharsToAnalyze = int.MaxValue,
-                };
-            }
-            catch (Exception e)
-            {
-                logger.LogError(e, "Failure creating highlighters for {Value}", value);
-                return null;
-            }
-        }
-
-        private sealed class WordAnalyzer : Analyzer
-        {
-            public override TokenStream TokenStream(string fieldName, TextReader reader)
-            {
-                return new WordTokenizer(reader);
             }
 
-            private sealed class WordTokenizer : CharTokenizer
+            protected override bool IsTokenChar(char c)
             {
-                public WordTokenizer(TextReader input)
-                    : base(input)
-                {
-                }
+                return char.IsLetterOrDigit(c) || c.Equals('_');
+            }
 
-                protected override bool IsTokenChar(char c)
-                {
-                    return char.IsLetterOrDigit(c) || c.Equals('_');
-                }
-
-                protected override char Normalize(char c)
-                {
-                    return char.ToLower(c, InvariantCulture);
-                }
+            protected override char Normalize(char c)
+            {
+                return char.ToLower(c, InvariantCulture);
             }
         }
     }

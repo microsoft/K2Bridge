@@ -2,70 +2,70 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.End2End
+namespace K2Bridge.Tests.End2End;
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions.Json;
+using Kusto.Data.Common;
+using Kusto.Data.Ingestion;
+using Kusto.Data.Net.Client;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+
+public class KustoClientTests : KustoTestBase
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using FluentAssertions.Json;
-    using Kusto.Data.Common;
-    using Kusto.Data.Ingestion;
-    using Kusto.Data.Net.Client;
-    using Newtonsoft.Json.Linq;
-    using NUnit.Framework;
+    protected const string TypesDir = "../../../types";
 
-    public class KustoClientTests : KustoTestBase
+    /// <summary>
+    /// Name of the Kusto index for types check.
+    /// </summary>
+    protected const string TypesIndex = "types_index";
+
+    protected const string TypesMapping = "types_mapping";
+
+    // Map Kusto columns to types
+    private static readonly Dictionary<string, string> KustoColumnType = new()
     {
-        protected const string TypesDir = "../../../types";
+        { "Boolean", "bool" },
+        { "DateTime", "datetime" },
+        { "Guid", "guid" },
+        { "Int32", "int" },
+        { "Int64", "long" },
+        { "Double", "real" },
+        { "String", "string" },
+        { "TimeSpan", "timespan" },
+        { "SqlDecimal", "decimal" },
+        { "Dynamic", "dynamic" },
+    };
 
-        /// <summary>
-        /// Name of the Kusto index for types check.
-        /// </summary>
-        protected const string TypesIndex = "types_index";
+    private static ICslAdminProvider kustoAdminClient;
 
-        protected const string TypesMapping = "types_mapping";
+    private static string typesIndexFullName;
 
-        // Map Kusto columns to types
-        private static readonly Dictionary<string, string> KustoColumnType = new()
+    [OneTimeSetUp]
+    public static void CreateClient()
+    {
+        using (kustoAdminClient = KustoClientFactory.CreateCslAdminProvider(Kusto()))
         {
-            { "Boolean", "bool" },
-            { "DateTime", "datetime" },
-            { "Guid", "guid" },
-            { "Int32", "int" },
-            { "Int64", "long" },
-            { "Double", "real" },
-            { "String", "string" },
-            { "TimeSpan", "timespan" },
-            { "SqlDecimal", "decimal" },
-            { "Dynamic", "dynamic" },
-        };
-
-        private static ICslAdminProvider kustoAdminClient;
-
-        private static string typesIndexFullName;
-
-        [OneTimeSetUp]
-        public static void CreateClient()
-        {
-            using (kustoAdminClient = KustoClientFactory.CreateCslAdminProvider(Kusto()))
-            {
-                PopulateTypesIndexData();
-            }
-
-            typesIndexFullName = $"{KustoDatabase()}:{TypesIndex}";
+            PopulateTypesIndexData();
         }
 
-        [Test]
-        [Description("MSearch returns all data types as expected")]
-        public async Task MSearch_All_ReturnsAllHitsAsExpected()
-        {
-            var result = await K2Client().MSearch(TypesIndex, $"{TypesDir}/MSearch_All_InTimeRange.json");
-            var totalHits = result.SelectToken("responses[0].hits.total.value");
-            Assert.IsNotNull(totalHits);
-            Assert.IsTrue(totalHits.Value<int>() == 1);
+        typesIndexFullName = $"{KustoDatabase()}:{TypesIndex}";
+    }
 
-            var firstHit = result.SelectToken("responses[0].hits.hits[0]");
-            var expectedHit = JObject.Parse(@"{
+    [Test]
+    [Description("MSearch returns all data types as expected")]
+    public async Task MSearch_All_ReturnsAllHitsAsExpected()
+    {
+        var result = await K2Client().MSearch(TypesIndex, $"{TypesDir}/MSearch_All_InTimeRange.json");
+        var totalHits = result.SelectToken("responses[0].hits.total.value");
+        Assert.IsNotNull(totalHits);
+        Assert.IsTrue(totalHits.Value<int>() == 1);
+
+        var firstHit = result.SelectToken("responses[0].hits.hits[0]");
+        var expectedHit = JObject.Parse(@"{
                     ""_source"": {
                         ""Boolean"": true,
                         ""DateTime"": ""2020-02-23T07:22:29.1990163"",
@@ -83,15 +83,15 @@ namespace K2Bridge.Tests.End2End
                     }
                 }");
 
-            firstHit.Should().ContainSubtree(expectedHit);
-        }
+        firstHit.Should().ContainSubtree(expectedHit);
+    }
 
-        [Test]
-        [Description("FieldCaps returns fields for all types as expected")]
-        public async Task FieldCaps_WithAllTypes_ReturnsTypesConvertedToESTypes()
-        {
-            var fieldCaps = await K2Client().FieldCaps(typesIndexFullName, removeDynamicColumns: false);
-            var expected = JObject.Parse($@"{{
+    [Test]
+    [Description("FieldCaps returns fields for all types as expected")]
+    public async Task FieldCaps_WithAllTypes_ReturnsTypesConvertedToESTypes()
+    {
+        var fieldCaps = await K2Client().FieldCaps(typesIndexFullName, removeDynamicColumns: false);
+        var expected = JObject.Parse($@"{{
               ""indices"": [
                 ""{typesIndexFullName.Split(':')[1]}""
               ],
@@ -194,51 +194,50 @@ namespace K2Bridge.Tests.End2End
                 }},
               }}
             }}");
-            fieldCaps.Should().BeEquivalentTo(expected);
-        }
+        fieldCaps.Should().BeEquivalentTo(expected);
+    }
 
-        private static void PopulateTypesIndexData()
+    private static void PopulateTypesIndexData()
+    {
+        // Build list of columns and mappings to provision Kusto
+        var kustoColumns = new List<string>();
+        var columnMappings = new List<ColumnMapping>();
+
+        foreach (var entry in KustoColumnType)
         {
-            // Build list of columns and mappings to provision Kusto
-            var kustoColumns = new List<string>();
-            var columnMappings = new List<ColumnMapping>();
-
-            foreach (var entry in KustoColumnType)
+            var name = entry.Key;
+            kustoColumns.Add($"{name}:{entry.Value}");
+            columnMappings.Add(new ColumnMapping()
             {
-                var name = entry.Key;
-                kustoColumns.Add($"{name}:{entry.Value}");
-                columnMappings.Add(new ColumnMapping()
+                ColumnName = name,
+                Properties = new Dictionary<string, string>
                 {
-                    ColumnName = name,
-                    Properties = new Dictionary<string, string>
-                    {
-                        ["Path"] = $"$.{name}",
-                    },
-                });
-            }
-
-            // Send drop table ifexists command to Kusto
-            var command = CslCommandGenerator.GenerateTableDropCommand(TypesIndex, true);
-            KustoExecute(command);
-
-            // Send create table command to Kusto
-            command = $".create table {TypesIndex} ({string.Join(", ", kustoColumns)})";
-            Console.WriteLine(command);
-            KustoExecute(command);
-
-            // Send create table mapping command to Kusto
-            command = CslCommandGenerator.GenerateTableMappingCreateCommand(IngestionMappingKind.Json, TypesIndex, TypesMapping, columnMappings, true);
-            KustoExecute(command);
-
-            command = ".append types_index <|" +
-                "print x = true, datetime('2020-02-23T07:22:29.1990163Z'), guid(74be27de-1e4e-49d9-b579-fe0b331d3642), int(17), long(17), real(0.3), 'string type', 30m, decimal(0.3), dynamic({'a':123, 'b':'hello'})";
-            KustoExecute(command);
+                    ["Path"] = $"$.{name}",
+                },
+            });
         }
 
-        private static void KustoExecute(string command)
-        {
-            TestContext.Progress.WriteLine(command);
-            kustoAdminClient.ExecuteControlCommand(command);
-        }
+        // Send drop table ifexists command to Kusto
+        var command = CslCommandGenerator.GenerateTableDropCommand(TypesIndex, true);
+        KustoExecute(command);
+
+        // Send create table command to Kusto
+        command = $".create table {TypesIndex} ({string.Join(", ", kustoColumns)})";
+        Console.WriteLine(command);
+        KustoExecute(command);
+
+        // Send create table mapping command to Kusto
+        command = CslCommandGenerator.GenerateTableMappingCreateCommand(IngestionMappingKind.Json, TypesIndex, TypesMapping, columnMappings, true);
+        KustoExecute(command);
+
+        command = ".append types_index <|" +
+            "print x = true, datetime('2020-02-23T07:22:29.1990163Z'), guid(74be27de-1e4e-49d9-b579-fe0b331d3642), int(17), long(17), real(0.3), 'string type', 30m, decimal(0.3), dynamic({'a':123, 'b':'hello'})";
+        KustoExecute(command);
+    }
+
+    private static void KustoExecute(string command)
+    {
+        TestContext.Progress.WriteLine(command);
+        kustoAdminClient.ExecuteControlCommand(command);
     }
 }

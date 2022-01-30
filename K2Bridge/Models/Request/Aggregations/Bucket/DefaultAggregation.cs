@@ -2,19 +2,18 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations.Bucket
-{
-    using K2Bridge.Visitors;
+namespace K2Bridge.Models.Request.Aggregations.Bucket;
 
-    /// <summary>
-    /// Default bucket aggregation.
-    /// </summary>
-    internal class DefaultAggregation : BucketAggregation
+using K2Bridge.Visitors;
+
+/// <summary>
+/// Default bucket aggregation.
+/// </summary>
+internal class DefaultAggregation : BucketAggregation
+{
+    /// <inheritdoc/>
+    public override void Accept(IVisitor visitor)
     {
-        /// <inheritdoc/>
-        public override void Accept(IVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
+        visitor.Visit(this);
     }
 }

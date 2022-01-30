@@ -2,35 +2,34 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models
+namespace K2Bridge.Models;
+
+using Destructurama.Attributed;
+
+/// <summary>
+/// A wrapper class for data with potential PII data.
+/// This implementation allows Data to be replaced or redacted.
+/// </summary>
+public class SensitiveData
 {
-    using Destructurama.Attributed;
+    private const string DefaultRedactMsg = "Redacted";
 
     /// <summary>
-    /// A wrapper class for data with potential PII data.
-    /// This implementation allows Data to be replaced or redacted.
+    /// Initializes a new instance of the <see cref="SensitiveData"/> class.
     /// </summary>
-    public class SensitiveData
+    public SensitiveData()
     {
-        private const string DefaultRedactMsg = "Redacted";
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SensitiveData"/> class.
-        /// </summary>
-        public SensitiveData()
-        {
-            RedactMessage = DefaultRedactMsg;
-        }
-
-        /// <summary>
-        /// Gets or sets the message to display when data is redacted.
-        /// </summary>
-        [NotLogged]
-        public string RedactMessage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the data to be logged.
-        /// </summary>
-        public object Data { get; set; }
+        RedactMessage = DefaultRedactMsg;
     }
+
+    /// <summary>
+    /// Gets or sets the message to display when data is redacted.
+    /// </summary>
+    [NotLogged]
+    public string RedactMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the data to be logged.
+    /// </summary>
+    public object Data { get; set; }
 }

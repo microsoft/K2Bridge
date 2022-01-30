@@ -2,32 +2,31 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.KustoDAL
+namespace K2Bridge.Tests.UnitTests.KustoDAL;
+
+using System;
+using K2Bridge.KustoDAL;
+using NUnit.Framework;
+
+[TestFixture]
+public class ParseExceptionTests
 {
-    using System;
-    using K2Bridge.KustoDAL;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class ParseExceptionTests
+    [Test]
+    public void Constructor_WithNoArgument_ThrowsArgumentException()
     {
-        [Test]
-        public void Constructor_WithNoArgument_ThrowsArgumentException()
-        {
-            Assert.Throws<ArgumentException>(() => new ParseException());
-        }
+        Assert.Throws<ArgumentException>(() => new ParseException());
+    }
 
-        [Test]
-        public void Constructor_WithMessage_ThrowsArgumentException()
-        {
-            Assert.Throws<ArgumentException>(() => new ParseException("test"));
-        }
+    [Test]
+    public void Constructor_WithMessage_ThrowsArgumentException()
+    {
+        Assert.Throws<ArgumentException>(() => new ParseException("test"));
+    }
 
-        [Test]
-        public void Constructor_WithInnerExceptionAndMessage_ConstructsParseException()
-        {
-            var exc = new ParseException("test", new ArgumentException("test"));
-            Assert.AreEqual(ParseException.ParsePhaseName, exc.PhaseName);
-        }
+    [Test]
+    public void Constructor_WithInnerExceptionAndMessage_ConstructsParseException()
+    {
+        var exc = new ParseException("test", new ArgumentException("test"));
+        Assert.AreEqual(ParseException.ParsePhaseName, exc.PhaseName);
     }
 }

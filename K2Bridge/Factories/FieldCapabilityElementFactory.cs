@@ -2,93 +2,92 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Factories
+namespace K2Bridge.Factories;
+
+using System;
+using System.Data;
+using K2Bridge.Models.Response.Metadata;
+
+/// <summary>
+/// Convertos methods for <see cref="FieldCapabilityElement"/>.
+/// </summary>
+public static class FieldCapabilityElementFactory
 {
-    using System;
-    using System.Data;
-    using K2Bridge.Models.Response.Metadata;
+    /// <summary>
+    /// Creates a new instance of <see cref="FieldCapabilityElement"/>.
+    /// </summary>
+    /// <param name="record">IDataRecord.</param>
+    /// <returns>FieldCapabilityElement.</returns>
+    public static FieldCapabilityElement CreateFromDataRecord(IDataRecord record)
+    {
+        Ensure.IsNotNull(record, nameof(record));
+
+        var columnName = record[(int)FieldCapabilityElementDataReaderMapping.ColumnName];
+        var columnType = record[(int)FieldCapabilityElementDataReaderMapping.ColumnType];
+
+        return new FieldCapabilityElement
+        {
+            Name = Convert.ToString(columnName),
+            Type = ElasticTypeFromKustoType(Convert.ToString(columnType)),
+        };
+    }
 
     /// <summary>
-    /// Convertos methods for <see cref="FieldCapabilityElement"/>.
+    /// Creates a new instance of <see cref="FieldCapabilityElement"/> from a kusto shorthand type.
     /// </summary>
-    public static class FieldCapabilityElementFactory
+    /// <param name="name">Name of the field.</param>
+    /// <param name="kustoShorthandType">Kusto shorthand types.</param>
+    /// <returns>FieldCapabilityElement.</returns>
+    public static FieldCapabilityElement CreateFromNameAndKustoShorthandType(string name, string kustoShorthandType)
     {
-        /// <summary>
-        /// Creates a new instance of <see cref="FieldCapabilityElement"/>.
-        /// </summary>
-        /// <param name="record">IDataRecord.</param>
-        /// <returns>FieldCapabilityElement.</returns>
-        public static FieldCapabilityElement CreateFromDataRecord(IDataRecord record)
+        Ensure.IsNotNullOrEmpty(name, nameof(name));
+        Ensure.IsNotNullOrEmpty(kustoShorthandType, nameof(kustoShorthandType));
+
+        return new FieldCapabilityElement
         {
-            Ensure.IsNotNull(record, nameof(record));
+            Name = name,
+            Type = ElasticTypeFromKustoShorthandType(kustoShorthandType),
+        };
+    }
 
-            var columnName = record[(int)FieldCapabilityElementDataReaderMapping.ColumnName];
-            var columnType = record[(int)FieldCapabilityElementDataReaderMapping.ColumnType];
-
-            return new FieldCapabilityElement
-            {
-                Name = Convert.ToString(columnName),
-                Type = ElasticTypeFromKustoType(Convert.ToString(columnType)),
-            };
-        }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="FieldCapabilityElement"/> from a kusto shorthand type.
-        /// </summary>
-        /// <param name="name">Name of the field.</param>
-        /// <param name="kustoShorthandType">Kusto shorthand types.</param>
-        /// <returns>FieldCapabilityElement.</returns>
-        public static FieldCapabilityElement CreateFromNameAndKustoShorthandType(string name, string kustoShorthandType)
+    private static string ElasticTypeFromKustoType(string type)
+    {
+        return type switch
         {
-            Ensure.IsNotNullOrEmpty(name, nameof(name));
-            Ensure.IsNotNullOrEmpty(kustoShorthandType, nameof(kustoShorthandType));
+            "System.Int32" => "integer",
+            "System.Int64" => "long",
+            "System.Single" => "float",
+            "System.Double" => "double",
+            "System.SByte" => "boolean",
+            "System.Object" => "object",
+            "System.String" => "keyword", // Elastic support text and keyword string types. Text is interpreted as something that can't be aggregated, hence we need to choose keyword.
+            "System.DateTime" => "date",
+            "System.Data.SqlTypes.SqlDecimal" => "double",
+            "System.Guid" => "string",
+            "System.TimeSpan" => "string",
+            "System.Boolean" => "boolean",
+            _ => throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type"),
+        };
+    }
 
-            return new FieldCapabilityElement
-            {
-                Name = name,
-                Type = ElasticTypeFromKustoShorthandType(kustoShorthandType),
-            };
-        }
-
-        private static string ElasticTypeFromKustoType(string type)
+    private static string ElasticTypeFromKustoShorthandType(string type)
+    {
+        return type switch
         {
-            return type switch
-            {
-                "System.Int32" => "integer",
-                "System.Int64" => "long",
-                "System.Single" => "float",
-                "System.Double" => "double",
-                "System.SByte" => "boolean",
-                "System.Object" => "object",
-                "System.String" => "keyword", // Elastic support text and keyword string types. Text is interpreted as something that can't be aggregated, hence we need to choose keyword.
-                "System.DateTime" => "date",
-                "System.Data.SqlTypes.SqlDecimal" => "double",
-                "System.Guid" => "string",
-                "System.TimeSpan" => "string",
-                "System.Boolean" => "boolean",
-                _ => throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type"),
-            };
-        }
-
-        private static string ElasticTypeFromKustoShorthandType(string type)
-        {
-            return type switch
-            {
-                "int" => "integer",
-                "long" => "long",
-                "double" => "double",
-                "real" => "double",
-                "bool" => "boolean",
-                "boolean" => "boolean",
-                "dynamic" => "object",
-                "string" => "keyword", // Elastic support text and keyword string types. Text is interpreted as something that can't be aggregated, hence we need to choose keyword.
-                "datetime" => "date",
-                "date" => "date",
-                "decimal" => "double",
-                "guid" => "string",
-                "timespan" => "string",
-                _ => throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type"),
-            };
-        }
+            "int" => "integer",
+            "long" => "long",
+            "double" => "double",
+            "real" => "double",
+            "bool" => "boolean",
+            "boolean" => "boolean",
+            "dynamic" => "object",
+            "string" => "keyword", // Elastic support text and keyword string types. Text is interpreted as something that can't be aggregated, hence we need to choose keyword.
+            "datetime" => "date",
+            "date" => "date",
+            "decimal" => "double",
+            "guid" => "string",
+            "timespan" => "string",
+            _ => throw new ArgumentException($"Kusto Type {type} does not map to a known ElasticSearch type"),
+        };
     }
 }

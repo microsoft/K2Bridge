@@ -2,33 +2,32 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.Models.Response
+namespace K2Bridge.Tests.UnitTests.Models.Response;
+
+using K2Bridge.Models.Response;
+using NUnit.Framework;
+
+[TestFixture]
+public class HitsCollectionTests
 {
-    using K2Bridge.Models.Response;
-    using NUnit.Framework;
-
-    [TestFixture]
-    public class HitsCollectionTests
+    [Test]
+    public void HitsCollection_WhenAddToTotal_TotalCountIsUpdated()
     {
-        [Test]
-        public void HitsCollection_WhenAddToTotal_TotalCountIsUpdated()
-        {
-            var hitsCollection = new HitsCollection();
+        var hitsCollection = new HitsCollection();
 
-            hitsCollection.AddToTotal(17);
+        hitsCollection.AddToTotal(17);
 
-            Assert.AreEqual(17, hitsCollection.Total.Value);
-        }
+        Assert.AreEqual(17, hitsCollection.Total.Value);
+    }
 
-        [Test]
-        public void HitsCollection_WhenAddedTwiceMaxIntValue_TotalCountIsUpdatedCorrectly()
-        {
-            var hitsCollection = new HitsCollection();
+    [Test]
+    public void HitsCollection_WhenAddedTwiceMaxIntValue_TotalCountIsUpdatedCorrectly()
+    {
+        var hitsCollection = new HitsCollection();
 
-            hitsCollection.AddToTotal(int.MaxValue);
-            hitsCollection.AddToTotal(int.MaxValue);
+        hitsCollection.AddToTotal(int.MaxValue);
+        hitsCollection.AddToTotal(int.MaxValue);
 
-            Assert.That(hitsCollection.Total.Value > int.MaxValue);
-        }
+        Assert.That(hitsCollection.Total.Value > int.MaxValue);
     }
 }
