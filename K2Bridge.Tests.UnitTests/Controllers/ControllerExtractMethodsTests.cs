@@ -2,10 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Controllers
+namespace K2Bridge.Tests.UnitTests.Controllers
 {
-    using System;
-    using global::K2Bridge.Controllers;
+    using K2Bridge.Controllers;
     using NUnit.Framework;
 
     [TestFixture]
@@ -15,9 +14,9 @@ namespace UnitTests.K2Bridge.Controllers
             new TestCaseData("header\r\nquery").Returns(("header", "query")).SetName("SplitQueryBody_WithSlashNSlashR_PartitionsStringsCorrectly"),
             new TestCaseData("header\rquery").Returns(("header", "query")).SetName("SplitQueryBody_WithSlashR_PartitionsStringsCorrectly"),
             new TestCaseData("header\nquery").Returns(("header", "query")).SetName("SplitQueryBody_WithSlashN_PartitionsStringsCorrectly"),
-            new TestCaseData("headerquery").Returns(ValueTuple.Create<string, string>("headerquery", null)).SetName("SplitQueryBody_WhenNoCharacters_DoesNotPartitionsStrings"),
+            new TestCaseData("headerquery").Returns(("headerquery", (string)null)).SetName("SplitQueryBody_WhenNoCharacters_DoesNotPartitionsStrings"),
             new TestCaseData("header\nquery\nnotheader\nnotquery").Returns(("header", "query")).SetName("SplitQueryBody_WithMorePartitions_Ignores"),
-            new TestCaseData("header").Returns(ValueTuple.Create<string, string>("header", null)).SetName("SplitQueryBody_WithLessPartitions_NoError"),
+            new TestCaseData("header").Returns(("header", (string)null)).SetName("SplitQueryBody_WithLessPartitions_NoError"),
         };
 
         private static readonly object[] TemplateReplaceStringTestCases = {

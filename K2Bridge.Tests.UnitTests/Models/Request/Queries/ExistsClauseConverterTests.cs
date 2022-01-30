@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Models.Request.Queries
+namespace K2Bridge.Tests.UnitTests.Models.Request.Queries
 {
     using System;
-    using global::K2Bridge.Models.Request.Queries;
+    using K2Bridge.Models.Request.Queries;
     using Newtonsoft.Json;
     using NUnit.Framework;
 

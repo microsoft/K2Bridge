@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.JsonConverters
+namespace K2Bridge.Tests.UnitTests.JsonConverters
 {
     using System;
     using DeepEqual.Syntax;
@@ -27,10 +27,12 @@ namespace UnitTests.K2Bridge.JsonConverters
                 $"json {expected.NormalizeChars()} did not match {serializedString.NormalizeChars()}");
         }
 
-        private static string NormalizeChars(this string s) =>
-            s.
-            Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase).
-            Replace("\r", string.Empty, StringComparison.OrdinalIgnoreCase).
-            Replace("\n", string.Empty, StringComparison.OrdinalIgnoreCase);
+        private static string NormalizeChars(this string s)
+        {
+            return s.
+                Replace(" ", string.Empty, StringComparison.OrdinalIgnoreCase).
+                Replace("\r", string.Empty, StringComparison.OrdinalIgnoreCase).
+                Replace("\n", string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

@@ -7,8 +7,9 @@ namespace K2Bridge.Visitors
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using K2Bridge.Models.Request.Aggregations;
+    using K2Bridge.Models.Request.Aggregations.Metric;
     using K2Bridge.Utils;
+    using K2Bridge.Visitors.Aggregations.Helpers;
 
     /// <content>
     /// A visitor for the different <see cref="MetricAggregation"/> types.

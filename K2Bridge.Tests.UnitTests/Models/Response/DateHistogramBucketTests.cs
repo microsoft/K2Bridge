@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Models.Response
+namespace K2Bridge.Tests.UnitTests.Models.Response
 {
     using System;
     using System.Data;
-    using global::K2Bridge.Factories;
-    using global::K2Bridge.Models;
+    using K2Bridge.Factories;
+    using K2Bridge.Models;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Newtonsoft.Json.Linq;

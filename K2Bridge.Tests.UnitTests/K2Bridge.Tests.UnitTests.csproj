@@ -42,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Visitors\" />
     <Folder Include="Controllers\" />
     <Folder Include="Visitors\LuceneNet\" />
     <Folder Include="Models\Response\Metadata\" />

@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Visitors
+namespace K2Bridge.Utils
 {
     using System;
     using System.Text.RegularExpressions;
@@ -56,7 +56,7 @@ namespace K2Bridge.Visitors
                     'H' => "hour",
                     'm' => "minute",
                     's' => "second",
-                    _ => throw new IllegalClauseException("Invalid date math range unit."),
+                    _ => throw new Visitors.IllegalClauseException("Invalid date math range unit."),
                 };
 
                 kexpr = $"datetime_add('{unit}', {sign}{value}, {kexpr})";
@@ -75,7 +75,7 @@ namespace K2Bridge.Visitors
                     "H" => $"bin({kexpr}, 1h)",
                     "m" => $"bin({kexpr}, 1m)",
                     "s" => $"bin({kexpr}, 1s)",
-                    _ => throw new IllegalClauseException("Invalid date math rounding."),
+                    _ => throw new Visitors.IllegalClauseException("Invalid date math rounding."),
                 };
             }
 

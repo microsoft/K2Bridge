@@ -9,8 +9,8 @@ namespace K2Bridge.Factories
     using System.Globalization;
     using System.Linq;
     using K2Bridge.Models;
-    using K2Bridge.Models.Response;
     using K2Bridge.Models.Response.Aggregations;
+    using K2Bridge.Models.Response.Aggregations.Bucket;
     using K2Bridge.Utils;
     using Microsoft.Extensions.Logging;
 
@@ -165,6 +165,7 @@ namespace K2Bridge.Factories
             return fb;
         }
 
+        /// <summary>
         /// Create a new <see cref="DateRangeBucket"/> from a given <see cref="DataRow"/>.
         /// </summary>
         /// <param name="primaryKey">The primary aggregation key.</param>
