@@ -2,135 +2,134 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.HttpMessages
+namespace K2Bridge.Tests.UnitTests.HttpMessages;
+
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using K2Bridge.HttpMessages;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using NUnit.Framework;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA1001:owns disposable field(s) but is not disposable", Justification = "No need to do this.")]
+[TestFixture]
+public class HttpResponseMessageResultsTests
 {
-    using System;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using K2Bridge.HttpMessages;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Features;
-    using NUnit.Framework;
+    private const string Reason = "A good reason";
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA1001:owns disposable field(s) but is not disposable", Justification = "No need to do this.")]
-    [TestFixture]
-    public class HttpResponseMessageResultsTests
+    private HttpResponseMessageResult httpResponseMessageResult;
+
+    private HttpResponseMessage httpResponseMessage;
+
+    [Test]
+    public void Ctor_InvalidArg_ThrowsArgumentNullException()
     {
-        private const string Reason = "A good reason";
+        Assert.Throws(
+            Is.TypeOf<ArgumentNullException>()
+             .And.Message.Contains("Value cannot be null."),
+            () => new HttpResponseMessageResult(null));
+    }
 
-        private HttpResponseMessageResult httpResponseMessageResult;
-
-        private HttpResponseMessage httpResponseMessage;
-
-        [Test]
-        public void Ctor_InvalidArg_ThrowsArgumentNullException()
+    [SetUp]
+    public void SetUp()
+    {
+        httpResponseMessage = new HttpResponseMessage
         {
-            Assert.Throws(
-                Is.TypeOf<ArgumentNullException>()
-                 .And.Message.Contains("Value cannot be null."),
-                () => new HttpResponseMessageResult(null));
-        }
+            StatusCode = (System.Net.HttpStatusCode)200,
+            ReasonPhrase = Reason,
+        };
 
-        [SetUp]
-        public void SetUp()
+        httpResponseMessage.Headers.Add("my-custom-header", "val 1");
+
+        httpResponseMessage.Content = new StringContent("Your response text");
+        httpResponseMessage.Content.Headers.Add("my-custom-content-header", "val 1");
+
+        httpResponseMessageResult = new HttpResponseMessageResult(httpResponseMessage);
+    }
+
+    [Test]
+    public async Task ExecuteResultAsync_WithValidContext_Passes()
+    {
+        // The ActionContext will hold the copy result
+        var ac = new Microsoft.AspNetCore.Mvc.ActionContext
         {
-            httpResponseMessage = new HttpResponseMessage
-            {
-                StatusCode = (System.Net.HttpStatusCode)200,
-                ReasonPhrase = Reason,
-            };
+            HttpContext = new DefaultHttpContext(),
+        };
 
-            httpResponseMessage.Headers.Add("my-custom-header", "val 1");
+        // Execute
+        await httpResponseMessageResult.ExecuteResultAsync(ac);
 
-            httpResponseMessage.Content = new StringContent("Your response text");
-            httpResponseMessage.Content.Headers.Add("my-custom-content-header", "val 1");
+        var res = ac.HttpContext.Response;
+        Assert.AreEqual(200, res.StatusCode);
 
-            httpResponseMessageResult = new HttpResponseMessageResult(httpResponseMessage);
-        }
+        var responseFeature = ac.HttpContext.Features.Get<IHttpResponseFeature>();
+        Assert.AreEqual(Reason, responseFeature.ReasonPhrase);
 
-        [Test]
-        public async Task ExecuteResultAsync_WithValidContext_Passes()
+        res.Headers.TryGetValue("my-custom-header", out var headerVal);
+        Assert.AreEqual(httpResponseMessage.Headers.GetValues("my-custom-header"), headerVal);
+
+        var val = httpResponseMessage.Content.Headers.GetValues("my-custom-content-header");
+        res.Headers.TryGetValue("my-custom-content-header", out var contentHeaderVal);
+        Assert.AreEqual(val, contentHeaderVal);
+    }
+
+    [Test]
+    public async Task ExecuteResultAsync_IgnoresTransferEncoding_Passes()
+    {
+        // The ActionContext will hold the copy result
+        var ac = new Microsoft.AspNetCore.Mvc.ActionContext
         {
-            // The ActionContext will hold the copy result
-            var ac = new Microsoft.AspNetCore.Mvc.ActionContext
-            {
-                HttpContext = new DefaultHttpContext(),
-            };
+            HttpContext = new DefaultHttpContext(),
+        };
 
-            // Execute
-            await httpResponseMessageResult.ExecuteResultAsync(ac);
+        // Set transfer encoding
+        httpResponseMessage.Headers.TransferEncodingChunked = true;
 
-            var res = ac.HttpContext.Response;
-            Assert.AreEqual(200, res.StatusCode);
+        // recreate result object with updated message.
+        httpResponseMessageResult = new HttpResponseMessageResult(httpResponseMessage);
 
-            var responseFeature = ac.HttpContext.Features.Get<IHttpResponseFeature>();
-            Assert.AreEqual(Reason, responseFeature.ReasonPhrase);
+        // Execute
+        await httpResponseMessageResult.ExecuteResultAsync(ac);
 
-            res.Headers.TryGetValue("my-custom-header", out var headerVal);
-            Assert.AreEqual(httpResponseMessage.Headers.GetValues("my-custom-header"), headerVal);
+        var res = ac.HttpContext.Response;
+        Assert.AreEqual(200, res.StatusCode);
 
-            var val = httpResponseMessage.Content.Headers.GetValues("my-custom-content-header");
-            res.Headers.TryGetValue("my-custom-content-header", out var contentHeaderVal);
-            Assert.AreEqual(val, contentHeaderVal);
-        }
+        var responseFeature = ac.HttpContext.Features.Get<IHttpResponseFeature>();
+        Assert.AreEqual(Reason, responseFeature.ReasonPhrase);
 
-        [Test]
-        public async Task ExecuteResultAsync_IgnoresTransferEncoding_Passes()
-        {
-            // The ActionContext will hold the copy result
-            var ac = new Microsoft.AspNetCore.Mvc.ActionContext
-            {
-                HttpContext = new DefaultHttpContext(),
-            };
+        res.Headers.TryGetValue("my-custom-header", out var headerVal);
+        Assert.AreEqual(httpResponseMessage.Headers.GetValues("my-custom-header"), headerVal);
 
-            // Set transfer encoding
-            httpResponseMessage.Headers.TransferEncodingChunked = true;
+        var val = httpResponseMessage.Content.Headers.GetValues("my-custom-content-header");
+        res.Headers.TryGetValue("my-custom-content-header", out var contentHeaderVal);
+        Assert.AreEqual(val, contentHeaderVal);
 
-            // recreate result object with updated message.
-            httpResponseMessageResult = new HttpResponseMessageResult(httpResponseMessage);
+        // Verify transfer encoding was ignored
+        res.Headers.TryGetValue("Transfer-Encoding", out var transferEnc);
+        Assert.IsTrue(transferEnc.Count == 0);
+    }
 
-            // Execute
-            await httpResponseMessageResult.ExecuteResultAsync(ac);
+    [Test]
+    public void ExecuteResultAsync_WithActionContextNoHttpContext_Throws()
+    {
+        // The ActionContext that SHOULD hold the copy result
+        var ac = new Microsoft.AspNetCore.Mvc.ActionContext();
 
-            var res = ac.HttpContext.Response;
-            Assert.AreEqual(200, res.StatusCode);
+        // Execute
+        Assert.ThrowsAsync(
+            Is.TypeOf<ArgumentNullException>()
+             .And.Message.EqualTo($"Response message can not be null (Parameter 'response')"),
+            async () => await httpResponseMessageResult.ExecuteResultAsync(ac));
+    }
 
-            var responseFeature = ac.HttpContext.Features.Get<IHttpResponseFeature>();
-            Assert.AreEqual(Reason, responseFeature.ReasonPhrase);
-
-            res.Headers.TryGetValue("my-custom-header", out var headerVal);
-            Assert.AreEqual(httpResponseMessage.Headers.GetValues("my-custom-header"), headerVal);
-
-            var val = httpResponseMessage.Content.Headers.GetValues("my-custom-content-header");
-            res.Headers.TryGetValue("my-custom-content-header", out var contentHeaderVal);
-            Assert.AreEqual(val, contentHeaderVal);
-
-            // Verify transfer encoding was ignored
-            res.Headers.TryGetValue("Transfer-Encoding", out var transferEnc);
-            Assert.IsTrue(transferEnc.Count == 0);
-        }
-
-        [Test]
-        public void ExecuteResultAsync_WithActionContextNoHttpContext_Throws()
-        {
-            // The ActionContext that SHOULD hold the copy result
-            var ac = new Microsoft.AspNetCore.Mvc.ActionContext();
-
-            // Execute
-            Assert.ThrowsAsync(
-                Is.TypeOf<ArgumentNullException>()
-                 .And.Message.EqualTo($"Response message can not be null (Parameter 'response')"),
-                async () => await httpResponseMessageResult.ExecuteResultAsync(ac));
-        }
-
-        [Test]
-        public void ExecuteResultAsync_WithoutActionContext_Throws()
-        {
-            // Execute
-            Assert.ThrowsAsync(
-                Is.TypeOf<ArgumentNullException>()
-                 .And.Message.EqualTo($"Response message can not be null (Parameter 'response')"),
-                async () => await httpResponseMessageResult.ExecuteResultAsync(null));
-        }
+    [Test]
+    public void ExecuteResultAsync_WithoutActionContext_Throws()
+    {
+        // Execute
+        Assert.ThrowsAsync(
+            Is.TypeOf<ArgumentNullException>()
+             .And.Message.EqualTo($"Response message can not be null (Parameter 'response')"),
+            async () => await httpResponseMessageResult.ExecuteResultAsync(null));
     }
 }

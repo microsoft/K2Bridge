@@ -2,17 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Tests.UnitTests.JsonConverters
-{
-    using System.Collections.Generic;
-    using K2Bridge.Models.Request;
-    using K2Bridge.Models.Request.Queries;
-    using NUnit.Framework;
+namespace K2Bridge.Tests.UnitTests.JsonConverters;
 
-    [TestFixture]
-    public class QueryStringClauseConverterTests
-    {
-        private const string ValidQuery = @"
+using System.Collections.Generic;
+using K2Bridge.Models.Request;
+using K2Bridge.Models.Request.Queries;
+using NUnit.Framework;
+
+[TestFixture]
+public class QueryStringClauseConverterTests
+{
+    private const string ValidQuery = @"
             {""bool"":
                 {""must"":
                     [
@@ -33,7 +33,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }";
 
-        private const string QueryMissingAnalyzeWildcardProperty = @"
+    private const string QueryMissingAnalyzeWildcardProperty = @"
             {""bool"":
                 {""must"":
                     [
@@ -53,7 +53,7 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }";
 
-        private const string QueryMissingDefaultFieldProperty = @"
+    private const string QueryMissingDefaultFieldProperty = @"
             {""bool"":
                 {""must"":
                     [
@@ -73,11 +73,11 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                 }
             }";
 
-        private static readonly Query ExpectedValidQuery = new()
+    private static readonly Query ExpectedValidQuery = new()
+    {
+        Bool = new BoolQuery
         {
-            Bool = new BoolQuery
-            {
-                Must = new List<IQuery> {
+            Must = new List<IQuery> {
                     new QueryStringClause()
                     {
                         Phrase = "TEST_FIELD:[0 TO 2]",
@@ -85,18 +85,18 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                         Default = "-",
                     },
                 },
-                MustNot = new List<IQuery>(),
-                Should = new List<IQuery>(),
-                ShouldNot = new List<IQuery>(),
-                Filter = new List<IQuery> { null },
-            },
-        };
+            MustNot = new List<IQuery>(),
+            Should = new List<IQuery>(),
+            ShouldNot = new List<IQuery>(),
+            Filter = new List<IQuery> { null },
+        },
+    };
 
-        private static readonly Query ExpectedValidQueryMissingAnalyzeWildcard = new()
+    private static readonly Query ExpectedValidQueryMissingAnalyzeWildcard = new()
+    {
+        Bool = new BoolQuery
         {
-            Bool = new BoolQuery
-            {
-                Must = new List<IQuery> {
+            Must = new List<IQuery> {
                     new QueryStringClause()
                     {
                         Phrase = "TEST_FIELD:[0 TO 2]",
@@ -104,18 +104,18 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                         Default = "*",
                     },
                 },
-                MustNot = new List<IQuery>(),
-                Should = new List<IQuery>(),
-                ShouldNot = new List<IQuery>(),
-                Filter = new List<IQuery> { null },
-            },
-        };
+            MustNot = new List<IQuery>(),
+            Should = new List<IQuery>(),
+            ShouldNot = new List<IQuery>(),
+            Filter = new List<IQuery> { null },
+        },
+    };
 
-        private static readonly Query ExpectedValidQueryMissingDefaultField = new()
+    private static readonly Query ExpectedValidQueryMissingDefaultField = new()
+    {
+        Bool = new BoolQuery
         {
-            Bool = new BoolQuery
-            {
-                Must = new List<IQuery> {
+            Must = new List<IQuery> {
                     new QueryStringClause()
                     {
                         Phrase = "TEST_FIELD:[0 TO 2]",
@@ -123,23 +123,22 @@ namespace K2Bridge.Tests.UnitTests.JsonConverters
                         Default = "*",
                     },
                 },
-                MustNot = new List<IQuery>(),
-                Should = new List<IQuery>(),
-                ShouldNot = new List<IQuery>(),
-                Filter = new List<IQuery> { null },
-            },
-        };
+            MustNot = new List<IQuery>(),
+            Should = new List<IQuery>(),
+            ShouldNot = new List<IQuery>(),
+            Filter = new List<IQuery> { null },
+        },
+    };
 
-        private static readonly object[] QueryStringClauseTestCases = {
+    private static readonly object[] QueryStringClauseTestCases = {
             new TestCaseData(ValidQuery, ExpectedValidQuery).SetName("JsonDeserializeObject_WithValidQueryClause_DeserializedCorrectly"),
             new TestCaseData(QueryMissingAnalyzeWildcardProperty, ExpectedValidQueryMissingAnalyzeWildcard).SetName("JsonDeserializeObject_WithQueryMissingAnalyzeWildcardProperty_DeserializedCorrectly"),
             new TestCaseData(QueryMissingDefaultFieldProperty, ExpectedValidQueryMissingDefaultField).SetName("JsonDeserializeObject_WithQueryMissingDefaultFieldProperty_DeserializedCorrectly"),
         };
 
-        [TestCaseSource(nameof(QueryStringClauseTestCases))]
-        public void TestQueryStringQueries(string queryString, object expected)
-        {
-            queryString.AssertJsonString((Query)expected);
-        }
+    [TestCaseSource(nameof(QueryStringClauseTestCases))]
+    public void TestQueryStringQueries(string queryString, object expected)
+    {
+        queryString.AssertJsonString((Query)expected);
     }
 }

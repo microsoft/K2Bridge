@@ -2,21 +2,20 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge
-{
-    using K2Bridge.Models;
+namespace K2Bridge;
 
+using K2Bridge.Models;
+
+/// <summary>
+/// An interface for query translation.
+/// </summary>
+public interface ITranslator
+{
     /// <summary>
-    /// An interface for query translation.
+    /// Translate Data query.
     /// </summary>
-    public interface ITranslator
-    {
-        /// <summary>
-        /// Translate Data query.
-        /// </summary>
-        /// <param name="header">Query header.</param>
-        /// <param name="query">Query to translate.</param>
-        /// <returns>Translated QueryData.</returns>
-        QueryData TranslateQuery(string header, string query);
-    }
+    /// <param name="header">Query header.</param>
+    /// <param name="query">Query to translate.</param>
+    /// <returns>Translated QueryData.</returns>
+    QueryData TranslateQuery(string header, string query);
 }

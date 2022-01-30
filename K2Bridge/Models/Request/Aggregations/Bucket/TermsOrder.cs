@@ -2,18 +2,17 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace K2Bridge.Models.Request.Aggregations.Bucket
-{
-    internal class TermsOrder
-    {
-        /// <summary>
-        /// Gets or sets the field name used to sort buckets.
-        /// </summary>
-        public string SortField { get; set; } = "count_";
+namespace K2Bridge.Models.Request.Aggregations.Bucket;
 
-        /// <summary>
-        /// Gets or sets the ordering of the results.
-        /// </summary>
-        public string SortOrder { get; set; } = "desc";
-    }
+internal class TermsOrder
+{
+    /// <summary>
+    /// Gets or sets the field name used to sort buckets.
+    /// </summary>
+    public string SortField { get; set; } = "count_";
+
+    /// <summary>
+    /// Gets or sets the ordering of the results.
+    /// </summary>
+    public string SortOrder { get; set; } = "desc";
 }
