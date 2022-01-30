@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -27,7 +27,7 @@ namespace K2Bridge.RewriteRules
             }
         }
 
-        private string GetIndexNameFromPath(PathString pathString)
+        private static string GetIndexNameFromPath(PathString pathString)
         {
             var segments = pathString.ToString().Split('/', System.StringSplitOptions.RemoveEmptyEntries);
             return segments[0];

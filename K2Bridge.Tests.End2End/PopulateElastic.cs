@@ -37,7 +37,7 @@ namespace K2Bridge.Tests.End2End
 
             // Populate index
             using Stream fs = File.OpenRead(dataFile);
-            using GZipStream decompressionStream = new GZipStream(fs, CompressionMode.Decompress);
+            using var decompressionStream = new GZipStream(fs, CompressionMode.Decompress);
             using var reader = new StreamReader(decompressionStream);
             return await BulkInsert(esClient, index, reader);
         }

@@ -7,8 +7,7 @@ namespace K2Bridge.KustoDAL
     using System;
 
     /// <summary>
-    /// Thrown when trying to visit a clause and it mandatory properties
-    /// are wrong/missing.
+    /// Thrown when failing to execute a Kusto query.
     /// </summary>
     public class QueryException : K2Exception
     {

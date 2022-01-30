@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -69,7 +69,7 @@ namespace UnitTests.K2Bridge.JsonConverters
                 }
             }";
 
-        private static readonly Query ExpectedValidQueryTimestampRange = new Query
+        private static readonly Query ExpectedValidQueryTimestampRange = new()
         {
             Bool = new BoolQuery
             {
@@ -89,7 +89,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly Query ExpectedValidQueryBetweenRange = new Query
+        private static readonly Query ExpectedValidQueryBetweenRange = new()
         {
             Bool = new BoolQuery
             {
@@ -108,7 +108,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             },
         };
 
-        private static readonly Query ExpectedValidQueryTimestampRangeSingleNoPair = new Query
+        private static readonly Query ExpectedValidQueryTimestampRangeSingleNoPair = new()
         {
             Bool = new BoolQuery
             {

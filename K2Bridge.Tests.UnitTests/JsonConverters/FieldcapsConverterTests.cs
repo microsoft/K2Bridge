@@ -11,7 +11,7 @@ namespace UnitTests.K2Bridge.JsonConverters
     public class FieldcapsConverterTests
     {
         private const string ExpectedValidFieldCaps = @"
-            { 
+            {
             ""text"": {
                 ""aggregatable"": true,
                 ""searchable"": true,
@@ -20,7 +20,7 @@ namespace UnitTests.K2Bridge.JsonConverters
             }
         }";
 
-        private static readonly FieldCapabilityElement ValidFieldCapsElement = new FieldCapabilityElement()
+        private static readonly FieldCapabilityElement ValidFieldCapsElement = new()
         {
             Name = "title",
             Type = "text",

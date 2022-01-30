@@ -1,4 +1,4 @@
-﻿# Dynamic Columns
+# Dynamic Columns
 
 In ADX (Kusto), columns of the type "dynamic" are special.  
 They can contain within themselves arbitrarily nested data structures, that can be different from row to row.
@@ -68,5 +68,3 @@ Therefore, when building the schema, K2bridge ignores array types and uses them 
 This works for some uses for K2bridge, but still may be the subject of bugs when doing some queries in kusto.
 
 Currently this is a topic for future research, and issues and contributions are welcome.
-
-

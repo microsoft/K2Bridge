@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -50,7 +50,7 @@ namespace K2Bridge.JsonConverters
             return token != null ? token.ToObject<List<IQuery>>(serializer) : new List<IQuery>();
         }
 
-        private BoolQuery DeserializeBoolQuery(JToken token, JsonSerializer serializer)
+        private static BoolQuery DeserializeBoolQuery(JToken token, JsonSerializer serializer)
         {
             return new BoolQuery
             {

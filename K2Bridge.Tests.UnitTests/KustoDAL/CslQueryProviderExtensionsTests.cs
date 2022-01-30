@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -20,9 +20,9 @@ namespace UnitTests.K2Bridge.KustoDAL
     public class CslQueryProviderExtensionsTests
     {
         private readonly IDataReader stubReader = new Mock<IDataReader>().Object;
-        private readonly Mock<ICslQueryProvider> stubClient = new Mock<ICslQueryProvider>();
-        private readonly Mock<Metrics> stubMetrics = new Mock<Metrics>();
-        private readonly ClientRequestProperties clientRequestProperties = default;
+        private readonly Mock<ICslQueryProvider> stubClient = new();
+        private readonly Mock<Metrics> stubMetrics = new();
+        private readonly ClientRequestProperties clientRequestProperties = new Mock<ClientRequestProperties>().Object;
 
         [Test]
         public async Task ExecuteMonitoredQueryAsync_WithValidInput_ReturnsReaderAndTime()
@@ -63,8 +63,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                 async () => await stubClient.Object.ExecuteMonitoredQueryAsync(null, clientRequestProperties, stubMetrics.Object));
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "No need to do this.")]
-        private TelemetryClient GetMockTelemetryClient()
+        private static TelemetryClient GetMockTelemetryClient()
         {
             return new TelemetryClient(
                 new TelemetryConfiguration

@@ -46,7 +46,7 @@ namespace K2Bridge.Visitors
                             FillKqlQuery(rangeClause, s => $"{KustoQLOperators.StrCmp}('{s}', {KustoQLOperators.ToStringOperator}({EncodeKustoField(rangeClause.FieldName)}))", "0");
                             break;
                         case ClauseFieldType.Unknown:
-                            throw new Exception($"Field name {rangeClause.FieldName} has an unknown type.");
+                            throw new IllegalClauseException($"Field name {rangeClause.FieldName} has an unknown type.");
                         default:
                             throw new IllegalClauseException();
                     }

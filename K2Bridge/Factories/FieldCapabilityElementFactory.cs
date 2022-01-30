@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -33,11 +33,11 @@ namespace K2Bridge.Factories
         }
 
         /// <summary>
-        /// wew
+        /// Creates a new instance of <see cref="FieldCapabilityElement"/> from a kusto shorthand type.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="kustoShorthandType"></param>
-        /// <returns></returns>
+        /// <param name="name">Name of the field.</param>
+        /// <param name="kustoShorthandType">Kusto shorthand types.</param>
+        /// <returns>FieldCapabilityElement.</returns>
         public static FieldCapabilityElement CreateFromNameAndKustoShorthandType(string name, string kustoShorthandType)
         {
             Ensure.IsNotNullOrEmpty(name, nameof(name));

@@ -15,39 +15,39 @@
 
     ```json
     {
-      "aadClientId": "<aadClientId>",
-      "aadClientSecret": "<aadClientSecret>",
-      "aadTenantId": "<aadTenantId>",
-      "adxClusterUrl": "<adxClusterUrl>",
-      "adxDefaultDatabaseName": "<adxDefaultDatabaseName>",
-      "bridgeListenerAddress": "http://127.0.0.1:8080/", //this needs to be identical to what kibana will connect to
-      "metadataElasticAddress": "http://localhost:9200",
-      "outputBackendQuery": "true",
-      "collectTelemetry": "false", //unless you want to work on app-insights
-      "enableQueryLogging": "true",
+    "aadClientId": "<aadClientId>",
+    "aadClientSecret": "<aadClientSecret>",
+    "aadTenantId": "<aadTenantId>",
+    "adxClusterUrl": "<adxClusterUrl>",
+    "adxDefaultDatabaseName": "<adxDefaultDatabaseName>",
+    "bridgeListenerAddress": "http://127.0.0.1:8080/", //this needs to be identical to what kibana will connect to
+    "metadataElasticAddress": "http://localhost:9200",
+    "outputBackendQuery": "true",
+    "collectTelemetry": "false", //unless you want to work on app-insights
+    "enableQueryLogging": "true",
 
-       //this section overrides default Serilog configuration to make it easier to develop and see logs.
-      "Serilog": {
+        //this section overrides default Serilog configuration to make it easier to develop and see logs.
+    "Serilog": {
         "Using": [ "Serilog.Sinks.Console", "Serilog.Filters.Expressions" ],
         "MinimumLevel": {
-          "Default": "Verbose",
-          "Override": {
+        "Default": "Verbose",
+        "Override": {
             "Microsoft": "Warning",
             "Microsoft.AspNetCore": "Warning",
             "Serilog.AspNetCore.RequestLoggingMiddleware": "Warning",
             "System": "Warning"
-          }
+        }
         },
         "WriteTo": [
-          {
+        {
             "Name": "Console",
             "Args": {
-              "outputTemplate": "[{Timestamp:o} {CorrelationId} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}"
+            "outputTemplate": "[{Timestamp:o} {CorrelationId} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}"
             }
-          }
+        }
         ],
         "Enrich": [ "FromLogContext", "WithCorrelationId", "WithCorrelationIdHeader" ]
-      }
+    }
     }
     ```
 

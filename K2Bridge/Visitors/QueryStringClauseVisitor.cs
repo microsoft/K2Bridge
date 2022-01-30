@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -25,7 +25,7 @@ namespace K2Bridge.Visitors
         /// A list of strings that when found, means the search term is a Lucene term.
         /// </summary>
         private static readonly List<string> SpecialStrings =
-            new () { " ", "AND", "OR", "NOT", "\"", ":", "(", ")", "[", "]", "{", "}", "*", "&&", "+", "-", "|", "?", "\\", "^", "~" };
+            new() { " ", "AND", "OR", "NOT", "\"", ":", "(", ")", "[", "]", "{", "}", "*", "&&", "+", "-", "|", "?", "\\", "^", "~" };
 
         /// <inheritdoc/>
         public void Visit(QueryStringClause queryStringClause)
@@ -50,7 +50,7 @@ namespace K2Bridge.Visitors
                     if (isNumeric)
                     {
                         // Check to see whether this Phrase contains just a numeric or >=, <=, > or > examples
-                        if (decimal.TryParse(queryStringClause.Phrase, out decimal _))
+                        if (decimal.TryParse(queryStringClause.Phrase, out var _))
                         {
                             queryStringClause.KustoQL = $"{parsedFieldName} {KustoQLOperators.Equal} {queryStringClause.Phrase}";
                         }
@@ -93,6 +93,20 @@ namespace K2Bridge.Visitors
             }
         }
 
+        /// <summary>
+        /// Checks whether the given string is a 'simple' pharse.
+        /// a simple pharse is a phrase that does not contains any
+        /// special keywords such as 'AND', 'OR', ':' and more.
+        /// These keywords indicates that its not a simple phrase, its
+        /// a Lucene expression.
+        /// </summary>
+        /// <param name="phrase">The phrase to check.</param>
+        /// <returns>true if the given phrase is 'simple'.</returns>
+        private static bool IsSimplePhrase(string phrase)
+        {
+            return string.IsNullOrEmpty(phrase) || !SpecialStrings.Any(s => phrase.Contains(s, StringComparison.OrdinalIgnoreCase));
+        }
+
         private async Task<bool> GetIsFieldNumeric(string fieldName)
         {
             Ensure.IsNotNullOrEmpty(fieldName, nameof(fieldName));
@@ -114,13 +128,13 @@ namespace K2Bridge.Visitors
                     Lucene.Net.Util.Version.LUCENE_30,
                     queryStringClause.Default,
                     analyzer)
-                    {
-                        AllowLeadingWildcard = queryStringClause.Wildcard,
-                        LowercaseExpandedTerms = false,
-                    };
+                {
+                    AllowLeadingWildcard = queryStringClause.Wildcard,
+                    LowercaseExpandedTerms = false,
+                };
 
-           // We don't need to escape the phrase here, we want to keep it as-is so we can use escape sequences in lucene (such as \")
-           var query = queryParser.Parse(queryStringClause.Phrase);
+            // We don't need to escape the phrase here, we want to keep it as-is so we can use escape sequences in lucene (such as \")
+            var query = queryParser.Parse(queryStringClause.Phrase);
 
             // We make our own 'visitable' Lucence.Net query model
             var luceneQuery = VisitableLuceneQueryFactory.Make(query);
@@ -132,25 +146,6 @@ namespace K2Bridge.Visitors
             esQuery.Accept(this);
 
             return esQuery.KustoQL;
-        }
-
-        /// <summary>
-        /// Checks whether the given string is a 'simple' pharse.
-        /// a simple pharse is a phrase that does not contains any
-        /// special keywords such as 'AND', 'OR', ':' and more.
-        /// These keywords indicates that its not a simple phrase, its
-        /// a Lucene expression.
-        /// </summary>
-        /// <param name="phrase">The phrase to check.</param>
-        /// <returns>true if the given phrase is 'simple'.</returns>
-        private bool IsSimplePhrase(string phrase)
-        {
-            if (string.IsNullOrEmpty(phrase))
-            {
-                return true;
-            }
-
-            return !SpecialStrings.Any(s => phrase.Contains(s, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

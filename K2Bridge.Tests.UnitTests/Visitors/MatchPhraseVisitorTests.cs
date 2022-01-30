@@ -93,7 +93,7 @@ namespace UnitTests.K2Bridge.Visitors
             };
         }
 
-        private string VisitQuery(MatchPhraseClause clause)
+        private static string VisitQuery(MatchPhraseClause clause)
         {
             var visitor = new ElasticSearchDSLVisitor(SchemaRetrieverMock.CreateMockSchemaRetriever());
             visitor.Visit(clause);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -56,23 +56,17 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public async Task GetFieldCaps_WithValidIndex_ReturnFieldCaps()
         {
-            Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
-                    { "ColumnName", name },
-                    { "ColumnType", type },
-                };
-
             var testData = new List<Dictionary<string, object>>() {
-                column("mybool", "System.SByte"),
-                column("myint", "System.Int32"),
-                column("mylong", "System.Int64"),
-                column("myreal", "System.Double"),
-                column("mystring", "System.String"),
-                column("mydatetime", "System.DateTime"),
-                column("mydynamic", "System.Object"),
-                column("myguid", "System.Guid"),
-                column("mytimespan", "System.TimeSpan"),
-                column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
+                Column("mybool", "System.SByte"),
+                Column("myint", "System.Int32"),
+                Column("mylong", "System.Int64"),
+                Column("myreal", "System.Double"),
+                Column("mystring", "System.String"),
+                Column("mydatetime", "System.DateTime"),
+                Column("mydynamic", "System.Object"),
+                Column("myguid", "System.Guid"),
+                Column("mytimespan", "System.TimeSpan"),
+                Column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
             };
             using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
@@ -228,23 +222,17 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public async Task GetFieldCaps_WithValidIndex_WithCache_ReturnFieldCaps()
         {
-            Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
-                    { "ColumnName", name },
-                    { "ColumnType", type },
-                };
-
             var testData = new List<Dictionary<string, object>>() {
-                column("mybool", "System.SByte"),
-                column("myint", "System.Int32"),
-                column("mylong", "System.Int64"),
-                column("myreal", "System.Double"),
-                column("mystring", "System.String"),
-                column("mydatetime", "System.DateTime"),
-                column("mydynamic", "System.Object"),
-                column("myguid", "System.Guid"),
-                column("mytimespan", "System.TimeSpan"),
-                column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
+                Column("mybool", "System.SByte"),
+                Column("myint", "System.Int32"),
+                Column("mylong", "System.Int64"),
+                Column("myreal", "System.Double"),
+                Column("mystring", "System.String"),
+                Column("mydatetime", "System.DateTime"),
+                Column("mydynamic", "System.Object"),
+                Column("myguid", "System.Guid"),
+                Column("mytimespan", "System.TimeSpan"),
+                Column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
             };
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
                 .Returns(() =>
@@ -418,19 +406,13 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public async Task GetFieldCaps_WithDynamicColumnArray_ReturnFieldCaps()
         {
-            Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
-                    { "ColumnName", name },
-                    { "ColumnType", type },
-                };
-
             var testData = new List<Dictionary<string, object>>() {
-                column("myint", "System.Int32"),
-                column("nested_dynamic", "System.Object"),
-                column("nested_indexer", "System.Object"),
-                column("dynamic_top_level_string", "System.Object"),
-                column("dynamic_top_level_indexer", "System.Object"),
-                column("dynamic_top_level_array", "System.Object"),
+                Column("myint", "System.Int32"),
+                Column("nested_dynamic", "System.Object"),
+                Column("nested_indexer", "System.Object"),
+                Column("dynamic_top_level_string", "System.Object"),
+                Column("dynamic_top_level_indexer", "System.Object"),
+                Column("dynamic_top_level_array", "System.Object"),
             };
             using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
@@ -599,15 +581,10 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task GetFieldCaps_WithMaxSamples_ReturnCorrectQuery()
         {
             const ulong samples = 10;
-            Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
-                    { "ColumnName", name },
-                    { "ColumnType", type },
-                };
 
             var testData = new List<Dictionary<string, object>>() {
-                column("myint", "System.Int32"),
-                column("mydynamic", "System.Object"),
+                Column("myint", "System.Int32"),
+                Column("mydynamic", "System.Object"),
             };
             using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
@@ -634,15 +611,10 @@ namespace UnitTests.K2Bridge.KustoDAL
         public async Task GetFieldCaps_WithMaxHours_ReturnCorrectQuery()
         {
             const ulong hours = 4;
-            Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
-                    { "ColumnName", name },
-                    { "ColumnType", type },
-                };
 
             var testData = new List<Dictionary<string, object>>() {
-                column("myint", "System.Int32"),
-                column("mydynamic", "System.Object"),
+                Column("myint", "System.Int32"),
+                Column("mydynamic", "System.Object"),
             };
             using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
@@ -670,15 +642,10 @@ namespace UnitTests.K2Bridge.KustoDAL
         {
             const ulong hours = 4;
             const ulong samples = 10;
-            Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
-                    { "ColumnName", name },
-                    { "ColumnType", type },
-                };
 
             var testData = new List<Dictionary<string, object>>() {
-                column("myint", "System.Int32"),
-                column("mydynamic", "System.Object"),
+                Column("myint", "System.Int32"),
+                Column("mydynamic", "System.Object"),
             };
             using IDataReader testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
@@ -704,15 +671,9 @@ namespace UnitTests.K2Bridge.KustoDAL
         [Test]
         public async Task GetFieldCaps_WithValidFunction_ReturnFieldCaps()
         {
-            Func<string, string, Dictionary<string, object>> column = (name, type) =>
-                new Dictionary<string, object> {
-                    { "ColumnName", name },
-                    { "ColumnType", type },
-                };
-
             var testData = new List<Dictionary<string, object>>() {
-                column("myint", "System.Int32"),
-                column("mystring", "System.String"),
+                Column("myint", "System.Int32"),
+                Column("mystring", "System.String"),
             };
             using var testReader = new DataReaderMock(testData);
             mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>()))
@@ -860,7 +821,7 @@ namespace UnitTests.K2Bridge.KustoDAL
                         { "1", "somevalue1" },
                     },
                 });
-            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, StringComparison.OrdinalIgnoreCase)), It.IsAny<RequestContext>()))
+            mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, OrdinalIgnoreCase)), It.IsAny<RequestContext>()))
                 .Returns(Task.FromResult(stubIndexReader));
             var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
             var indexResponse = await kusto.ResolveIndexAsync(indexName);
@@ -878,6 +839,14 @@ namespace UnitTests.K2Bridge.KustoDAL
             var serviceProvider = services.BuildServiceProvider();
 
             return serviceProvider.GetService<IMemoryCache>();
+        }
+
+        private static Dictionary<string, object> Column(string name, string type)
+        {
+            return new Dictionary<string, object> {
+                    { "ColumnName", name },
+                    { "ColumnType", type },
+                };
         }
     }
 }

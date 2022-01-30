@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
@@ -20,16 +20,16 @@ namespace UnitTests.K2Bridge.Models.Response
         public void Create_WithDateTime_ReturnsISOString()
         {
             // Arrange
-            string primaryKey = "timestamp";
-            DataTable table = new DataTable();
+            var primaryKey = "timestamp";
+            var table = new DataTable();
             table.Columns.Add(primaryKey, typeof(DateTime)).DateTimeMode = DataSetDateTime.Utc;
             table.Columns.Add("count_", typeof(int));
 
-            DataRow row = table.NewRow();
+            var row = table.NewRow();
             row[primaryKey] = new DateTime(2017, 1, 2, 13, 4, 5, 60, DateTimeKind.Utc);
             row["count_"] = 234;
 
-            QueryData data = new QueryData("query", "index");
+            var data = new QueryData("query", "index");
 
             // Act
             var logger = Mock.Of<ILogger<dynamic>>();
@@ -47,18 +47,18 @@ namespace UnitTests.K2Bridge.Models.Response
         public void Create_WithDateTimeAndKeys_ReturnsISOString()
         {
             // Arrange
-            string primaryKey = "timestamp";
-            DataTable table = new DataTable();
+            var primaryKey = "timestamp";
+            var table = new DataTable();
             table.Columns.Add(primaryKey, typeof(DateTime)).DateTimeMode = DataSetDateTime.Utc;
             table.Columns.Add("count_", typeof(int));
             table.Columns.Add("1%percentile%50.0%True", typeof(JArray));
 
-            DataRow row = table.NewRow();
+            var row = table.NewRow();
             row[primaryKey] = new DateTime(2017, 1, 2, 13, 4, 5, 60, DateTimeKind.Utc);
             row["count_"] = 234;
             row["1%percentile%50.0%True"] = new JArray(644.54658);
 
-            QueryData data = new QueryData("query", "index");
+            var data = new QueryData("query", "index");
 
             // Act
             var logger = Mock.Of<ILogger<dynamic>>();
