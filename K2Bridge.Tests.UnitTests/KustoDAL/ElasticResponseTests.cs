@@ -351,10 +351,10 @@ public class ElasticResponseTests
     private static IEnumerable<Hit> SetRandomProperties(IEnumerable<Hit> hits)
     {
         return hits.Select(i =>
-{
-i.Id = HitTestId;
-return i;
-});
+        {
+            i.Id = HitTestId;
+            return i;
+        });
     }
 
     /// <summary>
