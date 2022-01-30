@@ -2,11 +2,11 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.RewriteRules
+namespace K2Bridge.Tests.UnitTests.RewriteRules
 {
     using System.IO;
     using System.Text;
-    using global::K2Bridge.RewriteRules;
+    using K2Bridge.RewriteRules;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Rewrite;
     using Moq;

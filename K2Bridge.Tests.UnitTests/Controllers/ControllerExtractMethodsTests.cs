@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Controllers
+namespace K2Bridge.Tests.UnitTests.Controllers
 {
-    using global::K2Bridge.Controllers;
+    using K2Bridge.Controllers;
     using NUnit.Framework;
 
     [TestFixture]

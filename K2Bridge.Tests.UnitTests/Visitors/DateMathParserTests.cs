@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Visitors
+namespace K2Bridge.Tests.UnitTests.Visitors
 {
-    using global::K2Bridge.Utils;
+    using K2Bridge.Utils;
     using NUnit.Framework;
 
     [TestFixture]

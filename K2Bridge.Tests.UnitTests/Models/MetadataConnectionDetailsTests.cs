@@ -2,10 +2,10 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.Models
+namespace K2Bridge.Tests.UnitTests.Models
 {
     using System;
-    using global::K2Bridge.Factories;
+    using K2Bridge.Factories;
     using Microsoft.Extensions.Configuration;
     using Moq;
     using NUnit.Framework;

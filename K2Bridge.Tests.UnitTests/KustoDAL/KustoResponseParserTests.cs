@@ -2,19 +2,19 @@
 // Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-namespace UnitTests.K2Bridge.KustoDAL
+namespace K2Bridge.Tests.UnitTests.KustoDAL
 {
     using System;
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
-    using global::K2Bridge.KustoDAL;
-    using global::K2Bridge.Models;
-    using global::K2Bridge.Models.Request.Aggregations.Bucket;
-    using global::K2Bridge.Models.Response.Aggregations;
-    using global::K2Bridge.Models.Response.Aggregations.Bucket;
-    using global::K2Bridge.Telemetry;
-    using global::K2Bridge.Utils;
+    using K2Bridge.KustoDAL;
+    using K2Bridge.Models;
+    using K2Bridge.Models.Request.Aggregations.Bucket;
+    using K2Bridge.Models.Response.Aggregations;
+    using K2Bridge.Models.Response.Aggregations.Bucket;
+    using K2Bridge.Telemetry;
+    using K2Bridge.Utils;
     using Kusto.Data;
     using Kusto.Data.Data;
     using Microsoft.Extensions.Logging;
