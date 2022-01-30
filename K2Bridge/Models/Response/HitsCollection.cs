@@ -30,10 +30,7 @@ public class HitsCollection
     /// Gets all hits.
     /// </summary>
     [JsonProperty("hits")]
-    public IEnumerable<Hit> Hits
-    {
-        get { return hits; }
-    }
+    public IEnumerable<Hit> Hits => hits;
 
     /// <summary>
     /// Add all hits.
