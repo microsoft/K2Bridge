@@ -25,7 +25,7 @@ public interface IQueryExecutor
     /// <param name="query">String respresenting a query to execute.</param>
     /// <param name="requestContext">The request context.</param>
     /// <returns>Task.<(TimeSpan timeTaken, IDataReader reader)> - timeTaken is the query execution time and reader is the query result.</returns>
-    Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext);
+    Task<(TimeSpan TimeTaken, IDataReader Reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext);
 
     /// <summary>
     /// Execute an asynchronous control command.

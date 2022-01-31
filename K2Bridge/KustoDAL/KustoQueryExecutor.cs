@@ -107,7 +107,7 @@ internal class KustoQueryExecutor : IQueryExecutor
     /// <param name="requestContext">An object that represents properties of the entire request process.</param>
     /// <returns>A data reader with response and time taken.</returns>
     /// <exception cref="QueryException">Throws a QueryException on error.</exception>
-    public async Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteQueryAsync(QueryData queryData, RequestContext requestContext)
+    public async Task<(TimeSpan TimeTaken, IDataReader Reader)> ExecuteQueryAsync(QueryData queryData, RequestContext requestContext)
     {
         try
         {

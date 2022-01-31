@@ -10,3 +10,4 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600:Elements should be documented", Justification = "TODO: complete docs", Scope = "type", Target = "~T:K2Bridge.Startup")]
 [assembly: SuppressMessage("Naming", "CA1711:Identifiers should not have incorrect suffix", Justification = "Too complex to fix now", Scope = "type", Target = "~T:K2Bridge.Models.Response.HitsCollection")]
+[assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1629:Documentation text should end with a period", Justification = "period cannot be there.", Scope = "type", Target = "~T:K2Bridge.Visitors.ElasticSearchDSLVisitor")]

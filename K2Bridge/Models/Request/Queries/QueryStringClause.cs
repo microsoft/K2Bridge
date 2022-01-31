@@ -41,7 +41,7 @@ internal class QueryStringClause : KustoQLBase, ILeafClause, IVisitable
         Wildcard,
 
         /// <summary>
-        /// Matches everything (*:*)
+        /// Matches everything (*:*).
         /// </summary>
         MatchAll,
     }

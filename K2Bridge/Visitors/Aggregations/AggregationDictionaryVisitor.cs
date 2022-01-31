@@ -18,9 +18,9 @@ using K2Bridge.Utils;
 internal partial class ElasticSearchDSLVisitor : IVisitor
 {
     /// <summary>
-    /// List of sub query names
+    /// Gets a list of sub query names
     /// Each time a new sub query is created, it's name is added to the list
-    /// The last name of the stack is returned as aggs table
+    /// The last name of the stack is returned as aggs table.
     /// </summary>
     internal List<string> SubQueriesStack { get; } = new List<string>() { AggregationsSubQueries.SummarizableMetricsQuery };
 

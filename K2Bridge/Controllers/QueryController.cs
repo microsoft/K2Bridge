@@ -174,7 +174,7 @@ public class QueryController : ControllerBase
     /// <param name="func">The function to run.</param>
     /// <param name="indexName">index name where action is running on.</param>
     /// <returns>A tuple of either the result of running the function or an elastic error response if there's an exception.</returns>
-    private async Task<(TResult result, ElasticErrorResponse errorResponse)> TryAsyncFuncReturnsElasticError<TResult>(
+    private async Task<(TResult Result, ElasticErrorResponse ErrorResponse)> TryAsyncFuncReturnsElasticError<TResult>(
         Func<Task<TResult>> func,
         string indexName)
     {
@@ -198,7 +198,7 @@ public class QueryController : ControllerBase
     /// <param name="func">The async function to run.</param>
     /// <param name="indexName">index name where action is running on.</param>
     /// <returns>A tuple of either the result of running the function or an elastic error response if there's an exception.</returns>
-    private (TResult result, ElasticErrorResponse errorResponse) TryFuncReturnsElasticError<TResult>(
+    private (TResult Result, ElasticErrorResponse ErrorResponse) TryFuncReturnsElasticError<TResult>(
         Func<TResult> func,
         string indexName)
     {

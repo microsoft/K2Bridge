@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 public class ResponseElement : ResponseElementBase
 {
     /// <summary>
-    /// Gets or sets aggregations in a response element.
+    /// Gets aggregations in a response element.
     /// </summary>
     [JsonProperty("aggregations")]
     public AggregateDictionary Aggregations { get; } = new AggregateDictionary();
