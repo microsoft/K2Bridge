@@ -24,7 +24,7 @@ public static class CslQueryProviderExtensions
     /// <param name="clientRequestProperties">An object that represents properties that will be sent to Kusto.</param>
     /// <param name="metrics">Prometheus query duration metric.</param>
     /// <returns>Tuple of timeTaken and the reader result.</returns>
-    public static async Task<(TimeSpan timeTaken, IDataReader reader)> ExecuteMonitoredQueryAsync(
+    public static async Task<(TimeSpan TimeTaken, IDataReader Reader)> ExecuteMonitoredQueryAsync(
         this ICslQueryProvider client,
         string query,
         ClientRequestProperties clientRequestProperties,

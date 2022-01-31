@@ -10,12 +10,12 @@ namespace K2Bridge.Models.Response.Metadata;
 internal enum FieldCapabilityElementDataReaderMapping
 {
     /// <summary>
-    /// ColumnName
+    /// ColumnName.
     /// </summary>
     ColumnName = 0,
 
     /// <summary>
-    /// ColumnType
+    /// ColumnType.
     /// </summary>
     ColumnType = 1,
 }

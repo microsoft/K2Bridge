@@ -34,13 +34,7 @@ public class ErrorElement
     /// Gets the Root Cause Enumerable.
     /// </summary>
     [JsonProperty("root_cause")]
-    public IEnumerable<RootCause> RootCauses
-    {
-        get
-        {
-            return rootCauses;
-        }
-    }
+    public IEnumerable<RootCause> RootCauses => rootCauses;
 
     /// <summary>
     /// Gets the type of error.

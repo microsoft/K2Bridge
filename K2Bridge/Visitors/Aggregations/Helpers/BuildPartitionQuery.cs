@@ -22,7 +22,7 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
     /// </summary>
     internal List<string> VisitedMetrics { get; } = new List<string>();
 
-    public string BuildPartitionQuery(PartitionQueryDefinition definition)
+    private string BuildPartitionQuery(PartitionQueryDefinition definition)
     {
         var query = new StringBuilder();
 
@@ -74,13 +74,16 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
     /// Gets the list of all metrics keys already visited
     /// ['2'], ['3'], ['count_'].
     /// </summary>
-    public string GetVisitedMetricsEncodedKeys() => string.Join(',', VisitedMetrics);
+    private string GetVisitedMetricsEncodedKeys()
+    {
+        return string.Join(',', VisitedMetrics);
+    }
 
     /// <summary>
     /// Gets the list of all metrics keys already visited with take_any operator
-    /// take_any(['2']), take_any(['3']), take_any(['count_'])
+    /// take_any(['2']), take_any(['3']), take_any(['count_']).
     /// </summary>
-    public string GetVisitedMetricsEncodedKeysTakeAny()
+    private string GetVisitedMetricsEncodedKeysTakeAny()
     {
         var encodedKeys = VisitedMetrics.Select(key => $"{KustoQLOperators.TakeAny}({key})");
         return string.Join(',', encodedKeys);

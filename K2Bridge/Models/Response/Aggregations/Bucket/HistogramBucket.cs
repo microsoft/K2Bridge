@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 public class HistogramBucket : KeyedBucket
 {
     /// <summary>
-    /// Gets or sets the Keyed value.
+    /// Gets or sets a value indicating whether this is a Keyed bucket.
     /// </summary>
     public bool Keyed { get; set; }
 }

@@ -45,7 +45,7 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
         aggregationContainer.KustoQL = aggregationContainer.PrimaryAggregation.KustoQL;
     }
 
-    public string BuildSummarizableMetricsQuery(IEnumerable<Aggregation> primaryAggregations)
+    private string BuildSummarizableMetricsQuery(IEnumerable<Aggregation> primaryAggregations)
     {
         var query = new StringBuilder();
         var aggregations = primaryAggregations.OfType<SummarizableMetricAggregation>();
@@ -56,11 +56,11 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
         foreach (var aggregation in aggregations)
         {
             aggregation.Accept(this);
-            summarizableMetrics.Add($"{aggregation.KustoQL}");
+            summarizableMetrics.Add(aggregation.KustoQL);
         }
 
         var summarizableMetricsExpression = string.Join(',', summarizableMetrics);
-        query.Append($"{summarizableMetricsExpression}");
+        query.Append(summarizableMetricsExpression);
 
         if (!string.IsNullOrEmpty(summarizableMetricsExpression))
         {
@@ -81,7 +81,7 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
             aggregation.PartitionKey = partitionKey;
 
             aggregation.Accept(this);
-            query.Append($"{aggregation.KustoQL}");
+            query.Append(aggregation.KustoQL);
         }
 
         return query.ToString();

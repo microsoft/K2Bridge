@@ -35,7 +35,7 @@ public interface IConnectionDetails
     string AadTenantId { get; }
 
     /// <summary>
-    /// Gets a boolean indicating if we need to use a Managed Identity.
+    /// Gets a value indicating whether we need to use a Managed Identity.
     /// </summary>
     bool UseManagedIdentity { get; }
 }

@@ -22,7 +22,7 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
     /// </summary>
     /// <param name="metadata">A metadata dictionary.</param>
     /// <returns>A string containing the Kusto QL statement.</returns>
-    public static string BuildMetadataQuery(Dictionary<string, List<string>> metadata)
+    private static string BuildMetadataQuery(Dictionary<string, List<string>> metadata)
     {
         var query = new StringBuilder();
 

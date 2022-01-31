@@ -10,22 +10,22 @@ namespace K2Bridge.Visitors;
 public enum ClauseFieldType
 {
     /// <summary>
-    /// Numeric value type
+    /// Numeric value type.
     /// </summary>
     Numeric,
 
     /// <summary>
-    /// String value type
+    /// String value type.
     /// </summary>
     Text,
 
     /// <summary>
-    /// Date type
+    /// Date type.
     /// </summary>
     Date,
 
     /// <summary>
-    /// Unknown type
+    /// Unknown type.
     /// </summary>
     Unknown,
 }

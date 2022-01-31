@@ -27,10 +27,7 @@ public class FieldCapabilityResponse
     /// </summary>
     /// <returns>List of indices.</returns>
     [JsonProperty("indices")]
-    public IEnumerable<string> Indices
-    {
-        get { return indices; }
-    }
+    public IEnumerable<string> Indices => indices;
 
     /// <summary>
     /// Add field capability element to response.

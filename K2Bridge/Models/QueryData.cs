@@ -65,12 +65,12 @@ public struct QueryData
     public Dictionary<string, string> HighlightText { get; private set; }
 
     /// <summary>
-    /// Gets or sets the tag that opens highlighted text.
+    /// Gets the tag that opens highlighted text.
     /// </summary>
     public string HighlightPreTag { get; internal set; }
 
     /// <summary>
-    /// Gets or sets the tag that closes highlighted text.
+    /// Gets the tag that closes highlighted text.
     /// </summary>
     public string HighlightPostTag { get; internal set; }
 
