@@ -319,7 +319,7 @@ internal static class AggregateFactory
             return extendedStatsAggregate;
         }
 
-        var sigma = Convert.ToInt32(columnMetadata[2]);
+        var sigma = Convert.ToDouble(columnMetadata[2]);
 
         var jObject = (JObject)row[columnName];
 

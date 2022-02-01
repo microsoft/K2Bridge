@@ -53,7 +53,9 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
                 extendedStatsAggregation.Sigma.ToString(),
             };
 
-        var keyWithMetadata = EncodeKustoField(string.Join(AggregationsConstants.MetadataSeparator, metadata));
+        // We don't use EncodeKustoField on this key because it may a decimal value, that contains a '.'
+        // Example: ['A%extended_stats%2.5']
+        var keyWithMetadata = $"['{string.Join(AggregationsConstants.MetadataSeparator, metadata)}']";
 
         var count = $"{KustoQLOperators.Count}()";
         var min = $"{KustoQLOperators.Min}({EncodeKustoField(extendedStatsAggregation)})";
