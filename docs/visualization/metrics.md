@@ -79,6 +79,63 @@ A multi-value metrics aggregation that computes stats over numeric values extrac
 
 [Extended stats aggregation (Elasticsearch)](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-metrics-extendedstats-aggregation.html)
 
+This aggregation is mapped to :
+- [variancep()](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/variancep-aggfunction)
+- [variance()](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/variance-aggfunction)
+- [stdevp()](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/stdevp-aggfunction)
+- [stdev()](https://docs.microsoft.com/en-us/azure/data-explorer/kusto/query/stdev-aggfunction)
+
+The Standard Deviation Bounds values are calculated internally by K2Bridge:
+
+```
+Lower Deviation (Population or Sampling) = Average Value - (Standard Deviation (Population or Sampling) * Sigma)
+Upper Deviation (Population or Sampling) = Average Value + (Standard Deviation (Population or Sampling) * Sigma)
+```
+
+The `Sigma` value controls controls how many standard deviations +/- from the mean should be displayed (see explanation on how to use it, below).
+
+> As reference, you can check the Elasticsearch implementation used to calculate bounds here : [getStdDeviationBound()](https://github.com/elastic/elasticsearch/blob/0699c9351f1439e246d408fd6538deafde4087b6/server/src/main/java/org/elasticsearch/search/aggregations/metrics/InternalExtendedStats.java#L187-L194)
+
+Example of Kusto Query Language built by K2Bridge:
+
+```
+let _data = kibana_data_flights
+| where (['timestamp'] >= todatetime("2007-01-27T15:18:02.1310000Z") and ['timestamp'] <= todatetime("2022-01-27T15:18:02.1310000Z"));
+
+let _extdata = _data
+| extend ['f4674a57-bb73-4916-8a3f-c0bb65ee4c0d'] = true;
+
+let _summarizablemetrics = _extdata
+| summarize ['1%extended_stats%2']=pack('count', count(),'min', min(['AvgTicketPrice']),'max', max(['AvgTicketPrice']),'avg', avg(['AvgTicketPrice']),'sum', sum(['AvgTicketPrice']),'sum_of_squares', sum(pow(['AvgTicketPrice'], 2)),'variance_population', variancep(['AvgTicketPrice']),'variance_sampling', variance(['AvgTicketPrice']),'std_deviation_population', stdevp(['AvgTicketPrice']),'std_deviation_sampling', stdev(['AvgTicketPrice'])),count() by ['f4674a57-bb73-4916-8a3f-c0bb65ee4c0d'];
+
+(_summarizablemetrics
+| project-away ['f4674a57-bb73-4916-8a3f-c0bb65ee4c0d']
+| as aggs);
+```
+## Sigma
+
+The `Sigma` value is not used from within the ADX query and is calculated later on by K2Bridge.
+`Sigma` can be any non-negative double, meaning you can request non-integer values such as `3`.
+A value of `0` is valid, but will simply return the average for both upper and lower bounds.
+
+``` json
+{
+  "size": 0,
+  "aggs": {
+    "grades_stats": {
+      "extended_stats": {
+        "field": "grade",
+        "sigma": 3          
+      }
+    }
+  }
+}
+```
+You can also add the sigma value, directly in the Advanced JSON input field. The value will be merged with the elasticsearch aggregation definition:
+
+![sigma](../images/sigma.png)
+
+
 # Max aggregation
 
 A single-value metrics aggregation that keeps track and returns the maximum value among the numeric values extracted from the aggregated documents.
