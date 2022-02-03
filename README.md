@@ -7,9 +7,10 @@ K2Bridge is a solution that enables Kibana to use [Azure Data Explorer](https://
 | :zap: Breaking change notice ! |
 |--------------------------------|
 
-This is a new version that add support for visualization and for Kibana 7. To avoid a breaking change, we are changing the way we tag our images. 
+This is a new version that adds support for visualization and for Kibana 7. To avoid a breaking change, we are changing the way we tag our images. 
 The new images tags are: 6.8_latest and 7.16_latest, support Kibana 6.8 and Kibana 7.10 respectively.
-_Action item:_ Use the provided helm chart to update the deployment with the new image tags. |
+The image of '7.16_latest' supports Kibana OSS 7.10.2, and its internal Elasticsearch instance is 7.16.2.
+_Action item:_ Use the provided helm chart to update the deployment with the new image tags.
 
 ---
 
