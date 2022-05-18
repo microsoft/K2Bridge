@@ -27,7 +27,7 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
         {
             EnsureClause.StringIsNotNullOrEmpty(sortClause.Order, nameof(sortClause.Order));
 
-            sortClause.KustoQL = $"{EncodeKustoField(sortClause.FieldName)} {sortClause.Order}";
+            sortClause.KustoQL = $"{EncodeKustoField(sortClause.FieldName, true)} {sortClause.Order}";
         }
     }
 }
