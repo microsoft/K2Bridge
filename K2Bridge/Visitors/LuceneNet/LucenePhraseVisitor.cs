@@ -31,7 +31,7 @@ internal partial class LuceneVisitor : ILuceneVisitor
         phraseQueryWrapper.ESQuery = clause;
     }
 
-    private string TermsToString(Term[] terms)
+    private static string TermsToString(Term[] terms)
     {
         var sb = new StringBuilder();
         foreach (var term in terms)
