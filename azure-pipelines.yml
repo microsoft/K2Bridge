@@ -215,8 +215,7 @@ stages:
 
     - bash: |
         set -eu
-        echo "$password" | wc -c
-        az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
+        az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "($password | xargs)" --tenant $(TENANT_ID)
         az aks get-versions --location westeurope
         oid=$(az ad sp show --id  $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
         echo "##vso[task.setvariable variable=AKS_SP_OBJECT_ID]$oid"
