@@ -172,7 +172,7 @@ stages:
           # Push Docker image
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
-          
+
   - job: push_helm_charts
     displayName: Prepare and push helm charts
     steps:
@@ -215,6 +215,7 @@ stages:
 
     - bash: |
         set -eu
+        echo "$password" | wc -c
         az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
         az aks get-versions --location westeurope
         oid=$(az ad sp show --id  $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
