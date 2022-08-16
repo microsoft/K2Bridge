@@ -59,7 +59,15 @@ internal class ElasticQueryTranslator : ITranslator
             // Todo: Consolidate json (de)serializations framework
             var headerDictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(header);
 
-            Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
+            // Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
+            elasticSearchDsl.Query ??= new Query
+            {
+                Bool = new BoolQuery
+                {
+                    Must = new List<IQuery>(),
+                    Filter = new List<IQuery>(),
+                },
+            };
 
             elasticSearchDsl.IndexName = headerDictionary["index"];
             elasticSearchDsl.HighlightText = new Dictionary<string, string>();

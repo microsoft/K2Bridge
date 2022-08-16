@@ -52,6 +52,7 @@ internal class RangeClauseConverter : ReadOnlyJsonConverter
             JTokenType.Date => first.Value<DateTime>().ToString("o"),
             JTokenType.Float => first.Value<double>().ToString(CultureInfo.InvariantCulture),
             JTokenType.Integer => first.Value<long>().ToString(CultureInfo.InvariantCulture),
+            JTokenType.String => first.Value<string>(),
             _ => first.Value<string>(value),
         };
     }

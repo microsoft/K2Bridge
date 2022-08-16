@@ -7,6 +7,8 @@ namespace K2Bridge.Models.Request.Queries;
 using System.Collections.Generic;
 using K2Bridge.Models.Request;
 using K2Bridge.Visitors;
+using Newtonsoft.Json;
+using Utils;
 
 /// <summary>
 /// A query that matches documents by boolean combinations of other queries.
@@ -16,27 +18,32 @@ internal class BoolQuery : KustoQLBase, IVisitable, IQuery
     /// <summary>
     /// Gets or sets Must value in bool query.
     /// </summary>
+    [JsonConverter(typeof(SingleOrArrayConverter<IQuery>))]
     public IEnumerable<IQuery> Must { get; set; }
 
     /// <summary>
     /// Gets or sets MustNot value in bool query.
     /// </summary>
+    [JsonConverter(typeof(SingleOrArrayConverter<IQuery>))]
     public IEnumerable<IQuery> MustNot { get; set; }
 
     /// <summary>
     /// Gets or sets Should value in bool query.
     /// </summary>
+    [JsonConverter(typeof(SingleOrArrayConverter<IQuery>))]
     public IEnumerable<IQuery> Should { get; set; }
 
     /// <summary>
     /// Gets or sets ShouldNot value in bool query.
     /// </summary>
+    [JsonConverter(typeof(SingleOrArrayConverter<IQuery>))]
     public IEnumerable<IQuery> ShouldNot { get; set; }
 
     /// <summary>
     /// Gets or sets the expressions for filtering documents.
     /// This applies before other search expressions in the query class (like Must).
     /// </summary>
+    [JsonConverter(typeof(SingleOrArrayConverter<IQuery>))]
     public IEnumerable<IQuery> Filter { get; set; }
 
     /// <inheritdoc/>

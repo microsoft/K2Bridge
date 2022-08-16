@@ -55,4 +55,7 @@ public class FieldCapabilityController : ControllerBase
             StatusCode = (int)System.Net.HttpStatusCode.OK,
         };
     }
+
+    [HttpGet("/FieldCapability/Process/{indexName}")]
+    public Task<IActionResult> Direct(string indexName) => Process(indexName);
 }

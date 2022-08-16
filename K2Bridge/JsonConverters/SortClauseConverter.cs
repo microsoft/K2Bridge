@@ -28,7 +28,7 @@ internal class SortClauseConverter : ReadOnlyJsonConverter
         var obj = new SortClause
         {
             FieldName = first.Name,
-            Order = (string)first.First["order"],
+            Order = (first.First.Type == JTokenType.String) ? first.Value<string>() : (string)first.First["order"],
         };
 
         return obj;

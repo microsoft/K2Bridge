@@ -21,8 +21,16 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
         EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Metric, nameof(TermsAggregation.Metric));
         EnsureClause.StringIsNotNullOrEmpty(termsAggregation.Field, nameof(TermsAggregation.Field));
 
-        // Extend expression: ['2']=['Carrier']
-        var extendExpression = $"{EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}";
+        var extendExpression = string.Empty;
+        if (termsAggregation.Field != "_index")
+        {
+            // Extend expression: ['2']=['Carrier']
+            extendExpression = $"{EncodeKustoField(termsAggregation.Key)} = {EncodeKustoField(termsAggregation.Field, true)}";
+        }
+        else
+        {
+            extendExpression = $"{EncodeKustoField(termsAggregation.Key)} = '1'";
+        }
 
         // Bucket expression: count() by ['2']=['Carrier'] | order by count_ desc | limit 5
         var bucketExpression = new StringBuilder();

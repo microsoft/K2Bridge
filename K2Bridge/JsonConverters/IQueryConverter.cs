@@ -47,7 +47,7 @@ internal class IQueryConverter : ReadOnlyJsonConverter
 
     private static IEnumerable<IQuery> TokenToIQueryClauseList(JToken token, JsonSerializer serializer)
     {
-        return token != null ? token.ToObject<List<IQuery>>(serializer) : new List<IQuery>();
+        return token != null ? (token.Type == JTokenType.Array ? token.ToObject<List<IQuery>>(serializer) : new[] { token.ToObject<IQuery>(serializer) }) : new List<IQuery>();
     }
 
     private static BoolQuery DeserializeBoolQuery(JToken token, JsonSerializer serializer)

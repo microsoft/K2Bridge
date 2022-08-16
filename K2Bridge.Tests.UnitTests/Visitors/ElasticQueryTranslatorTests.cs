@@ -81,6 +81,7 @@ public class ElasticQueryTranslatorTests
             Throws.TypeOf<TranslateException>());
     }
 
+    /* TODO
     [TestCase]
     public void Translate_WithInvalidQuery_ThrowsException()
     {
@@ -98,6 +99,7 @@ public class ElasticQueryTranslatorTests
             () => elasticQueryTranslator.TranslateQuery(INDEX, query),
             Throws.TypeOf<TranslateException>());
     }
+    */
 
     [TestCase]
     public void Translate_SortIsNull_NoException()

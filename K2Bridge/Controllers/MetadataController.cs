@@ -53,6 +53,7 @@ public class MetadataController : ControllerBase
     {
         try
         {
+            logger.LogDebug("Received request to {Method} {RequestPath} {QueryString}", HttpContext.Request.Method, HttpContext.Request.Path, HttpContext.Request.QueryString);
             return await PassthroughInternal();
         }
         catch (Exception exception)

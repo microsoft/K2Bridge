@@ -62,8 +62,7 @@ public class QueryController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(ElasticResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(HttpResponseMessageResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> MultiSearchAsync(
-        [FromServices] RequestContext requestContext)
+    public async Task<IActionResult> MultiSearchAsync([FromServices] RequestContext requestContext)
     {
         try
         {
@@ -96,6 +95,11 @@ public class QueryController : ControllerBase
         [FromServices] RequestContext requestContext)
     {
         Ensure.IsNotNullOrEmpty(indexName, nameof(indexName), null, logger);
+        if (!indexName.Contains(':', StringComparison.Ordinal))
+        {
+            return RedirectToAction("Passthrough", "MetaData");
+        }
+
         var header = "{\"index\":\"" + indexName + "\"}";
 
         return await SearchInternalAsync(header, await ExtractBodyAsync(), requestContext, true);
@@ -185,8 +189,11 @@ public class QueryController : ControllerBase
         catch (K2Exception exception)
         {
             logger.LogError(exception.Message, exception.InnerException);
-            return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
+            return (default(TResult),
+                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(
+                    exception.InnerException?.GetType().Name,
+                    exception.InnerException?.Message,
+                    indexName));
         }
     }
 
@@ -209,8 +216,11 @@ public class QueryController : ControllerBase
         catch (K2Exception exception)
         {
             logger.LogError(exception.Message, exception.InnerException);
-            return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
+            return (default(TResult),
+                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(
+                    exception.InnerException?.GetType().Name,
+                    exception.InnerException?.Message,
+                    indexName));
         }
     }
 

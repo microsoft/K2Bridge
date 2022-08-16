@@ -9,6 +9,7 @@ using K2Bridge.Models.Request.Aggregations;
 using K2Bridge.Models.Request.Queries;
 using K2Bridge.Visitors;
 using Newtonsoft.Json;
+using Utils;
 
 /// <summary>
 /// ElasticSearchDSL (Elasticsearch Domain Specific Language) represents
@@ -33,6 +34,7 @@ internal class ElasticSearchDSL : KustoQLBase, IVisitable
     /// Gets or sets the query sorting value.
     /// </summary>
     [JsonProperty("sort")]
+    [JsonConverter(typeof(SingleOrArrayConverter<SortClause>))]
     public List<SortClause> Sort { get; set; }
 
     /// <summary>
