@@ -215,13 +215,13 @@ stages:
 
     - bash: |
         set -eu
-        az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "($password | xargs)" --tenant $(TENANT_ID)
+        az login --service-principal --username $(AKS_SP_CLIENT_ID) --password $PASS --tenant $(TENANT_ID)
         az aks get-versions --location westeurope
         oid=$(az ad sp show --id  $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
         echo "##vso[task.setvariable variable=AKS_SP_OBJECT_ID]$oid"
       displayName: Get AKS SP object ID
       env:
-        password: $(AKS_SP_CLIENT_SECRET)
+        PASS: $(AKS_SP_CLIENT_SECRET)
 
     - template: infrastructure/terraform-tasks-template.yml
       parameters:
