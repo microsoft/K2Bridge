@@ -71,7 +71,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
-
   service_principal {
     client_id     = var.aks_sp_client_id
     client_secret = var.aks_sp_client_secret
