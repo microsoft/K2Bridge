@@ -214,7 +214,7 @@ stages:
     steps:
 
     - bash: |
-        set -eu
+        set -eux
         az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
         az aks get-versions --location westeurope
         echo "1"
