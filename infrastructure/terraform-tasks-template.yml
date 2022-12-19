@@ -62,7 +62,7 @@ steps:
   displayName: Copy terraform backend config to terraform directory
   workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV3@3
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
   displayName: Terraform init
   inputs:
     workingDirectory: '$(System.DefaultWorkingDirectory)/infrastructure/terraform'
