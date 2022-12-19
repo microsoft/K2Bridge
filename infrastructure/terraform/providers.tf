@@ -9,12 +9,14 @@ terraform {
 provider "azurerm" {
   # It is recommended to pin to a given version of the Provider
   version = "=3.36.0"
+  features { }
 }
 
 # Configure other Providers
 
 provider "random" {
   version = "~> 2.2"
+  features { }
 }
 
 # Data
