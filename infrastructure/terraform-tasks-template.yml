@@ -2,7 +2,7 @@
 
 parameters:
   environment: cd
-  TerraformVersion: 0.12.18
+  TerraformVersion: 1.3.6
   TerraformArguments: ''
   TerraformBackendServiceConnection: $(TERRAFORM_SERVICE_CONNECTION)
   TerraformEnvironmentServiceConnection: $(TERRAFORM_SERVICE_CONNECTION)
@@ -24,6 +24,7 @@ steps:
     inlineScript: |
       set -eu  # fail on error
       export AZURE_STORAGE_ACCOUNT='${{ parameters.TerraformBackendStorageAccount }}'
+      export TERRAFORM_BREAK_LEASE=1
       container='${{ parameters.TerraformBackendStorageContainer }}'
       if ! az storage container exists -n "$container" -o none; then
         az configure --defaults group='${{ parameters.TerraformBackendResourceGroup }}' location='${{ parameters.TerraformBackendLocation }}'
