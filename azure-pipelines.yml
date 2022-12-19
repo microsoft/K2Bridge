@@ -215,7 +215,7 @@ stages:
 
     - task: AzureCLI@1
       inputs:
-        azureSubscription: $(ACR_PUSH_SERVICE_CONNECTION)
+        azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
         scriptLocation: inlineScript
         inlineScript: |
           set -eux
