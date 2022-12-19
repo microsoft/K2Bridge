@@ -2,7 +2,7 @@
 
 parameters:
   environment: cd
-  TerraformVersion: 0.12.18
+  TerraformVersion: 0.12.31
   TerraformArguments: ''
   TerraformBackendServiceConnection: $(TERRAFORM_SERVICE_CONNECTION)
   TerraformEnvironmentServiceConnection: $(TERRAFORM_SERVICE_CONNECTION)
