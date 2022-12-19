@@ -172,7 +172,7 @@ stages:
           # Push Docker image
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
-          
+
   - job: push_helm_charts
     displayName: Prepare and push helm charts
     steps:
@@ -218,6 +218,7 @@ stages:
         az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
         az aks get-versions --location westeurope
         oid=$(az ad sp show --id  $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
+        echo $oid
         echo "##vso[task.setvariable variable=AKS_SP_OBJECT_ID]$oid"
       displayName: Get AKS SP object ID
       env:
