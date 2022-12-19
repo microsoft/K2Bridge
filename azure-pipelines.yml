@@ -221,11 +221,11 @@ stages:
           set -eux
           az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
           az aks get-versions --location westeurope
-          echo "1"
+          echo "1 - " $(AKS_SP_CLIENT_ID)
           echo $(az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId -o tsv 2>&1)
-          echo "2"
+          echo "2 - " $(az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId 2>&1)
           oid=$(az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
-          echo "3"
+          echo "3 - " $(az ad sp show --id 87c08231-4e69-495c-bd3f-02999f44281e --query objectId -o tsv 2>&1)
           echo oid=$oid
           echo "4"
           echo "##vso[task.setvariable variable=AKS_SP_OBJECT_ID]$oid"
