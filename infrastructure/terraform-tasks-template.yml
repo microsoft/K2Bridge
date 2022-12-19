@@ -85,15 +85,14 @@ steps:
     inlineScript: |
       set -eu
       subscriptionId=$(az account show --query id -o tsv)
-      echo "##vso[task.setvariable variable=CLIENT_ID]$servicePrincipalId"
-      echo "##vso[task.setvariable variable=CLIENT_SECRET;issecret=true]$servicePrincipalKey"
-      echo "##vso[task.setvariable variable=SUBSCRIPTION_ID]$subscriptionId"
-      echo "##vso[task.setvariable variable=TENANT_ID]$tenantId"
+      echo "##vso[task.setvariable variable=ARM_CLIENT_ID]$servicePrincipalId"
+      echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;issecret=true]$servicePrincipalKey"
+      echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID]$subscriptionId"
+      echo "##vso[task.setvariable variable=ARM_TENANT_ID]$tenantId"
     addSpnToEnvironment: true
 
 - bash: |
     set -eu
-    export CLIENT_SECRET=$(CLIENT_SECRET)
     export ARM_CLIENT_SECRET=$(CLIENT_SECRET)
     terraform plan -input=false -out=tfplan -var environment=${{ parameters.environment }} ${{ parameters.TerraformArguments }}
     terraform apply -auto-approve -input=false tfplan
