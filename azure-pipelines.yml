@@ -218,7 +218,7 @@ stages:
         az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
         az aks get-versions --location westeurope
         echo "1"
-        echo (az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId -o tsv 2>&1)
+        echo $(az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId -o tsv 2>&1)
         echo "2"
         oid=$(az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
         echo "3"
