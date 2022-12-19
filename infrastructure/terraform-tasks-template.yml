@@ -93,7 +93,7 @@ steps:
 
 - bash: |
     set -eu
-    export ARM_CLIENT_SECRET=$(CLIENT_SECRET)
+    export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
     terraform plan -input=false -out=tfplan -var environment=${{ parameters.environment }} ${{ parameters.TerraformArguments }}
     terraform apply -auto-approve -input=false tfplan
   displayName: Terraform apply
