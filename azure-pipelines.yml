@@ -172,7 +172,7 @@ stages:
           # Push Docker image
           docker push "$ACR_NAME.azurecr.io/k2bridge:$SEMANTIC_VERSION"
           docker push "$ACR_NAME.azurecr.io/k2bridge-test:$SEMANTIC_VERSION"
-          
+
   - job: push_helm_charts
     displayName: Prepare and push helm charts
     steps:
@@ -213,15 +213,25 @@ stages:
   - job: Terraform
     steps:
 
-    - bash: |
-        set -eu
-        az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
-        az aks get-versions --location westeurope
-        oid=$(az ad sp show --id  $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
-        echo "##vso[task.setvariable variable=AKS_SP_OBJECT_ID]$oid"
-      displayName: Get AKS SP object ID
-      env:
-        password: $(AKS_SP_CLIENT_SECRET)
+#    - task: AzureCLI@1
+#      inputs:
+#        azureSubscription: $(ACR_PULL_SERVICE_CONNECTION)
+#        scriptLocation: inlineScript
+#        inlineScript: |
+#          set -eux
+#          az login --service-principal --username $(AKS_SP_CLIENT_ID) --password "$password" --tenant $(TENANT_ID)
+#          az aks get-versions --location westeurope
+#          echo "1 - " $(AKS_SP_CLIENT_ID)
+#          echo $(az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId -o tsv 2>&1)
+#          echo "2 - " $(az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId 2>&1)
+#          oid=$(az ad sp show --id $(AKS_SP_CLIENT_ID) --query objectId -o tsv)
+#          echo "3 - " $(az ad sp show --id 87c08231-4e69-495c-bd3f-02999f44281e 2>&1)
+#          echo oid=$oid
+#          echo "4"
+#          echo "##vso[task.setvariable variable=AKS_SP_OBJECT_ID]$oid"
+#      displayName: Get AKS SP object ID
+#      env:
+#        password: $(AKS_SP_CLIENT_SECRET)
 
     - template: infrastructure/terraform-tasks-template.yml
       parameters:
