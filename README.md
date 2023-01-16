@@ -20,7 +20,7 @@ _Action item:_ Use the provided helm chart to update the deployment with the new
 ## Description
 
 The K2Bridge solution is a proxy capable of communicating with the Kibana application and translate its queries to [KQL](https://docs.microsoft.com/en-us/azure/kusto/query/), the query language of the Azure Data Explorer service.
-The solution currently targets the "Discover" tab in Kibana to enable users to quickly and interactively explore their data. It supports the filters and well as the search box in the screen with both simple term search and Lucene expressions.
+The solution currently targets the "Discover", "Visualzie" and "Dashboard" tabs in Kibana to enable users to quickly and interactively explore their data. It supports the filters and well as the search box in the screen with both simple term search and Lucene expressions.
 
 ## How does it work
 
@@ -35,8 +35,6 @@ The bridge accept each request and redirects business (data) requests to ADX and
 
 1. Each document in Elasticsearch has a unique id usually noted in the "_id" field. This isn't inherently available for data stored in ADX and because Kibana expects it,
 K2Bridge generates a *random* number for this value. Please note that this is *not a reproducible* value and you shouldn't search for documents/items that have specific values.
-
-1. We currently don't have a plan to support Visualize or Dashboards in Kibana but will be interested in your feedback regarding those missing features. Feel free to vote and/or comment on this [issue](../../issues/3).
 
 1. We have used and tested the solution using Kibana OSS 7.10.2.
 
