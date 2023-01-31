@@ -79,7 +79,7 @@ internal class KustoQueryExecutor : IQueryExecutor
         }
 
         // Sending both name and version this way for better visibility in Kusto audit logs.
-        conn.ApplicationNameForTracing = $"{KustoApplicationNameForTracing}:{AssemblyVersion} ({SupportedElasticVersionForTracing})";
+        conn.SetConnectorDetails("K2Bridge", AssemblyVersion, "Elastic", SupportedElasticVersionForTracing);
 
         return conn;
     }
