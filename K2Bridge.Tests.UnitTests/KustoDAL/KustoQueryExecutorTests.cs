@@ -74,7 +74,8 @@ public class KustoQueryExecutorTests
                 client.ExecuteQueryAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
-                It.IsAny<ClientRequestProperties>()))
+                It.IsAny<ClientRequestProperties>(),
+                default))
             .Returns(Task.FromResult(expectedDataReaderMock.Object));
 
         var kustoQueryExecutor = new KustoQueryExecutor(queryClientMock.Object, adminClientMock.Object, loggerMock, metricsHistograms);

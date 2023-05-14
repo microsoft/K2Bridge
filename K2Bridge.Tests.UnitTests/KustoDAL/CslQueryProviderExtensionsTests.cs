@@ -28,7 +28,7 @@ public class CslQueryProviderExtensionsTests
     public async Task ExecuteMonitoredQueryAsync_WithValidInput_ReturnsReaderAndTime()
     {
         var metrics = Metrics.Create(GetMockTelemetryClient());
-        stubClient.Setup(client => client.ExecuteQueryAsync(string.Empty, It.IsAny<string>(), It.IsAny<ClientRequestProperties>()))
+        stubClient.Setup(client => client.ExecuteQueryAsync(string.Empty, It.IsAny<string>(), It.IsAny<ClientRequestProperties>(), default))
             .Returns(Task.FromResult(stubReader));
         var (timeTaken, reader) = await stubClient.Object.ExecuteMonitoredQueryAsync("wibble", clientRequestProperties, metrics);
 
