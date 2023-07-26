@@ -44,7 +44,7 @@ internal class ElasticQueryTranslator : ITranslator
     /// <param name="query">A query.</param>
     /// <returns>A <see cref="QueryData"/>.</returns>
     /// <exception cref="TranslateException">Throws a TranslateException on error.</exception>
-    public QueryData TranslateQuery(string header, string query)
+    public QueryData? TranslateQuery(string header, string query)
     {
         Ensure.IsNotNullOrEmpty(header, nameof(header));
 
@@ -59,14 +59,16 @@ internal class ElasticQueryTranslator : ITranslator
             // Todo: Consolidate json (de)serializations framework
             var headerDictionary = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(header);
 
-            Ensure.IsNotNull(elasticSearchDsl.Query, nameof(elasticSearchDsl.Query));
-
             elasticSearchDsl.IndexName = headerDictionary["index"];
             elasticSearchDsl.HighlightText = new Dictionary<string, string>();
 
             List<string> sortFields = null;
             List<string> docValueFields = null;
 
+            if (elasticSearchDsl.Query == null)
+            {
+                return null;
+            }
             if (elasticSearchDsl.Query.Bool != null)
             {
                 Ensure.IsNotNull(elasticSearchDsl.Query.Bool.Must, nameof(elasticSearchDsl.Query.Bool.Must));

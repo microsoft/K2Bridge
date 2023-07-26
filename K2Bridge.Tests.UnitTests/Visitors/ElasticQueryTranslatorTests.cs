@@ -50,7 +50,8 @@ public class ElasticQueryTranslatorTests
         // hard coded mock
         var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
 
-        return queryData.QueryCommandText;
+        Assert.NotNull(queryData);
+        return queryData.Value.QueryCommandText;
     }
 
     [TestCase(ExpectedResult = "some kql from mock visitor")]
@@ -59,10 +60,12 @@ public class ElasticQueryTranslatorTests
         var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
 
         var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
-        Assert.AreEqual(queryData.HighlightText["*"], MustField);
-        Assert.AreEqual(queryData.HighlightText[FilterField], "5");
+        Assert.NotNull(queryData);
 
-        return queryData.QueryCommandText;
+        Assert.AreEqual(queryData.Value.HighlightText["*"], MustField);
+        Assert.AreEqual(queryData.Value.HighlightText[FilterField], "5");
+
+        return queryData.Value.QueryCommandText;
     }
 
     [TestCase]

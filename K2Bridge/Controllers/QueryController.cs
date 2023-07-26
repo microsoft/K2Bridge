@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Ensure = Ensure;
 
 /// <summary>
 /// Handles requests for business data from Kusto.
@@ -42,8 +43,7 @@ public class QueryController : ControllerBase
     /// <param name="responseParser">IResponseParser instance used to parse kusto response.</param>
     public QueryController(
         IQueryExecutor queryExecutor,
-        ITranslator translator,
-        ILogger<QueryController> logger,
+        ITranslator translator, ILogger<QueryController> logger,
         IResponseParser responseParser)
     {
         this.queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
@@ -125,7 +125,7 @@ public class QueryController : ControllerBase
         CheckEncodingHeader();
 
         // Translate Query
-        var (translationResult, translationError) = TryFuncReturnsElasticError(
+        var (translationResultNullable, translationError) = TryFuncReturnsElasticError(
             () => translator.TranslateQuery(header, query),
             UnknownIndexName); // At this point we don't know the index name.
 
@@ -133,6 +133,13 @@ public class QueryController : ControllerBase
         {
             return Ok(translationError);
         }
+
+        if (translationResultNullable == null)
+        {
+            return Ok();
+        }
+
+        var translationResult = translationResultNullable.Value;
 
         logger.LogDebug("Translated query:\n{@QueryCommandText}", translationResult.QueryCommandText.ToSensitiveData());
 

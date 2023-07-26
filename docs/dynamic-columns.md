@@ -56,6 +56,9 @@ In kibana, this is not supported, so when a field has more than one type, it wil
 
 In the future, smarter combinations may be available, such as combining a field that can either be "double" or "long" to a numeric type rather than a string.
 
+> **Warning**
+> Having a value that is too big in "maxDynamicSamplesIngestionTimeHours" may cause slowdowns or failures to create your index. Use it with caution in relation to the size of your table.
+
 ### Array Fields
 
 Kusto dynamic fields can contain arrays within themselves.
