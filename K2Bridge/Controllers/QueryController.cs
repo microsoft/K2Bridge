@@ -125,7 +125,7 @@ public class QueryController : ControllerBase
         CheckEncodingHeader();
 
         // Translate Query
-        var (translationResult, translationError) = TryFuncReturnsElasticError(
+        var (translationResultNullable, translationError) = TryFuncReturnsElasticError(
             () => translator.TranslateQuery(header, query),
             UnknownIndexName); // At this point we don't know the index name.
 
@@ -133,6 +133,13 @@ public class QueryController : ControllerBase
         {
             return Ok(translationError);
         }
+
+        if (translationResultNullable == null)
+        {
+            return Ok();
+        }
+
+        var translationResult = translationResultNullable.Value;
 
         logger.LogDebug("Translated query:\n{@QueryCommandText}", translationResult.QueryCommandText.ToSensitiveData());
 
@@ -185,8 +192,9 @@ public class QueryController : ControllerBase
         catch (K2Exception exception)
         {
             logger.LogError(exception.Message, exception.InnerException);
-            return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
+            return (
+                default,
+                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
         }
     }
 
@@ -209,8 +217,9 @@ public class QueryController : ControllerBase
         catch (K2Exception exception)
         {
             logger.LogError(exception.Message, exception.InnerException);
-            return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
+            return (
+                default,
+                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
         }
     }
 

@@ -104,7 +104,7 @@ public class QueryControllerTests
         };
 
     private static readonly object[] IntegrationTestCases = {
-            new TestCaseData(ValidMSearchRequestContent, typeof(OkObjectResult)).SetName("QueryController_WhenMSearchRequestIsValid_ReturnsOk"),
+            new TestCaseData(ValidMSearchRequestContent, typeof(OkResult)).SetName("QueryController_WhenMSearchRequestIsValid_ReturnsOk"),
             new TestCaseData(string.Empty, typeof(BadRequestObjectResult)).SetName("QueryController_WhenMSearchRequestIsEmpty_ReturnsBadRequest"),
         };
 

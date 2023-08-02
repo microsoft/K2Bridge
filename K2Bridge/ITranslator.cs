@@ -17,5 +17,5 @@ public interface ITranslator
     /// <param name="header">Query header.</param>
     /// <param name="query">Query to translate.</param>
     /// <returns>Translated QueryData.</returns>
-    QueryData TranslateQuery(string header, string query);
+    QueryData? TranslateQuery(string header, string query);
 }

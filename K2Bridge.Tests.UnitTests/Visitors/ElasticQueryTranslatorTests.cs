@@ -50,7 +50,8 @@ public class ElasticQueryTranslatorTests
         // hard coded mock
         var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
 
-        return queryData.QueryCommandText;
+        Assert.NotNull(queryData);
+        return queryData.Value.QueryCommandText;
     }
 
     [TestCase(ExpectedResult = "some kql from mock visitor")]
@@ -59,10 +60,12 @@ public class ElasticQueryTranslatorTests
         var query = File.ReadAllText($"{DATADIR}/simple_k2_query.json");
 
         var queryData = elasticQueryTranslator.TranslateQuery(INDEX, query);
-        Assert.AreEqual(queryData.HighlightText["*"], MustField);
-        Assert.AreEqual(queryData.HighlightText[FilterField], "5");
+        Assert.NotNull(queryData);
 
-        return queryData.QueryCommandText;
+        Assert.AreEqual(queryData.Value.HighlightText["*"], MustField);
+        Assert.AreEqual(queryData.Value.HighlightText[FilterField], "5");
+
+        return queryData.Value.QueryCommandText;
     }
 
     [TestCase]
@@ -82,14 +85,12 @@ public class ElasticQueryTranslatorTests
     }
 
     [TestCase]
-    public void Translate_WithInvalidQuery_ThrowsException()
+    public void Translate_WithInvalidQuery_ReturnsNull()
     {
         var query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_query.json");
 
-        // will fail as query is not valid (missing query)
-        Assert.That(
-            () => elasticQueryTranslator.TranslateQuery(INDEX, query),
-            Throws.TypeOf<TranslateException>());
+
+        Assert.AreEqual(null, elasticQueryTranslator.TranslateQuery(INDEX, query));
 
         query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_bool.json");
 
