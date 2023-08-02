@@ -192,9 +192,9 @@ public class QueryController : ControllerBase
         catch (K2Exception exception)
         {
             logger.LogError(exception.Message, exception.InnerException);
-            return (default(TResult),
-                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message,
-                    indexName));
+            return (
+                default,
+                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
         }
     }
 
@@ -217,9 +217,9 @@ public class QueryController : ControllerBase
         catch (K2Exception exception)
         {
             logger.LogError(exception.Message, exception.InnerException);
-            return (default(TResult),
-                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message,
-                    indexName));
+            return (
+                default,
+                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
         }
     }
 
