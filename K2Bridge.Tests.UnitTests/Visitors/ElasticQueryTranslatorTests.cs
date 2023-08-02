@@ -85,21 +85,17 @@ public class ElasticQueryTranslatorTests
     }
 
     [TestCase]
-    public void Translate_WithInvalidQuery_ThrowsException()
+    public void Translate_WithInvalidQuery_ReturnsNull()
     {
         var query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_query.json");
 
-        // will fail as query is not valid (missing query)
-        Assert.That(
-            () => elasticQueryTranslator.TranslateQuery(INDEX, query),
-            Throws.TypeOf<TranslateException>());
+
+        Assert.AreEqual(null, elasticQueryTranslator.TranslateQuery(INDEX, query));
 
         query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_bool.json");
 
         // will fail as query is not valid (missing query.bool)
-        Assert.That(
-            () => elasticQueryTranslator.TranslateQuery(INDEX, query),
-            Throws.TypeOf<TranslateException>());
+        Assert.AreEqual(null, elasticQueryTranslator.TranslateQuery(INDEX, query));
     }
 
     [TestCase]
