@@ -95,7 +95,9 @@ public class ElasticQueryTranslatorTests
         query = File.ReadAllText($"{DATADIR}/invalid_k2_query_no_bool.json");
 
         // will fail as query is not valid (missing query.bool)
-        Assert.AreEqual(null, elasticQueryTranslator.TranslateQuery(INDEX, query));
+        Assert.That(
+            () => elasticQueryTranslator.TranslateQuery(INDEX, query),
+            Throws.TypeOf<TranslateException>());
     }
 
     [TestCase]
