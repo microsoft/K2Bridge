@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Ensure = Ensure;
 
 /// <summary>
 /// Handles requests for business data from Kusto.
@@ -43,7 +42,8 @@ public class QueryController : ControllerBase
     /// <param name="responseParser">IResponseParser instance used to parse kusto response.</param>
     public QueryController(
         IQueryExecutor queryExecutor,
-        ITranslator translator, ILogger<QueryController> logger,
+        ITranslator translator,
+        ILogger<QueryController> logger,
         IResponseParser responseParser)
     {
         this.queryExecutor = queryExecutor ?? throw new ArgumentNullException(nameof(queryExecutor));
@@ -192,8 +192,9 @@ public class QueryController : ControllerBase
         catch (K2Exception exception)
         {
             logger.LogError(exception.Message, exception.InnerException);
-            return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
+            return (default(TResult),
+                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message,
+                    indexName));
         }
     }
 
@@ -216,8 +217,9 @@ public class QueryController : ControllerBase
         catch (K2Exception exception)
         {
             logger.LogError(exception.Message, exception.InnerException);
-            return (default(TResult), new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).
-                WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message, indexName));
+            return (default(TResult),
+                new ElasticErrorResponse(exception.GetType().Name, exception.Message, exception.PhaseName).WithRootCause(exception.InnerException?.GetType().Name, exception.InnerException?.Message,
+                    indexName));
         }
     }
 
