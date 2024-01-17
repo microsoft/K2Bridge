@@ -73,8 +73,8 @@ internal class KustoDataAccess : IKustoDataAccess
             var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.DefaultDatabaseName);
             var kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=='{tableName}' {KustoQLOperators.And} DatabaseName=='{databaseName}' {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
 
-            using var kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, RequestContext);
-            await MapFieldCaps(kustoResults, response, tableName);
+            using var kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, RequestContext, databaseName);
+            await MapFieldCaps(kustoResults, response, tableName, databaseName);
 
             response.AddIndex(tableName);
 
@@ -87,8 +87,8 @@ internal class KustoDataAccess : IKustoDataAccess
             Logger.LogDebug("Getting schema for function '{@indexName}'", indexName);
             var functionQuery = $"{tableName.QuoteKustoTable()} | {KustoQLOperators.GetSchema} | project ColumnName, ColumnType=DataType";
             var functionQueryData = new QueryData(functionQuery, tableName, null, null);
-            var (timeTaken, reader) = await Kusto.ExecuteQueryAsync(functionQueryData, RequestContext);
-            await MapFieldCaps(reader, response, tableName);
+            var (timeTaken, reader) = await Kusto.ExecuteQueryAsync(functionQueryData, RequestContext, databaseName);
+            await MapFieldCaps(reader, response, tableName, databaseName);
         }
         catch (Exception ex)
         {
@@ -178,7 +178,7 @@ internal class KustoDataAccess : IKustoDataAccess
         };
     }
 
-    private async Task MapFieldCaps(IDataReader kustoResults, FieldCapabilityResponse response, string tableName)
+    private async Task MapFieldCaps(IDataReader kustoResults, FieldCapabilityResponse response, string tableName, string databaseName)
     {
         while (kustoResults.Read())
         {
@@ -186,7 +186,7 @@ internal class KustoDataAccess : IKustoDataAccess
 
             if (fieldCapabilityElement.Type == "object")
             {
-                await HandleDynamicField(response, tableName, fieldCapabilityElement);
+                await HandleDynamicField(response, tableName, fieldCapabilityElement, databaseName);
             }
             else
             {
@@ -209,13 +209,14 @@ internal class KustoDataAccess : IKustoDataAccess
     /// <param name="response">Response containing the field caps.</param>
     /// <param name="tableName">Name of the kusto table containing the dynamic field.</param>
     /// <param name="fieldCapabilityElement">The dynamic field itself.</param>
+    /// <param name="databaseName">Name of the kusto database containing the table.</param>
     /// <exception cref="InvalidOperationException">When parsing the json response yields an unexpected type.</exception>
-    private async Task HandleDynamicField(FieldCapabilityResponse response, string tableName, FieldCapabilityElement fieldCapabilityElement)
+    private async Task HandleDynamicField(FieldCapabilityResponse response, string tableName, FieldCapabilityElement fieldCapabilityElement, string databaseName)
     {
         var sample = MaxDynamicSamples.HasValue ? $" | {KustoQLOperators.Sample} {MaxDynamicSamples.Value}" : string.Empty;
         var ingestionTime = MaxDynamicSamplesIngestionTimeHours.HasValue ? $" | {KustoQLOperators.Where} {KustoQLOperators.IngestionTime}() > {KustoQLOperators.Ago}({MaxDynamicSamplesIngestionTimeHours.Value}{KustoQLOperators.HoursMark})" : string.Empty;
         var query = $"{tableName.QuoteKustoTable()}{ingestionTime}{sample} | {KustoQLOperators.Summarize} {KustoQLOperators.BuildSchema}({fieldCapabilityElement.Name})";
-        var (_, result) = await Kusto.ExecuteQueryAsync(new QueryData(query, tableName), RequestContext);
+        var (_, result) = await Kusto.ExecuteQueryAsync(new QueryData(query, tableName), RequestContext, databaseName);
         result.Read();
         var jsonResult = result[0];
         var stack = new Stack<(string, JToken)>();

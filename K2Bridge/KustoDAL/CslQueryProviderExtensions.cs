@@ -23,12 +23,14 @@ public static class CslQueryProviderExtensions
     /// <param name="query">ADX query string.</param>
     /// <param name="clientRequestProperties">An object that represents properties that will be sent to Kusto.</param>
     /// <param name="metrics">Prometheus query duration metric.</param>
+    /// <param name="databaseName">Optional name of database.</param>
     /// <returns>Tuple of timeTaken and the reader result.</returns>
     public static async Task<(TimeSpan TimeTaken, IDataReader Reader)> ExecuteMonitoredQueryAsync(
         this ICslQueryProvider client,
         string query,
         ClientRequestProperties clientRequestProperties,
-        Metrics metrics)
+        Metrics metrics,
+        string databaseName = "")
     {
         Ensure.IsNotNull(client, nameof(client));
         Ensure.IsNotNull(metrics, nameof(metrics));
@@ -37,7 +39,7 @@ public static class CslQueryProviderExtensions
         // Timer to be used to report the duration of a query to.
         var stopwatch = new Stopwatch();
         stopwatch.Start();
-        var reader = await client.ExecuteQueryAsync(string.Empty, query, clientRequestProperties);
+        var reader = await client.ExecuteQueryAsync(databaseName, query, clientRequestProperties);
         stopwatch.Stop();
         var duration = stopwatch.Elapsed;
 

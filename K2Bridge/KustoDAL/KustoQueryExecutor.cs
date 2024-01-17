@@ -89,14 +89,15 @@ internal class KustoQueryExecutor : IQueryExecutor
     /// </summary>
     /// <param name="command">The command to execute.</param>
     /// <param name="requestContext">An object that represents properties of the entire request process.</param>
+    /// <param name="databaseName">Optional name of database.</param>
     /// <returns>A data reader with a result.</returns>
-    public async Task<IDataReader> ExecuteControlCommandAsync(string command, RequestContext requestContext)
+    public async Task<IDataReader> ExecuteControlCommandAsync(string command, RequestContext requestContext, string databaseName = "")
     {
         // TODO: When a single K2 flow will generate multiple requests to Kusto - find a way to differentiate them using different ClientRequestIds
         var clientRequestProperties = ClientRequestPropertiesExtensions.ConstructClientRequestPropertiesFromRequestContext(KustoApplicationNameForTracing, ControlCommandActivityName, requestContext);
 
         Logger.LogDebug("Calling adminClient.ExecuteControlCommand with the command: {@command}", command.ToSensitiveData());
-        var result = await adminClient.ExecuteControlCommandAsync(string.Empty, command, clientRequestProperties);
+        var result = await adminClient.ExecuteControlCommandAsync(databaseName, command, clientRequestProperties);
         return result;
     }
 
@@ -105,9 +106,10 @@ internal class KustoQueryExecutor : IQueryExecutor
     /// </summary>
     /// <param name="queryData">A Query data.</param>
     /// <param name="requestContext">An object that represents properties of the entire request process.</param>
+    /// <param name="databaseName">Optional name of database.</param>
     /// <returns>A data reader with response and time taken.</returns>
     /// <exception cref="QueryException">Throws a QueryException on error.</exception>
-    public async Task<(TimeSpan TimeTaken, IDataReader Reader)> ExecuteQueryAsync(QueryData queryData, RequestContext requestContext)
+    public async Task<(TimeSpan TimeTaken, IDataReader Reader)> ExecuteQueryAsync(QueryData queryData, RequestContext requestContext, string databaseName = "")
     {
         try
         {
@@ -115,7 +117,7 @@ internal class KustoQueryExecutor : IQueryExecutor
             var clientRequestProperties = ClientRequestPropertiesExtensions.ConstructClientRequestPropertiesFromRequestContext(KustoApplicationNameForTracing, QueryActivityName, requestContext);
 
             // Use the kusto client to execute the query
-            var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, clientRequestProperties, metricsHistograms);
+            var (timeTaken, dataReader) = await queryClient.ExecuteMonitoredQueryAsync(queryData.QueryCommandText, clientRequestProperties, metricsHistograms, databaseName);
             Logger.LogDebug("Calling queryClient.ExecuteMonitoredQuery with query data: {@queryData}", queryData.ToSensitiveData());
 
             var fieldCount = dataReader.FieldCount;
