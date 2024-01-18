@@ -419,7 +419,7 @@ public class KustoDataAccessTests
             .Returns(Task.FromResult(testReader));
 
         mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>(), string.Empty))
-            .Returns((QueryData query, RequestContext context) =>
+            .Returns((QueryData query, RequestContext context, string db) =>
             {
                 string response;
                 if (query.QueryCommandText.Contains("nested_indexer"))
