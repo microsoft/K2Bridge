@@ -45,10 +45,10 @@ public class KustoDataAccessTests
         mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(string.Empty);
         mockQueryExecutor.SetupGet(x => x.DefaultDatabaseName).Returns(mockDetails.Object.DefaultDatabaseName);
         using IDataReader emptyReader = new DataReaderMock(new List<Dictionary<string, object>>());
-        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(emptyReader));
         using IDataReader emptyReader2 = new DataReaderMock(new List<Dictionary<string, object>>());
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsNotNull<QueryData>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsNotNull<QueryData>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult((TimeSpan.FromSeconds(1), emptyReader2)));
         memoryCache = GetMemoryCache();
     }
@@ -69,7 +69,7 @@ public class KustoDataAccessTests
                 Column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
             };
         using IDataReader testReader = new DataReaderMock(testData);
-        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(testReader));
 
         using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
@@ -80,7 +80,7 @@ public class KustoDataAccessTests
 
         // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
         var calls = new List<QueryData>();
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
 
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
@@ -234,7 +234,7 @@ public class KustoDataAccessTests
                 Column("mytimespan", "System.TimeSpan"),
                 Column("mydecimal", "System.Data.SqlTypes.SqlDecimal"),
             };
-        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(() =>
             {
                 IDataReader testReader = new DataReaderMock(testData);
@@ -243,7 +243,7 @@ public class KustoDataAccessTests
 
         // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
         var calls = new List<QueryData>();
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>(), string.Empty))
             .Returns(() =>
             {
                 IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
@@ -415,10 +415,10 @@ public class KustoDataAccessTests
                 Column("dynamic_top_level_array", "System.Object"),
             };
         using IDataReader testReader = new DataReaderMock(testData);
-        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(testReader));
 
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns((QueryData query, RequestContext context) =>
             {
                 string response;
@@ -587,7 +587,7 @@ public class KustoDataAccessTests
                 Column("mydynamic", "System.Object"),
             };
         using IDataReader testReader = new DataReaderMock(testData);
-        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(testReader));
 
         using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
@@ -598,7 +598,7 @@ public class KustoDataAccessTests
 
         // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
         var calls = new List<QueryData>();
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
 
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, samples);
@@ -617,7 +617,7 @@ public class KustoDataAccessTests
                 Column("mydynamic", "System.Object"),
             };
         using IDataReader testReader = new DataReaderMock(testData);
-        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(testReader));
 
         using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
@@ -628,7 +628,7 @@ public class KustoDataAccessTests
 
         // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
         var calls = new List<QueryData>();
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
 
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, maxDynamicSamplesIngestionTimeHours: hours);
@@ -648,7 +648,7 @@ public class KustoDataAccessTests
                 Column("mydynamic", "System.Object"),
             };
         using IDataReader testReader = new DataReaderMock(testData);
-        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.IsNotNull<string>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(testReader));
 
         using IDataReader dynamicResultReader = new DataReaderMock(new List<Dictionary<string, object>>() {
@@ -659,7 +659,7 @@ public class KustoDataAccessTests
 
         // We capture the calls to ExecuteQueryAsync to verify it calls the correct query to build dynamic fields
         var calls = new List<QueryData>();
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(Capture.In(calls), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult((TimeSpan.Zero, dynamicResultReader)));
 
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object, samples, hours);
@@ -676,7 +676,7 @@ public class KustoDataAccessTests
                 Column("mystring", "System.String"),
             };
         using var testReader = new DataReaderMock(testData);
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult((TimeSpan.FromSeconds(1), (IDataReader)testReader)));
 
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
@@ -686,7 +686,8 @@ public class KustoDataAccessTests
             It.Is<QueryData>(d =>
                 d.IndexName == "testIndexName"
                 && d.QueryCommandText == "['testIndexName'] | getschema | project ColumnName, ColumnType=DataType"),
-            It.IsAny<RequestContext>()));
+            It.IsAny<RequestContext>(),
+            string.Empty));
 
         JToken.FromObject(response).Should().BeEquivalentTo(JToken.Parse(@"
                   {
@@ -725,7 +726,7 @@ public class KustoDataAccessTests
                     },
             });
         mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
+                It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(stubIndexReader));
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
         var indexResponse = await kusto.ResolveIndexAsync("testIndex");
@@ -737,7 +738,8 @@ public class KustoDataAccessTests
             + " | search TableName: 'testIndex'"
             + " | search DatabaseName: ''"
             + " |  project strcat(DatabaseName, \":\", TableName)",
-            It.IsAny<RequestContext>()));
+            It.IsAny<RequestContext>(),
+            string.Empty));
 
         Assert.IsNotNull(indexResponse);
         var itr = indexResponse.Indices.GetEnumerator();
@@ -756,7 +758,7 @@ public class KustoDataAccessTests
                     },
             });
         mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
+                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(stubIndexReader));
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
         var indexResponse = await kusto.ResolveIndexAsync("testIndex");
@@ -767,7 +769,8 @@ public class KustoDataAccessTests
             + " | distinct Name"
             + " | search Name: 'testIndex'"
             + " | project strcat(\"\", \":\", Name)",
-            It.IsAny<RequestContext>()));
+            It.IsAny<RequestContext>(),
+            string.Empty));
 
         Assert.IsNotNull(indexResponse);
         var itr = indexResponse.Indices.GetEnumerator();
@@ -792,10 +795,10 @@ public class KustoDataAccessTests
                     },
             });
         mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>()))
+                It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(stubIndexReader1));
         mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
-                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>()))
+                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(stubIndexReader2));
 
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
@@ -824,7 +827,7 @@ public class KustoDataAccessTests
                         { "1", "somevalue1" },
                     },
             });
-        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, OrdinalIgnoreCase)), It.IsAny<RequestContext>()))
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(It.Is<string>(s => s.Contains(searchString, OrdinalIgnoreCase)), It.IsAny<RequestContext>(), string.Empty))
             .Returns(Task.FromResult(stubIndexReader));
         var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, It.IsAny<RequestContext>(), new Mock<ILogger<KustoDataAccess>>().Object);
         var indexResponse = await kusto.ResolveIndexAsync(indexName);

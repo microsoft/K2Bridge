@@ -164,7 +164,7 @@ public class QueryControllerTests
         mockTranslator.Setup(translator => translator.TranslateQuery(ValidHeaderContent, ValidSearchRequestContent)).Returns(queryData);
 
         var mockQueryExecutor = new Mock<IQueryExecutor>();
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>())).Returns(Task.FromResult((ts, reader.Object)));
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>(), string.Empty)).Returns(Task.FromResult((ts, reader.Object)));
 
         var mockLogger = new Mock<ILogger<QueryController>>();
         var mockResponseParser = new Mock<IResponseParser>();
@@ -189,7 +189,7 @@ public class QueryControllerTests
         mockTranslator.Verify(
             translator => translator.TranslateQuery(ValidHeaderContent, ValidSearchRequestContent), Times.Once());
         mockQueryExecutor.Verify(
-             executor => executor.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>()), Times.Once());
+             executor => executor.ExecuteQueryAsync(queryData, It.IsAny<RequestContext>(), string.Empty), Times.Once());
         mockResponseParser.Verify(
             parsr => parsr.Parse(reader.Object, queryData, ts), Times.Once());
     }
@@ -340,7 +340,8 @@ public class QueryControllerTests
         mockQueryExecutor.Setup(executor
             => executor.ExecuteQueryAsync(
                 It.IsAny<QueryData>(),
-                It.IsAny<RequestContext>()))
+                It.IsAny<RequestContext>(),
+                string.Empty))
             .Throws(new QueryException(
                 "test error message",
                 new ArgumentException("test")));
@@ -384,7 +385,7 @@ public class QueryControllerTests
         var mockTranslator = new Mock<ITranslator>();
         mockTranslator.Setup(x => x.TranslateQuery(It.IsAny<string>(), It.IsAny<string>())).Returns(mockQueryData);
         var mockQueryExecutor = new Mock<IQueryExecutor>();
-        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>())).Returns(Task.FromResult((default(TimeSpan), new Mock<IDataReader>().Object)));
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(It.IsAny<QueryData>(), It.IsAny<RequestContext>(), string.Empty)).Returns(Task.FromResult((default(TimeSpan), new Mock<IDataReader>().Object)));
         var mockLogger = new Mock<ILogger<QueryController>>();
         var mockResponseParser = new Mock<IResponseParser>();
         mockResponseParser.Setup(exec =>
