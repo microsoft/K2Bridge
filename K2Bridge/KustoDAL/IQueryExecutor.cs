@@ -24,14 +24,16 @@ public interface IQueryExecutor
     /// </summary>
     /// <param name="query">String respresenting a query to execute.</param>
     /// <param name="requestContext">The request context.</param>
+    /// <param name="databaseName">Optional name of database</param>
     /// <returns>Task.<(TimeSpan timeTaken, IDataReader reader)> - timeTaken is the query execution time and reader is the query result.</returns>
-    Task<(TimeSpan TimeTaken, IDataReader Reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext);
+    Task<(TimeSpan TimeTaken, IDataReader Reader)> ExecuteQueryAsync(QueryData query, RequestContext requestContext, string databaseName = "");
 
     /// <summary>
     /// Execute an asynchronous control command.
     /// </summary>
     /// <param name="query">The control command to execute.</param>
     /// <param name="requestContext">The request context.</param>
+    /// <param name="databaseName">Optional name of database</param>
     /// <returns>Task.<IDataReader> where IDataReader is the query result.</returns>
-    Task<IDataReader> ExecuteControlCommandAsync(string query, RequestContext requestContext);
+    Task<IDataReader> ExecuteControlCommandAsync(string query, RequestContext requestContext, string databaseName = "");
 }
