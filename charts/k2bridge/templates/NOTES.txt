@@ -1,3 +1,12 @@
+0. Installing the helm chart with certain versions may cause this error:
+
+Error: INSTALLATION FAILED: unable to build kubernetes objects from release manifest: resource mapping not found for name: "k2bridgees-master-pdb" namespace: "" from "": no matches for kind "PodDisruptionBudget" in version "policy/v1beta1"
+ensure CRDs are installed first
+
+To work around this error, you can add `maxUnavailable: null` to your values.yaml file.
+See https://kubernetes.io/docs/tasks/run-application/configure-pdb/ for more information.
+
+
 1. Wait for the K2Bridge and internal Elasticseach pods to be fully started. It can take several minutes to obtain persistent storage from the cloud provider the first time.
     kubectl get pods --namespace {{ .Release.Namespace }}
 
@@ -21,6 +30,7 @@
     http://127.0.0.1:8080. This is an internal address in the cluster and you should run this to access it locally:
     kubectl port-forward service/{{ include "k2bridge.fullname" .}} 8080 --namespace {{ .Release.Namespace }}
 {{- end }}
+
 
 3. Optionally deploy Kibana by running these commands:
     helm install kibana elastic/kibana --version 7.17.3 --namespace {{ .Release.Namespace }} --set image=docker.elastic.co/kibana/kibana-oss --set imageTag=7.10.2 --set elasticsearchHosts=http://{{ include "k2bridge.fullname" . }}:{{ .Values.service.port }}
