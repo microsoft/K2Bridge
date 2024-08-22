@@ -3,7 +3,7 @@
 Error: INSTALLATION FAILED: unable to build kubernetes objects from release manifest: resource mapping not found for name: "k2bridgees-master-pdb" namespace: "" from "": no matches for kind "PodDisruptionBudget" in version "policy/v1beta1"
 ensure CRDs are installed first
 
-To work around this error, you can add `maxUnavailable: null` to your values.yaml file.
+To work around this error, you can add `maxUnavailable: ''` to your values.yaml file.
 See https://kubernetes.io/docs/tasks/run-application/configure-pdb/ for more information.
 
 
