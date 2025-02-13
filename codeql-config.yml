@@ -1,0 +1,3 @@
+path_classifiers:
+  exclude:
+    - "K2Bridge/KustoDAL/**"
