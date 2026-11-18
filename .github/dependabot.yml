@@ -11,3 +11,12 @@ updates:
       interval: "monthly"
     allow:
       - dependency-name: "Microsoft.Azure.Kusto.*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    groups:
+      github-actions:
+        patterns: ["*"]
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
