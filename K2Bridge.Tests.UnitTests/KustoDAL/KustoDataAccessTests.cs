@@ -29,6 +29,14 @@ public class KustoDataAccessTests
             new string[] { "tableName", string.Empty, "tableName" },
             new string[] { ":", string.Empty, string.Empty },
             new string[] { "tableName", "databaseName", "tableName" },
+            new string[] { "logs*", "defaultdb", "logs*" },
+            new string[] { "prod*:logs*", "prod*", "logs*" },
+            new string[] { "prod-db:logs.2026-11", "prod-db", "logs.2026-11" },
+            new string[] { "prod db:logs archive", "prod db", "logs archive" },
+            new string[] { "defaultdb:logs:archive", "defaultdb", "logs:archive" },
+            new string[] { "*:logs*", "*", "logs*" },
+            new string[] { "prod*:*", "prod*", "*" },
+            new string[] { "*logs*", "defaultdb", "*logs*" },
         };
 
     private Mock<IQueryExecutor> mockQueryExecutor;
@@ -735,8 +743,8 @@ public class KustoDataAccessTests
             ".show databases schema"
             + " | where TableName != ''"
             + " | distinct TableName, DatabaseName"
-            + " | search TableName: 'testIndex'"
-            + " | search DatabaseName: ''"
+            + " | search TableName: \"testIndex\""
+            + " | search DatabaseName: \"\""
             + " |  project strcat(DatabaseName, \":\", TableName)",
             It.IsAny<RequestContext>(),
             string.Empty));
@@ -767,7 +775,7 @@ public class KustoDataAccessTests
             ".show functions"
             + " | where Parameters == '()'"
             + " | distinct Name"
-            + " | search Name: 'testIndex'"
+            + " | search Name: \"testIndex\""
             + " | project strcat(\"\", \":\", Name)",
             It.IsAny<RequestContext>(),
             string.Empty));
@@ -820,7 +828,7 @@ public class KustoDataAccessTests
         var mockDetails = new Mock<IConnectionDetails>();
         mockDetails.SetupGet(d => d.DefaultDatabaseName).Returns(databaseName);
         mockQueryExecutor.SetupGet(x => x.DefaultDatabaseName).Returns(mockDetails.Object.DefaultDatabaseName);
-        var searchString = $"search TableName: '{tableName}' | search DatabaseName: '{databaseName}' |";
+        var searchString = $"search TableName: \"{tableName}\" | search DatabaseName: \"{databaseName}\" |";
         using IDataReader stubIndexReader = new DataReaderMock(
             new List<Dictionary<string, object>>() {
                     new Dictionary<string, object> {
@@ -836,6 +844,205 @@ public class KustoDataAccessTests
         var itr = indexResponse.Indices.GetEnumerator();
         itr.MoveNext();
         Assert.NotNull(itr.Current, $"failed to provide valid search term with database name {databaseName} and table name {tableName} from indexname {indexName}. expected: {searchString}");
+    }
+
+    [Test]
+    public async Task GetFieldCaps_WithIndexInjection_EncodesSchemaAndFunctionQueries()
+    {
+        const string tableName = "logs'] | union database(\"other\").['secret";
+        const string indexName = "defaultdb:" + tableName;
+        using IDataReader schemaReader = new DataReaderMock(new List<Dictionary<string, object>>());
+        using IDataReader functionReader = new DataReaderMock(new List<Dictionary<string, object>>());
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
+                It.IsAny<string>(), It.IsAny<RequestContext>(), "defaultdb"))
+            .ReturnsAsync(schemaReader);
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(
+                It.IsAny<QueryData>(), It.IsAny<RequestContext>(), "defaultdb"))
+            .ReturnsAsync((TimeSpan.Zero, functionReader));
+        var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, null, new Mock<ILogger<KustoDataAccess>>().Object);
+
+        await kusto.GetFieldCapsAsync(indexName);
+
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteControlCommandAsync(
+                ".show databases schema | where TableName==\"logs'] | union database(\\\"other\\\").['secret\""
+                + " and DatabaseName==\"defaultdb\" and ColumnName!='' | project ColumnName, ColumnType",
+                It.IsAny<RequestContext>(),
+                "defaultdb"),
+            Times.Once);
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteQueryAsync(
+                It.Is<QueryData>(q => q.QueryCommandText == "['logs\\'] | union database(\"other\").[\\'secret']"
+                    + " | getschema | project ColumnName, ColumnType=DataType"),
+                It.IsAny<RequestContext>(),
+                "defaultdb"),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetTablesAndFunctions_WithQuotedIndex_EncodesSearchLiterals()
+    {
+        const string databaseName = "db'\\name";
+        const string tableName = "logs'] | union database(\"other\").['secret";
+        using IDataReader tablesReader = new DataReaderMock(new List<Dictionary<string, object>>());
+        using IDataReader functionsReader = new DataReaderMock(new List<Dictionary<string, object>>());
+        mockQueryExecutor.SetupGet(exec => exec.DefaultDatabaseName).Returns(databaseName);
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
+                It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>(), string.Empty))
+            .ReturnsAsync(tablesReader);
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
+                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>(), string.Empty))
+            .ReturnsAsync(functionsReader);
+        var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, null, new Mock<ILogger<KustoDataAccess>>().Object);
+
+        await kusto.GetTablesAndFunctions(databaseName + ":" + tableName);
+
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteControlCommandAsync(
+                ".show databases schema | where TableName != '' | distinct TableName, DatabaseName"
+                + " | search TableName: \"logs'] | union database(\\\"other\\\").['secret\""
+                + " | search DatabaseName: \"db'\\\\name\" |  project strcat(DatabaseName, \":\", TableName)",
+                It.IsAny<RequestContext>(),
+                string.Empty),
+            Times.Once);
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteControlCommandAsync(
+                ".show functions | where Parameters == '()' | distinct Name"
+                + " | search Name: \"logs'] | union database(\\\"other\\\").['secret\""
+                + " | project strcat(\"db'\\\\name\", \":\", Name)",
+                It.IsAny<RequestContext>(),
+                string.Empty),
+            Times.Once);
+    }
+
+    [TestCaseSource(nameof(EncodedNameTestCases))]
+    public async Task GetFieldCaps_WithEncodedNames_PreservesFunctionSchema(
+        string databaseName, string tableName, string databaseLiteral, string tableLiteral, string tableIdentifier)
+    {
+        using IDataReader schemaReader = new DataReaderMock(new List<Dictionary<string, object>>());
+        using IDataReader functionReader = new DataReaderMock(new List<Dictionary<string, object>>
+        {
+            Column("message", "System.String"),
+        });
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
+                It.IsAny<string>(), It.IsAny<RequestContext>(), databaseName))
+            .ReturnsAsync(schemaReader);
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(
+                It.IsAny<QueryData>(), It.IsAny<RequestContext>(), databaseName))
+            .ReturnsAsync((TimeSpan.Zero, functionReader));
+        var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, null, new Mock<ILogger<KustoDataAccess>>().Object);
+
+        var response = await kusto.GetFieldCapsAsync(databaseName + ":" + tableName);
+
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteControlCommandAsync(
+                ".show databases schema | where TableName==" + tableLiteral
+                + " and DatabaseName==" + databaseLiteral
+                + " and ColumnName!='' | project ColumnName, ColumnType",
+                It.IsAny<RequestContext>(),
+                databaseName),
+            Times.Once);
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteQueryAsync(
+                It.Is<QueryData>(q => q.IndexName == tableName
+                    && q.QueryCommandText == tableIdentifier
+                    + " | getschema | project ColumnName, ColumnType=DataType"),
+                It.IsAny<RequestContext>(),
+                databaseName),
+            Times.Once);
+        Assert.That(response.Indices, Is.EqualTo(new[] { tableName }));
+        Assert.That(response.Fields.ContainsKey("message"), Is.True);
+    }
+
+    [TestCaseSource(nameof(EncodedNameTestCases))]
+    public async Task GetTablesAndFunctions_WithEncodedNames_PreservesReturnedIndices(
+        string databaseName, string tableName, string databaseLiteral, string tableLiteral, string _)
+    {
+        const string defaultDatabase = "configured\"db\\";
+        const string defaultDatabaseLiteral = "\"configured\\\"db\\\\\"";
+        using IDataReader tablesReader = new DataReaderMock(new List<Dictionary<string, object>>
+        {
+            new() { { "Name", databaseName + ":" + tableName } },
+        });
+        using IDataReader functionsReader = new DataReaderMock(new List<Dictionary<string, object>>
+        {
+            new() { { "Name", defaultDatabase + ":function" } },
+        });
+        mockQueryExecutor.SetupGet(exec => exec.DefaultDatabaseName).Returns(defaultDatabase);
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
+                It.Is<string>(q => q.StartsWith(".show databases", Ordinal)), It.IsAny<RequestContext>(), string.Empty))
+            .ReturnsAsync(tablesReader);
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
+                It.Is<string>(q => q.StartsWith(".show functions", Ordinal)), It.IsAny<RequestContext>(), string.Empty))
+            .ReturnsAsync(functionsReader);
+        var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, null, new Mock<ILogger<KustoDataAccess>>().Object);
+
+        var indices = await kusto.GetTablesAndFunctions(databaseName + ":" + tableName);
+
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteControlCommandAsync(
+                ".show databases schema | where TableName != '' | distinct TableName, DatabaseName"
+                + " | search TableName: " + tableLiteral + " | search DatabaseName: " + databaseLiteral
+                + " |  project strcat(DatabaseName, \":\", TableName)",
+                It.IsAny<RequestContext>(),
+                string.Empty),
+            Times.Once);
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteControlCommandAsync(
+                ".show functions | where Parameters == '()' | distinct Name"
+                + " | search Name: " + tableLiteral
+                + " | project strcat(" + defaultDatabaseLiteral + ", \":\", Name)",
+                It.IsAny<RequestContext>(),
+                string.Empty),
+            Times.Once);
+        Assert.That(indices, Is.EqualTo(new[] { databaseName + ":" + tableName, defaultDatabase + ":function" }));
+    }
+
+    [TestCase("logs archive", "['logs archive']")]
+    [TestCase("logs'\\", "['logs\\'\\\\']")]
+    [TestCase("logs\nnext", "['logs\\u000anext']")]
+    public async Task GetFieldCaps_WithQuotedTable_PreservesDynamicSchema(string tableName, string tableIdentifier)
+    {
+        using IDataReader schemaReader = new DataReaderMock(new List<Dictionary<string, object>>
+        {
+            Column("properties", "System.Object"),
+        });
+        using IDataReader dynamicReader = new DataReaderMock(new List<Dictionary<string, object>>
+        {
+            new() { { "result", JToken.Parse(@"{""value"": ""long""}") } },
+        });
+        mockQueryExecutor.Setup(exec => exec.ExecuteControlCommandAsync(
+                It.IsAny<string>(), It.IsAny<RequestContext>(), "defaultdb"))
+            .ReturnsAsync(schemaReader);
+        mockQueryExecutor.Setup(exec => exec.ExecuteQueryAsync(
+                It.IsAny<QueryData>(), It.IsAny<RequestContext>(), "defaultdb"))
+            .ReturnsAsync((TimeSpan.Zero, dynamicReader));
+        var kusto = new KustoDataAccess(memoryCache, mockQueryExecutor.Object, null, new Mock<ILogger<KustoDataAccess>>().Object, 5, 2);
+
+        var response = await kusto.GetFieldCapsAsync("defaultdb:" + tableName);
+
+        mockQueryExecutor.Verify(
+            exec => exec.ExecuteQueryAsync(
+                It.Is<QueryData>(q => q.IndexName == tableName
+                    && q.QueryCommandText == tableIdentifier
+                    + " | where ingestion_time() > ago(2h) | sample 5 | summarize buildschema(properties)"),
+                It.IsAny<RequestContext>(),
+                "defaultdb"),
+            Times.Once);
+        Assert.That(response.Indices, Is.EqualTo(new[] { tableName }));
+        Assert.That(response.Fields.ContainsKey("properties.value"), Is.True);
+    }
+
+    private static IEnumerable<TestCaseData> EncodedNameTestCases()
+    {
+        yield return new TestCaseData("prod-db", "logs.2026-11", "\"prod-db\"", "\"logs.2026-11\"", "['logs.2026-11']");
+        yield return new TestCaseData("prod db", "logs archive", "\"prod db\"", "\"logs archive\"", "['logs archive']");
+        yield return new TestCaseData("db\"\\", "lo'gs\\", "\"db\\\"\\\\\"", "\"lo'gs\\\\\"", "['lo\\'gs\\\\']");
+        yield return new TestCaseData("db\\n", "logs\\u0027", "\"db\\\\n\"", "\"logs\\\\u0027\"", "['logs\\\\u0027']");
+        yield return new TestCaseData("db\nnext", "logs\r\nnext", "\"db\\u000anext\"", "\"logs\\u000d\\u000anext\"", "['logs\\u000d\\u000anext']");
+        yield return new TestCaseData("db\u2028next", "logs\u2029next", "\"db\\u2028next\"", "\"logs\\u2029next\"", "['logs\\u2029next']");
+        yield return new TestCaseData(string.Empty, "logs:archive", "\"\"", "\"logs:archive\"", "['logs:archive']");
+        yield return new TestCaseData("\u6570\u636e", "\u65e5\u5fd7", "\"\u6570\u636e\"", "\"\u65e5\u5fd7\"", "['\u65e5\u5fd7']");
     }
 
     private static IMemoryCache GetMemoryCache()

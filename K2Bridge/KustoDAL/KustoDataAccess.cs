@@ -71,7 +71,7 @@ internal class KustoDataAccess : IKustoDataAccess
         {
             Logger.LogDebug("Getting schema for table '{@indexName}'", indexName);
             var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.DefaultDatabaseName);
-            var kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=='{tableName}' {KustoQLOperators.And} DatabaseName=='{databaseName}' {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
+            var kustoCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName=={tableName.ToKustoStringLiteral()} {KustoQLOperators.And} DatabaseName=={databaseName.ToKustoStringLiteral()} {KustoQLOperators.And} ColumnName!='' | {KustoQLOperators.Project} ColumnName, ColumnType";
 
             using var kustoResults = await Kusto.ExecuteControlCommandAsync(kustoCommand, RequestContext, databaseName);
             await MapFieldCaps(kustoResults, response, tableName, databaseName);
@@ -113,7 +113,7 @@ internal class KustoDataAccess : IKustoDataAccess
         {
             Logger.LogDebug("Listing tables matching '{@indexName}'", indexName);
             var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(indexName, Kusto.DefaultDatabaseName);
-            var readTablesCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: '{tableName}' | {KustoQLOperators.Search} DatabaseName: '{databaseName}' |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
+            var readTablesCommand = $".show {KustoQLOperators.Databases} {KustoQLOperators.Schema} | {KustoQLOperators.Where} TableName != '' | {KustoQLOperators.Distinct} TableName, DatabaseName | {KustoQLOperators.Search} TableName: {tableName.ToKustoStringLiteral()} | {KustoQLOperators.Search} DatabaseName: {databaseName.ToKustoStringLiteral()} |  {KustoQLOperators.Project} strcat(DatabaseName, \"{KustoDatabaseTableNames.Separator}\", TableName)";
 
             using var kustoTables = await Kusto.ExecuteControlCommandAsync(readTablesCommand, RequestContext);
             if (kustoTables != null)
@@ -126,7 +126,7 @@ internal class KustoDataAccess : IKustoDataAccess
 
             Logger.LogDebug("Listing functions matching '{@indexName}'", indexName);
             var defaultDb = Kusto.DefaultDatabaseName;
-            var readFunctionsCommand = $".show {KustoQLOperators.Functions} | {KustoQLOperators.Where} Parameters == '()' | {KustoQLOperators.Distinct} Name | {KustoQLOperators.Search} Name: '{tableName}' | {KustoQLOperators.Project} strcat(\"{defaultDb}\", \"{KustoDatabaseTableNames.Separator}\", Name)";
+            var readFunctionsCommand = $".show {KustoQLOperators.Functions} | {KustoQLOperators.Where} Parameters == '()' | {KustoQLOperators.Distinct} Name | {KustoQLOperators.Search} Name: {tableName.ToKustoStringLiteral()} | {KustoQLOperators.Project} strcat({defaultDb.ToKustoStringLiteral()}, \"{KustoDatabaseTableNames.Separator}\", Name)";
 
             using var kustoFunctions = await Kusto.ExecuteControlCommandAsync(readFunctionsCommand, RequestContext);
             if (kustoFunctions != null)

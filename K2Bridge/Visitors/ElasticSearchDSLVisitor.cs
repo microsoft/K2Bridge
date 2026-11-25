@@ -48,13 +48,14 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
         var queryStringBuilder = new StringBuilder();
 
         var (databaseName, tableName) = KustoDatabaseTableNames.FromElasticIndexName(elasticSearchDSL.IndexName, defaultDatabaseName);
+        var source = $"database({databaseName.ToKustoStringLiteral()}).{tableName.QuoteKustoTable()}";
 
         // When an index-pattern doesn't have a default time filter the query element can be empty
         var translatedQueryExpression = !string.IsNullOrEmpty(elasticSearchDSL.Query.KustoQL) ? $"| {elasticSearchDSL.Query.KustoQL}" : string.Empty;
 
         if (elasticSearchDSL.Query.Bool != null)
         {
-            queryStringBuilder.Append($"{KustoQLOperators.Let} {KustoTableNames.Data} = database(\"{databaseName}\").{tableName.QuoteKustoTable()} {translatedQueryExpression};");
+            queryStringBuilder.Append($"{KustoQLOperators.Let} {KustoTableNames.Data} = {source} {translatedQueryExpression};");
 
             // Aggregations
             if (elasticSearchDSL.Aggregations?.Count > 0)
@@ -101,7 +102,7 @@ internal partial class ElasticSearchDSLVisitor : IVisitor
         else
         {
             // ViewSingleDocument query
-            queryStringBuilder.Append($"database(\"{databaseName}\").{tableName.QuoteKustoTable()} {translatedQueryExpression} | as {KustoTableNames.Hits};");
+            queryStringBuilder.Append($"{source} {translatedQueryExpression} | as {KustoTableNames.Hits};");
         }
 
         elasticSearchDSL.KustoQL = queryStringBuilder.ToString();
